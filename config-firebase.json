@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "taki-education",
+  "private_key_id": "02e43ccf0b6b31544b1eb4ef5ccb3e68f0a12d8e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCqcPfWmXUAai2H\nn+K7LraTq/Pdjm7p6y8i8vOU3pujR65+PuszWNB79bOd73KV88QfxlWEHQS+nrZc\nNAThS78caZ2sp+rVnwaOIiE57L4Pt+GskDF9EKprTHdb4w0OTP5dCXXtLc6AFHDu\nk0TsalM5HDfzX1sZuq3ZcTxIyfy+niy5Osv+4wMmciFbZC5rEuZLI9xpHDj+4Q/K\nVL1AAQTSoapQX3Dt/jLc1LVt4yzhvkmquLVAEkl+dsjPTvsSqD94IcRH0RR0Rdm4\ngC96zlKCxcdk+Gd2L7rmmd5IdAWEDIBdvxd084kgDHl9POq2+R0GkZOqRHyWbcgw\nyM6NEp2nAgMBAAECggEABSuQGQ5mojCWWPrcodj06N3ac+oSKz5bG7BK+0UVa4qN\nHH9EGzaifGAjprLQwwO1+1DE31ESB8ZAueNKEpt9nJsHkWk2kmxUgpM+dsdbrJZj\nXhyxo52Rzddv93WXu8tSG/hhf2RYU0JLerE08gb3p0/X0qYd2VX0WBg7P+oApLeS\n0UzeI3mOQCCtoI76O4GFV5MM9WCBgIxR59xv4mbv0Ky2l8HKoV/8O+93F26PKuAh\nfehyePtHB+r5Evk1lN5wB/VeY6sDbQ8IhEUTGBFsQM/Ld+b64RThOV+xdtarZ8dZ\nIfazsMkYH3ehtKhQUecqtkBehX0lM1wIxSLgYmZzgQKBgQDvY9umeINKfaFD6bC7\nda5Y/3fYSAmrryGEIhlgnR1cQnOq93G2b4ZMSmc/AfQyMdCJuWoUb7qRXDNZo8RD\nCtAj1TkqtjoYsWjE3+KgbMpS7ruy6aWNVl1ws5juezHJGCBBWpG4v3a3nF0h+AVk\n2okj8bmazWIsyME9t6VWTEaBdwKBgQC2RGoJJps/6VcT4m2NbGkUG7fLagbZaMDG\nWqqneVGaMNHj/K2Mwh+c7JtuUntDpTPBOa9qi5w5hnKx4ZcCc37hoz5RUpFvIday\njbjwxln6I75TXJ42UU0ZfZLbYyIC7ma4Z6QkkdhjNnP0lfRvbT5x8e+RFyHWLVJi\nJTlsPdtRUQKBgQCo04jVx0n4X886gPWlzuGtXEWd33gKf1EoyY+SJlvNdAP0/9tP\nKSnSZeqYcf1Q5PbIGl4omX8/AoIoZqmECn0tuDM/3xHr1jooFijSsMajZEA1djfO\nDKmLUO26ymEbDAu7a283lrfX18uKqErNjJ2JHvGhrdTd9prptrlAujxDEwKBgAc1\nbXwvKrS8ZdVDf1G4l+9TqVFCQEMZAYbWzykQg0m15Jc/xx1qEBYExaD3YiiqwAFE\nZsuv+d3Mk3y1j2Npbfs+mZhdy6K5k+Q79rSPI7/g6gYiA5/iV0pKzSQgJ5g2FZn1\nf2hy3DwQS0XBKIm/qFiZWQBECfKOmFOJZVwClkoBAoGALDgPkQrrhU7IwktS4tcQ\nV1gSFNCMtU28wIIIfVaQgKWO4APFvj8hGoP0uuJ7ng6vKFfInMJ3iOE2RYL9+tUu\nIJ0wBitbFo16y8QgXBJWq6P7nhq1XKVezYZOsdZbhJArUhl2e5cNaZJ+bikP8L5T\nDrLAILu9/TH7UQpfp6fp/HU=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-l5nlf@taki-education.iam.gserviceaccount.com",
+  "client_id": "105399594886735456333",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-l5nlf%40taki-education.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

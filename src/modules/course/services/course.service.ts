@@ -1,0 +1,307 @@
+import { Injectable } from "@nestjs/common";
+import { CreateCourseDto } from "../dto/create-course.dto";
+import { CourseDocument, Course } from "../schemas/course.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model, Types } from "mongoose";
+import { UpdateCourseDto } from "../dto/update-course.dto";
+import { SearchCourseDto } from "../dto/search-course.dto";
+import { SortByCourseDto } from "../dto/sort_by-course.dto";
+import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+
+@Injectable()
+export class CourseService {
+  constructor(
+    @InjectModel(Course.name)
+    private courseModel: Model<CourseDocument>
+  ) { }
+
+  /**
+   * @author Tony Vu
+   * @param filter
+   * @returns
+   */
+  async getCondition(filter: SearchCourseDto) {
+    let condition: any = {};
+    if (filter.user_id) {
+      condition = Object.assign(condition, { user_id: filter.user_id });
+    }
+    if (filter.language) {
+      condition = Object.assign(condition, { language: filter.language });
+    }
+
+    if (filter.course_status) {
+      condition = Object.assign(condition, { course_status: filter.course_status });
+    }
+
+    if (filter.channel_id) {
+      condition = Object.assign(condition, { channel_id: filter.channel_id });
+    }
+
+    if (filter.level_value) {
+      condition = Object.assign(condition, { level_value: { $gte: filter.level_value } });
+    }
+
+    if (filter.coin_value) {
+      condition = Object.assign(condition, { coin_value: { $gte: filter.coin_value } });
+    }
+
+    if (filter.hasOwnProperty("coin_value")) {
+      if (Number(filter.coin_value) === 0) {
+        condition = Object.assign(condition, { coin_value: 0 });
+      }
+    }
+
+    if (filter.post_category) {
+      condition = Object.assign(condition, { post_category: filter.post_category });
+    }
+
+    if (filter.ref_id) {
+      if (filter.ref_id?.indexOf(",") !== -1) {
+        let dataRefArray = filter.ref_id?.split(",");
+        condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
+      } else {
+        condition = Object.assign(condition, { ref_id: filter.ref_id });
+      }
+    }
+
+    if (filter.ids) {
+      let dataIds = filter.ids.split(",");
+      condition = Object.assign(condition, { _id: { $in: dataIds } });
+    }
+
+    if (filter.search) {
+      let dataSearch = `${filter.search}`;
+      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
+    }
+    return condition;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param sortBy
+   * @returns
+   */
+  getSort(sortBy: SortByCourseDto) {
+    let sort = { priority: -1 };
+    if (sortBy.createdAt) {
+      sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
+    }
+    return sort;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param filter
+   * @param sortBy
+   * @param page
+   * @param limit
+   * @returns
+   */
+  async filter(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
+    let condition = await this.getCondition(filter);
+    let sortObject: any;
+    if (sortBy) {
+      sortObject = this.getSort(sortBy);
+    }
+    let projection = {};
+
+    // if (filter.search) {
+    //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
+    //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
+    // }
+
+    let dataReturn = await this.courseModel
+      .find(condition, projection)
+      .populate(
+        "user_id",
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("media_id")
+      .populate("avatar")
+      .sort(sortObject)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .exec();
+    return dataReturn;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param filter
+   * @param sortBy
+   * @param page
+   * @param limit
+   * @returns
+   */
+  async filterAdmin(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
+    let condition = await this.getCondition(filter);
+    let sortObject: any;
+    if (sortBy) {
+      sortObject = this.getSort(sortBy);
+    }
+    let projection = {};
+    let dataReturn = await this.courseModel
+      .find(condition, projection)
+      .populate(
+        "user_id",
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("media_id")
+      .populate("avatar")
+      .sort(sortObject)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .exec();
+    return dataReturn;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param filter
+   * @returns
+   */
+  public count = async (filter: SearchCourseDto) => {
+    try {
+      let condition = await this.getCondition(filter);
+      if (JSON.stringify(condition) === JSON.stringify({})) {
+        return this.courseModel.estimatedDocumentCount();
+      } else {
+        return this.courseModel.countDocuments(condition);
+      }
+    } catch (e) {
+      return 0;
+    }
+  };
+
+  /**
+   * @author Tony Vu
+   * @param createUser
+   * @returns
+   */
+  async create(createUser: CreateCourseDto) {
+    const createdCourse = new this.courseModel(createUser);
+    let dataCreate = await createdCourse.save();
+    return dataCreate;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param userId
+   * @returns boolean
+   */
+  async isSuperAdmin(userId: string) {
+    let superAdmin = process.env.SUPER_ADMIN;
+    if (superAdmin) {
+      let superAdminArray = superAdmin.split(",");
+      if (superAdminArray.indexOf(userId) !== -1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @author Tony Vu
+   * @returns
+   */
+  async findAll(): Promise<Course[]> {
+    return this.courseModel.find().exec();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataToSearch
+   * @returns
+   */
+  async findOne(dataToSearch: any): Promise<Course> {
+    return await this.courseModel
+      .findOne(dataToSearch)
+      .sort({ _id: -1 })
+      .populate(
+        "user_id",
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("media_id")
+      .populate("avatar")
+      .exec();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataToSearch
+   * @returns
+   */
+  async findById(id: string): Promise<Course> {
+    if (!id) {
+      return null;
+    }
+    let objectId = new Types.ObjectId(id);
+    if (!objectId) {
+      return null;
+    }
+    return await this.courseModel
+      .findById(objectId)
+      .populate(
+        "user_id",
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("media_id")
+      .populate("avatar")
+      .exec();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param id
+   * @returns
+   */
+  async remove(id: string) {
+    return await this.courseModel
+      .findByIdAndDelete(id)
+      .populate(
+        "user_id",
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("media_id")
+      .populate("avatar")
+      .exec();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataUpdate
+   * @returns
+   */
+  async update(dataUpdate: UpdateCourseDto) {
+    try {
+      if (!dataUpdate._id) {
+        return null;
+      }
+      let dataReturn = await this.courseModel
+        .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
+        .populate(
+          "user_id",
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        )
+        .populate("media_id")
+        .populate("avatar");
+      return dataReturn;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataFilter
+   * @returns
+   */
+  async updateCount(dataFilter: any, dataUpdate: any) {
+    try {
+      return this.courseModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate });
+    } catch (e) {
+      return null;
+    }
+  }
+}
