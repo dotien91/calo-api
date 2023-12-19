@@ -1,16 +1,16 @@
-import { UserService } from "../../user/services/user.service";
-import { Logger, BadRequestException, HttpStatus, Injectable, NotAcceptableException, Inject } from "@nestjs/common";
-import { Response, Request } from "express";
-import { User } from "../../../modules/user/schemas/user.schema";
-import { ChatHistoryService } from "../services/chat_history.service";
+import { BadRequestException, HttpStatus, Injectable, Logger, NotAcceptableException } from "@nestjs/common";
 import axios from "axios";
+import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_media.dto";
-import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
-import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.service";
-import { ListChatHistoryDto } from "../dto/list-chat_history.dto";
 import { ChatMediaService } from "../../../modules/chat_media/services/chat_media.service";
+import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.service";
+import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../user/services/user.service";
+import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_media.dto";
+import { ListChatHistoryDto } from "../dto/list-chat_history.dto";
+import { ChatHistoryService } from "../services/chat_history.service";
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -48,7 +48,7 @@ export class ChatHistoryHelper {
     }
     const authCode = req?.auth_code;
 
-    const isPayment = 0;
+    let isPayment = 0;
 
     //Validate Chat
     if (createChatHistoryDto.chat_room_id && (createChatHistoryDto.chat_content || createChatHistoryDto.media_data)) {

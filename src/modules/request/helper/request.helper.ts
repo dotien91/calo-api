@@ -1,58 +1,46 @@
-import { Response, Request, response } from "express";
-import {
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-  Injectable,
-  BadRequestException,
-  Res,
-  Req,
-  Param,
-} from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateRequestDto } from "../dto/create-request.dto";
-import { RequestService } from "../services/request.service";
-import { ListRequestDto } from "../dto/list-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateRequestDto } from "../dto/update-request.dto";
-import { Types } from "mongoose";
-import { RequestCategoryService } from "../services/request_category.service";
-import { RequestCommentService } from "../services/request_comment.service";
-import { ListRequestCommentDto } from "../dto/list-request_comment.dto";
-import { CreateRequestCommentDto } from "../dto/create-request_comment.dto";
-import { UpdateRequestCommentDto } from "../dto/update-request_comment.dto";
-import { CreateRequestCategoryDto } from "../dto/create-request_category.dto";
-import { ListRequestCategoryDto } from "../dto/list-request_category.dto";
-import { UpdateRequestCategoryDto } from "../dto/update-request_category.dto";
-import { CreateRequestLikeDto } from "../dto/create-request_like.dto";
-import { RequestLikeService } from "../services/request_like.service";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
-import { UserService } from "../../../modules/user/services/user.service";
-import { UserAnonymousSessionService } from "../../../modules/user/services/user_anonymous_session.service";
-import { UserAnonymousService } from "../../../modules/user/services/user_anonymous.service";
-import { RequestDisLikeService } from "../services/request_dislike.service";
-import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
-import { User } from "../../../modules/user/schemas/user.schema";
-import { RequestComment } from "../schemas/request-comment.schema";
-import { Request as RequestNew } from "../schemas/request.schema";
 import axios from "axios";
 import cheerio from "cheerio";
-import { UserOptionService } from "../../../modules/user/services/user_option.service";
-import { error } from "console";
-import { schedule } from "node-cron";
-import { CronExpression } from "@nestjs/schedule";
-import { CreateRequestPollDto } from "../dto/create-request_poll.dto";
-import { RequestPollService } from "../services/request_poll.service";
-import { FilterListVote } from "../dto/filter-list_vote.dto";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
-import { ListRequestLikeDto } from "../dto/list-request_like.dto";
-import { UserFollowService } from "../../../modules/user/services/user_follow.service";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
+import { Response } from "express";
+import { Types } from "mongoose";
+import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Channel } from "../../../modules/channel/schemas/channel.schema";
+import { ChannelService } from "../../../modules/channel/services/channel.service";
+import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
-const { getFirestore } = require("firebase-admin/firestore");
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserAnonymousService } from "../../../modules/user/services/user_anonymous.service";
+import { UserAnonymousSessionService } from "../../../modules/user/services/user_anonymous_session.service";
+import { UserFollowService } from "../../../modules/user/services/user_follow.service";
+import { UserOptionService } from "../../../modules/user/services/user_option.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import HookExpress from "../../hook/hook_epress";
+import { CreateRequestDto } from "../dto/create-request.dto";
+import { CreateRequestCategoryDto } from "../dto/create-request_category.dto";
+import { CreateRequestCommentDto } from "../dto/create-request_comment.dto";
+import { CreateRequestLikeDto } from "../dto/create-request_like.dto";
+import { CreateRequestPollDto } from "../dto/create-request_poll.dto";
+import { FilterListVote } from "../dto/filter-list_vote.dto";
+import { ListRequestDto } from "../dto/list-request.dto";
+import { ListRequestCategoryDto } from "../dto/list-request_category.dto";
+import { ListRequestCommentDto } from "../dto/list-request_comment.dto";
+import { ListRequestLikeDto } from "../dto/list-request_like.dto";
+import { UpdateRequestDto } from "../dto/update-request.dto";
+import { UpdateRequestCategoryDto } from "../dto/update-request_category.dto";
+import { UpdateRequestCommentDto } from "../dto/update-request_comment.dto";
+import { RequestComment } from "../schemas/request-comment.schema";
+import { Request as RequestNew } from "../schemas/request.schema";
+import { RequestService } from "../services/request.service";
+import { RequestCategoryService } from "../services/request_category.service";
+import { RequestCommentService } from "../services/request_comment.service";
+import { RequestDisLikeService } from "../services/request_dislike.service";
+import { RequestLikeService } from "../services/request_like.service";
+import { RequestPollService } from "../services/request_poll.service";
+const { getFirestore } = require("firebase-admin/firestore");
 const dataCrawl = `Other`;
 let initHook = false;
 
@@ -281,7 +269,7 @@ export class RequestHelper {
         // console.log(postId, "postId");
         // console.log(dataTitle, "dataTitle");
 
-        const categories = "";
+        let categories = "";
 
         let categoryId = null;
         if (categories) {
