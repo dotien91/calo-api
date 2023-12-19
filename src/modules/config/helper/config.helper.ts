@@ -45,21 +45,11 @@ export class ConfigHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
       if (createConfigData.option_content) {
         createConfigData = { ...createConfigData, ...{ option_content: JSON.parse(createConfigData.option_content) } };
       }
-      if (createConfigData.filter_premium) {
-        createConfigData = { ...createConfigData, ...{ filter_premium: JSON.parse(createConfigData.filter_premium) } };
-      }
-      if (createConfigData.filter_free) {
-        createConfigData = { ...createConfigData, ...{ filter_free: JSON.parse(createConfigData.filter_free) } };
-      }
       if (createConfigData.data_filter) {
         createConfigData = { ...createConfigData, ...{ data_filter: JSON.parse(createConfigData.data_filter) } };
-      }
-      if (createConfigData.filter_pro) {
-        createConfigData = { ...createConfigData, ...{ filter_pro: JSON.parse(createConfigData.filter_pro) } };
       }
       const dataCreate = await this.configService.create(createConfigData);
       return res
@@ -123,7 +113,7 @@ export class ConfigHelper {
   async getConfigListByUser(type: string, query: ListConfigDto, res: Response, req: ExpressRequestDto) {
     try {
       const dataToFilter = { type: type };
-      const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
+      const dataReturnConfig = await this.configService.findOne(dataToFilter);
 
       const dataAuth = await this.handleSession(req);
       let userVersion = 0;
@@ -142,7 +132,7 @@ export class ConfigHelper {
       if (query.version) {
         version = query.version;
       }
-      let dataChannel: any = {};
+      const dataChannel: any = {};
       if (channelId) {
         // dataChannel = await this.channelService.findById(channelId);
         channelVersion = Number(dataChannel?.channel_version) || 0;
@@ -192,6 +182,7 @@ export class ConfigHelper {
               }
             })
             .catch((error) => {
+              console.log(error);
               return null;
             });
           if (dataIp) {
@@ -241,7 +232,7 @@ export class ConfigHelper {
       }
 
       const hashPassword = new ConfigServiceNest().get<string>("HASH_PASSWORD");
-      const { data, exp } = (await new JwtService().verify(authCodeString, {
+      const { data } = (await new JwtService().verify(authCodeString, {
         secret: hashPassword,
       })) as DecodeUserToken;
       return data;
@@ -259,13 +250,7 @@ export class ConfigHelper {
    * @param req
    * @returns
    */
-  async getPackageType(
-    type: string,
-    packageString: string,
-    query: ListConfigDto,
-    res: Response,
-    req: ExpressRequestDto
-  ) {
+  async getPackageType(type: string, packageString: string, res: Response) {
     try {
       const dataToFilter = { type: type, package_name: packageString };
       const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
@@ -381,7 +366,8 @@ export class ConfigHelper {
       if (dataReturnConfig && dataReturnConfig?.option_content) {
         //console.log(dataReturnConfig?.option_content, 'dataReturnConfig?.option_content')
         //Check key
-        for (const dataOptionContent of dataReturnConfig?.option_content) {
+        const optionContents = dataReturnConfig ? dataReturnConfig.option_content : [];
+        for (const dataOptionContent of optionContents) {
           if (dataOptionContent?.key == "chatgpt_key") {
             chatGPTKey = dataOptionContent?.value;
           }
@@ -413,6 +399,7 @@ export class ConfigHelper {
             return response?.data;
           })
           .catch(function (error) {
+            console.log(error);
             return null;
           });
         // console.log(dataReturn, 'dataReturn')
@@ -489,17 +476,8 @@ export class ConfigHelper {
 
           dataUpdate = { ...dataUpdate, ...{ option_content: dataToUpdateOptionContent } };
         }
-        if (dataUpdate.filter_premium) {
-          dataUpdate = { ...dataUpdate, ...{ filter_premium: JSON.parse(dataUpdate.filter_premium) } };
-        }
         if (dataUpdate.data_filter) {
           dataUpdate = { ...dataUpdate, ...{ data_filter: JSON.parse(dataUpdate.data_filter) } };
-        }
-        if (dataUpdate.filter_free) {
-          dataUpdate = { ...dataUpdate, ...{ filter_free: JSON.parse(dataUpdate.filter_free) } };
-        }
-        if (dataUpdate.filter_pro) {
-          dataUpdate = { ...dataUpdate, ...{ filter_pro: JSON.parse(dataUpdate.filter_pro) } };
         }
         const dataReturn = await this.configService.update(dataUpdate);
         return res

@@ -20,20 +20,14 @@ export class ConfigController {
     return await this.configHelper.getConfigListByUser(type, query, res, req);
   }
 
-  @Get("/default-avatar/:type")
-  async getDefaultAvatar(@Param("type") type: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    // return await this.configHelper.getDefaultAvatar(type, res, req);
-  }
+  // @Get("/default-avatar/:type")
+  // async getDefaultAvatar(@Param("type") type: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  //   return await this.configHelper.getDefaultAvatar(type, res, req);
+  // }
 
   @Get("/:type/:package")
-  async getPackageType(
-    @Param("type") type: string,
-    @Param("package") packageString: string,
-    @Query() query: ListConfigDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
-    return await this.configHelper.getPackageType(type, packageString, query, res, req);
+  async getPackageType(@Param("type") type: string, @Param("package") packageString: string, @Res() res: Response) {
+    return await this.configHelper.getPackageType(type, packageString, res);
   }
 
   @Get("/check-gpt-health/:type/:password")

@@ -75,60 +75,6 @@ export class Config {
   data_content: string;
 
   @Prop({
-    type: Number,
-    default: 0,
-  })
-  near_by_free: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  chat_free: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  call_free: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  call_pro: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  follow_free: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  view_today_free: number;
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-  })
-  filter_free: string[];
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-  })
-  filter_pro: string[];
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-  })
-  filter_premium: string[];
-
-  @Prop({
     type: [OptionContentSchema],
     default: [],
   })
