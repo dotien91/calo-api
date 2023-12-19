@@ -1,58 +1,58 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
-import { IsString, IsOptional, IsJSON, IsNumberString } from "class-validator"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsString, IsOptional, IsJSON, IsNumberString } from "class-validator";
 
 export class UpdateUserInterestDto {
   @IsString()
   @ApiProperty()
-  _id: string
+  _id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  name: string
+  name: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  name_object: string
+  name_object: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  image: string
+  image: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  color: string
+  color: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  description: string
+  description: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  parent_id: string
+  parent_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  interest_key: string
+  interest_key: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  priority: number
+  priority: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  cover: string
+  cover: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  description_object: string
+  description_object: string;
 }

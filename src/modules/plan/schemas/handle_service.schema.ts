@@ -8,35 +8,35 @@ export class SubMenuOption extends Document {
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   icon_side_bar: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   title_side_bar: String;
 
   @Prop({
     type: Boolean,
     nullable: false,
-    default: false
+    default: false,
   })
   is_show_side_bar: Boolean;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   router_link: String;
 
   @Prop({
     type: Boolean,
     nullable: false,
-    default: false
+    default: false,
   })
   is_admin: Boolean;
 }
@@ -64,42 +64,42 @@ export class HandleService {
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   handle: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   title: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   description: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   long_description: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   service_type: String;
 
   @Prop({
     type: Boolean,
     nullable: false,
-    default: true
+    default: true,
   })
   active_status: Boolean;
 
@@ -140,49 +140,49 @@ export class HandleService {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
   })
   createBy: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   icon_side_bar: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   title_side_bar: String;
 
   @Prop({
     type: Boolean,
     nullable: false,
-    default: false
+    default: false,
   })
   is_show_side_bar: Boolean;
 
   @Prop({
     type: Boolean,
     nullable: false,
-    default: false
+    default: false,
   })
   is_admin: Boolean;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   router_link: String;
 
   @Prop({
     type: [SubMenuOptionSchema],
     nullable: false,
-    default: []
+    default: [],
   })
   sub_menu: SubMenuOption;
 }

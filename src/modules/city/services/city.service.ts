@@ -13,7 +13,7 @@ export class CityService {
   constructor(
     @InjectModel(City.name)
     private cityModel: Model<CityDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

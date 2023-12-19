@@ -71,14 +71,15 @@ import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/t
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Livestream.name, schema: LivestreamSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -147,6 +148,12 @@ import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/t
     TransactionService,
     TransactionBankService,
   ],
-  exports: [LivestreamHelper, LivestreamCommentService, LivestreamLikeService, LivestreamViewService, LivestreamService],
+  exports: [
+    LivestreamHelper,
+    LivestreamCommentService,
+    LivestreamLikeService,
+    LivestreamViewService,
+    LivestreamService,
+  ],
 })
-export class LivestreamModule { }
+export class LivestreamModule {}

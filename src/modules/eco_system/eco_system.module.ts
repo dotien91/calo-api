@@ -18,4 +18,4 @@ import { UserPermissionService } from "../user_permission/services/user_permissi
   providers: [EcoSystemService, EcoSystemHelper, UserPermissionService],
   exports: [EcoSystemHelper, EcoSystemService],
 })
-export class EcoSystemModule { }
+export class EcoSystemModule {}

@@ -37,7 +37,7 @@ export class Subscribe {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     nullable: false,
-    ref: "HandleService"
+    ref: "HandleService",
   })
   service_id: HandleService;
 

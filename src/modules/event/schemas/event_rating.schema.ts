@@ -17,7 +17,7 @@ export class EventRating {
   _id: MongooseSchema.Types.ObjectId;
 
   @Prop({
-    type:  MongooseSchema.Types.Array,
+    type: MongooseSchema.Types.Array,
     default: [],
     ref: "ChatMedia",
   })

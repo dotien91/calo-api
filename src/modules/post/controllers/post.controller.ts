@@ -24,7 +24,6 @@ export class PostController {
       //await this.handleCrawl();
       //await this.updateCategory();
       //await this.updateDownload();
-
       //await this.updateCrawl();
       //await this.updateImage();
     }, 1000);
@@ -70,13 +69,17 @@ export class PostController {
   }
 
   @Post("/create-prompt")
-  async createNewPostPrompt(@Body() createPostBody: CreatePostPromptDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewPostPrompt(
+    @Body() createPostBody: CreatePostPromptDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.postHelper.createNewPostPrompt(createPostBody, res, req);
   }
 
   @Post("/import-prompt")
   async importPrompt(@Body() dataImport: CreateImportPromptDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.postHelper.importPrompt(dataImport, res, req)
+    return await this.postHelper.importPrompt(dataImport, res, req);
   }
 
   @Post("/create-crawl")
@@ -94,7 +97,11 @@ export class PostController {
   }
 
   @Patch("/update-prompt")
-  async updatePromptByAdmin(@Body() dataUpdate: UpdatePostPromptDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async updatePromptByAdmin(
+    @Body() dataUpdate: UpdatePostPromptDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.postHelper.handleUpdatePostPromptByAdmin(dataUpdate, res, req);
   }
 

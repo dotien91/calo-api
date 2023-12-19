@@ -19,11 +19,7 @@ export class EcoSystemController {
   }
 
   @Get("/list")
-  async getAdminEcoSystem(
-    @Query() query: ListEcoSystemDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminEcoSystem(@Query() query: ListEcoSystemDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.ecoSystemHelper.getEcoSystemListByAdmin(query, res, req);
   }
 
@@ -37,11 +33,7 @@ export class EcoSystemController {
   }
 
   @Post("/admin-update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateEcoSystemDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateEcoSystemDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.ecoSystemHelper.handleUpdateEcoSystemByAdmin(dataUpdate, res, req);
   }
 

@@ -199,4 +199,4 @@ export class City {
 export const CitySchema = SchemaFactory.createForClass(City)
   .index({ loc: "2dsphere" })
   .index({ geometry: "2dsphere" })
-  .index({ city_name: "text", index_name: "text", localname: "text" })
+  .index({ city_name: "text", index_name: "text", localname: "text" });

@@ -20,14 +20,14 @@ export class Answer {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
     ref: "Question",
-    index: true
+    index: true,
   })
   question_id: Question;
 
@@ -35,23 +35,23 @@ export class Answer {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  answer: String
+  answer: String;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  point: Number
+  point: Number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  status: String
+  status: String;
 }
 
 export const AnswerSchema = SchemaFactory.createForClass(Answer).index({

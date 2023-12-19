@@ -51,7 +51,9 @@ export class ChatRoomService {
             path: "room_image",
           },
         ];
-        return this.chatRoomModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true }).populate(populateObject);
+        return this.chatRoomModel
+          .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
+          .populate(populateObject);
       }
     } catch (e) {
       return null;
@@ -94,7 +96,7 @@ export class ChatRoomService {
       condition = Object.assign(condition, { room_type: filter.room_type });
     }
     if (filter.group_partners) {
-      condition = Object.assign(condition, { group_partners: {$in: filter.group_partners} });
+      condition = Object.assign(condition, { group_partners: { $in: filter.group_partners } });
     }
     if (Number(filter.room_private) === 0 || Number(filter.room_private) === 1) {
       condition = Object.assign(condition, { room_private: filter.room_private });
@@ -170,7 +172,7 @@ export class ChatRoomService {
       },
     ];
     let dataRoom = await this.chatRoomModel
-      .find(condition, { })
+      .find(condition, {})
       .populate(populateObject)
       .sort(sortObject)
       .skip(limit * (page - 1))

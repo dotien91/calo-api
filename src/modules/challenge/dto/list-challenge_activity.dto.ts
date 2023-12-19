@@ -41,15 +41,15 @@ export class ListChallengeActivityDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  official_status: string
+  official_status: string;
 
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_child: string
+  is_child: string;
 }

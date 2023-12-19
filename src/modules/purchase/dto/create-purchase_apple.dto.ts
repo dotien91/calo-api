@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn } from "class-validator";
 export class CreatePurchaseAppleDto {
   @IsString()
   @IsOptional(null)

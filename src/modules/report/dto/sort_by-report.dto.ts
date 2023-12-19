@@ -1,3 +1,3 @@
 export class SortByReportDto {
-  createdAt?: string
+  createdAt?: string;
 }

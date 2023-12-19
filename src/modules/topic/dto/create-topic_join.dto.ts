@@ -1,20 +1,20 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject } from "class-validator";
 export class CreateTopicJoinDto {
   @IsString()
-  user_id: string
+  user_id: string;
 
   @IsString()
   topic_id: string;
 
   @IsString()
   @IsOptional(null)
-  parent_id?: string
+  parent_id?: string;
 
   @IsString()
   @IsOptional(null)
-  is_official?: string
+  is_official?: string;
 
   @IsString()
   @IsOptional(null)
-  status?: string
+  status?: string;
 }

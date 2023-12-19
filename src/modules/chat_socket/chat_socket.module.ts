@@ -18,7 +18,7 @@ import { UserSessionService } from "../user/services/user_session.service";
       // { name: User.name, schema: UserSchema},
       // { name: UserOption.name, schema: UserOptionSchema}
       // { name: UserSession.name, schema: UserSessionSchema},
-      { name: UserSession.name, schema: UserSessionSchema},
+      { name: UserSession.name, schema: UserSessionSchema },
     ]),
   ],
   providers: [

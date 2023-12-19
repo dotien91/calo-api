@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { InjectQueue } from "@nestjs/bull";
+import { Queue } from "bull";
 import { CreateGiftDto } from "../dto/create-gift.dto";
 import { Gift, GiftDocument } from "../schemas/gift.schema";
 import { InjectModel } from "@nestjs/mongoose";
@@ -9,7 +9,10 @@ import { UpdateGiftDto } from "../dto/update-gift.dto";
 import { SearchGiftDto } from "../dto/search-gift.dto";
 import { SortByGiftDto } from "../dto/sort_by-gift.dto";
 import { CheckGiftPointLevelDto } from "../dto/check-gift-point-level.dto";
-import { ChannelPermission, ChannelPermissionDocument } from "../../../modules/channel/schemas/channel_permission.schema";
+import {
+  ChannelPermission,
+  ChannelPermissionDocument,
+} from "../../../modules/channel/schemas/channel_permission.schema";
 
 @Injectable()
 export class GiftService {
@@ -17,15 +20,14 @@ export class GiftService {
     @InjectModel(Gift.name)
     private giftModel: Model<GiftDocument>,
     @InjectModel(ChannelPermission.name)
-    private channelPermission: Model<ChannelPermissionDocument>,
-  ) { }
+    private channelPermission: Model<ChannelPermissionDocument>
+  ) {}
   private readonly logger = new Logger(GiftService.name);
 
-
   /**
-     * @author SonLH
-     * @returns
-     */
+   * @author SonLH
+   * @returns
+   */
   async checkGiftUserDelivered(req: CheckGiftPointLevelDto) {
     let condition: any = {
       channel_id: req.channel_id,
@@ -34,16 +36,23 @@ export class GiftService {
         { $or: [{ "gift_conditions.point": { $lte: req.point } }, { "gift_conditions.point": { $exists: false } }] },
         { $or: [{ "gift_conditions.level": { $lte: req.level } }, { "gift_conditions.level": { $exists: false } }] },
         { $or: [{ "gift_conditions.like": { $lte: req.total_like } }, { "gift_conditions.like": { $exists: false } }] },
-        { $or: [{ "gift_conditions.comment": { $lte: req.total_comment } }, { "gift_conditions.comment": { $exists: false } }] },
-        { $or: [{ "gift_conditions.course": { $lte: req.total_view_course } }, { "gift_conditions.course": { $exists: false } }] },
+        {
+          $or: [
+            { "gift_conditions.comment": { $lte: req.total_comment } },
+            { "gift_conditions.comment": { $exists: false } },
+          ],
+        },
+        {
+          $or: [
+            { "gift_conditions.course": { $lte: req.total_view_course } },
+            { "gift_conditions.course": { $exists: false } },
+          ],
+        },
         { $or: [{ "gift_conditions.birth": 0 }, { "gift_conditions.birth": { $exists: false } }] },
-      ]
+      ],
     };
-    let dataReturn = await this.giftModel
-      .find(condition)
-      .exec();
+    let dataReturn = await this.giftModel.find(condition).exec();
     return dataReturn;
-
   }
 
   /**
@@ -107,13 +116,13 @@ export class GiftService {
       const now = new Date();
       const newDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0, 0);
       condition = Object.assign(condition, {
-        createdAt: { $gte: newDate }
-      })
+        createdAt: { $gte: newDate },
+      });
     }
     if (filter.search) {
       condition = Object.assign(condition, { $text: { $search: filter.search } });
     }
-    console.log(condition, 'condition')
+    console.log(condition, "condition");
     return condition;
   }
 
@@ -249,7 +258,8 @@ export class GiftService {
           "user_id",
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
         )
-        .populate("media_id").populate("gift_digital_media");
+        .populate("media_id")
+        .populate("gift_digital_media");
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

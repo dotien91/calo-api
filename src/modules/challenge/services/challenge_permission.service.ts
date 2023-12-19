@@ -11,7 +11,7 @@ export class ChallengePermissionService {
   constructor(
     @InjectModel(ChallengePermission.name)
     private challengePermissionModel: Model<ChallengePermissionDocument>
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(ChallengePermissionService.name);
 
@@ -113,7 +113,11 @@ export class ChallengePermissionService {
    * @returns
    */
   async findOneWithPopulate(dataToSearch: any): Promise<ChallengePermission> {
-    return await this.challengePermissionModel.findOne(dataToSearch).populate("user_id").populate("challenge_id").exec();
+    return await this.challengePermissionModel
+      .findOne(dataToSearch)
+      .populate("user_id")
+      .populate("challenge_id")
+      .exec();
   }
 
   /**
@@ -145,14 +149,16 @@ export class ChallengePermissionService {
       if (!dataUpdate.user_id && !dataUpdate.challenge_id) {
         return null;
       }
-      let dataReturn = await this.challengePermissionModel.findOneAndUpdate(
-        { user_id: dataUpdate.user_id, challenge_id: dataUpdate.challenge_id },
-        { $set: dataUpdate },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      ).populate(
-        "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      );
+      let dataReturn = await this.challengePermissionModel
+        .findOneAndUpdate(
+          { user_id: dataUpdate.user_id, challenge_id: dataUpdate.challenge_id },
+          { $set: dataUpdate },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        )
+        .populate(
+          "user_id",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        );
       return dataReturn;
     } catch (e) {
       return e;
@@ -321,8 +327,8 @@ export class ChallengePermissionService {
             {
               path: "media_id",
             },
-          ]
-        }
+          ],
+        },
       ],
     };
     let dataReturn: any = await this.challengePermissionModel
@@ -420,5 +426,4 @@ export class ChallengePermissionService {
       return null;
     }
   }
-
 }

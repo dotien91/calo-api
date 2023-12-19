@@ -20,7 +20,7 @@ export class PostCrawl {
   @Prop({
     type: String,
     nullable: false,
-    index: true
+    index: true,
   })
   slug: String;
 
@@ -29,22 +29,22 @@ export class PostCrawl {
     default: "",
     nullable: false,
   })
-  url: String
+  url: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  data: String
+  data: String;
 
   @Prop({
     type: String,
     default: "0",
     nullable: false,
-    index: true
+    index: true,
   })
-  status: String
+  status: String;
 }
 
 export const PostCrawlSchema = SchemaFactory.createForClass(PostCrawl);

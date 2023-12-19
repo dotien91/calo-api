@@ -1,4 +1,15 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsNumber, IsBooleanString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsBooleanString,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -33,7 +44,6 @@ export class ListLawyerDto {
   @ApiPropertyOptional()
   status?: string;
 
-
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
@@ -62,35 +72,35 @@ export class ListLawyerDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  categories?: string
+  categories?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  language_spoken?: string
+  language_spoken?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search?: string
+  search?: string;
 
   @IsBooleanString()
   @IsOptional()
   @ApiPropertyOptional()
-  is_free_consultation?: string
+  is_free_consultation?: string;
 
   @IsBooleanString()
   @IsOptional()
   @ApiPropertyOptional()
-  open_for_business?: string
+  open_for_business?: string;
 
   @IsBooleanString()
   @IsOptional()
   @ApiPropertyOptional()
-  is_misconduct?: string
+  is_misconduct?: string;
 
   @IsBooleanString()
   @IsOptional()
   @ApiPropertyOptional()
-  is_extra_virtual?: string
+  is_extra_virtual?: string;
 }

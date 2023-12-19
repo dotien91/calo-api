@@ -50,7 +50,7 @@ export class CallKitHelper {
     private readonly chatHistoryService: ChatHistoryService,
     private readonly chatHistoryHelper: ChatHistoryHelper,
     private readonly transactionHelper: TransactionHelper
-  ) { }
+  ) {}
   private readonly logger = new Logger("call");
   async handleCall(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
     try {
@@ -144,8 +144,7 @@ export class CallKitHelper {
               "user_" + query.call_type + "_" + query.call_time + "_" + callkitObject?.partner_id?.toString();
             await twilioClient.video.rooms(callkitObject.room_name).update({ status: "completed" });
           }
-        } catch (error) {
-        }
+        } catch (error) {}
 
         let currentTime = new Date();
 
@@ -664,7 +663,7 @@ export class CallKitHelper {
           offerCandidatesSocket
         );
       }
-      dataToSend = { ...dataToSend, ...{ is_has_call: isHasCall } }
+      dataToSend = { ...dataToSend, ...{ is_has_call: isHasCall } };
 
       res.json(dataToSend);
     } catch (error) {

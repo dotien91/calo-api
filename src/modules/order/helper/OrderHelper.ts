@@ -1,11 +1,5 @@
 import { Response } from "express";
-import {
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-  Injectable,
-  BadRequestException
-} from "@nestjs/common";
+import { ForbiddenException, HttpStatus, NotFoundException, Injectable, BadRequestException } from "@nestjs/common";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { OrderService } from "../services/order.service";
@@ -35,7 +29,7 @@ import { TicketService } from "../../../modules/ticket/services/ticket.service";
 import { ChannelPermission } from "../../../modules/channel/schemas/channel_permission.schema";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
-import HookExpress from '../../hook/hook_epress';
+import HookExpress from "../../hook/hook_epress";
 import { CreateCourseLikeDto } from "../../../modules/course/dto/create-course_like.dto";
 let initHook = false;
 
@@ -71,7 +65,7 @@ export class OrderHelper {
   }
 
   initHook() {
-    HookExpress.add_action('course.add-payment', async (data: CreateCourseLikeDto, courseData: Course) => {
+    HookExpress.add_action("course.add-payment", async (data: CreateCourseLikeDto, courseData: Course) => {
       await this.processCreateOrderCourse(data, courseData);
     });
   }
@@ -100,7 +94,7 @@ export class OrderHelper {
         description: "",
         trans_id: "",
         deep_link: "",
-        price: Number(courseData.coin_value)
+        price: Number(courseData.coin_value),
       };
       let dataCreate: Order = await this.orderService.create(dataToAdd);
       dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
@@ -144,7 +138,7 @@ export class OrderHelper {
 
       let dataCreate = {
         ip_address: ipAddr,
-        data_log: JSON.stringify(vnp_Params)
+        data_log: JSON.stringify(vnp_Params),
       };
       await this.orderService.createVnpayLog(dataCreate);
 
@@ -161,8 +155,6 @@ export class OrderHelper {
       let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
       let paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
-
-
 
       //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
       //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
@@ -296,7 +288,8 @@ export class OrderHelper {
       let channelId = dataOrder?.channel_id;
       let channelObject = await this.channelService.findOne({ _id: channelId });
 
-      let dataRedirect = (channelObject?.domain || "https://gamifa.vn") + '/r/orders/detail/' + dataOrder?._id?.toString();
+      let dataRedirect =
+        (channelObject?.domain || "https://gamifa.vn") + "/r/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
         dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
       }
@@ -547,9 +540,11 @@ export class OrderHelper {
       let channelId = req?.channel_id;
       let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
-      if (userPermission?.channel_role == "mentor" ||
+      if (
+        userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("order/list") !== -1))) {
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
+      ) {
         havePermission = true;
       }
       if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
@@ -558,7 +553,6 @@ export class OrderHelper {
       if (!havePermission) {
         throw new ForbiddenException("You not have permission for this activity!");
       }
-
 
       // if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
       if (Number(query.limit) > 1000) {
@@ -576,7 +570,12 @@ export class OrderHelper {
       //Check Channel
       if (channelId?.toString() !== process.env.DEFAULT_CHANNEL) {
         //Get Service Id
-        let dataServiceArray = await this.handleService.filter({ service_type: "extension,channel,domain,mobile" }, {}, 1, 1000);
+        let dataServiceArray = await this.handleService.filter(
+          { service_type: "extension,channel,domain,mobile" },
+          {},
+          1,
+          1000
+        );
         let dataServiceId = dataServiceArray?.map((valueService: HandleService, index: number) => {
           return valueService?._id?.toString();
         });
@@ -725,15 +724,17 @@ export class OrderHelper {
       let channelId = process.env.DEFAULT_CHANNEL;
 
       let dataOrderBefore = await this.orderService.findById(dataUpdate?._id?.toString());
-      if (dataOrderBefore?.service_id?.service_type === 'course') {
+      if (dataOrderBefore?.service_id?.service_type === "course") {
         channelId = req?.channel_id;
       }
 
       let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
-      if (userPermission?.channel_role == "mentor" ||
+      if (
+        userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("order/list") !== -1))) {
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
+      ) {
         havePermission = true;
       }
       if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
@@ -798,10 +799,16 @@ export class OrderHelper {
               // let channel = await this.channelService.findById(channelId);
               let channelObject = await this.channelService?.findById(req?.channel_id);
               let dataToPost = {
-                text: `${orderObject?.user_id.display_name} vừa chuyển khoản thành công thanh toán với số tiền:  (${orderObject.price} VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${(channelObject?.domain || "https://gamifa.vn")}/v/order/admin/${dataUpdate?._id}?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyOTUxNzIsImRhdGEiOnsiX2lkIjoiNjRkNWRlMmZhYTJmZWQxNzU4NDUxMGQyIiwia2V5IjoiYzViOTk1NmMxN2ZmNzRkMTQyMTUyMmUzNmRjNzQ4ZWUiLCJzaWduYXR1cmUiOiI3NDc3YjFjZDQxNzNjYzUxODUyYTUzODNjNWQ0ZmExMSIsInNlc3Npb24iOiI2NGU1NzQ4NDg0OGE3ZDc3YmVkZDQyZmEifSwiaWF0IjoxNjkyNzU5MTcyfQ.2guMNJ3SAjQYSIpbSAHVSh0tghAy_N0b7fmAJTgx9P8 để cập nhật trạng thái đơn hàng.`,
+                text: `${orderObject?.user_id.display_name} vừa chuyển khoản thành công thanh toán với số tiền:  (${
+                  orderObject.price
+                } VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${
+                  channelObject?.domain || "https://gamifa.vn"
+                }/v/order/admin/${
+                  dataUpdate?._id
+                }?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyOTUxNzIsImRhdGEiOnsiX2lkIjoiNjRkNWRlMmZhYTJmZWQxNzU4NDUxMGQyIiwia2V5IjoiYzViOTk1NmMxN2ZmNzRkMTQyMTUyMmUzNmRjNzQ4ZWUiLCJzaWduYXR1cmUiOiI3NDc3YjFjZDQxNzNjYzUxODUyYTUzODNjNWQ0ZmExMSIsInNlc3Npb24iOiI2NGU1NzQ4NDg0OGE3ZDc3YmVkZDQyZmEifSwiaWF0IjoxNjkyNzU5MTcyfQ.2guMNJ3SAjQYSIpbSAHVSh0tghAy_N0b7fmAJTgx9P8 để cập nhật trạng thái đơn hàng.`,
               };
               //Update
-              await axios.post(url, dataToPost, {}).then(() => { });
+              await axios.post(url, dataToPost, {}).then(() => {});
 
               this.eventHookNotificationService.sendNotiNMailPaySuccess({
                 send_user_id: orderObject?.channel_id?.user_id?.toString(),
@@ -815,7 +822,7 @@ export class OrderHelper {
                 title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} ĐẶT THÀNH CÔNG ${orderObject.service_name.toLocaleUpperCase()}`,
               });
             }, 500);
-          } catch (error) { }
+          } catch (error) {}
 
           //Send Telegram
           return res
@@ -839,7 +846,6 @@ export class OrderHelper {
   async updateOrderAfter(orderId: string, beforeStatus: string = "pending"): Promise<Order> {
     let orderObject: Order = await this.orderService.findById(orderId);
     try {
-
       if (!orderObject) {
         console.log("ORDER NOT FOUND");
         return null;
@@ -868,9 +874,11 @@ export class OrderHelper {
         let dataToCreate = await this.subscribeService.create(dataSubscribe);
         // console.log(orderObject?.service_id, "orderObject?.service_id");
         //Check if service is Extension
-        if (orderObject?.service_id?.service_type == "extension" ||
+        if (
+          orderObject?.service_id?.service_type == "extension" ||
           orderObject?.service_id?.service_type == "domain" ||
-          orderObject?.service_id?.service_type == "mobile") {
+          orderObject?.service_id?.service_type == "mobile"
+        ) {
           if (orderObject?.service_id?.service_type == "extension") {
             this.eventHookNotificationService.sendNotiNMailBuyExtensionSuccess({
               send_user_id: orderObject?.channel_id?.user_id?.toString(),
@@ -901,20 +909,25 @@ export class OrderHelper {
           await this.channelService.update(dataUdpate);
           let dataUpdate = {
             _id: orderObject?._id?.toString(),
-            product_url: '/r/domain/create'
+            product_url: "/r/domain/create",
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
 
-        if (orderObject?.service_id?.service_type === 'extension') {
+        if (orderObject?.service_id?.service_type === "extension") {
           let dataUpdate = {
             _id: orderObject?._id?.toString(),
-            product_url: orderObject?.service_id?.router_link
+            product_url: orderObject?.service_id?.router_link,
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
         if (orderObject?.service_id?.service_type == "mobile") {
-          let getTotalAdmin = await this.channelPermissionService.filter({ channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" }, {}, 1, 100);
+          let getTotalAdmin = await this.channelPermissionService.filter(
+            { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
+            {},
+            1,
+            100
+          );
           let userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: Number) => {
             return channelPermissionItem?.user_id?._id?.toString();
           });
@@ -936,18 +949,17 @@ export class OrderHelper {
           //Update Return
           let dataUpdate = {
             _id: orderObject?._id?.toString(),
-            redirect_url: '/r/support/' + dataTicket?._id?.toString(),
-            product_url: '/r/support/' + dataTicket?._id?.toString()
+            redirect_url: "/r/support/" + dataTicket?._id?.toString(),
+            product_url: "/r/support/" + dataTicket?._id?.toString(),
           };
           orderObject = await this.orderService.update(dataUpdate);
-
         }
 
         if (orderObject?.service_id?.service_type == "course") {
           await this.handleUpdateCourseAfter(orderObject);
           let dataUpdate = {
             _id: orderObject?._id?.toString(),
-            product_url: '/r/courses/view/' + orderObject?.service_id?.handle?.toString()
+            product_url: "/r/courses/view/" + orderObject?.service_id?.handle?.toString(),
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
@@ -1017,8 +1029,11 @@ export class OrderHelper {
       let isUserCommision = false;
       if (dataPermission?.from_user) {
         //Check user From
-        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({ user_id: dataPermission?.from_user?.toString(), channelId });
-        if (dataPermissionFromUser?.channel_role !== 'mentor') {
+        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+          user_id: dataPermission?.from_user?.toString(),
+          channelId,
+        });
+        if (dataPermissionFromUser?.channel_role !== "mentor") {
           isUserCommision = true;
 
           bossCommission = bossCommission - userCommision;
@@ -1052,15 +1067,16 @@ export class OrderHelper {
             },
             title: `${dataPermissionFromUser?.user_id?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
           });
-
         }
-
       }
 
       if (dataPermission?.from_mentor) {
         //Check user From
-        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({ user_id: dataPermission?.from_mentor?.toString(), channelId });
-        if (dataPermissionFromUser?.channel_role !== 'mentor') {
+        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+          user_id: dataPermission?.from_mentor?.toString(),
+          channelId,
+        });
+        if (dataPermissionFromUser?.channel_role !== "mentor") {
           if (isUserCommision) {
             mentorCommission = mentorCommission - userCommision;
           }
@@ -1099,12 +1115,16 @@ export class OrderHelper {
         }
       }
 
-
       let bossTransactionValue = transactionValue * (bossCommission / 100);
       bossTransactionValue = Math.round(bossTransactionValue * 100) / 100;
 
       //Plus money for boss
-      let bossUserPermissionArray = await this.channelPermissionService.filter({ channel_id: channelId, channel_role: "mentor" }, {}, 1, 100);
+      let bossUserPermissionArray = await this.channelPermissionService.filter(
+        { channel_id: channelId, channel_role: "mentor" },
+        {},
+        1,
+        100
+      );
 
       for (let bossItem of bossUserPermissionArray) {
         //Check User Permission
@@ -1131,8 +1151,6 @@ export class OrderHelper {
         //   })
         // }, 500);
       }
-
-
     } catch (error) {
       console.log(error, "error Transation");
     }

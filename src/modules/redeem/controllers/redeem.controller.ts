@@ -13,7 +13,7 @@ import { ListRedeemPermissionDto } from "../dto/list-redeem_permission.dto";
 @ApiTags("redeem")
 @ApiBearerAuth("ICEO")
 export class RedeemController {
-  constructor(private readonly redeemHelper: RedeemHelper) { }
+  constructor(private readonly redeemHelper: RedeemHelper) {}
 
   /**
    * ######## FOR REQUEST ######

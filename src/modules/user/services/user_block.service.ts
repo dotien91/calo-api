@@ -81,7 +81,7 @@ export class UserBlockService {
    * @param sortBy
    * @returns
    */
-   getSort(sortBy: any) {
+  getSort(sortBy: any) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -111,8 +111,9 @@ export class UserBlockService {
       .populate({
         path: "partner_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -121,14 +122,13 @@ export class UserBlockService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param dataToSearch
    * @returns
    */
-   async filterByUserId(userId: string, userPartners: string[]): Promise<UserBlock[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners }};
+  async filterByUserId(userId: string, userPartners: string[]): Promise<UserBlock[]> {
+    let condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userBlockModel.find(condition, {}).exec();
   }
 
@@ -184,4 +184,3 @@ export class UserBlockService {
     }
   };
 }
-

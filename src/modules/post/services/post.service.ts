@@ -13,7 +13,7 @@ export class PostService {
   constructor(
     @InjectModel(Post.name)
     private orderModel: Model<PostDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

@@ -12,7 +12,7 @@ export class HandleServiceService {
   constructor(
     @InjectModel(HandleService.name)
     private handleServiceModel: Model<HandleServiceDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -31,7 +31,6 @@ export class HandleServiceService {
       } else {
         condition = Object.assign(condition, { service_type: filter.service_type });
       }
-
     }
     return condition;
   }

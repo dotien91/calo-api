@@ -19,18 +19,18 @@ export class PostPrompt {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   post_language: String;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true })
   post_category: PostCategory;
 
   @Prop({
@@ -59,36 +59,36 @@ export class PostPrompt {
     default: [],
     nullable: false,
   })
-  placeholder: String[]
+  placeholder: String[];
 
   @Prop({
     type: String,
     default: "prompt",
     nullable: false,
-    index: true
+    index: true,
   })
-  post_type: String
+  post_type: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_parent: String
+  post_parent: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String
+  post_status: String;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  post_view: Number
+  post_view: Number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -99,5 +99,5 @@ export class PostPrompt {
 }
 
 export const PostPromptSchema = SchemaFactory.createForClass(PostPrompt).index({
-  text_to_view: "text"
+  text_to_view: "text",
 });

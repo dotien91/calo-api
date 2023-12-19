@@ -13,7 +13,7 @@ export class EsimCountryService {
   constructor(
     @InjectModel(EsimCountry.name)
     private requestModel: Model<EsimCountryDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -230,7 +230,7 @@ export class EsimCountryService {
             "user_id",
             "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
           )
-          .populate("avatar")
+          .populate("avatar");
       }
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };

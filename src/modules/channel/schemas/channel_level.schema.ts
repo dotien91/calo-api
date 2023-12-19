@@ -1,16 +1,16 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Channel } from './channel.schema';
-import { ChatMedia } from '../../../modules/chat_media/schemas/chat_media.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Channel } from "./channel.schema";
+import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
 
 export type ChannelLevelDocument = ChannelLevel & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChannelLevel {
@@ -20,7 +20,7 @@ export class ChannelLevel {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
@@ -44,7 +44,7 @@ export class ChannelLevel {
   })
   level_point: Number;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Channel', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
 
   @Prop({
@@ -54,14 +54,14 @@ export class ChannelLevel {
   })
   title: String;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChatMedia', index: true })
-  media_id: ChatMedia
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
+  media_id: ChatMedia;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChatMedia', index: true })
-  course_id: ChatMedia
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
+  course_id: ChatMedia;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChannelLevel', index: true })
-  parent_id: ChannelLevel
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChannelLevel", index: true })
+  parent_id: ChannelLevel;
 }
 
 export const ChannelLevelSchema = SchemaFactory.createForClass(ChannelLevel);

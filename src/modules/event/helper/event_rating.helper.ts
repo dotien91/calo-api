@@ -24,7 +24,7 @@ export class EventRatingHelper {
     private readonly eventService: EventService,
     private readonly eventTypeService: EventTypeService,
     private readonly eventRatingService: EventRatingService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

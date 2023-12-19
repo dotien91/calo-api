@@ -43,7 +43,7 @@ export class CityHelper {
     private userOptionService: UserOptionService,
     private userFilterService: UserFilterHelper,
     private chatRoomService: ChatRoomService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -109,7 +109,6 @@ export class CityHelper {
       limit
     );
     for (let dataItem of dataReturn) {
-
       let cityImage = dataItem?.city_image;
 
       if (!cityImage) {
@@ -129,8 +128,6 @@ export class CityHelper {
   }
 
   async processThumbnail(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-
-
     let limit = query.limit ? query.limit : 1000;
     let page = query.page ? query.page : 1;
     let orderByOBject = {};
@@ -138,7 +135,6 @@ export class CityHelper {
     // let dataReturn = await this.appUserService.findAll();
     let countUpdate = 0;
     for (let dataItem of dataReturn) {
-
       let dataCount = await this.userOptionService.count({ city: dataItem._id.toString() });
 
       let dataToUpdate = {
@@ -156,7 +152,6 @@ export class CityHelper {
   }
 
   async processPeople(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-
     let limit = query.limit ? query.limit : 1000;
     let page = query.page ? query.page : 1;
     let orderByOBject = {};
@@ -164,7 +159,6 @@ export class CityHelper {
     let dataReturn = await this.userOptionService.findAll();
     let countUpdate = 0;
     for (let dataItem of dataReturn) {
-
       if (dataItem.city) {
         let dataToUpdate = {
           _id: dataItem.user_id.toString(),
@@ -221,7 +215,6 @@ export class CityHelper {
   }
 
   async processCity(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-
     let limit = query.limit ? query.limit : 1000;
     let page = query.page ? query.page : 1;
     let orderByOBject = {};
@@ -229,7 +222,6 @@ export class CityHelper {
     let dataReturn = await this.userOptionService.findAll();
     let countUpdate = 0;
     for (let dataItem of dataReturn) {
-
       if (dataItem.loc && dataItem.loc?.coordinates) {
         let cityFind = await this.cityService.filter({ point: dataItem.loc?.coordinates }, {}, 1, 1);
         if (cityFind && cityFind[0]) {

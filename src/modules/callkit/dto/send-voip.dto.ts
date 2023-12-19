@@ -4,9 +4,9 @@ import { IsJSON, IsString } from "class-validator";
 export class SendVoipDto {
   @IsString()
   @ApiProperty()
-  token: string
+  token: string;
 
   @IsJSON()
   @ApiProperty()
-  param: string
+  param: string;
 }

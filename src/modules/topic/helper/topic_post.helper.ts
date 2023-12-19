@@ -28,7 +28,7 @@ export class TopicPostHelper {
     private topicService: TopicService,
     private topicPostService: TopicPostService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -119,8 +119,8 @@ export class TopicPostHelper {
         if (!topicObject?.parent_id) {
           //Get all Child Topic
           let dataFilter = {
-            parent_id: query.topic_id
-          }
+            parent_id: query.topic_id,
+          };
           let childTopicArray = await this.topicService.filter(dataFilter, {}, 1, 10000);
           let topicIds = [];
           for (let topicItem of childTopicArray) {

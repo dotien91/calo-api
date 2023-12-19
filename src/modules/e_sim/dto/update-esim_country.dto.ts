@@ -7,5 +7,5 @@ export class UpdateEsimCountryDto extends PartialType(CreateEsimCountryDto) {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  _id?: String
+  _id?: String;
 }

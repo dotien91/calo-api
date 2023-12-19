@@ -36,7 +36,7 @@ export class Clock {
     type: String,
     nullable: false,
     index: true,
-    default: "enable"
+    default: "enable",
   })
   status: String;
 

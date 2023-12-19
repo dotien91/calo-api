@@ -9,10 +9,10 @@ import { SearchMyEventRatingDto } from "../dto/search.my_event_rating.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller("event-rating")
-@ApiTags('event')
-@ApiBearerAuth('ICEO')
+@ApiTags("event")
+@ApiBearerAuth("ICEO")
 export class EventRatingController {
-  constructor(private readonly eventRatingHelper: EventRatingHelper) { }
+  constructor(private readonly eventRatingHelper: EventRatingHelper) {}
 
   @Post("/create")
   async createNewEventType(

@@ -18,7 +18,6 @@ export class LawyerLocation extends Document {
 }
 export const LawyerLocationSchema = SchemaFactory.createForClass(LawyerLocation);
 
-
 @Schema()
 export class DataCost extends Document {
   @Prop({
@@ -34,12 +33,12 @@ export class DataCost extends Document {
   @Prop({
     type: String,
   })
-  free_consultation: String
+  free_consultation: String;
 
   @Prop({
     type: String,
   })
-  hourly_rates: String
+  hourly_rates: String;
 }
 export const DataCostSchema = SchemaFactory.createForClass(DataCost);
 
@@ -52,7 +51,7 @@ export class DataCategory extends Document {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: "LawyerCategory"
+    ref: "LawyerCategory",
   })
   ref_id: MongooseSchema.Types.ObjectId;
 
@@ -64,20 +63,19 @@ export class DataCategory extends Document {
   @Prop({
     type: String,
   })
-  detail: String
+  detail: String;
 
   @Prop({
     type: String,
   })
-  year: String
+  year: String;
 
   @Prop({
     type: String,
   })
-  percent: String
+  percent: String;
 }
 export const DataCategorySchema = SchemaFactory.createForClass(DataCategory);
-
 
 @Schema()
 export class MapData extends Document {
@@ -130,7 +128,6 @@ export const MapDataSchema = SchemaFactory.createForClass(MapData);
 
 @Schema()
 export class ContactLawyer extends Document {
-
   @Prop({
     type: String,
   })
@@ -252,7 +249,6 @@ export class Licensed extends Document {
 }
 export const LicensedSchema = SchemaFactory.createForClass(Licensed);
 
-
 @Schema()
 export class RatingValue extends Document {
   @Prop({
@@ -297,7 +293,7 @@ export class Lawyer {
     type: String,
     nullable: true,
     default: "",
-    index: true
+    index: true,
   })
   state_name: String;
 
@@ -305,7 +301,7 @@ export class Lawyer {
     type: String,
     nullable: true,
     default: "",
-    index: true
+    index: true,
   })
   city_name: String;
 
@@ -345,7 +341,6 @@ export class Lawyer {
     ref: "ChatMedia",
   })
   public_album: [ChatMedia];
-
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -506,7 +501,7 @@ export class Lawyer {
     type: MongooseSchema.Types.Array,
     nullable: false,
     default: null,
-    index: true
+    index: true,
   })
   language_spoken: String[];
 
@@ -549,7 +544,7 @@ export class Lawyer {
     type: Number,
     nullable: false,
     default: 0,
-    index: true
+    index: true,
   })
   review_value: Number;
 
@@ -565,7 +560,7 @@ export class Lawyer {
     type: Number,
     nullable: false,
     default: 0,
-    index: true
+    index: true,
   })
   license_year: Number;
 
@@ -591,4 +586,6 @@ export class Lawyer {
   latitude: Number;
 }
 
-export const LawyerSchema = SchemaFactory.createForClass(Lawyer).index({ loc: "2dsphere" }).index({ name: "text", about: "text", sub_about: "text" });;
+export const LawyerSchema = SchemaFactory.createForClass(Lawyer)
+  .index({ loc: "2dsphere" })
+  .index({ name: "text", about: "text", sub_about: "text" });

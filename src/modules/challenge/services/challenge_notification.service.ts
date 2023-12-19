@@ -11,7 +11,7 @@ export class ChallengeNotificationService {
   constructor(
     @InjectModel(ChallengeNotification.name)
     private challengeLikeModel: Model<ChallengeNotificationDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -84,7 +84,8 @@ export class ChallengeNotificationService {
       .populate(
         "user_id",
         "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      ).populate("challenge_id")
+      )
+      .populate("challenge_id");
     return dataReturn;
   }
 
@@ -104,7 +105,7 @@ export class ChallengeNotificationService {
       .populate(
         "user_id",
         "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      )
+      );
     return dataReturn;
   }
 

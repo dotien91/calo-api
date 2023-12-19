@@ -22,10 +22,10 @@ const dataPopulateLivestream = {
       path: "product_id",
       populate: [
         {
-          path: "avatar"
-        }
-      ]
-    }
+          path: "avatar",
+        },
+      ],
+    },
   ],
 };
 @Injectable()
@@ -33,7 +33,7 @@ export class EventService {
   constructor(
     @InjectModel(Event.name)
     private eventModel: Model<EventDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

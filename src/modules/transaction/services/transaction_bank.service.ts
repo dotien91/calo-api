@@ -13,7 +13,7 @@ export class TransactionBankService {
   constructor(
     @InjectModel(TransactionBank.name)
     private transactionBankModel: Model<TransactionBankDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -100,7 +100,7 @@ export class TransactionBankService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
       };
 
       let dataReturn = await this.transactionBankModel

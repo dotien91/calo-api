@@ -28,7 +28,7 @@ export class AnswerHelper {
     private questionService: QuestionService,
     private answerService: AnswerService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

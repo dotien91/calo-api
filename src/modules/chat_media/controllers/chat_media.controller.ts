@@ -30,7 +30,7 @@ export class ChatMediaController {
     private readonly chatMediaService: ChatMediaService,
     private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
     private readonly userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("chat_media_controller");
   @Post("/create")

@@ -4,5 +4,5 @@ export class SearchRedeemPermissionDto {
   channel_id?: string;
   redeem_id?: string;
   redeem_mission_id?: string;
-  redeem_ids?: string[]
+  redeem_ids?: string[];
 }

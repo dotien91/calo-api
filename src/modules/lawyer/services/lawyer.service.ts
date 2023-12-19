@@ -13,7 +13,7 @@ export class LawyerService {
   constructor(
     @InjectModel(Lawyer.name)
     private lawyerModel: Model<LawyerDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -60,7 +60,7 @@ export class LawyerService {
         let dataToFilterArray = [];
         if (dataObject && dataObject?.length) {
           for (let itemArray of dataObject) {
-            dataToFilterArray.push(new Types.ObjectId(itemArray))
+            dataToFilterArray.push(new Types.ObjectId(itemArray));
           }
           condition = Object.assign(condition, { categories: { $in: dataToFilterArray } });
         }
@@ -82,17 +82,19 @@ export class LawyerService {
     }
 
     if (filter.hasOwnProperty("is_free_consultation")) {
-      condition = Object.assign(condition, { is_free_consultation: (filter.is_free_consultation == 'true') ? true : false });
+      condition = Object.assign(condition, {
+        is_free_consultation: filter.is_free_consultation == "true" ? true : false,
+      });
     }
     if (filter.hasOwnProperty("open_for_business")) {
-      condition = Object.assign(condition, { open_for_business: (filter.open_for_business == 'true') ? true : false });
+      condition = Object.assign(condition, { open_for_business: filter.open_for_business == "true" ? true : false });
     }
     if (filter.hasOwnProperty("is_misconduct")) {
-      condition = Object.assign(condition, { is_misconduct: (filter.is_misconduct == 'true') ? true : false });
+      condition = Object.assign(condition, { is_misconduct: filter.is_misconduct == "true" ? true : false });
     }
     if (filter.hasOwnProperty("is_extra_virtual")) {
-      console.log(filter.is_extra_virtual, 'filter.is_extra_virtual')
-      condition = Object.assign(condition, { is_extra_virtual: (filter.is_extra_virtual == 'true') ? true : false });
+      console.log(filter.is_extra_virtual, "filter.is_extra_virtual");
+      condition = Object.assign(condition, { is_extra_virtual: filter.is_extra_virtual == "true" ? true : false });
     }
 
     if (filter.review_value) {
@@ -102,7 +104,6 @@ export class LawyerService {
     if (filter.search) {
       condition = Object.assign(condition, { $text: { $search: filter.search } });
     }
-
 
     // if (
     //   filter.latitude &&
@@ -194,7 +195,7 @@ export class LawyerService {
    */
   getSort(sortBy: SortByLawyerDto) {
     let sort = {
-      points: -1
+      points: -1,
     };
     // if (sortBy.createdAt) {
     //   sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -231,9 +232,9 @@ export class LawyerService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-    console.log(JSON.stringify(condition), 'condition')
+    console.log(JSON.stringify(condition), "condition");
 
-    console.log(sortObject, 'sortObject')
+    console.log(sortObject, "sortObject");
 
     let dataReturn = await this.lawyerModel
       .find(condition, projection)
@@ -357,7 +358,11 @@ export class LawyerService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.lawyerModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate, $unset: unsetData }, { new: false });
+      let dataReturn = await this.lawyerModel.findByIdAndUpdate(
+        dataUpdate._id,
+        { $set: dataUpdate, $unset: unsetData },
+        { new: false }
+      );
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

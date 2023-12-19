@@ -34,7 +34,7 @@ export class ContactFormHelper {
     private userOptionService: UserOptionService,
     private userPermissionService: UserPermissionService,
     private postService: PostService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -67,7 +67,10 @@ export class ContactFormHelper {
       if (createContactFormData?.form_status) {
         let dataEntity = await this.postService.findById(createContactFormData?.entity_id?.toString());
         //Check
-        if (dataEntity?.user_id?._id?.toString() === userId || (await this.userPermissionService.isHavePermission(userId, "contact_form/update"))) {
+        if (
+          dataEntity?.user_id?._id?.toString() === userId ||
+          (await this.userPermissionService.isHavePermission(userId, "contact_form/update"))
+        ) {
           //
         } else {
           //Not have Permission
@@ -298,7 +301,7 @@ export class ContactFormHelper {
         let dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
         let userEntity = dataEntity.user_entity;
         if (!userEntity) {
-          userEntity = []
+          userEntity = [];
         }
         userEntity = userEntity.filter((value, index) => {
           if (value?.toString() == dataReturn?.user_id?.toString()) {
@@ -309,8 +312,8 @@ export class ContactFormHelper {
         });
         let dataUpdate = {
           _id: dataReturn?.entity_id?.toString(),
-          user_entity: userEntity
-        }
+          user_entity: userEntity,
+        };
         // console.log(dataUpdate, 'dataUpdate')
         //Update Entity
         await this.postService.update(dataUpdate);

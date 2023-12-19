@@ -23,7 +23,7 @@ export class EventTypeHelper {
     private readonly eventService: EventService,
     private readonly eventCategoryService: EventCategoryService,
     private readonly eventTypeService: EventTypeService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -331,4 +331,3 @@ export class EventTypeHelper {
     }
   }
 }
-

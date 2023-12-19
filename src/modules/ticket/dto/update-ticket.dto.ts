@@ -7,15 +7,15 @@ export class UpdateTicketDto extends PartialType(CreateTicketDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String
+  _id?: String;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_pin?: string
+  is_pin?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_comment?: string
+  is_comment?: string;
 }

@@ -4,25 +4,25 @@ import { IsJSON, IsOptional, IsString } from "class-validator";
 export class CreateChallengeNotificationDto {
   @IsString()
   @ApiProperty()
-  title: string
+  title: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  description: string
+  description: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  channel_id: string
+  channel_id: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  challenge_id: string
+  challenge_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_album?: any
+  public_album?: any;
 }

@@ -59,7 +59,10 @@ export class NeedHelpService {
     }
     let dataReturn = await this.needHelperModel
       .find(condition)
-      .populate("user_id", "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active")
+      .populate(
+        "user_id",
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)

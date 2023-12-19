@@ -38,7 +38,7 @@ export class PurchaseHelper {
     private jwtHelper: JwtHelperService,
     private chatHistoryHelper: ChatHistoryHelper,
     private transactionHelper: TransactionHelper
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

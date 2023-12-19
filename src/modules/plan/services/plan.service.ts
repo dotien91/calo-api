@@ -11,7 +11,7 @@ export class PlanService {
   constructor(
     @InjectModel(Plan.name)
     private planModel: Model<PlanDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -169,11 +169,7 @@ export class PlanService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.planModel.findByIdAndUpdate(
-        dataUpdate._id,
-        { $set: dataUpdate },
-        { new: false }
-      );
+      let dataReturn = await this.planModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

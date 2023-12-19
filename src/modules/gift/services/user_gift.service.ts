@@ -12,7 +12,7 @@ export class UserGiftService {
   constructor(
     @InjectModel(UserGift.name)
     private userUserGiftModel: Model<UserGiftDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

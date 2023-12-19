@@ -180,7 +180,7 @@ export class UserLoginHelper {
             event_name: `notification_after_${itemUpdate?.event_name}_day`,
             fullname: dataUser?.display_name,
             user_id: dataUser?._id?.toString(),
-            is_send_email: false
+            is_send_email: false,
           };
 
           console.log(dataToUpdate, "dataToUpdate");
@@ -710,7 +710,6 @@ export class UserLoginHelper {
               tokenReturn?.toString()
             );
           }
-
         }, 1000);
 
         return res
@@ -739,12 +738,11 @@ export class UserLoginHelper {
     } else {
       return "";
     }
-
   }
 
   async handleCountPointForUser(fromUserLogin: string, domain: string, dataUser: User, authCode: string) {
     try {
-      console.log(domain, 'domain')
+      console.log(domain, "domain");
       let channelObject = await this.channelService.findOne({ domain: domain });
       let fromUser = await this.appUserService.findOne({ user_login: fromUserLogin });
 
@@ -759,7 +757,7 @@ export class UserLoginHelper {
           channel_id: channelObject?._id,
         });
 
-        console.log(dataPermission, 'dataPermissionie')
+        console.log(dataPermission, "dataPermissionie");
         //Count
         //Update
         let dataChannelPoint = channelObject?.point_data;
@@ -795,36 +793,43 @@ export class UserLoginHelper {
           currentPermission = await this.channelPermissionService.create(dataToCreateChannel);
           //Update count user
 
-          const listChallenge = await this.challengeService.filter({
-            channel_id: process.env.DEFAULT_CHANNEL,
-            add_all_user: true
-          }, {}, 1, 1000)
+          const listChallenge = await this.challengeService.filter(
+            {
+              channel_id: process.env.DEFAULT_CHANNEL,
+              add_all_user: true,
+            },
+            {},
+            1,
+            1000
+          );
 
           this.queueService.addTaskUserJoinChallenge({
             user_id: dataUser?._id?.toString(),
-            list_challenge_id: listChallenge.map((x) => { return { challenge_id: x?._id.toString(), game_id: x?.game_id?._id.toString(), game_type: x?.game_id?.game_type } }),
+            list_challenge_id: listChallenge.map((x) => {
+              return {
+                challenge_id: x?._id.toString(),
+                game_id: x?.game_id?._id.toString(),
+                game_type: x?.game_id?.game_type,
+              };
+            }),
             channel_id: channelObject?._id?.toString(),
             official_status: 1,
-          })
+          });
         }
 
         if (!currentPermission || (!currentPermission?.from_user && !currentPermission?.from_mentor)) {
           //Update user
           let dataUpdate = {};
 
-          if (dataPermission?.mentor_role === 'mentor') {
-            dataUpdate = { ...dataUpdate, ...{ from_mentor: fromUser?._id?.toString() } }
+          if (dataPermission?.mentor_role === "mentor") {
+            dataUpdate = { ...dataUpdate, ...{ from_mentor: fromUser?._id?.toString() } };
 
             let dataUpdateCount = {
               number_of_user: 1,
             };
-            await this.channelPermissionService.updateCount(
-              { _id: dataPermission._id?.toString() },
-              dataUpdateCount
-            );
-
+            await this.channelPermissionService.updateCount({ _id: dataPermission._id?.toString() }, dataUpdateCount);
           } else {
-            dataUpdate = { ...dataUpdate, ...{ from_user: fromUser?._id?.toString() } }
+            dataUpdate = { ...dataUpdate, ...{ from_user: fromUser?._id?.toString() } };
           }
 
           let dataFilterUpdate = {
@@ -849,7 +854,10 @@ export class UserLoginHelper {
             },
             "invite_user"
           );
-          let dataHistory = await this.channelPermissionService.findOneHistory({ entientity_id: dataUser?._id, entity_type: "invite_user" });
+          let dataHistory = await this.channelPermissionService.findOneHistory({
+            entientity_id: dataUser?._id,
+            entity_type: "invite_user",
+          });
           if (!dataHistory) {
             //plus point for challenge invite user
             this.eventHookWorkerService.PlusPointChallengePusher({
@@ -858,19 +866,18 @@ export class UserLoginHelper {
               channel_id: channelObject?._id.toString(),
               point_value: 1,
               display_name: fromUser?.display_name?.toString(),
-            })
+            });
             this.eventHookWorkerService.PlusPointChallengePusher({
               user_id: fromUser?._id?.toString(),
               game_type: "point",
               channel_id: channelObject?._id.toString(),
               display_name: fromUser?.display_name?.toString(),
               point_value: 20,
-            })
+            });
           }
         }
-
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async handleGetUserAvatarRandom() {
@@ -1560,10 +1567,10 @@ export class UserLoginHelper {
 
         dataChannel = await this.channelService.findOne({ domain: dataChannel });
         if (!dataChannel) {
-          dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL })
+          dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
         }
       } else {
-        dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL })
+        dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
       }
       let dataFirestore = getFirestore();
       if (dataChannel) {
@@ -1577,8 +1584,10 @@ export class UserLoginHelper {
           fullname: userObject?.display_name,
           user_id: userObject?._id?.toString(),
           email_token: dataToken,
-          token_url: `${process.env.LOGIN_URL}/v/reset-password?token=${dataToken}&base_url=${(dataChannel?.domain) ? dataChannel?.domain : 'https://gamifa.vn'}`,
-          is_send_email: false
+          token_url: `${process.env.LOGIN_URL}/v/reset-password?token=${dataToken}&base_url=${
+            dataChannel?.domain ? dataChannel?.domain : "https://gamifa.vn"
+          }`,
+          is_send_email: false,
         };
 
         console.log(dataToUpdate, "dataToUpdate");
@@ -1589,7 +1598,6 @@ export class UserLoginHelper {
           console.log("User added!");
         });
       }
-
 
       let dataReturn = {
         data_success: "Done!",

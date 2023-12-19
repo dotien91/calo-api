@@ -3,7 +3,6 @@ import { Document, Schema as MongooseSchema } from "mongoose";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 
-
 @Schema()
 export class OptionContent extends Document {
   @Prop({
@@ -25,7 +24,6 @@ export class OptionContent extends Document {
     type: String,
   })
   description: string;
-
 }
 export const OptionContentSchema = SchemaFactory.createForClass(OptionContent);
 
@@ -48,21 +46,21 @@ export class Config {
   @Prop({
     type: String,
     default: "",
-    index: true
+    index: true,
   })
   type: String;
 
   @Prop({
     type: String,
     default: "",
-    index: true
+    index: true,
   })
   package_name: String;
 
   @Prop({
     type: Number,
     default: 0,
-    index: true
+    index: true,
   })
   count_ab: Number;
 
@@ -139,4 +137,4 @@ export class Config {
   option_content: OptionContent[];
 }
 
-export const ConfigSchema = SchemaFactory.createForClass(Config).index({ package_name: 'text' });
+export const ConfigSchema = SchemaFactory.createForClass(Config).index({ package_name: "text" });

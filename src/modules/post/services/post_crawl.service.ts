@@ -14,7 +14,7 @@ export class PostCrawlService {
   constructor(
     @InjectModel(PostCrawl.name)
     private postCrawlModel: Model<PostCrawlDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -52,7 +52,7 @@ export class PostCrawlService {
    */
   async filter(filter: any, sortBy: SortByPostDto, page: number, limit: number) {
     let condition = await this.getCondition(filter);
-    console.log(condition, 'condition')
+    console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -152,10 +152,7 @@ export class PostCrawlService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<PostCrawl> {
-    return await this.postCrawlModel
-      .findOne(dataToSearch)
-      .sort({ _id: -1 })
-      .exec();
+    return await this.postCrawlModel.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
   /**
@@ -200,7 +197,11 @@ export class PostCrawlService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.postCrawlModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      let dataReturn = await this.postCrawlModel.findByIdAndUpdate(
+        dataUpdate._id,
+        { $set: dataUpdate },
+        { new: false }
+      );
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

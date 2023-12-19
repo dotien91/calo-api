@@ -18,7 +18,7 @@ export class CreateRequestCategoryDto {
 
   @IsString()
   @ApiPropertyOptional()
-  category_title?: string | String
+  category_title?: string | String;
 
   @IsString()
   @IsOptional(null)

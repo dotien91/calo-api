@@ -1,3 +1,3 @@
 export class UserAnonymousSessionFilterDto {
-  device_id?: string
+  device_id?: string;
 }

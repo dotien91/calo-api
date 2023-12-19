@@ -1,9 +1,9 @@
 {
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": false,
-    "notebook.formatOnSave.enabled": false,
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    }
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "notebook.formatOnSave.enabled": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
 }

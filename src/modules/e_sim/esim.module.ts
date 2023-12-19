@@ -20,18 +20,11 @@ import { HandleServiceService } from "../plan/services/handle_service.service";
       { name: EsimCountry.name, schema: EsimCountrySchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Plan.name, schema: PlanSchema },
-      { name: HandleService.name, schema: HandleServiceSchema }
+      { name: HandleService.name, schema: HandleServiceSchema },
     ]),
   ],
   controllers: [EsimController],
-  providers: [
-    EsimService,
-    EsimHelper,
-    EsimCountryService,
-    PlanService,
-    UserPermissionService,
-    HandleServiceService
-  ],
+  providers: [EsimService, EsimHelper, EsimCountryService, PlanService, UserPermissionService, HandleServiceService],
   exports: [EsimHelper, EsimService, EsimCountryService],
 })
-export class EsimModule { }
+export class EsimModule {}

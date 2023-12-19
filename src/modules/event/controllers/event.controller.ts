@@ -12,10 +12,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { SearchEventLikeDto } from "../dto/search.event_like.dto";
 
 @Controller("event")
-@ApiTags('event')
-@ApiBearerAuth('ICEO')
+@ApiTags("event")
+@ApiBearerAuth("ICEO")
 export class EventController {
-  constructor(private readonly eventHelper: EventHelper) { }
+  constructor(private readonly eventHelper: EventHelper) {}
 
   @Get("list")
   async handleSearchEvent(@Query() query: SearchEventDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
@@ -28,25 +28,22 @@ export class EventController {
   }
 
   @Post("/create-event")
-  async createNewEvent(
-    @Body() createEventBody: CreateEventDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async createNewEvent(@Body() createEventBody: CreateEventDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventHelper.createNewEvent(createEventBody, res, req);
   }
 
   @Patch("/update-event")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateEventDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateEventDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventHelper.handleUpdateEventByAdmin(dataUpdate, res, req);
   }
 
   @Get("detail-event/:id")
-  async getDetailEvent(@Query() query: SearchEventDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailEvent(
+    @Query() query: SearchEventDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.eventHelper.handleGetDetailEvent(query, id, res, req);
   }
 
@@ -56,21 +53,12 @@ export class EventController {
   }
 
   @Post("like")
-  handleFollowUser(
-    @Body() dataFollow: CreateUserFollowEventDto,
-    @Res() res: Response,
-    @Req() req: Request
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateUserFollowEventDto, @Res() res: Response, @Req() req: Request) {
     return this.eventHelper.processFollowUser(dataFollow, req, res);
   }
 
-
   @Post("un-like")
-  handleUnFollowUser(
-    @Body() dataFollow: CreateUserFollowEventDto,
-    @Res() res: Response,
-    @Req() req: Request
-  ) {
+  handleUnFollowUser(@Body() dataFollow: CreateUserFollowEventDto, @Res() res: Response, @Req() req: Request) {
     return this.eventHelper.processUnFollowUser(dataFollow, req, res);
   }
 }

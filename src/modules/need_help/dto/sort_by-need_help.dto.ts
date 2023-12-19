@@ -1,3 +1,3 @@
 export class SortByNeedHelpDto {
-  createdAt?: string
+  createdAt?: string;
 }

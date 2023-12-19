@@ -11,10 +11,10 @@ import { UpdateEventTypeDto } from "../dto/update.event_type.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller("event-type")
-@ApiTags('event')
-@ApiBearerAuth('ICEO')
+@ApiTags("event")
+@ApiBearerAuth("ICEO")
 export class EventTypeController {
-  constructor(private readonly eventTypeHelper: EventTypeHelper) { }
+  constructor(private readonly eventTypeHelper: EventTypeHelper) {}
 
   @Post("/create-type")
   async createNewEventType(
@@ -35,30 +35,17 @@ export class EventTypeController {
   }
 
   @Get("/list-type")
-  async getListEventType(
-    @Query() query: SearchEventTypeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getListEventType(@Query() query: SearchEventTypeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventTypeHelper.getListEventType(query, res, req);
   }
 
   @Get("/list-category")
-  async getListEventCategory(
-    @Query() query: SearchEventTypeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getListEventCategory(@Query() query: SearchEventTypeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventTypeHelper.getListEventCategory(query, res, req);
   }
 
-
   @Patch("/admin-update-type")
-  async updateTypeByAdmin(
-    @Body() dataUpdate: UpdateEventTypeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateTypeByAdmin(@Body() dataUpdate: UpdateEventTypeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventTypeHelper.handleUpdateEventTypeByAdmin(dataUpdate, res, req);
   }
 
@@ -90,5 +77,4 @@ export class EventTypeController {
   async removeEventCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.eventTypeHelper.removeEventCategory(id, res, req);
   }
-
 }

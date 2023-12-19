@@ -18,5 +18,5 @@ export class SearchMyEventRatingDto {
   @IsOptional(null)
   event_id: string;
 
-  user_id: string
+  user_id: string;
 }

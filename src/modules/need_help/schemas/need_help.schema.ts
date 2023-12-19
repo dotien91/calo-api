@@ -34,7 +34,7 @@ export class NeedHelp {
   @Prop({
     type: String,
     nullable: false,
-    default: "en"
+    default: "en",
   })
   language: String;
 }

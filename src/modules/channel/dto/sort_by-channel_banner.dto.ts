@@ -1,3 +1,3 @@
 export class SortByChannelBannerDto {
-  createdAt?: string
+  createdAt?: string;
 }

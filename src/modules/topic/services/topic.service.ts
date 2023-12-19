@@ -40,7 +40,7 @@ export class TopicService {
       condition = Object.assign(condition, { parent_id: null });
     }
     if (filter.is_child) {
-      condition = Object.assign(condition, { parent_id: {$ne: null} });
+      condition = Object.assign(condition, { parent_id: { $ne: null } });
     }
     if (filter.search) {
       condition = Object.assign(condition, { $text: { $search: filter.search } });

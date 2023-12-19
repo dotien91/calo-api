@@ -10,96 +10,55 @@ import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 
 @Controller("short")
 export class ShortController {
-  constructor(private readonly shortHelper: ShortHelper) { }
+  constructor(private readonly shortHelper: ShortHelper) {}
 
   @Get("/list")
-  async getUserShort(
-    @Query() query: ListShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserShort(@Query() query: ListShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.getShortList(query, res, req);
   }
 
   @Get("/admin-list")
-  async getAdminShort(
-    @Query() query: ListShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminShort(@Query() query: ListShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.getShortListByAdmin(query, res, req);
   }
 
   @Post("/create")
-  async createNewShort(
-    @Body() createShortBody: CreateShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async createNewShort(@Body() createShortBody: CreateShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.createNewShort(createShortBody, res, req);
   }
 
   @Patch("/update")
-  async updateShort(
-    @Body() dataUpdate: UpdateShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateShort(@Body() dataUpdate: UpdateShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.updateShort(dataUpdate, res, req);
   }
 
-
   @Post("view")
-  handleViewUser(
-    @Body() dataView: CreateShortViewDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleViewUser(@Body() dataView: CreateShortViewDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.shortHelper.processViewUser(dataView, req, res);
   }
 
   @Post("like")
-  handleFollowUser(
-    @Body() dataFollow: CreateShortLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateShortLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.shortHelper.processFollowUser(dataFollow, req, res);
   }
 
   @Get("list-like")
-  handleGetListLike(
-    @Query() query: ListShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleGetListLike(@Query() query: ListShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.shortHelper.handleGetListLike(query, res, req);
   }
 
   @Get("list-view")
-  handleGetListView(
-    @Query() query: ListShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleGetListView(@Query() query: ListShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.shortHelper.handleGetListView(query, res, req);
   }
 
   @Post("un-like")
-  handleUnFollowUser(
-    @Body() dataFollow: CreateShortLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleUnFollowUser(@Body() dataFollow: CreateShortLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.shortHelper.processUnFollowUser(dataFollow, req, res);
   }
 
   @Patch("/update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateShortDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.handleUpdateShortByAdmin(dataUpdate, res, req);
   }
 

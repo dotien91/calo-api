@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsNumber } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsNumber,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Date } from "mongoose";
@@ -67,7 +77,7 @@ export class ListChannelPermissionDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  auth_id?: string
+  auth_id?: string;
 
   @IsString()
   @IsOptional(null)
@@ -97,9 +107,9 @@ export class ListChannelPermissionDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  unset?: any
+  unset?: any;
 
-  successed_at?: Date
+  successed_at?: Date;
 
   @IsString()
   @IsOptional(null)

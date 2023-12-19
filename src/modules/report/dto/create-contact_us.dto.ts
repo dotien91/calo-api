@@ -2,18 +2,18 @@ import { IsOptional, IsString } from "class-validator";
 
 export class CreateContactUsDto {
   @IsString()
-  report_type: string
+  report_type: string;
 
   @IsString()
-  partner_id: String
-
-  @IsString()
-  @IsOptional(null)
-  report_content: string
+  partner_id: String;
 
   @IsString()
   @IsOptional(null)
-  report_image: string
+  report_content: string;
+
+  @IsString()
+  @IsOptional(null)
+  report_image: string;
 
   @IsString()
   @IsOptional(null)

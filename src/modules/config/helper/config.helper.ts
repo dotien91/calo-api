@@ -42,7 +42,7 @@ export class ConfigHelper {
     private userService: UserService,
     private channelService: ChannelService,
     private chatMediaService: ChatMediaService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -160,7 +160,7 @@ export class ConfigHelper {
         userVersion = Number(dataUser?.user_version) || 0;
       }
 
-      let channelId = '';
+      let channelId = "";
       let authCodeHeader = req?.headers || "";
       if (authCodeHeader && authCodeHeader["x-channel"]) {
         channelId = authCodeHeader["x-channel"]?.toString() || "";
@@ -217,7 +217,7 @@ export class ConfigHelper {
         call_count: 0,
         map_count: 0,
         user_version: userVersion,
-        channel_version: channelVersion
+        channel_version: channelVersion,
       };
 
       if (process.env.BRANCH_NAME === "esim") {
@@ -264,7 +264,6 @@ export class ConfigHelper {
     }
   }
 
-
   /**
    * @author Tony Vu
    * @param query
@@ -276,8 +275,8 @@ export class ConfigHelper {
   async getDefaultAvatar(type: string, res: Response, req: ExpressRequestDto) {
     try {
       let dataFilter = {
-        function_type: type
-      }
+        function_type: type,
+      };
       let dataCount = await this.chatMediaService.count(dataFilter);
       let max = dataCount;
       let min = 1;
@@ -295,7 +294,6 @@ export class ConfigHelper {
           .status(HttpStatus.NO_CONTENT)
           .json(dataReturn);
       }
-
     } catch (error) {
       throw new NotFoundException(error.message);
     }

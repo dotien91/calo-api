@@ -2,11 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class CreateForgotPassword {
-	@IsString()
+  @IsString()
   @ApiProperty()
-	user_email: string
+  user_email: string;
 
   @IsString()
   @ApiProperty()
-	g_recaptcha: string
+  g_recaptcha: string;
 }

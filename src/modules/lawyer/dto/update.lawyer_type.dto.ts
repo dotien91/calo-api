@@ -5,7 +5,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class UpdateLawyerTypeDto extends CreateLawyerTypeDto {
   @IsString()
   @ApiProperty()
-  _id: string
+  _id: string;
 
   @IsString()
   @IsOptional(null)

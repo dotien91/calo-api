@@ -66,10 +66,10 @@ export class ListTransactionDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  type_system: string
+  type_system: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search: string
+  search: string;
 }

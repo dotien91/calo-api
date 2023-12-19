@@ -44,7 +44,7 @@ export class ChallengePermission {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: "ChallengeGame"
+    ref: "ChallengeGame",
   })
   game_id: MongooseSchema.Types.ObjectId;
 
@@ -57,9 +57,9 @@ export class ChallengePermission {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: "Channel"
+    ref: "Channel",
   })
-  channel_id: MongooseSchema.Types.ObjectId
+  channel_id: MongooseSchema.Types.ObjectId;
 }
 
 export const ChallengePermissionSchema = SchemaFactory.createForClass(ChallengePermission);

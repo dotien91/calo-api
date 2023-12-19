@@ -37,7 +37,7 @@ export class LawyerCategoryService {
    * @param filter
    * @returns
    */
-   async getCondition(filter: SearchLawyerTypeDto) {
+  async getCondition(filter: SearchLawyerTypeDto) {
     let condition: any = {};
     return condition;
   }
@@ -78,13 +78,12 @@ export class LawyerCategoryService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   public count = async (filter: SearchLawyerTypeDto) => {
+  public count = async (filter: SearchLawyerTypeDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {

@@ -13,7 +13,7 @@ export class TicketService {
   constructor(
     @InjectModel(Ticket.name)
     private ticketModel: Model<TicketDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

@@ -11,7 +11,7 @@ export class SubscribeService {
   constructor(
     @InjectModel(Subscribe.name)
     private appSubscribeModel: Model<SubscribeDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

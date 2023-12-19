@@ -1,3 +1,3 @@
 export class SortByTicketCommentDto {
-  createdAt?: string
+  createdAt?: string;
 }

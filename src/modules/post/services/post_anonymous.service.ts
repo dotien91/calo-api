@@ -71,9 +71,9 @@ export class PostAnonymousService {
           path: "post_category",
           populate: [
             {
-              path: 'category_avatar'
-            }
-          ]
+              path: "category_avatar",
+            },
+          ],
         },
       ],
     };
@@ -111,9 +111,9 @@ export class PostAnonymousService {
           path: "post_category",
           populate: [
             {
-              path: 'category_avatar'
-            }
-          ]
+              path: "category_avatar",
+            },
+          ],
         },
       ],
     };
@@ -194,9 +194,9 @@ export class PostAnonymousService {
           path: "post_category",
           populate: [
             {
-              path: 'category_avatar'
-            }
-          ]
+              path: "category_avatar",
+            },
+          ],
         },
       ],
     };
@@ -228,17 +228,13 @@ export class PostAnonymousService {
           path: "post_category",
           populate: [
             {
-              path: 'category_avatar'
-            }
-          ]
+              path: "category_avatar",
+            },
+          ],
         },
       ],
     };
-    return await this.postAnonymousModel
-      .findById(objectId)
-      .populate("user_id")
-      .populate(populateObject)
-      .exec();
+    return await this.postAnonymousModel.findById(objectId).populate("user_id").populate(populateObject).exec();
   }
 
   /**
@@ -262,7 +258,11 @@ export class PostAnonymousService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        dataReturn = await this.postAnonymousModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+        dataReturn = await this.postAnonymousModel.findByIdAndUpdate(
+          dataUpdate._id,
+          { $set: dataUpdate },
+          { new: false }
+        );
       } else {
         return null;
       }

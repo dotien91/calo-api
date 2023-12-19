@@ -10,67 +10,40 @@ import { CrawlCityDto } from "../dto/crawl-city.dto";
 
 @Controller("city")
 export class CityController {
-  constructor(private readonly cityHelper: CityHelper) { }
+  constructor(private readonly cityHelper: CityHelper) {}
 
   @Get("/list")
-  async getUserCity(
-    @Query() query: ListCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserCity(@Query() query: ListCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.getCityListByUser(query, res, req);
   }
 
   @Get("/client-list")
-  async getListClient(
-    @Query() query: ListCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getListClient(@Query() query: ListCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.getListClient(query, res, req);
   }
 
   @Get("/admin-list")
-  async getAdminCity(
-    @Query() query: ListCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminCity(@Query() query: ListCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.getCityListByAdmin(query, res, req);
   }
 
   @Get("/process-city-avatar")
-  async processCityAvatar(
-    @Query() query: CrawlCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async processCityAvatar(@Query() query: CrawlCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.processCityAvatar(query, res, req);
   }
 
   @Get("/top-country")
-  async processCountry(
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async processCountry(@Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.processCountry(res, req);
   }
 
   @Get("/process-avatar")
-  async processAvatar(
-    @Query() query: CrawlCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async processAvatar(@Query() query: CrawlCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.processAvatar(query, res, req);
   }
 
   @Get("/process-city")
-  async processCity(
-    @Query() query: CrawlCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async processCity(@Query() query: CrawlCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.processCity(query, res, req);
   }
 
@@ -84,30 +57,17 @@ export class CityController {
   // }
 
   @Get("/process-thumbnail")
-  async processThumbnail(
-    @Query() query: CrawlCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async processThumbnail(@Query() query: CrawlCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.processThumbnail(query, res, req);
   }
 
-
   @Post("/create")
-  async createNewCity(
-    @Body() createCityBody: CreateCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async createNewCity(@Body() createCityBody: CreateCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.createNewCity(createCityBody, res, req);
   }
 
   @Patch("/update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.cityHelper.handleUpdateCityByAdmin(dataUpdate, res, req);
   }
 
@@ -117,20 +77,12 @@ export class CityController {
   }
 
   @Post("join")
-  handleFollowUser(
-    @Body() dataFollow: CreateUserJoinCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateUserJoinCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.cityHelper.processJoinUser(dataFollow, req, res);
   }
 
   @Post("un-join")
-  handleUnFollowUser(
-    @Body() dataFollow: CreateUserJoinCityDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleUnFollowUser(@Body() dataFollow: CreateUserJoinCityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.cityHelper.processUnJoinUser(dataFollow, req, res);
   }
 }

@@ -14,6 +14,6 @@ export class SearchEventIndexDto {
   @IsOptional(null)
   order_by?: "DESC" | "ASC";
 
-  date?: string
-  event_id?: string
+  date?: string;
+  event_id?: string;
 }

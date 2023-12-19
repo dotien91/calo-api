@@ -31,7 +31,7 @@ export class NeedHelpHelper {
     private userService: UserService,
     private userOptionService: UserOptionService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

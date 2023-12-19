@@ -71,4 +71,3 @@ export class CreateGiftDto {
   @ApiPropertyOptional()
   gift_conditions?: string;
 }
-

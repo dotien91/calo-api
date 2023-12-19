@@ -14,7 +14,7 @@ export class ChannelService {
   constructor(
     @InjectModel(Channel.name)
     private channelModel: Model<ChannelDocument>
-  ) { }
+  ) {}
   private readonly logger = new Logger(ChannelService.name);
   /**
    * @author Tony Vu
@@ -366,43 +366,42 @@ export class ChannelService {
    */
   async getTypeService(channelId: string): Promise<any> {
     try {
-      const result = await this.channelModel.aggregate(
-        [
-          {
-            $match: { _id: new Types.ObjectId(channelId) }
+      const result = await this.channelModel.aggregate([
+        {
+          $match: { _id: new Types.ObjectId(channelId) },
+        },
+        {
+          $lookup: {
+            from: "subscribes",
+            localField: "_id",
+            foreignField: "channel_id",
+            as: "subscriptions",
           },
-          {
-            $lookup: {
-              from: 'subscribes',
-              localField: '_id',
-              foreignField: 'channel_id',
-              as: 'subscriptions'
-            }
+        },
+        {
+          $lookup: {
+            from: "handleservices",
+            localField: "subscriptions.service_id",
+            foreignField: "_id",
+            as: "services",
           },
-          {
-            $lookup: {
-              from: 'handleservices',
-              localField: 'subscriptions.service_id',
-              foreignField: '_id',
-              as: 'services'
-            }
+        },
+        {
+          $unwind: "$services",
+        },
+        {
+          $project: {
+            type: "$services.type",
           },
-          {
-            $unwind: '$services'
-          },
-          {
-            $project: {
-              type: '$services.type'
-            }
-          }
-        ])
+        },
+      ]);
       if (result.length > 0) {
         return result[0].type;
       } else {
         return null;
       }
     } catch (error) {
-      this.logger.log(error.message)
+      this.logger.log(error.message);
       return null;
     }
   }

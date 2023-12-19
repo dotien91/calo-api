@@ -1,3 +1,3 @@
 export class SortByCategoryDto {
-  createdAt?: string
+  createdAt?: string;
 }

@@ -4,9 +4,9 @@ import { IsNumberString, IsOptional, IsString, IsIn } from "class-validator";
 export class SendPhoneDto {
   @IsString()
   @ApiProperty()
-  captcha: string
+  captcha: string;
 
   @IsString()
   @ApiProperty()
-  phone_number: string
+  phone_number: string;
 }

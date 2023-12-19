@@ -16,7 +16,7 @@ export class CreateChangePasswordDto {
   @MinLength(4)
   @MaxLength(20)
   @ApiProperty()
-  re_password: string
+  re_password: string;
 
   @IsString()
   @ApiProperty()

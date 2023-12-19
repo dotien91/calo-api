@@ -24,5 +24,5 @@ export class ListEcoSystemDto {
 
   @IsString()
   @IsOptional(null)
-  white_list: string
+  white_list: string;
 }

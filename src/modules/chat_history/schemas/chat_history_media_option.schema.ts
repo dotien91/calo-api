@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
 
 export type ChatHistoryMediaOptionDocument = ChatHistoryMediaOption & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChatHistoryMediaOption {
@@ -19,23 +19,23 @@ export class ChatHistoryMediaOption {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'ChatMedia'
+    ref: "ChatMedia",
   })
-  chat_media_id: number
+  chat_media_id: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'ChatHistory'
+    ref: "ChatHistory",
   })
-  chat_history_id: number
+  chat_history_id: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'ChatRoom'
+    ref: "ChatRoom",
   })
-  chat_room_id: number
+  chat_room_id: number;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User" })
   createBy: MongooseSchema.Types.ObjectId;
 }
 

@@ -125,7 +125,7 @@ export class User {
   @Prop({
     type: String,
     default: "",
-    index: true
+    index: true,
   })
   email_token: String;
 
@@ -206,7 +206,7 @@ export class User {
     type: Number,
     unsigned: true,
     index: true,
-    default: 0
+    default: 0,
   })
   user_version: number;
 
@@ -284,14 +284,12 @@ export class User {
   })
   notification_course: number;
 
-
   @Prop({
     type: Number,
     unsigned: true,
     default: 1,
   })
   message_stranger: number;
-
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserOption" })
   user_option_id: UserOption;
@@ -303,7 +301,7 @@ export class User {
     type: MongooseSchema.Types.Array,
     default: [],
     ref: "Request",
-    index: true
+    index: true,
   })
   notification_request: Request[];
 
@@ -311,7 +309,7 @@ export class User {
     type: MongooseSchema.Types.Array,
     default: [],
     ref: "Channel",
-    index: true
+    index: true,
   })
   channel_permission: Channel[];
 }
@@ -320,5 +318,5 @@ export const UserSchema = SchemaFactory.createForClass(User).index({
   user_login: "text",
   user_email: "text",
   display_name: "text",
-  _id: "text"
+  _id: "text",
 });

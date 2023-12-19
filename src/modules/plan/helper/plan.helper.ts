@@ -30,7 +30,7 @@ export class PlanHelper {
     private userPermissionService: UserPermissionService,
     private handleServiceService: HandleServiceService,
     private subscribeService: SubscribeService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

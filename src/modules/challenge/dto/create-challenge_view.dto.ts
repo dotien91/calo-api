@@ -4,5 +4,5 @@ import { IsNumberString, IsString } from "class-validator";
 export class CreateChallengeViewDto {
   @IsString()
   @ApiProperty()
-  module_id: string
+  module_id: string;
 }

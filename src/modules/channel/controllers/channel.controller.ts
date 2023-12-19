@@ -26,7 +26,7 @@ import { PlusPointChannelDto } from "../../../modules/challenge/dto/plus-point-c
 @ApiTags("channel")
 @ApiBearerAuth("ICEO")
 export class ChannelController {
-  constructor(private readonly channelHelper: ChannelHelper) { }
+  constructor(private readonly channelHelper: ChannelHelper) {}
 
   @Get("/list")
   async getUserChannel(@Query() query: ListChannelDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -122,7 +122,7 @@ export class ChannelController {
       return await this.channelHelper.handleGetDetailChannelByDomain(channelDomain, res, req);
     } else {
       let channelId = req?.channel_id;
-      if (!channelId || channelId === 'undefined') {
+      if (!channelId || channelId === "undefined") {
         let dataReferal = req.headers.referer;
         let dataChannel = null;
         if (dataReferal) {
@@ -130,7 +130,6 @@ export class ChannelController {
           let originUrl = data?.origin;
           let channelDomain = await this.getDomainFromUrl(originUrl);
           return await this.channelHelper.handleGetDetailChannelByDomain(channelDomain, res, req);
-
         } else {
           throw new NotFoundException("Channel is not found!");
         }
@@ -222,14 +221,24 @@ export class ChannelController {
   }
 
   @Post("check-create-domain/:id")
-  async checkCreateDomain(@Param("id") id: string, @Body() query: CreateChannelDomainDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async checkCreateDomain(
+    @Param("id") id: string,
+    @Body() query: CreateChannelDomainDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     query.channel_id = id;
     query.user_id = req?.user_object?._id.toString();
     return await this.channelHelper.updateDomain(query, res, req);
   }
 
   @Get("check-active-domain/:id")
-  async checkActiveDomain(@Param("id") id: string, @Query() query: CheckChannelDomainDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async checkActiveDomain(
+    @Param("id") id: string,
+    @Query() query: CheckChannelDomainDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     query.channel_id = id;
     query.user_id = req?.user_object?._id.toString();
     return await this.channelHelper.checkDomainActive(query, res, req);

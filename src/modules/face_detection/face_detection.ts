@@ -43,7 +43,7 @@ import { ChannelPermission, ChannelPermissionSchema } from "../channel/schemas/c
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: Channel.name, schema: ChannelSchema },
       { name: Gift.name, schema: GiftSchema },
-      { name: ChannelPermission.name, schema: ChannelPermissionSchema }
+      { name: ChannelPermission.name, schema: ChannelPermissionSchema },
     ]),
   ],
   controllers: [CallKitController],
@@ -65,4 +65,4 @@ import { ChannelPermission, ChannelPermissionSchema } from "../channel/schemas/c
   ],
   exports: [FaceDetectionHelper, FaceDetectionService],
 })
-export class FaceDetectionModule { }
+export class FaceDetectionModule {}

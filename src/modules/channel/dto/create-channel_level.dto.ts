@@ -6,34 +6,34 @@ import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema
 export class CreateChannelLevelDto {
   @IsString()
   @ApiProperty()
-  channel_id?: string
+  channel_id?: string;
 
   @IsString()
   @ApiProperty()
-  title?: string | String
+  title?: string | String;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  media_id?: string | ObjectId
+  media_id?: string | ObjectId;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  course_id?: string | ObjectId
+  course_id?: string | ObjectId;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  parent_id?: string | ObjectId
+  parent_id?: string | ObjectId;
 
   @IsNumberString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  level_point?: string | Number
+  level_point?: string | Number;
 
   @IsNumberString()
   @ApiProperty()
-  level_number?: string | Number
-  total_member?: string | Number
+  level_number?: string | Number;
+  total_member?: string | Number;
 }

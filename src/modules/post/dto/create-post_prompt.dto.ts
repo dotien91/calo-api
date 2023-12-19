@@ -1,23 +1,22 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject, IsJSON } from "class-validator";
 export class CreatePostPromptDto {
+  @IsString()
+  @ApiProperty()
+  text_to_view?: string;
 
   @IsString()
   @ApiProperty()
-  text_to_view?: string
-
-  @IsString()
-  @ApiProperty()
-  text_to_ai?: string
+  text_to_ai?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  text_to_image?: string
+  text_to_image?: string;
 
   @IsJSON()
   @ApiProperty()
-  placeholder?: any
+  placeholder?: any;
 
   @IsString()
   @IsOptional(null)

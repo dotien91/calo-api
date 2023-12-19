@@ -11,15 +11,11 @@ import { ListHandleServiceDto } from "../dto/list-handle_service.dto";
 import { UpdateHandleServiceDto } from "../dto/update-handle_service.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-
 @Controller("plan")
-@ApiTags('plan')
-@ApiBearerAuth('ICEO')
+@ApiTags("plan")
+@ApiBearerAuth("ICEO")
 export class SubscribeController {
-  constructor(
-    private readonly planHelper: PlanHelper,
-    private readonly handleServiceHelper: HandleServiceHelper
-  ) { }
+  constructor(private readonly planHelper: PlanHelper, private readonly handleServiceHelper: HandleServiceHelper) {}
 
   @Post("/create-service")
   async createNewService(
@@ -31,20 +27,12 @@ export class SubscribeController {
   }
 
   @Post("/create-plan")
-  async createNewPlan(
-    @Body() createPlanData: CreatePlanDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async createNewPlan(@Body() createPlanData: CreatePlanDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.planHelper.createPlan(createPlanData, res, req);
   }
 
   @Patch("/update-plan")
-  async updatePlan(
-    @Body() updatePlanData: UpdatePlanDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updatePlan(@Body() updatePlanData: UpdatePlanDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.planHelper.updatePlan(updatePlanData, res, req);
   }
 

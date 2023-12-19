@@ -72,14 +72,15 @@ import { ChatRoom, ChatRoomSchema } from "../chat_room/schemas/chat_room.schema"
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Course.name, schema: CourseSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -150,4 +151,4 @@ import { ChatRoom, ChatRoomSchema } from "../chat_room/schemas/chat_room.schema"
   ],
   exports: [CourseHelper, CourseLikeService, CourseViewService, CourseService],
 })
-export class CourseModule { }
+export class CourseModule {}

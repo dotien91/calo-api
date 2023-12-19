@@ -1,14 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from './user.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "./user.schema";
 
 export type UserAnonymousDocument = UserAnonymous & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class UserAnonymous {
@@ -23,76 +23,76 @@ export class UserAnonymous {
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  user_ip: String
+  user_ip: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  display_name: String
+  display_name: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  device_uuid: String
+  device_uuid: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  user_type: String
+  user_type: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  language: String
+  language: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  device_type: String
+  device_type: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  device_signature: String
+  device_signature: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
-    index: true
+    index: true,
   })
-  apple_signature: String
+  apple_signature: String;
 
   @Prop({
     type: Boolean,
     default: false,
     nullable: true,
-    index: true
+    index: true,
   })
-  is_ab_testing: Boolean
+  is_ab_testing: Boolean;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
-    index: true
+    index: true,
   })
-  apple_notification: String
+  apple_notification: String;
 }
 
 export const UserAnonymousSchema = SchemaFactory.createForClass(UserAnonymous);

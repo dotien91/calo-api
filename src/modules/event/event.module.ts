@@ -80,14 +80,15 @@ import { CourseLikeService } from "../course/services/course_like.service";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Event.name, schema: EventSchema },
       { name: EventType.name, schema: EventTypeSchema },
@@ -120,7 +121,7 @@ import { CourseLikeService } from "../course/services/course_like.service";
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
       { name: ChatRoom.name, schema: ChatRoomSchema },
       { name: Course.name, schema: CourseSchema },
-      { name: CourseLike.name, schema: CourseLikeSchema }
+      { name: CourseLike.name, schema: CourseLikeSchema },
     ]),
   ],
   controllers: [EventController, EventTypeController, EventRatingController],
@@ -164,6 +165,15 @@ import { CourseLikeService } from "../course/services/course_like.service";
     ChatRoomUserOptionService,
     ChatRoomService,
   ],
-  exports: [EventHelper, EventCategoryService, EventIndexService, EventRatingService, EventReportService, EventTypeService, EventService, UserFollowEventService],
+  exports: [
+    EventHelper,
+    EventCategoryService,
+    EventIndexService,
+    EventRatingService,
+    EventReportService,
+    EventTypeService,
+    EventService,
+    UserFollowEventService,
+  ],
 })
-export class EventModule { }
+export class EventModule {}

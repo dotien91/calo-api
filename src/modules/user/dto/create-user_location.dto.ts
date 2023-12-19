@@ -5,7 +5,7 @@ export class CreateUserLocationDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  speed: number
+  speed: number;
 
   @IsLatitude()
   @ApiProperty()
@@ -18,10 +18,10 @@ export class CreateUserLocationDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  low_power_mode?: string
+  low_power_mode?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  battery?: string
+  battery?: string;
 }

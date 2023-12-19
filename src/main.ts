@@ -8,7 +8,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import * as bodyParser from "body-parser";
 import * as basicAuth from "express-basic-auth";
 import * as cookieParser from "cookie-parser";
-export * from './modules/hook/hook_epress'
+export * from "./modules/hook/hook_epress";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });

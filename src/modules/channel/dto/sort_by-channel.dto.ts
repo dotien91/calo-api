@@ -1,3 +1,3 @@
 export class SortByChannelDto {
-  createdAt?: string
+  createdAt?: string;
 }

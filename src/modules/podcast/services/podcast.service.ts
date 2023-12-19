@@ -13,7 +13,7 @@ export class PodcastService {
   constructor(
     @InjectModel(Podcast.name)
     private podcastModel: Model<PodcastDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

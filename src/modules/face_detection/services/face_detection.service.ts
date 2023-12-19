@@ -62,9 +62,11 @@ export class FaceDetectionService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.FaceDetectionModel
-      .find(condition)
-      .populate("user_id", "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active")
+    let dataReturn = await this.FaceDetectionModel.find(condition)
+      .populate(
+        "user_id",
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -147,9 +149,11 @@ export class FaceDetectionService {
     if (!objectId) {
       return null;
     }
-    return await this.FaceDetectionModel
-      .findById(objectId)
-      .populate("user_id", "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active")
+    return await this.FaceDetectionModel.findById(objectId)
+      .populate(
+        "user_id",
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
       .exec();
   }
 
@@ -172,7 +176,11 @@ export class FaceDetectionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.FaceDetectionModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
+      let dataReturn = await this.FaceDetectionModel.findByIdAndUpdate(
+        dataUpdate._id,
+        { $set: dataUpdate },
+        { new: true }
+      );
       return dataReturn;
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };

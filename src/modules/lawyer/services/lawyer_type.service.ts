@@ -24,14 +24,12 @@ export class LawyerTypeService {
     return await createdUser.save();
   }
 
-
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   async getCondition(filter: SearchLawyerTypeDto) {
+  async getCondition(filter: SearchLawyerTypeDto) {
     let condition: any = {};
     return condition;
   }
@@ -72,13 +70,12 @@ export class LawyerTypeService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   public count = async (filter: SearchLawyerTypeDto) => {
+  public count = async (filter: SearchLawyerTypeDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {

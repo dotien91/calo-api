@@ -1,45 +1,45 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsNumber } from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsNumber } from "class-validator";
 export class CreateNotificationDto {
   @IsString()
-  title: string
+  title: string;
 
   @IsString()
-  user_id: string | string[]
+  user_id: string | string[];
 
   @IsString()
   @IsOptional(null)
-  createdBy: string
+  createdBy: string;
 
   @IsString()
-  content: string
+  content: string;
 
   @IsIn(["user", "channel"])
-  channel: string
+  channel: string;
 
-  @IsIn(['link'])
-  type_action: string
-
-  @IsString()
-  @IsOptional(null)
-  param?: string
+  @IsIn(["link"])
+  type_action: string;
 
   @IsString()
   @IsOptional(null)
-  request_id?: string
+  param?: string;
 
   @IsString()
   @IsOptional(null)
-  click_action?: string
+  request_id?: string;
 
   @IsString()
-  image: string
+  @IsOptional(null)
+  click_action?: string;
+
+  @IsString()
+  image: string;
 
   @IsDateString()
   @IsOptional(null)
-  send_start?: string
+  send_start?: string;
 
   @IsIn(["0", "1", "2"])
-  manual_mode?: number
+  manual_mode?: number;
 
-  channel_id?: string
+  channel_id?: string;
 }

@@ -151,7 +151,6 @@ export class SearchBaseUserDto {
   @ApiPropertyOptional()
   is_match?: string;
 
-
   @IsOptional(null)
   @ApiPropertyOptional()
   is_map?: string;
@@ -199,10 +198,10 @@ export class SearchBaseUserDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ready_status?: number
+  ready_status?: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  country?: string
+  country?: string;
 }

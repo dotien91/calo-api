@@ -21,4 +21,4 @@ import { UserSessionService } from "../user/services/user_session.service";
   controllers: [UserPermissionController],
   providers: [UserService, UserPermissionHelper, UserPermissionService, JwtHelperService, UserSessionService],
 })
-export class UserPermissionModule { }
+export class UserPermissionModule {}

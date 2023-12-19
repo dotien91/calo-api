@@ -1,3 +1,3 @@
 export class SortByMyEventRatingDto {
-  createdAt?: string
+  createdAt?: string;
 }

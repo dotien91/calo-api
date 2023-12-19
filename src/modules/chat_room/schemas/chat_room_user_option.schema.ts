@@ -121,7 +121,6 @@ export class ChatRoomUserOption {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", nullable: true, index: true })
   ref_user: MongooseSchema.Types.ObjectId;
-
 }
 
 export const ChatRoomUserOptionSchema = SchemaFactory.createForClass(ChatRoomUserOption);

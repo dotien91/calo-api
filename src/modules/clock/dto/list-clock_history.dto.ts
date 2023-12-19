@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from "class-validator";
 import { Type } from "class-transformer";
 
 export class ListClockHistoryDto {
@@ -20,9 +30,9 @@ export class ListClockHistoryDto {
 
   @IsDateString()
   @IsOptional(null)
-  from?: string
+  from?: string;
 
   @IsDateString()
   @IsOptional(null)
-  to?: string
+  to?: string;
 }

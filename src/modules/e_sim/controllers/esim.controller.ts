@@ -10,11 +10,11 @@ import { resolve } from "path";
 
 @Controller("esim")
 export class EsimController {
-  constructor(private readonly esimHelper: EsimHelper) { }
+  constructor(private readonly esimHelper: EsimHelper) {}
 
-  @Get('/view')
+  @Get("/view")
   async getView(@Res() res: Response, @Req() req: ExpressRequestDto) {
-    res.sendFile(resolve('./../../../modules/e_sim/views/index.html'));
+    res.sendFile(resolve("./../../../modules/e_sim/views/index.html"));
   }
 
   /**

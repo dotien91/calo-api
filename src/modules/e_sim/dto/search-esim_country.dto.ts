@@ -1,3 +1,3 @@
 export class SearchEsimCountryDto {
-  search?: string
+  search?: string;
 }

@@ -20,7 +20,7 @@ export class LawyerTypeHelper {
     private readonly lawyerService: LawyerService,
     private readonly lawyerCategoryService: LawyerCategoryService,
     private readonly lawyerTypeService: LawyerTypeService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -318,4 +318,3 @@ export class LawyerTypeHelper {
     }
   }
 }
-

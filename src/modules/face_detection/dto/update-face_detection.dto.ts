@@ -1,3 +1,3 @@
 export class UpdateFaceDetectionDto {
-  _id?: string
+  _id?: string;
 }

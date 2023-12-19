@@ -27,7 +27,7 @@ export class Callkit {
   @Prop({
     type: String,
     nullable: false,
-    index: true
+    index: true,
   })
   room_name: String;
 
@@ -63,14 +63,14 @@ export class Callkit {
   @Prop({
     type: String,
     nullable: true,
-    default: '',
+    default: "",
   })
   token: String;
 
   @Prop({
     type: String,
     nullable: true,
-    default: '',
+    default: "",
   })
   partner_token: String;
 
@@ -89,23 +89,23 @@ export class Callkit {
   @Prop({
     type: String,
     nullable: true,
-    default: '',
+    default: "",
   })
-  offer: String
+  offer: String;
 
   @Prop({
     type: String,
     nullable: true,
-    default: '',
+    default: "",
   })
-  answer: String
+  answer: String;
 
   @Prop({
     type: String,
     nullable: true,
     default: 1,
   })
-  version: Number
+  version: Number;
 }
 
 export const CallkitSchema = SchemaFactory.createForClass(Callkit);

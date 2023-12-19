@@ -1,3 +1,3 @@
 export class SortByEventDto {
-  createdAt?: string
+  createdAt?: string;
 }

@@ -56,7 +56,7 @@ export class LivestreamHelper {
     private eventService: EventService,
     private channelService: ChannelService,
     private requestService: RequestService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -76,12 +76,15 @@ export class LivestreamHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -95,7 +98,10 @@ export class LivestreamHelper {
 
       console.log(createLivestreamData, "createLivestreamData");
       let userOptionData = await this.userOptionService.findById(userObject?._id.toString(), {});
-      createLivestreamData = { ...createLivestreamData, ...{ user_id: userId, country: userOptionData?.country, channel_id: channelId } };
+      createLivestreamData = {
+        ...createLivestreamData,
+        ...{ user_id: userId, country: userOptionData?.country, channel_id: channelId },
+      };
 
       if (createLivestreamData?.livestream_data) {
         try {
@@ -144,8 +150,6 @@ export class LivestreamHelper {
         // let eventObject = await this.eventService.findOne({ livestream_id: dataCreate?._id?.toString() });
         let channelObject = await this.channelService.findOne({ _id: channelId });
         await this.handleSendNotificationToAllCreate(userObject, dataCreate, authString, channelObject, req);
-
-
       }, 500);
 
       return res
@@ -170,7 +174,7 @@ export class LivestreamHelper {
     str = str.replace(/([^0-9a-z-\s])/g, "");
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
-    str = str.replace(/-+$/g, "") + (new Date()).getTime();
+    str = str.replace(/-+$/g, "") + new Date().getTime();
     return str;
   }
 
@@ -194,12 +198,15 @@ export class LivestreamHelper {
       //Get Media Data
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -214,7 +221,7 @@ export class LivestreamHelper {
       if (dataUpdate?.livestream_data) {
         try {
           dataUpdate = { ...dataUpdate, ...{ livestream_data: JSON.parse(dataUpdate?.livestream_data) } };
-        } catch (error) { }
+        } catch (error) {}
       }
 
       let dataCreate: any = await this.livestreamService.update(dataUpdate);
@@ -234,7 +241,7 @@ export class LivestreamHelper {
             //Remove
             await this.requestService.removeOne({ ref_id: dataCreate?._id?.toString() });
             //Update dataPost
-            let dataTitle = userObject?.display_name + ' đang livestream!';
+            let dataTitle = userObject?.display_name + " đang livestream!";
             let dataSlug = this.toSlug(dataTitle);
 
             let dataCreatePost = {
@@ -250,12 +257,11 @@ export class LivestreamHelper {
               country: "VN",
               data_json_type: "livestream",
               data_json: JSON.stringify(dataCreate),
-              post_avatar: dataCreate?.avatar?.toString()
-            }
-            await this.requestService.create(dataCreatePost)
+              post_avatar: dataCreate?.avatar?.toString(),
+            };
+            await this.requestService.create(dataCreatePost);
             let channelObject = await this.channelService.findOne({ _id: channelId });
             await this.handleSendNotificationToAllNow(userObject, dataCreate, authString, channelObject, req);
-
           }, 500);
         }
         // await this.handleUpdateCloudflareData(dataCreate, 'automatic');
@@ -301,9 +307,9 @@ export class LivestreamHelper {
 
       let eventObject = await this.eventService.findOne({ livestream_id: dataCreate?._id?.toString() });
       if (eventObject) {
-        dataCreate = { ...dataCreate, ...{ event_data: eventObject } }
+        dataCreate = { ...dataCreate, ...{ event_data: eventObject } };
       } else {
-        dataCreate = { ...dataCreate, ...{ event_data: null } }
+        dataCreate = { ...dataCreate, ...{ event_data: null } };
       }
 
       return res
@@ -672,9 +678,9 @@ export class LivestreamHelper {
           dataReturn = dataReturn?.toObject();
           let eventObject: any = await this.eventService.findOne({ livestream_id: dataReturn?._id?.toString() });
           if (eventObject) {
-            dataReturn = { ...dataReturn, ...{ event_data: eventObject?.toObject() } }
+            dataReturn = { ...dataReturn, ...{ event_data: eventObject?.toObject() } };
           } else {
-            dataReturn = { ...dataReturn, ...{ event_data: null } }
+            dataReturn = { ...dataReturn, ...{ event_data: null } };
           }
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -683,7 +689,6 @@ export class LivestreamHelper {
         } else {
           throw new NotFoundException("Livestream is not found!");
         }
-
       } else {
         throw new NotFoundException("Livestream is not found!");
       }
@@ -739,12 +744,15 @@ export class LivestreamHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -997,7 +1005,6 @@ export class LivestreamHelper {
             break;
           }
         }
-
       }
 
       //Update Email
@@ -1017,7 +1024,7 @@ export class LivestreamHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/r/live-room/" + dataLivestream?._id,
           event_name: "livestream-now",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -1102,7 +1109,6 @@ export class LivestreamHelper {
             break;
           }
         }
-
       }
 
       //Update Email
@@ -1121,7 +1127,7 @@ export class LivestreamHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/r/live-room/" + dataLivestream?._id,
           event_name: "livestream-create",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -1384,7 +1390,7 @@ export class LivestreamHelper {
 
     //Update Save Video in version 1.0.0
     //When in version 1.0.1 we not have this condition!
-    if (message?.input_type === 'outside') {
+    if (message?.input_type === "outside") {
       //Check livestream
       let urlCloudFlare = `https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/${message?.cloudflare_stream_id}/videos`;
 

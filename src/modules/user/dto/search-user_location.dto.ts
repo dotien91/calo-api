@@ -1,21 +1,30 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {IsString, IsOptional, IsNumberString, IsNumber, IsIn, IsLatitude, IsLongitude, IsDateString} from "class-validator";
+import {
+  IsString,
+  IsOptional,
+  IsNumberString,
+  IsNumber,
+  IsIn,
+  IsLatitude,
+  IsLongitude,
+  IsDateString,
+} from "class-validator";
 
 export class SearchUserLocationDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  page?: number
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit?: number
+  limit?: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 
   @IsOptional(null)
   @ApiProperty()
@@ -44,11 +53,10 @@ export class SearchUserLocationDto {
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  date?: string
+  date?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id?: string
-
+  user_id?: string;
 }

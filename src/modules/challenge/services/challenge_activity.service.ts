@@ -11,7 +11,7 @@ export class ChallengeActivityService {
   constructor(
     @InjectModel(ChallengeActivity.name)
     private challengeActivityModel: Model<ChallengeActivityDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -19,8 +19,7 @@ export class ChallengeActivityService {
    * @returns
    */
   async create(createUser: CreateChallengeActivityDto) {
-    let dataReturn = await this.challengeActivityModel
-      .create(createUser);
+    let dataReturn = await this.challengeActivityModel.create(createUser);
     return dataReturn;
   }
 

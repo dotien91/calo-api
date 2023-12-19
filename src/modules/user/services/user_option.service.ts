@@ -17,7 +17,7 @@ export class UserOptionService {
   constructor(
     @InjectModel(UserOption.name)
     private userOptionModel: Model<UserOptionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

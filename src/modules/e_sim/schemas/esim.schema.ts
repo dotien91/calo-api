@@ -20,20 +20,20 @@ export class Esim {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   name: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   color: String;
 
@@ -47,7 +47,7 @@ export class Esim {
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   description: String;
 
@@ -86,35 +86,35 @@ export class Esim {
   @Prop({
     type: MongooseSchema.Types.Array,
     nullable: false,
-    index: true
+    index: true,
   })
   network: String[];
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   plan_type: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   activation_policy: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   eKYC: string;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   top_up_option: String;
 
@@ -129,7 +129,7 @@ export class Esim {
   @Prop({
     type: MongooseSchema.Types.Array,
     nullable: false,
-    index: true
+    index: true,
   })
   available_top_up: MongooseSchema.Types.ObjectId[];
 
@@ -137,7 +137,7 @@ export class Esim {
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   language: String;
 
@@ -147,7 +147,7 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  buy_number: Number
+  buy_number: Number;
 }
 
 export const EsimSchema = SchemaFactory.createForClass(Esim).index({

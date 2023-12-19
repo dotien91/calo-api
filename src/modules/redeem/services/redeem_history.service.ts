@@ -14,7 +14,7 @@ export class RedeemHistoryService {
   constructor(
     @InjectModel(RedeemHistory.name)
     private redeemModel: Model<RedeemHistoryDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

@@ -66,14 +66,15 @@ import { ChatRoomService } from "../chat_room/services/chat_room.service";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Challenge.name, schema: ChallengeSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -138,10 +139,14 @@ import { ChatRoomService } from "../chat_room/services/chat_room.service";
     ChatRoomUserOptionService,
     ChatRoomService,
   ],
-  exports: [ChallengeHelper, ChallengeActivityService,
-    ChallengeGameService, ChallengePermissionService,
-    ChallengeViewService, ChallengeService, MongooseModule.forFeature([
-      { name: ChannelPermission.name, schema: ChannelPermissionSchema },
-    ])],
+  exports: [
+    ChallengeHelper,
+    ChallengeActivityService,
+    ChallengeGameService,
+    ChallengePermissionService,
+    ChallengeViewService,
+    ChallengeService,
+    MongooseModule.forFeature([{ name: ChannelPermission.name, schema: ChannelPermissionSchema }]),
+  ],
 })
-export class ChallengeModule { }
+export class ChallengeModule {}

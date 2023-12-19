@@ -141,12 +141,12 @@ export class Gift {
       comment: 0,
       course: 0,
       birth: 0,
-      coin: 0
+      coin: 0,
     },
   })
   gift_conditions: GiftConditions;
 }
 
 export const GiftSchema = SchemaFactory.createForClass(Gift).index({
-  name: "text"
+  name: "text",
 });

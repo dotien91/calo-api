@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,15 +31,15 @@ export class ListTicketCategoryDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  version: string
+  version: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_status: string
+  public_status: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id: string
+  channel_id: string;
 }

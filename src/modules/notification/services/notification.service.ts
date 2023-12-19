@@ -13,7 +13,7 @@ export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private NotificationModel: Model<NotificationDocument>
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("cron_job");
 
@@ -90,12 +90,12 @@ export class NotificationService {
     }
     let populateObject = {
       path: "request_id",
-      populate:
-      {
+      populate: {
         path: "user_id",
-        select: "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      }
-    }
+        select:
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+      },
+    };
     let dataReturn = await this.NotificationModel.find(condition, { user_id: false })
       .populate(
         "createdBy",
@@ -161,7 +161,6 @@ export class NotificationService {
    */
   async updateOne(dataUpdate: CreateNotificationDto) {
     try {
-
       let dataReturn = await this.NotificationModel.findOneAndUpdate(
         { _id: null },
         { $set: dataUpdate },

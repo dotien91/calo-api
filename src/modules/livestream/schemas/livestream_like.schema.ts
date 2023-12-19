@@ -1,15 +1,15 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Livestream } from './livestream.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Livestream } from "./livestream.schema";
 
 export type LivestreamLikeDocument = LivestreamLike & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class LivestreamLike {
@@ -19,10 +19,10 @@ export class LivestreamLike {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Livestream', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Livestream", index: true })
   livestream_id: Livestream;
 
   @Prop({
@@ -30,7 +30,7 @@ export class LivestreamLike {
     default: "",
     nullable: false,
   })
-  react_type: String
+  react_type: String;
 }
 
 export const LivestreamLikeSchema = SchemaFactory.createForClass(LivestreamLike);

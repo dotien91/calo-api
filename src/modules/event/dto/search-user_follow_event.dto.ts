@@ -1,15 +1,15 @@
-import {IsString, IsOptional, IsNumberString, IsNumber, IsIn} from "class-validator";
+import { IsString, IsOptional, IsNumberString, IsNumber, IsIn } from "class-validator";
 
 export class SearchUserFollowEventDto {
   @IsNumberString()
   @IsOptional(null)
-  page?: number
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
-  limit?: number
+  limit?: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 }

@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req, BadRequestException } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  Query,
+  Req,
+  BadRequestException,
+} from "@nestjs/common";
 import { LivestreamHelper } from "../helper/livestream.helper";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -12,17 +24,13 @@ import { ListChatHistoryDto } from "../../../modules/chat_history/dto/list-chat_
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller("livestream")
-@ApiTags('livestream')
-@ApiBearerAuth('ICEO')
+@ApiTags("livestream")
+@ApiBearerAuth("ICEO")
 export class LivestreamController {
-  constructor(private readonly livestreamHelper: LivestreamHelper) { }
+  constructor(private readonly livestreamHelper: LivestreamHelper) {}
 
   @Get("/list")
-  async getUserLivestream(
-    @Query() query: ListLivestreamDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserLivestream(@Query() query: ListLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.getLivestreamList(query, res, req);
   }
 
@@ -40,11 +48,7 @@ export class LivestreamController {
   }
 
   @Get("/admin-list")
-  async getAdminLivestream(
-    @Query() query: ListLivestreamDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminLivestream(@Query() query: ListLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.getLivestreamListByAdmin(query, res, req);
   }
 
@@ -58,48 +62,27 @@ export class LivestreamController {
   }
 
   @Patch("/update")
-  async updateLivestream(
-    @Body() dataUpdate: UpdateLivestreamDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateLivestream(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.updateLivestream(dataUpdate, res, req);
   }
 
-
   @Post("view")
-  handleViewUser(
-    @Body() dataView: CreateLivestreamViewDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleViewUser(@Body() dataView: CreateLivestreamViewDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.livestreamHelper.processViewUser(dataView, req, res);
   }
 
   @Post("like")
-  handleFollowUser(
-    @Body() dataFollow: CreateLivestreamLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateLivestreamLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.livestreamHelper.processFollowUser(dataFollow, req, res);
   }
 
   @Post("un-like")
-  handleUnFollowUser(
-    @Body() dataFollow: CreateLivestreamLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleUnFollowUser(@Body() dataFollow: CreateLivestreamLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.livestreamHelper.processUnFollowUser(dataFollow, req, res);
   }
 
   @Patch("/update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateLivestreamDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.handleUpdateLivestreamByAdmin(dataUpdate, res, req);
   }
 

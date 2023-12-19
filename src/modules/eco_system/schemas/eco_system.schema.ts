@@ -3,7 +3,6 @@ import { Document, Schema as MongooseSchema } from "mongoose";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 
-
 @Schema()
 export class OptionContent extends Document {
   @Prop({
@@ -73,7 +72,7 @@ export class EcoSystem {
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
-    index: true
+    index: true,
   })
   white_list: String[];
 
@@ -106,7 +105,6 @@ export class EcoSystem {
     default: 0,
   })
   view_count: Number;
-
 }
 
 export const EcoSystemSchema = SchemaFactory.createForClass(EcoSystem);

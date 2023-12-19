@@ -45,7 +45,7 @@ export class ChatRoomHelper {
     private topicService: TopicService,
     private userFollowService: UserFollowService,
     private channelPermissionService: ChannelPermissionService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("user_login");
 

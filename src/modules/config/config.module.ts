@@ -29,7 +29,7 @@ import { ChatMediaService } from "../chat_media/services/chat_media.service";
       { name: HandleService.name, schema: HandleServiceSchema },
       { name: User.name, schema: UserSchema },
       { name: Channel.name, schema: ChannelSchema },
-      { name: ChatMedia.name, schema: ChatMediaSchema }
+      { name: ChatMedia.name, schema: ChatMediaSchema },
     ]),
   ],
   controllers: [ConfigController],
@@ -46,4 +46,4 @@ import { ChatMediaService } from "../chat_media/services/chat_media.service";
   ],
   exports: [ConfigHelper],
 })
-export class ConfigModule { }
+export class ConfigModule {}

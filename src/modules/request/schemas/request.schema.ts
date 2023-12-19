@@ -31,7 +31,7 @@ export class Request {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    index: true
+    index: true,
   })
   ref_id: MongooseSchema.Types.ObjectId;
 

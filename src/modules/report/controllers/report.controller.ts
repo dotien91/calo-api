@@ -8,7 +8,7 @@ import { UpdateReportDto } from "../dto/update-report.dto";
 
 @Controller("report")
 export class ReportController {
-  constructor(private readonly reportHelper: ReportHelper) { }
+  constructor(private readonly reportHelper: ReportHelper) {}
 
   @Post("/create-report")
   async createNewReport(
@@ -29,20 +29,12 @@ export class ReportController {
   }
 
   @Post("/contact-us")
-  async contactUs(
-    @Body() createReportData: CreateReportDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async contactUs(@Body() createReportData: CreateReportDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.reportHelper.createContactUs(createReportData, res, req);
   }
 
   @Patch("/update-report")
-  async updateReport(
-    @Body() updateReportData: UpdateReportDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateReport(@Body() updateReportData: UpdateReportDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.reportHelper.updateReport(updateReportData, res, req);
   }
 

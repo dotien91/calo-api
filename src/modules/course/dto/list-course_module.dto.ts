@@ -28,7 +28,6 @@ export class ListCourseModuleDto {
   @ApiPropertyOptional()
   course_id: string;
 
-
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
@@ -37,10 +36,10 @@ export class ListCourseModuleDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_child: string
+  is_child: string;
 }

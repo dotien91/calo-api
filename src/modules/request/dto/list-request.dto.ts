@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,12 +31,12 @@ export class ListRequestDto {
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  order_type: any
+  order_type: any;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  channel_id: any
+  channel_id: any;
 
   @IsString()
   @IsOptional(null)
@@ -76,7 +86,7 @@ export class ListRequestDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  data_json_type: string
+  data_json_type: string;
 
   @IsString()
   @IsOptional(null)

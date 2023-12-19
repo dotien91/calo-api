@@ -64,18 +64,19 @@ import { CourseLikeService } from "../course/services/course_like.service";
 
 @Module({
   imports: [
-    forwardRef(() => TransactionModule), forwardRef(() => GiftModule)
-    ,
+    forwardRef(() => TransactionModule),
+    forwardRef(() => GiftModule),
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Channel.name, schema: ChannelSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -103,7 +104,7 @@ import { CourseLikeService } from "../course/services/course_like.service";
       { name: ChatHistory.name, schema: ChatHistorySchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
       { name: ChatRoom.name, schema: ChatRoomSchema },
-      { name: CourseLike.name, schema: CourseLikeSchema }
+      { name: CourseLike.name, schema: CourseLikeSchema },
     ]),
   ],
   controllers: [ChannelController],
@@ -140,6 +141,13 @@ import { CourseLikeService } from "../course/services/course_like.service";
     ChatRoomUserOptionService,
     ChatRoomService,
   ],
-  exports: [ChannelHelper, ChannelLevelService, ChannelService, ChannelLikeService, ChannelPermissionService, ChannelBannerService],
+  exports: [
+    ChannelHelper,
+    ChannelLevelService,
+    ChannelService,
+    ChannelLikeService,
+    ChannelPermissionService,
+    ChannelBannerService,
+  ],
 })
-export class ChannelModule { }
+export class ChannelModule {}

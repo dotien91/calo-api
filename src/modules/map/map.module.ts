@@ -7,16 +7,9 @@ import { MapToken, MapTokenSchema } from "./schemas/map_token.schema";
 import { MapTokenService } from "./services/map_token.service";
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: MapToken.name, schema: MapTokenSchema}
-    ]),
-  ],
+  imports: [MongooseModule.forFeature([{ name: MapToken.name, schema: MapTokenSchema }])],
   controllers: [MapController],
-  providers: [
-    MapHelper,
-    MapTokenService
-  ],
-  exports: [MapHelper]
+  providers: [MapHelper, MapTokenService],
+  exports: [MapHelper],
 })
 export class MapModule {}

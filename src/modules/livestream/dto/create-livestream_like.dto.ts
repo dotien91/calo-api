@@ -2,11 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class CreateLivestreamLikeDto {
-	@IsString()
+  @IsString()
   @ApiProperty()
-	livestream_id: string
+  livestream_id: string;
 
   @IsString()
   @ApiProperty()
-	react_type: string
+  react_type: string;
 }

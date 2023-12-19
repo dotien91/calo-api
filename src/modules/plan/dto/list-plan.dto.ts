@@ -1,6 +1,6 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ListPlanDto {
   @IsNumberString()
@@ -11,30 +11,30 @@ export class ListPlanDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit: number
+  limit: number;
 
-  @IsIn(['DESC', 'ASC'])
+  @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by: 'DESC' | 'ASC'
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  country: string
+  order_by: "DESC" | "ASC";
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  service_id: string
+  country: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  service_name: string
+  service_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  version: string
+  service_name: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  version: string;
 }

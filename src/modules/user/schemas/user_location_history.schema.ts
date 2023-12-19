@@ -1,14 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from './user.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "./user.schema";
 
 export type UserLocationHistoryDocument = UserLocationHistory & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class UserLocationHistory {
@@ -18,7 +18,7 @@ export class UserLocationHistory {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
@@ -26,21 +26,21 @@ export class UserLocationHistory {
     default: 0,
     nullable: true,
   })
-  speed: Number
+  speed: Number;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  battery: String
+  battery: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  low_power_mode: String
+  low_power_mode: String;
 
   @Prop({
     type: Number,

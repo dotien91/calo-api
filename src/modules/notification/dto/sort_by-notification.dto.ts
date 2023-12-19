@@ -1,3 +1,3 @@
 export class SortByNotificationDto {
-  createdAt?: string
+  createdAt?: string;
 }

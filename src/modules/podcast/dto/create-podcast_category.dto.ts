@@ -17,7 +17,7 @@ export class CreatePodcastCategoryDto {
 
   @IsString()
   @ApiPropertyOptional()
-  category_title?: string
+  category_title?: string;
 
   @IsString()
   @IsOptional(null)
@@ -27,25 +27,25 @@ export class CreatePodcastCategoryDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_parent?: string
+  category_parent?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_status?: string
+  category_status?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_avatar?: string
+  category_avatar?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_type?: string
+  category_type?: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_status?: string
+  public_status?: string;
 }

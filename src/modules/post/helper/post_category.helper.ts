@@ -23,7 +23,7 @@ import { PostCategoryService } from "../services/post_category.service";
  */
 @Injectable()
 export class PostCategoryHelper {
-  constructor(private postCategoryService: PostCategoryService, private userPermissionService: UserPermissionService) { }
+  constructor(private postCategoryService: PostCategoryService, private userPermissionService: UserPermissionService) {}
 
   /**
    * @author Tony Vu
@@ -133,7 +133,7 @@ export class PostCategoryHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
       if (query?.ids) {
-        dataToFilter = { ...dataToFilter, ...{ ids: [query?.ids] } }
+        dataToFilter = { ...dataToFilter, ...{ ids: [query?.ids] } };
       }
       let dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
       let dataCount = await this.postCategoryService.count(dataToFilter);
@@ -168,9 +168,9 @@ export class PostCategoryHelper {
 
       let dataToFilter = {};
       if (objectId) {
-        dataToFilter = { ...dataToFilter, ...{ _id: objectId } }
+        dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
       } else {
-        dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } }
+        dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
       let dataReturn = await this.postCategoryService.findOne(dataToFilter);
       return res

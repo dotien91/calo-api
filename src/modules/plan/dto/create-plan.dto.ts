@@ -1,69 +1,69 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn } from "class-validator";
 export class CreatePlanDto {
   @IsString()
   @ApiProperty()
-  service_id: string
+  service_id: string;
 
   @IsString()
   @ApiProperty()
-  name : string
+  name: string;
 
   @IsNumberString()
   @ApiProperty()
-  price : number
+  price: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  amount_of_day : number
+  amount_of_day: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  trial_day?: number
+  trial_day?: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  amount_of_coin: number
+  amount_of_coin: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  description : string
+  description: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id?: string
+  channel_id?: string;
 
   @IsIn(["recurring", "one_time", "coin"])
   @ApiProperty()
-  type : string
+  type: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  image : string
+  image: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  country : string
+  country: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  version : string
+  version: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ref_id: string
+  ref_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  google_store_product_id: string
+  google_store_product_id: string;
 }

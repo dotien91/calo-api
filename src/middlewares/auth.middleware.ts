@@ -1,19 +1,17 @@
-import { Injectable, NestMiddleware, UnauthorizedException, HttpStatus, Module } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
-import { JwtHelperService } from '../modules/core/services/jwt_helper.service';
+import { Injectable, NestMiddleware, UnauthorizedException, HttpStatus, Module } from "@nestjs/common";
+import { NextFunction, Request, Response } from "express";
+import { JwtHelperService } from "../modules/core/services/jwt_helper.service";
 
 /**
  * @class AuthMiddleware
  * @author Tony Vu
  */
 @Module({
-  providers: [JwtHelperService]
+  providers: [JwtHelperService],
 })
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(
-    private readonly jwtHelper: JwtHelperService
-  ) { }
+  constructor(private readonly jwtHelper: JwtHelperService) {}
 
   async use(req: any, res: Response, next: NextFunction) {
     let authObject = await this.jwtHelper.validateAuth(req, true);

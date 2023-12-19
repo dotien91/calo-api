@@ -58,7 +58,7 @@ import { QueueService } from "../../../modules/queue/queue.service";
 import { RequestCategoryService } from "../../../modules/request/services/request_category.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 var admin = require("firebase-admin");
-import HookExpress from '../../hook/hook_epress';
+import HookExpress from "../../hook/hook_epress";
 import { CourseLikeService } from "../../../modules/course/services/course_like.service";
 import { CourseLike } from "../../../modules/course/schemas/course_like.schema";
 const { getFirestore } = require("firebase-admin/firestore");
@@ -99,9 +99,9 @@ export class ChannelHelper {
   private readonly logger = new Logger("channel");
 
   initHook() {
-    HookExpress.add_action('request.add-level', async (data: any) => {
+    HookExpress.add_action("request.add-level", async (data: any) => {
       await this.processLevelWhenCreateChannel(data);
-    })
+    });
   }
 
   /**
@@ -111,11 +111,24 @@ export class ChannelHelper {
   async processLevelWhenCreateChannel(channelId: any) {
     try {
       //getChannelOfGamifa
-      let levelGamifa: any = await this.channelLevelService.filter({ channel_id: process.env.DEFAULT_CHANNEL }, {}, 1, 1000);
+      let levelGamifa: any = await this.channelLevelService.filter(
+        { channel_id: process.env.DEFAULT_CHANNEL },
+        {},
+        1,
+        1000
+      );
       for (let levelData of levelGamifa) {
         if (Number(levelData?.level_number) > 1) {
           //Process Level
-          let levelToAdd = { ...levelData?.toObject(), ...{ channel_id: channelId, course_id: levelData?.course_id?.toString(), parent_id: levelData?.parent_id?.toString(), media_id: levelData?.media_id?.toString() } }
+          let levelToAdd = {
+            ...levelData?.toObject(),
+            ...{
+              channel_id: channelId,
+              course_id: levelData?.course_id?.toString(),
+              parent_id: levelData?.parent_id?.toString(),
+              media_id: levelData?.media_id?.toString(),
+            },
+          };
           delete levelToAdd?._id;
           delete levelToAdd?.__v;
           await this.channelLevelService.create(levelToAdd);
@@ -125,7 +138,6 @@ export class ChannelHelper {
       console.log(error);
     }
   }
-
 
   /**
    * @author SonLH
@@ -182,7 +194,7 @@ export class ChannelHelper {
           content: ip,
           name: new URL(createChannelDomainDto.domain).hostname.split(".")[0],
           type: "A",
-          proxied: true
+          proxied: true,
         };
         const params = { ...dataToCreateDNSRecord };
         const config = {
@@ -195,10 +207,10 @@ export class ChannelHelper {
         result = await axios
           .patch(
             urlCloudflare +
-            "/zones/" +
-            idZoneCloudflare.toString() +
-            "/dns_records/" +
-            isDNSRecordExist.domain_id.toString(),
+              "/zones/" +
+              idZoneCloudflare.toString() +
+              "/dns_records/" +
+              isDNSRecordExist.domain_id.toString(),
             params,
             config
           )
@@ -231,7 +243,11 @@ export class ChannelHelper {
       if (!isChannelExist) {
         throw new ForbiddenException("Cannot Found Channel!");
       }
-      if (!isChannelExist?.domain || isChannelExist?.domain === "" || isChannelExist?.domain !== createChannelDomainDto?.domain) {
+      if (
+        !isChannelExist?.domain ||
+        isChannelExist?.domain === "" ||
+        isChannelExist?.domain !== createChannelDomainDto?.domain
+      ) {
         const urlCloudflare = process.env.CLOUDFLARE_API;
         const idAccountCloudflare = process.env.CLOUDFLARE_ACOUNT_ID;
         const token = process.env.CLOUDFLARE_CREATE_ZONE;
@@ -257,7 +273,7 @@ export class ChannelHelper {
               this.logger.log("Send Call Api Create Domain Successfully" + JSON.stringify(response.data));
               let channelUpdate = {
                 _id: isChannelExist?._id.toString(),
-                domain_id: response?.data?.result?.id.toString().split('//')[1],
+                domain_id: response?.data?.result?.id.toString().split("//")[1],
                 name_servers: response?.data?.result?.name_servers,
                 domain: response?.data?.result?.name.toString(),
               };
@@ -292,15 +308,21 @@ export class ChannelHelper {
       // if(!userObject){
       //   throw new ForbiddenException("User is invalid");
       // }
-      let checkDomain = new URL(createChannelDomainDto.domain)
-      if (checkDomain?.protocol !== 'https:' || checkDomain?.password !== "" || checkDomain?.username !== "") {
-        if (String(checkDomain.hostname).split('.').length < 2) throw new BadRequestException('hostname_invalid');
+      let checkDomain = new URL(createChannelDomainDto.domain);
+      if (checkDomain?.protocol !== "https:" || checkDomain?.password !== "" || checkDomain?.username !== "") {
+        if (String(checkDomain.hostname).split(".").length < 2) throw new BadRequestException("hostname_invalid");
         throw new BadRequestException("domain_invalid");
       }
       createChannelDomainDto.domain = checkDomain?.hostname.toString();
-      let channelPermission = await this.channelPermissionService.findOne({ user_id: req?.user_object?._id, channel_id: createChannelDomainDto.channel_id });
+      let channelPermission = await this.channelPermissionService.findOne({
+        user_id: req?.user_object?._id,
+        channel_id: createChannelDomainDto.channel_id,
+      });
       if (channelPermission?.channel_role === "mentor") {
-        let typeService = await this.subscribeService.findOne({ channel_id: createChannelDomainDto.channel_id, service_name: "domain" });
+        let typeService = await this.subscribeService.findOne({
+          channel_id: createChannelDomainDto.channel_id,
+          service_name: "domain",
+        });
         if (typeService) {
           const isCreateDomain = await this.createDomainChannel(createChannelDomainDto);
           if (isCreateDomain !== false) {
@@ -310,11 +332,14 @@ export class ChannelHelper {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(isCreateDomain);
             } else {
-              res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.CREATED).json({
-                data: isCreateDomain,
-                message: "Create Domain success",
-                isDomain: true,
-              });
+              res
+                .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+                .status(HttpStatus.CREATED)
+                .json({
+                  data: isCreateDomain,
+                  message: "Create Domain success",
+                  isDomain: true,
+                });
             }
           } else {
             res
@@ -325,12 +350,10 @@ export class ChannelHelper {
                 isDomain: false,
               });
           }
-        }
-        else {
+        } else {
           throw new ForbiddenException("Channel Cannot Create Domain!");
         }
-      }
-      else {
+      } else {
         throw new ForbiddenException("User Cannot Create Domain!");
       }
     } catch (error) {
@@ -434,8 +457,8 @@ export class ChannelHelper {
             { key: "view_course", value: "2" },
             { key: "like_comment", value: "1" },
             { key: "post_new", value: "5" },
-            { key: "invite_user", value: "5" }
-          ]
+            { key: "invite_user", value: "5" },
+          ],
         },
       };
 
@@ -499,7 +522,7 @@ export class ChannelHelper {
       //Setup Category & Level
       setTimeout(async () => {
         this.hookWorker.ProcessAddCategory(dataCreate?._id?.toString());
-        this.hookWorker.ProcessAddLevel(dataCreate?._id?.toString())
+        this.hookWorker.ProcessAddLevel(dataCreate?._id?.toString());
       }, 300);
 
       return res
@@ -653,21 +676,36 @@ export class ChannelHelper {
           };
           await this.userService.updateArray(dataUpdateUser);
 
-          const listChallenge = await this.challengeService.filter({
-            channel_id: channelObject._id.toString(),
-            add_all_user: true
-          }, {}, 1, 1000)
+          const listChallenge = await this.challengeService.filter(
+            {
+              channel_id: channelObject._id.toString(),
+              add_all_user: true,
+            },
+            {},
+            1,
+            1000
+          );
           this.queueService.addTaskUserJoinChallenge({
             user_id: userObject._id.toString(),
-            list_challenge_id: listChallenge.map((x) => { return { challenge_id: x?._id.toString(), game_id: x?.game_id?._id.toString(), game_type: x?.game_id?.game_type, title: x?.title } }),
+            list_challenge_id: listChallenge.map((x) => {
+              return {
+                challenge_id: x?._id.toString(),
+                game_id: x?.game_id?._id.toString(),
+                game_type: x?.game_id?.game_type,
+                title: x?.title,
+              };
+            }),
             channel_id: channelObject._id.toString(),
             official_status: 1,
-            display_name: userObject?.display_name
-          })
+            display_name: userObject?.display_name,
+          });
 
-          await this.channelService.updateCount({ _id: new Types.ObjectId(createChannelData?.channel_id) }, {
-            member_number: 1
-          })
+          await this.channelService.updateCount(
+            { _id: new Types.ObjectId(createChannelData?.channel_id) },
+            {
+              member_number: 1,
+            }
+          );
 
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -749,7 +787,13 @@ export class ChannelHelper {
    * @param dataRequest
    * @returns
    */
-  async handleSendNotificationMentor(fromUser: User, toUser: User, authCode: string = "", channelObject: any = {}, req: ExpressRequestDto) {
+  async handleSendNotificationMentor(
+    fromUser: User,
+    toUser: User,
+    authCode: string = "",
+    channelObject: any = {},
+    req: ExpressRequestDto
+  ) {
     try {
       //Title
       let titleNotification = "Bạn vừa được thêm làm Mentor";
@@ -777,7 +821,7 @@ export class ChannelHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/r/setting-mentor/detail/" + toUser?._id,
           event_name: "add_to_challenge",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -872,7 +916,7 @@ export class ChannelHelper {
         fullname: inviteViaEmail.email,
         user_id: userObjectCheck?._id?.toString(),
         token_url: (channelObject?.domain || "https://gamifa.vn") + "/login",
-        is_send_email: false
+        is_send_email: false,
       };
 
       if (passwordRandom) {
@@ -1069,7 +1113,7 @@ export class ChannelHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("channel/update") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("channel/update") !== -1)
       ) {
         havePermission = true;
       }
@@ -1108,7 +1152,7 @@ export class ChannelHelper {
               } else {
                 dataUserToAdd.push(userItem);
               }
-            } catch (error) { }
+            } catch (error) {}
           }
         }
 
@@ -1190,13 +1234,13 @@ export class ChannelHelper {
       if (dataUpdate?.payment_method) {
         try {
           dataUpdate = { ...dataUpdate, ...{ payment_method: JSON.parse(dataUpdate?.payment_method) } };
-        } catch (error) { }
+        } catch (error) {}
       }
 
       if (dataUpdate?.service_id) {
         try {
           dataUpdate = { ...dataUpdate, ...{ service_id: JSON.parse(dataUpdate?.service_id) } };
-        } catch (error) { }
+        } catch (error) {}
       }
 
       if (dataUpdate?.official_status) {
@@ -1221,9 +1265,14 @@ export class ChannelHelper {
       const oldChannel = await this.channelService.findById(dataUpdate?._id);
 
       if (dataUpdate?.domain && dataUpdate?.domain !== oldChannel?.domain) {
-        let isDomainExist = await this.channelService.filter({
-          domain: dataUpdate?.domain,
-        }, {}, 1, 99);
+        let isDomainExist = await this.channelService.filter(
+          {
+            domain: dataUpdate?.domain,
+          },
+          {},
+          1,
+          99
+        );
         if (isDomainExist.length > 0) {
           throw new BadRequestException("Domain already Exist!");
         }
@@ -1359,12 +1408,15 @@ export class ChannelHelper {
               "event/delete",
             ],
             number_of_user: 0,
-            mentor_role: ""
+            mentor_role: "",
           },
         };
 
         //Xoá toàn bộ mọi người trong mentor đi
-        await this.channelPermissionService.updateMany({ from_mentor: dataPermission?.user_id?.toString(), channel_id: dataPermission?.channel_id?._id?.toString() }, { from_mentor: null });
+        await this.channelPermissionService.updateMany(
+          { from_mentor: dataPermission?.user_id?.toString(), channel_id: dataPermission?.channel_id?._id?.toString() },
+          { from_mentor: null }
+        );
 
         if (dataPermission?.channel_role === "user") {
           await this.channelService.updateCount(
@@ -1373,7 +1425,7 @@ export class ChannelHelper {
             },
             {
               admin_number: 1,
-              member_number: -1
+              member_number: -1,
             }
           );
         }
@@ -1393,7 +1445,7 @@ export class ChannelHelper {
           },
           {
             admin_number: -1,
-            member_number: 1
+            member_number: 1,
           }
         );
       }
@@ -1404,20 +1456,27 @@ export class ChannelHelper {
           //Remove all by Mentor
           //Xoá toàn bộ mọi người trong mentor đi
           await this.channelPermissionService.updateMany(
-            { from_mentor: dataPermission?.user_id?.toString(), channel_id: dataPermission?.channel_id?._id?.toString() }
-            , { from_mentor: null });
+            {
+              from_mentor: dataPermission?.user_id?.toString(),
+              channel_id: dataPermission?.channel_id?._id?.toString(),
+            },
+            { from_mentor: null }
+          );
         }, 500);
         dataUpdate = {
           ...dataUpdate,
           ...{
-            number_of_user: 0
-          }
+            number_of_user: 0,
+          },
         };
       }
 
       if (dataUpdate.hasOwnProperty("from_mentor") && oldFromMentor && !dataUpdate?.from_mentor) {
         //Update remove number of user
-        await this.channelPermissionService.updateCount({ user_id: oldFromMentor?.toString(), channel_id: dataPermission?.channel_id?._id?.toString() }, { number_of_user: -1 })
+        await this.channelPermissionService.updateCount(
+          { user_id: oldFromMentor?.toString(), channel_id: dataPermission?.channel_id?._id?.toString() },
+          { number_of_user: -1 }
+        );
       }
 
       //Get Media Data
@@ -1434,7 +1493,7 @@ export class ChannelHelper {
             return `Người dùng ${params?.display_name} muốn gia nhập kênh ${params?.channel_name}`;
           },
           title: `YÊU CẦU THAM GIA KÊNH ${channel?.name.toLocaleUpperCase()} CỦA BẠN ĐƯỢC PHÊ DUYỆT`,
-        })
+        });
       }
 
       return res
@@ -1556,7 +1615,7 @@ export class ChannelHelper {
    */
   async handleGetListView(query: ListChannelPermissionDto, res: Response, req: ExpressRequestDto) {
     try {
-      console.log(query, 'query')
+      console.log(query, "query");
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
@@ -1634,16 +1693,20 @@ export class ChannelHelper {
 
       if (query?.course_id) {
         //Process Course
-        let dataCourseLike: CourseLike[] = await this.courseLikeService.filter({ course_id: query?.course_id }, {}, 1, 1000, {});
+        let dataCourseLike: CourseLike[] = await this.courseLikeService.filter(
+          { course_id: query?.course_id },
+          {},
+          1,
+          1000,
+          {}
+        );
         let dataIdsUserCourse = dataCourseLike?.map((dataItem: CourseLike, index: number) => {
-          return dataItem?.user_id?.toString()
-        })
+          return dataItem?.user_id?.toString();
+        });
         if (dataIdsUserCourse && dataIdsUserCourse?.length) {
           dataToFilter = { ...dataToFilter, ...{ user_unset: dataIdsUserCourse } };
         }
-
       }
-
 
       let dataReturn: ChannelPermission[] = await this.channelPermissionService.filter(
         dataToFilter,
@@ -2059,8 +2122,8 @@ export class ChannelHelper {
       let dataReturn = await this.channelPermissionService.remove(id);
       this.eventHookWorkerService.RequestDeleteMultipleDocumentByChannelPermission({
         channel_id: dataChannel?.channel_id?._id?.toString(),
-        user_id: dataChannel?.user_id?._id?.toString()
-      })
+        user_id: dataChannel?.user_id?._id?.toString(),
+      });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2268,17 +2331,29 @@ export class ChannelHelper {
         { total_member: 1 }
       );
 
-      const listChallenge = await this.challengeService.filter({
-        channel_id: channelObject._id.toString(),
-        add_all_user: true
-      }, {}, 1, 1000)
+      const listChallenge = await this.challengeService.filter(
+        {
+          channel_id: channelObject._id.toString(),
+          add_all_user: true,
+        },
+        {},
+        1,
+        1000
+      );
       this.queueService.addTaskUserJoinChallenge({
         user_id: userObject._id.toString(),
-        list_challenge_id: listChallenge.map((x) => { return { challenge_id: x?._id.toString(), game_id: x?.game_id?._id.toString(), game_type: x?.game_id?.game_type, title: x?.title } }),
+        list_challenge_id: listChallenge.map((x) => {
+          return {
+            challenge_id: x?._id.toString(),
+            game_id: x?.game_id?._id.toString(),
+            game_type: x?.game_id?.game_type,
+            title: x?.title,
+          };
+        }),
         channel_id: channelObject._id.toString(),
         official_status: 1,
-        display_name: userObject?.display_name
-      })
+        display_name: userObject?.display_name,
+      });
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -2329,7 +2404,6 @@ export class ChannelHelper {
     }
   }
 
-
   /**
    * @author Tony Vu
    * @param dataPermission
@@ -2352,27 +2426,28 @@ export class ChannelHelper {
         //Update Count
         const result = await this.channelPermissionService.updateCount(
           { _id: dataPermission?._id?.toString() },
-          { point: plusPointChannelDto.point, point_month: plusPointChannelDto.point, point_week: plusPointChannelDto.point },
+          {
+            point: plusPointChannelDto.point,
+            point_month: plusPointChannelDto.point,
+            point_week: plusPointChannelDto.point,
+          },
           req?.auth_code,
           {
             entity_id: userObject?._id?.toString(),
-            entity_type: (new Date()).toISOString(),
+            entity_type: new Date().toISOString(),
             point_number: plusPointChannelDto.point,
             user_id: plusPointChannelDto?.user_receive_id?.toString(),
-          },
+          }
         );
-        res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json({
-            data: result,
-            message: "Plus Point For User Success"
-          });
+        res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
+          data: result,
+          message: "Plus Point For User Success",
+        });
       } else {
         throw new BadRequestException("Cannot plus point large than or equal 10");
       }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-
   }
 }

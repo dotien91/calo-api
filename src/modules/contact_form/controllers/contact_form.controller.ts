@@ -9,7 +9,7 @@ import { updateStatusContactForm } from "../dto/update-status-contact_form.dto";
 
 @Controller("contact-form")
 export class ContactFormController {
-  constructor(private readonly contactFormHelper: ContactFormHelper) { }
+  constructor(private readonly contactFormHelper: ContactFormHelper) {}
 
   @Post("/create")
   async createNewContactForm(
@@ -28,7 +28,6 @@ export class ContactFormController {
   ) {
     return await this.contactFormHelper.updateContactForm(updateContactFormData, res, req);
   }
-
 
   @Patch("/update-status")
   async updateStatusContactForm(

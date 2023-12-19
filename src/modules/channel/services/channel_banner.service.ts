@@ -13,7 +13,7 @@ export class ChannelBannerService {
   constructor(
     @InjectModel(ChannelBanner.name)
     private channelBannerModel: Model<ChannelBannerDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -55,7 +55,12 @@ export class ChannelBannerService {
    * @param limit
    * @returns
    */
-  async filter(filter: SearchChannelBannerDto, sortBy: SortByChannelBannerDto, page: number, limit: number): Promise<ChannelBanner[]> {
+  async filter(
+    filter: SearchChannelBannerDto,
+    sortBy: SortByChannelBannerDto,
+    page: number,
+    limit: number
+  ): Promise<ChannelBanner[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -167,11 +172,7 @@ export class ChannelBannerService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<ChannelBanner> {
-    return await this.channelBannerModel
-      .findOne(dataToSearch)
-      .sort({ _id: -1 })
-      .populate("media_id")
-      .exec();
+    return await this.channelBannerModel.findOne(dataToSearch).sort({ _id: -1 }).populate("media_id").exec();
   }
 
   /**
@@ -231,10 +232,7 @@ export class ChannelBannerService {
     if (!objectId) {
       return null;
     }
-    return await this.channelBannerModel
-      .findById(objectId)
-      .populate("media_id")
-      .exec();
+    return await this.channelBannerModel.findById(objectId).populate("media_id").exec();
   }
 
   /**
@@ -243,10 +241,7 @@ export class ChannelBannerService {
    * @returns
    */
   async remove(id: string) {
-    return await this.channelBannerModel
-      .findByIdAndDelete(id)
-      .populate("media_id")
-      .exec();
+    return await this.channelBannerModel.findByIdAndDelete(id).populate("media_id").exec();
   }
 
   /**

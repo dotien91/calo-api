@@ -4,12 +4,12 @@ import { CreateChannelLevelDto } from "./create-channel_level.dto";
 import { PartialType } from "@nestjs/mapped-types";
 
 export class UpdateChannelLevelDto extends PartialType(CreateChannelLevelDto) {
-    @IsString()
-    @ApiProperty()
-    _id?: string
+  @IsString()
+  @ApiProperty()
+  _id?: string;
 
-    @IsNumberString()
-    @ApiPropertyOptional()
-    @IsOptional(null)
-    official_status?: string
+  @IsNumberString()
+  @ApiPropertyOptional()
+  @IsOptional(null)
+  official_status?: string;
 }

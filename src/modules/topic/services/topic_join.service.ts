@@ -11,7 +11,7 @@ export class TopicJoinService {
   constructor(
     @InjectModel(TopicJoin.name)
     private topicJoinModel: Model<TopicJoinDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

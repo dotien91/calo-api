@@ -25,6 +25,14 @@ import { UserOptionService } from "../user/services/user_option.service";
     ]),
   ],
   controllers: [ReportController],
-  providers: [UserService, ReportHelper, ReportService, JwtHelperService, UserSessionService, UserPermissionService, UserOptionService],
+  providers: [
+    UserService,
+    ReportHelper,
+    ReportService,
+    JwtHelperService,
+    UserSessionService,
+    UserPermissionService,
+    UserOptionService,
+  ],
 })
-export class ReportModule { }
+export class ReportModule {}

@@ -40,7 +40,7 @@ export class PodcastHelper {
     private userOptionService: UserOptionService,
     private notificationHelper: NotificationHelper,
     private channelPermissionService: ChannelPermissionService
-  ) { }
+  ) {}
 
   async handleUpdateUserOption(userId: string) {
     let dataCreate = {
@@ -106,7 +106,7 @@ export class PodcastHelper {
         };
         await this.podcastService.update(dataToUpdate);
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -235,7 +235,7 @@ export class PodcastHelper {
         // console.log(error);
         return null;
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -259,7 +259,7 @@ export class PodcastHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("podcast/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("podcast/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -269,7 +269,6 @@ export class PodcastHelper {
       if (!havePermission) {
         throw new ForbiddenException("You not have permission for this activity!");
       }
-
 
       let dataSlug = this.toSlug(createPodcastData.title);
       createPodcastData = {
@@ -375,7 +374,7 @@ export class PodcastHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + dataPodcast?.podcast_slug,
           event_name: "send_mail_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -420,8 +419,6 @@ export class PodcastHelper {
       return false;
     }
   }
-
-
 
   /**
    * @author Tony Vu
@@ -586,7 +583,7 @@ export class PodcastHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("podcast/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("podcast/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -613,7 +610,6 @@ export class PodcastHelper {
       throw new NotFoundException(error.message);
     }
   }
-
 
   /**
    * @author Tony Vu
@@ -661,7 +657,7 @@ export class PodcastHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("podcast/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("podcast/delete") !== -1)
       ) {
         havePermission = true;
       }

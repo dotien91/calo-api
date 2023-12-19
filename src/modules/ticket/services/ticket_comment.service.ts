@@ -14,7 +14,7 @@ export class TicketCommentService {
   constructor(
     @InjectModel(TicketComment.name)
     private ticketModel: Model<TicketCommentDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

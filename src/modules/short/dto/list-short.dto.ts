@@ -52,9 +52,9 @@ export class ListShortDto {
 
   @IsString()
   @IsOptional(null)
-  only_id: string
+  only_id: string;
 
   @IsString()
   @IsOptional(null)
-  post_category: string
+  post_category: string;
 }

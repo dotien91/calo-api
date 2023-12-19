@@ -18,7 +18,7 @@ export class FaceDetectionHelper {
     private readonly faceDetectionService: FaceDetectionService,
     private readonly chatMediaService: ChatMediaService,
     private readonly userOptionService: UserOptionService
-  ) { }
+  ) {}
   private readonly logger = new Logger("detect_image");
 
   /**
@@ -132,7 +132,7 @@ export class FaceDetectionHelper {
     let point = 0;
     let dataResponse = null;
 
-    if (process.env.FACE_COMPARE != 'whiteg') {
+    if (process.env.FACE_COMPARE != "whiteg") {
       const apiUrl = process.env.API_URL_DETECT;
       const subscriptionKey = process.env.SUBSCRIBE_KEY_DETECT; //change subscription key
       var optionsFaceCompare = {
@@ -172,23 +172,21 @@ export class FaceDetectionHelper {
       const apiUrl = process.env.FACE_COMPARE_URL;
       const subscriptionKey = process.env.FACE_COMPARE_KEY; //change subscription key
 
-
-      var FormData = require('form-data');
+      var FormData = require("form-data");
       var data = new FormData();
-      data.append('secret_compare', subscriptionKey);
-      data.append('key_compare', 'ABC');
-      data.append('image_before', base64SingleFace1);
-      data.append('image_compare', base64SingleFace2);
+      data.append("secret_compare", subscriptionKey);
+      data.append("key_compare", "ABC");
+      data.append("image_before", base64SingleFace1);
+      data.append("image_compare", base64SingleFace2);
 
       var config = {
-        method: 'post',
+        method: "post",
         url: apiUrl,
         headers: {
-          ...data.getHeaders()
+          ...data.getHeaders(),
         },
-        data: data
+        data: data,
       };
-
 
       dataResponse = await axios(config)
         .then((response) => {
@@ -218,7 +216,7 @@ export class FaceDetectionHelper {
       user_id: userObject?._id.toString(),
       point: point,
       validate_status: statusValidate,
-      response: JSON.stringify(dataResponse)
+      response: JSON.stringify(dataResponse),
     };
     let dataReturn = await this.faceDetectionService.create(dataToCreate);
     //Update User Option

@@ -3,5 +3,5 @@ import { CreateEventIndexDto } from "./create.event_index.dto";
 
 export class UpdateEventIndexDto extends CreateEventIndexDto {
   @IsString()
-  _id: string
+  _id: string;
 }

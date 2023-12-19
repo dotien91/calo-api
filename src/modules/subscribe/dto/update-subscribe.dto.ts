@@ -1,27 +1,27 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateSubscribeDto } from './create-subscribe.dto';
-import { IsOptional, IsString, IsIn, IsDateString} from 'class-validator';
+import { PartialType } from "@nestjs/swagger";
+import { CreateSubscribeDto } from "./create-subscribe.dto";
+import { IsOptional, IsString, IsIn, IsDateString } from "class-validator";
 
 export class UpdateSubscribeDto {
   @IsString()
-  _id?: string
+  _id?: string;
 
   @IsString()
   @IsOptional(null)
-  coupon_code: string
+  coupon_code: string;
 
   @IsString()
   @IsOptional(null)
-  channel_id: string
+  channel_id: string;
 
   @IsIn(["active", "deactivate", "expired"])
-  status: string
+  status: string;
 
   @IsDateString()
   @IsOptional(null)
-  start_at: string
+  start_at: string;
 
   @IsDateString()
   @IsOptional(null)
-  end_at: string
+  end_at: string;
 }

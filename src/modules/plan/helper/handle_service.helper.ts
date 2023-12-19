@@ -27,7 +27,7 @@ export class HandleServiceHelper {
   constructor(
     private userPermissionService: UserPermissionService,
     private handleServiceService: HandleServiceService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

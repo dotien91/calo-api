@@ -40,7 +40,7 @@ export class TicketComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_id: String;
 
@@ -48,7 +48,7 @@ export class TicketComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_parent_id: String;
 
@@ -99,5 +99,5 @@ export class TicketComment {
 }
 
 export const TicketCommentSchema = SchemaFactory.createForClass(TicketComment).index({
-  content: "text"
+  content: "text",
 });

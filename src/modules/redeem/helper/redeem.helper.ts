@@ -46,7 +46,7 @@ export class RedeemHelper {
     private notificationHelper: NotificationHelper,
     private channelPermissionService: ChannelPermissionService,
     private redeemPermissionService: RedeemPermissionService
-  ) { }
+  ) {}
 
   async handleUpdateCount() {
     try {
@@ -64,7 +64,7 @@ export class RedeemHelper {
           await this.redeemService.update(dataUpdate);
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -135,7 +135,7 @@ export class RedeemHelper {
         };
         await this.redeemService.update(dataToUpdate);
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -168,16 +168,17 @@ export class RedeemHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-
       //Check for Mentor
       //
-      let dataPermission = await this.channelPermissionService.findOne({ user_id: req?.user_id, channel_id: req?.channel_id });
+      let dataPermission = await this.channelPermissionService.findOne({
+        user_id: req?.user_id,
+        channel_id: req?.channel_id,
+      });
 
-      if (dataPermission?.channel_role !== 'mentor') {
-        dataToFilter = { ...dataToFilter, ...{ to_level: dataPermission?.level_number } }
+      if (dataPermission?.channel_role !== "mentor") {
+        dataToFilter = { ...dataToFilter, ...{ to_level: dataPermission?.level_number } };
       }
       let dataReturn = await this.redeemService.filter(dataToFilter, orderByOBject, page, limit);
-
 
       if (dataReturn) {
         let dataIds = [];
@@ -364,7 +365,7 @@ export class RedeemHelper {
         // console.log(error);
         return null;
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -383,12 +384,15 @@ export class RedeemHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -516,7 +520,9 @@ export class RedeemHelper {
       }
       let dataRedeemArray = _.uniq(dataCreate?.redeem_id?.split(","));
 
-      let dataRedeemArrayCheckDuplicate = dataRedeemArray.filter((item, index) => dataRedeemArray.indexOf(item) === index)
+      let dataRedeemArrayCheckDuplicate = dataRedeemArray.filter(
+        (item, index) => dataRedeemArray.indexOf(item) === index
+      );
       //Check Redeem
 
       let dataToFilter = {
@@ -527,8 +533,8 @@ export class RedeemHelper {
       let dataCreateRedeemMission = await this.redeemPermissionService.filter(dataToFilter, {}, 1, 100);
       //check data
       let dataRedeemIds = dataCreateRedeemMission.map((itemReturn: RedeemPermission, index: number) => {
-        return itemReturn?.redeem_id?._id?.toString()
-      })
+        return itemReturn?.redeem_id?._id?.toString();
+      });
 
       for (let redeemItem of dataRedeemArrayCheckDuplicate) {
         if (dataRedeemIds?.indexOf(redeemItem) === -1) {
@@ -539,10 +545,10 @@ export class RedeemHelper {
           }
           let userPermission = await this.channelPermissionService.findOne({
             user_id: userObject?._id.toString(),
-            channel_id: req?.channel_id.toString()
-          })
-          if ((userPermission?.level_number < redeemObject?.redeem_level) && userPermission?.channel_role !== 'mentor') {
-            console.log("level is not enough!!!")
+            channel_id: req?.channel_id.toString(),
+          });
+          if (userPermission?.level_number < redeemObject?.redeem_level && userPermission?.channel_role !== "mentor") {
+            console.log("level is not enough!!!");
             continue;
           }
 
@@ -555,15 +561,22 @@ export class RedeemHelper {
             for (let dataRedeemItem of dataRedeemMission) {
               //Create permision
               let point_data = dataRedeemItem?.mission_action.map((x) => {
-                return Object.assign({ point_number: 0, status: "process" }, x)
-              })
+                return Object.assign({ point_number: 0, status: "process" }, x);
+              });
 
+              const nowUTC7 = moment().tz("Asia/Ho_Chi_Minh");
+              const startOfDay = nowUTC7.clone().startOf("day").toDate();
 
-              const nowUTC7 = moment().tz('Asia/Ho_Chi_Minh');
-              const startOfDay = nowUTC7.clone().startOf('day').toDate();
-
-              let start_time = nowUTC7.clone().startOf('day').add(Number(dataRedeemItem?.number_of_day) - 1, 'days').toDate();
-              let end_time = nowUTC7.clone().endOf('day').add(Number(dataRedeemItem?.number_of_day) - 1, 'days').toDate();
+              let start_time = nowUTC7
+                .clone()
+                .startOf("day")
+                .add(Number(dataRedeemItem?.number_of_day) - 1, "days")
+                .toDate();
+              let end_time = nowUTC7
+                .clone()
+                .endOf("day")
+                .add(Number(dataRedeemItem?.number_of_day) - 1, "days")
+                .toDate();
 
               let dataInsert = {
                 user_id: req?.user_id,
@@ -573,7 +586,7 @@ export class RedeemHelper {
                 point_data: point_data,
                 start_time: start_time,
                 end_time: end_time,
-                status: "process"
+                status: "process",
               };
               console.log(dataInsert, "dataInsert");
               let dataReturnInsert = await this.redeemPermissionService.upsert(dataInsert);
@@ -583,7 +596,6 @@ export class RedeemHelper {
             }
           }
         }
-
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -653,7 +665,7 @@ export class RedeemHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + "",
           event_name: "send_mail_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -758,7 +770,7 @@ export class RedeemHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + "",
           event_name: "reply_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -900,7 +912,7 @@ export class RedeemHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("redeem/update") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("redeem/update") !== -1)
       ) {
         havePermission = true;
       }
@@ -922,8 +934,8 @@ export class RedeemHelper {
       if (this.validateJson(dataUpdate?.mission_data?.toString())) {
         //Let data
         //Remove All history data
-        await this.redeemPermissionService.removeMany({ redeem_id: dataUpdate?._id?.toString() })
-        await this.redeemService.removeMisionMany({ redeem_id: dataUpdate?._id?.toString() })
+        await this.redeemPermissionService.removeMany({ redeem_id: dataUpdate?._id?.toString() });
+        await this.redeemService.removeMisionMany({ redeem_id: dataUpdate?._id?.toString() });
         let dataMission = JSON.parse(dataUpdate?.mission_data?.toString());
         let dataMissionObjectArray: any[] = await this.redeemService.createMisionData(dataMission);
 
@@ -989,7 +1001,7 @@ export class RedeemHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("comment/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("comment/delete") !== -1)
       ) {
         havePermission = true;
       }

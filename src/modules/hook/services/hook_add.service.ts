@@ -1,26 +1,31 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PlusPointChallengeDto } from '../dtos/plus_point_challenge.dto';
-import { ChallengePermission, ChallengePermissionDocument } from '../../../modules/challenge/schemas/challenge_permission.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { ChallengePermissionService } from '../../../modules/challenge/services/challenge_permission.service';
-import { UserService } from '../../../modules/user/services/user.service';
-import { ChallengeActivityService } from '../../../modules/challenge/services/challenge_activity.service';
-import HookExpress from '../hook_epress';
-import { CreateChallengeActivityDto } from '../../../modules/challenge/dto/create-challenge_activity.dto';
-import { ChannelService } from '../../../modules/channel/services/channel.service';
-import { NotificationHelper } from '../../../modules/notification/helper/notification.helper';
-import { RedeemPermission, RedeemPermissionDocument } from '../../../modules/redeem/schemas/redeem_permission.schema';
-import { RedeemMission, RedeemMissionDocument } from '../../../modules/redeem/schemas/redeem_mission.schema';
-import { Redeem, RedeemDocument } from '../../../modules/redeem/schemas/redeem.schema';
-import { GiftHelper } from '../../../modules/gift/helper/gift.helper';
-import { GiftService } from '../../../modules/gift/services/gift.service';
-import { ChannelPermission, ChannelPermissionDocument } from '../../../modules/channel/schemas/channel_permission.schema';
-import axios from 'axios';
+import { Injectable, Logger } from "@nestjs/common";
+import { PlusPointChallengeDto } from "../dtos/plus_point_challenge.dto";
+import {
+  ChallengePermission,
+  ChallengePermissionDocument,
+} from "../../../modules/challenge/schemas/challenge_permission.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model, Types } from "mongoose";
+import { ChallengePermissionService } from "../../../modules/challenge/services/challenge_permission.service";
+import { UserService } from "../../../modules/user/services/user.service";
+import { ChallengeActivityService } from "../../../modules/challenge/services/challenge_activity.service";
+import HookExpress from "../hook_epress";
+import { CreateChallengeActivityDto } from "../../../modules/challenge/dto/create-challenge_activity.dto";
+import { ChannelService } from "../../../modules/channel/services/channel.service";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { RedeemPermission, RedeemPermissionDocument } from "../../../modules/redeem/schemas/redeem_permission.schema";
+import { RedeemMission, RedeemMissionDocument } from "../../../modules/redeem/schemas/redeem_mission.schema";
+import { Redeem, RedeemDocument } from "../../../modules/redeem/schemas/redeem.schema";
+import { GiftHelper } from "../../../modules/gift/helper/gift.helper";
+import { GiftService } from "../../../modules/gift/services/gift.service";
+import {
+  ChannelPermission,
+  ChannelPermissionDocument,
+} from "../../../modules/channel/schemas/channel_permission.schema";
+import axios from "axios";
 let alreadyWork = false;
 @Injectable()
 export class EventHookAdderService {
-
   constructor(
     @InjectModel(ChallengePermission.name)
     private challengePermission: Model<ChallengePermissionDocument>,
@@ -38,7 +43,7 @@ export class EventHookAdderService {
     private channelPermissionModel: Model<ChannelPermissionDocument>,
     private readonly giftHelper: GiftHelper,
     private readonly giftService: GiftService,
-    private readonly channelService: ChannelService,
+    private readonly channelService: ChannelService
   ) {
     if (alreadyWork !== true) {
       this.initHook();
@@ -47,33 +52,43 @@ export class EventHookAdderService {
   }
 
   initHook() {
-    console.log('Make sure you work once %s', Math.random())
-    HookExpress.add_action('challenge.plus-point', async (data) => {
+    console.log("Make sure you work once %s", Math.random());
+    HookExpress.add_action("challenge.plus-point", async (data) => {
       try {
         if (data.game_type === "point") {
-          const challengess = await this.challengePermissionService.filterWithPopulate({
-            user_id: data?.user_id,
-            game_type: data?.game_type,
-            channel_id: data?.channel_id
-          }, {}, 1, 1000);
+          const challengess = await this.challengePermissionService.filterWithPopulate(
+            {
+              user_id: data?.user_id,
+              game_type: data?.game_type,
+              channel_id: data?.channel_id,
+            },
+            {},
+            1,
+            1000
+          );
           for (let challenge of challengess) {
             let currentTime = new Date();
-            if (new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime || new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime) {
+            if (
+              new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime ||
+              new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime
+            ) {
               continue;
             }
             const channel = await this.channelService.findById(data?.channel_id);
-            let foundGameSetting = channel.point_data.find(obj => obj.key === data?.type_action)
+            let foundGameSetting = channel.point_data.find((obj) => obj.key === data?.type_action);
             if (foundGameSetting) {
               data.point_value = Number(foundGameSetting.value);
             }
-            await this.challengePermission.findOneAndUpdate({
-              _id: challenge?._id
-            }, {
-              $inc: {
-                total_point: data.point_value
+            await this.challengePermission.findOneAndUpdate(
+              {
+                _id: challenge?._id,
+              },
+              {
+                $inc: {
+                  total_point: data.point_value,
+                },
               }
-            }
-            )
+            );
             let userData: any = {};
             if (!data.display_name) {
               userData = await this.userService.findUserById(data?.user_id, { display_name: true });
@@ -86,31 +101,41 @@ export class EventHookAdderService {
               user_id: data?.user_id,
               point_value: data.point_value,
               media_id: null,
-              start_time: (new Date()).toISOString(),
-              official_status: 1
-            }
+              start_time: new Date().toISOString(),
+              official_status: 1,
+            };
             await this.challengeActivityService.create(challengeActivity);
           }
         } else {
-          const challengess = await this.challengePermissionService.filterWithPopulate({
-            user_id: data?.user_id,
-            game_type: data?.game_type,
-            channel_id: data?.channel_id
-          }, {}, 1, 1000);
+          const challengess = await this.challengePermissionService.filterWithPopulate(
+            {
+              user_id: data?.user_id,
+              game_type: data?.game_type,
+              channel_id: data?.channel_id,
+            },
+            {},
+            1,
+            1000
+          );
           for (let challenge of challengess) {
             let currentTime = new Date();
-            if (new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime || new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime) {
+            if (
+              new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime ||
+              new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime
+            ) {
               continue;
             }
 
-            await this.challengePermission.findOneAndUpdate({
-              _id: challenge?._id
-            }, {
-              $inc: {
-                total_point: data?.point_value
+            await this.challengePermission.findOneAndUpdate(
+              {
+                _id: challenge?._id,
+              },
+              {
+                $inc: {
+                  total_point: data?.point_value,
+                },
               }
-            }
-            )
+            );
             let userData: any = {};
             if (!data.display_name) {
               userData = await this.userService.findUserById(data?.user_id, { display_name: true });
@@ -123,9 +148,9 @@ export class EventHookAdderService {
               user_id: data?.user_id,
               point_value: data?.point_value,
               media_id: null,
-              start_time: (new Date()).toISOString(),
-              official_status: 1
-            }
+              start_time: new Date().toISOString(),
+              official_status: 1,
+            };
             await this.challengeActivityService.create(challengeActivity);
           }
         }
@@ -134,7 +159,7 @@ export class EventHookAdderService {
       }
     });
 
-    HookExpress.add_action('redeem.check-permission', async (data) => {
+    HookExpress.add_action("redeem.check-permission", async (data) => {
       try {
         const user_id = data?.user_id;
         const typeAction = data?.typeAction;
@@ -146,28 +171,35 @@ export class EventHookAdderService {
           user_id: new Types.ObjectId(user_id),
           start_date: today.toLocaleDateString("en-US"),
           "point_data.action_name": typeAction,
-          status: "process"
+          status: "process",
         });
-        console.log(redeemPermissions?.length)
+        console.log(redeemPermissions?.length);
         for (let redeemPermission of redeemPermissions) {
           // plus point process and check redeemPermission complete
           let checkPermission = true;
           let isSendSocket = false;
 
-          console.log(redeemPermission?.point_data, 'redeemPermission?.point_data')
+          console.log(redeemPermission?.point_data, "redeemPermission?.point_data");
           redeemPermission?.point_data.map(async (x) => {
             try {
-              if (x?.action_name === typeAction && Number(x?.point_number) < Number(x?.action_point) && x?.status !== "done") {
+              if (
+                x?.action_name === typeAction &&
+                Number(x?.point_number) < Number(x?.action_point) &&
+                x?.status !== "done"
+              ) {
                 x.point_number = String(Number(x?.point_number) + 1);
                 if (Number(x.point_number) === Number(x.action_point)) {
-                  x.status = "done"
+                  x.status = "done";
                 } else {
-                  checkPermission = false
+                  checkPermission = false;
                 }
-                console.log(redeemPermission, "redeemPermission")
-                await this.redeemPermissionModel.findOneAndUpdate({
-                  _id: redeemPermission?._id
-                }, redeemPermission);
+                console.log(redeemPermission, "redeemPermission");
+                await this.redeemPermissionModel.findOneAndUpdate(
+                  {
+                    _id: redeemPermission?._id,
+                  },
+                  redeemPermission
+                );
 
                 isSendSocket = true;
               } else if (x?.action_name !== typeAction && Number(x?.point_number) < Number(x?.action_point)) {
@@ -175,33 +207,32 @@ export class EventHookAdderService {
               }
             } catch (error) {
               console.log(error);
-
             }
-
           });
           setTimeout(async () => {
             try {
-              console.log(checkPermission, 'checkPermission');
-              console.log(isSendSocket, 'isSendSocket')
+              console.log(checkPermission, "checkPermission");
+              console.log(isSendSocket, "isSendSocket");
               if (isSendSocket) {
-
                 /// get data send-socket
-                const dataToSendSocket = await this.redeemPermissionModel.findOne({
-                  _id: redeemPermission?._id
-                }).populate({
-                  path: "redeem_mission_id",
-                  options: { strictPopulate: false },
-                  populate: [
-                    {
-                      path: "gift_data",
-                      populate: [
-                        {
-                          path: "media_id"
-                        }
-                      ]
-                    }
-                  ],
-                })
+                const dataToSendSocket = await this.redeemPermissionModel
+                  .findOne({
+                    _id: redeemPermission?._id,
+                  })
+                  .populate({
+                    path: "redeem_mission_id",
+                    options: { strictPopulate: false },
+                    populate: [
+                      {
+                        path: "gift_data",
+                        populate: [
+                          {
+                            path: "media_id",
+                          },
+                        ],
+                      },
+                    ],
+                  })
                   .populate({
                     path: "redeem_id",
                     options: { strictPopulate: false },
@@ -210,62 +241,78 @@ export class EventHookAdderService {
                         path: "gift_data",
                         populate: [
                           {
-                            path: "media_id"
-                          }
-                        ]
-                      }
-                    ]
+                            path: "media_id",
+                          },
+                        ],
+                      },
+                    ],
                   });
-                console.log(dataToSendSocket, 'dataToSendSocket')
+                console.log(dataToSendSocket, "dataToSendSocket");
 
                 setTimeout(async () => {
-                  console.log("START SEND SOCKET ------>")
+                  console.log("START SEND SOCKET ------>");
                   await this.sendSocket(dataToSendSocket?.toObject(), authCode);
-                }, 300)
+                }, 300);
                 //send socket
-
               }
               if (checkPermission === true) {
                 //update redeemPermission
                 redeemPermission.status = "done";
                 ///update data
-                await this.redeemPermissionModel.findOneAndUpdate({
-                  _id: redeemPermission?._id
-                }, redeemPermission);
+                await this.redeemPermissionModel.findOneAndUpdate(
+                  {
+                    _id: redeemPermission?._id,
+                  },
+                  redeemPermission
+                );
 
                 const redeemMission = await this.redeemMissionModel.findById({
-                  _id: redeemPermission?.redeem_mission_id?._id ? redeemPermission?.redeem_mission_id?._id : redeemPermission?.redeem_mission_id
+                  _id: redeemPermission?.redeem_mission_id?._id
+                    ? redeemPermission?.redeem_mission_id?._id
+                    : redeemPermission?.redeem_mission_id,
                 });
                 // plus coin for channel Permission
                 if (Number(redeemMission.gift_coin) > 0) {
                   await this.channelPermissionModel.findByIdAndUpdate(oldData?._id, {
                     $inc: {
                       coin_number: redeemMission.gift_coin,
-                    }
-                  })
+                    },
+                  });
                 }
 
                 //send gift for user
                 if (redeemMission?.gift_data?.length > 0) {
                   for (let gift of redeemMission?.gift_data) {
                     if (gift._id) {
-                      await this.giftHelper.handleAutoGiveGift({ gift_id: gift, partner_id: user_id, quantity: Number(gift.stock_qty) })
+                      await this.giftHelper.handleAutoGiveGift({
+                        gift_id: gift,
+                        partner_id: user_id,
+                        quantity: Number(gift.stock_qty),
+                      });
                     } else {
                       const giftData = await this.giftService.findOne({
                         _id: gift,
-                      })
-                      await this.giftHelper.handleAutoGiveGift({ gift_id: giftData, partner_id: user_id, quantity: Number(giftData.stock_qty) })
+                      });
+                      await this.giftHelper.handleAutoGiveGift({
+                        gift_id: giftData,
+                        partner_id: user_id,
+                        quantity: Number(giftData.stock_qty),
+                      });
                     }
                   }
                 }
 
-
-
                 // check redeem complete and
                 let checkRedeemComplete = true;
-                const listRedeemPermissionByRedeem = await this.redeemPermissionModel.find({ user_id: user_id, redeem_id: redeemPermission.redeem_id });
+                const listRedeemPermissionByRedeem = await this.redeemPermissionModel.find({
+                  user_id: user_id,
+                  redeem_id: redeemPermission.redeem_id,
+                });
                 for (let redeemPermissionByRedeem of listRedeemPermissionByRedeem) {
-                  if (redeemPermissionByRedeem?._id !== redeemPermission._id && redeemPermissionByRedeem?.status !== 'done') {
+                  if (
+                    redeemPermissionByRedeem?._id !== redeemPermission._id &&
+                    redeemPermissionByRedeem?.status !== "done"
+                  ) {
                     checkRedeemComplete = false;
                   }
                 }
@@ -275,12 +322,20 @@ export class EventHookAdderService {
                   if (redeem.gift_data && redeem.gift_data.length > 0) {
                     for (let gift of redeem?.gift_data) {
                       if (gift._id) {
-                        await this.giftHelper.handleAutoGiveGift({ gift_id: gift, partner_id: user_id, quantity: Number(gift?.stock_qty) })
+                        await this.giftHelper.handleAutoGiveGift({
+                          gift_id: gift,
+                          partner_id: user_id,
+                          quantity: Number(gift?.stock_qty),
+                        });
                       } else {
                         const giftData = await this.giftService.findOne({
                           _id: gift,
-                        })
-                        await this.giftHelper.handleAutoGiveGift({ gift_id: giftData, partner_id: user_id, quantity: Number(giftData?.stock_qty) })
+                        });
+                        await this.giftHelper.handleAutoGiveGift({
+                          gift_id: giftData,
+                          partner_id: user_id,
+                          quantity: Number(giftData?.stock_qty),
+                        });
                       }
                     }
                   }
@@ -293,32 +348,30 @@ export class EventHookAdderService {
                     await this.channelPermissionModel.findByIdAndUpdate(oldData?._id, {
                       $inc: {
                         coin_number: Number(redeem.gift_coin),
-                      }
-                    })
+                      },
+                    });
                   }
                 }
               }
             } catch (error) {
-              console.log(error)
+              console.log(error);
             }
-
-          }, 500)
+          }, 500);
         }
       } catch (error) {
-        console.log("Check redeem complete Fails: ", error.message)
+        console.log("Check redeem complete Fails: ", error.message);
       }
     });
-
   }
   async sendSocket(dataToSendSocket: any, authCode: any) {
     //Send Socket
     const urlLogin = process.env.SOCKET_API;
     if (authCode && dataToSendSocket) {
       let dataToObject = {
-        redeem: JSON.stringify(dataToSendSocket)
-      }
+        redeem: JSON.stringify(dataToSendSocket),
+      };
       const paramsRedeem = new URLSearchParams(dataToObject);
-      console.log(paramsRedeem, 'paramsRedeem')
+      console.log(paramsRedeem, "paramsRedeem");
       const config = {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

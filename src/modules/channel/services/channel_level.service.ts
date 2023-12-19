@@ -11,7 +11,7 @@ export class ChannelLevelService {
   constructor(
     @InjectModel(ChannelLevel.name)
     private channelLevelModel: Model<ChannelLevelDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -152,10 +152,7 @@ export class ChannelLevelService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelLevelModel.findOneAndUpdate(
-        { _id: dataUpdate._id },
-        { $set: dataUpdate }
-      );
+      let dataReturn = await this.channelLevelModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
@@ -341,7 +338,11 @@ export class ChannelLevelService {
    */
   async updateCount(dataFilter: any, dataUpdate: any) {
     try {
-      let dataReturn: any = this.channelLevelModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate }, { new: true });
+      let dataReturn: any = this.channelLevelModel.findByIdAndUpdate(
+        dataFilter._id,
+        { $inc: dataUpdate },
+        { new: true }
+      );
       return dataReturn;
     } catch (e) {
       return null;

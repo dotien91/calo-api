@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsJSON,
-  IsLatitude,
-  IsLongitude,
-} from "class-validator";
+import { IsString, IsJSON, IsLatitude, IsLongitude } from "class-validator";
 export class CreateCityDto {
   @IsString()
   city_name: string;

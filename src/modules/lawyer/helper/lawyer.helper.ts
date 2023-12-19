@@ -44,7 +44,6 @@ export class LawyerHelper {
       }
 
       // self.handleProcessCategory();
-
     }, 1000);
   }
 
@@ -60,28 +59,28 @@ export class LawyerHelper {
         // console.log(dataItem)
         let pointLawyer = 0;
         if (officeNumber) {
-          pointLawyer++
+          pointLawyer++;
         }
         if (description) {
-          pointLawyer++
+          pointLawyer++;
         }
         if (website) {
-          pointLawyer++
+          pointLawyer++;
         }
         // console.log(dataItem?.avatar?.media_url, 'dataItem?.avatar?.media_url')
         // console.log(dataItem?.avatar?.media_url?.indexOf(".svg"), 'dataItem?.avatar?.media_url?.indexOf(".svg")')
         if (dataItem?.avatar?.media_url?.indexOf(".svg") === -1) {
-          pointLawyer++
+          pointLawyer++;
         }
         // console.log(pointLawyer, 'pointLawyer++')
         let dataUpdate = {
           points: pointLawyer,
-          _id: dataItem?._id?.toString()
-        }
+          _id: dataItem?._id?.toString(),
+        };
         let dataReturn = await this.lawyerService.update(dataUpdate);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -144,7 +143,7 @@ export class LawyerHelper {
 
       for (let dataItem of dataUpdate) {
         if (!dataItem?.loc) {
-          console.log(dataItem?.name)
+          console.log(dataItem?.name);
         }
         //   let dataLatLon = dataItem?.maps?.coordinates;
         //   console.log(dataItem?.maps?.coordinates)
@@ -198,7 +197,7 @@ export class LawyerHelper {
             dataLatLon = [dataMap[0]?.latlong[1], dataMap[0]?.latlong[0]];
           }
           console.log(JSON.parse(profileMap));
-        } catch (error) { }
+        } catch (error) {}
 
         let dataContact = [];
 

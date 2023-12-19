@@ -1,3 +1,3 @@
 export class SortByContactFormDto {
-  createdAt?: string
+  createdAt?: string;
 }

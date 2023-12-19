@@ -1,39 +1,39 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsDateString, IsString, IsNumberString, IsJSON, IsBooleanString} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsOptional, IsDateString, IsString, IsNumberString, IsJSON, IsBooleanString } from "class-validator";
 export class CreateHandleServiceDto {
   @IsString()
   @ApiProperty()
-  handle: string | String
+  handle: string | String;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  title: string
+  title: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  description: string
+  description: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  avatar: string
+  avatar: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_album?: any
+  public_album?: any;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  sub_menu?: any
+  sub_menu?: any;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  long_description?: string
+  long_description?: string;
 
   @IsString()
   @IsOptional(null)

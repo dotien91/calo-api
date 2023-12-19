@@ -1,3 +1,3 @@
 export class SortByConfigDto {
-  createdAt?: string
+  createdAt?: string;
 }

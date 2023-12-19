@@ -40,14 +40,13 @@ export class ListTopicPostDto {
 
   @IsString()
   @IsOptional(null)
-  topic_id: string
+  topic_id: string;
 
   @IsNumberString()
   @IsOptional(null)
-  is_homepage: number
+  is_homepage: number;
 
   @IsNumberString()
   @IsOptional(null)
-  is_trending: number
-
+  is_trending: number;
 }

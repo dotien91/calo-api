@@ -20,14 +20,14 @@ export class Short {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   language: String;
 
@@ -64,28 +64,28 @@ export class Short {
     default: 0,
     nullable: false,
   })
-  like_number: Number
+  like_number: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  view_number: Number
+  view_number: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  comment_number: Number
+  comment_number: Number;
 
   @Prop({
     type: Number,
     default: 1,
     nullable: false,
   })
-  short_status: Number
+  short_status: Number;
 
   @Prop({
     type: MongooseSchema.Types.Array,

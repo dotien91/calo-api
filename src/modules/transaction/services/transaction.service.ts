@@ -13,7 +13,7 @@ export class TransactionService {
   constructor(
     @InjectModel(Transaction.name)
     private transactionsModel: Model<TransactionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -137,7 +137,7 @@ export class TransactionService {
 
   async getUserIncome(filter: SearchTransactionDto, sortBy: SortByTransactionDto, page: number, limit: number) {
     let condition = await this.getCondition(filter);
-    console.log(condition, 'condition')
+    console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);

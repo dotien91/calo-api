@@ -12,7 +12,7 @@ export class ContactFormService {
   constructor(
     @InjectModel(ContactForm.name)
     private contactFormModel: Model<ContactFormDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -136,14 +136,13 @@ export class ContactFormService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<ContactForm> {
-
     let populateObject = {
       path: "user_id",
-      select: "bio user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-      populate:
-      {
+      select:
+        "bio user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+      populate: {
         path: "user_option_id",
-      }
+      },
     };
 
     return await this.contactFormModel

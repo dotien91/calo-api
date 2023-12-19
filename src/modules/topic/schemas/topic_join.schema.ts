@@ -20,7 +20,7 @@ export class TopicJoin {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Topic", index: true })
@@ -38,13 +38,13 @@ export class TopicJoin {
     default: 0,
     index: true,
   })
-  is_official: Number
+  is_official: Number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  child_number: Number
+  child_number: Number;
 
   @Prop({
     type: String,

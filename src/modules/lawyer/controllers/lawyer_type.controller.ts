@@ -8,9 +8,9 @@ import { UpdateLawyerTypeDto } from "../dto/update.lawyer_type.dto";
 import { ApiTags } from "@nestjs/swagger";
 
 @Controller("lawyer-type")
-@ApiTags('lawyer')
+@ApiTags("lawyer")
 export class LawyerTypeController {
-  constructor(private readonly lawyerTypeHelper: LawyerTypeHelper) { }
+  constructor(private readonly lawyerTypeHelper: LawyerTypeHelper) {}
 
   @Post("/create-type")
   async createNewLawyerType(
@@ -31,11 +31,7 @@ export class LawyerTypeController {
   }
 
   @Get("/list-type")
-  async getListLawyerType(
-    @Query() query: SearchLawyerTypeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getListLawyerType(@Query() query: SearchLawyerTypeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.lawyerTypeHelper.getListLawyerType(query, res, req);
   }
 
@@ -47,7 +43,6 @@ export class LawyerTypeController {
   ) {
     return await this.lawyerTypeHelper.getListLawyerCategory(query, res, req);
   }
-
 
   @Patch("/admin-update-type")
   async updateTypeByAdmin(
@@ -86,5 +81,4 @@ export class LawyerTypeController {
   async removeLawyerCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.lawyerTypeHelper.removeLawyerCategory(id, res, req);
   }
-
 }

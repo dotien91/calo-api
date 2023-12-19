@@ -1,6 +1,6 @@
 // file: ../middlewares/check-document-size.middleware.ts
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
 
 @Injectable()
 export class CheckDocumentSizeMiddleware implements NestMiddleware {
@@ -11,7 +11,7 @@ export class CheckDocumentSizeMiddleware implements NestMiddleware {
     if (documentSize <= 102400) {
       next();
     } else {
-      res.status(400).json({ message: 'The document you post is too large, please try again!' });
+      res.status(400).json({ message: "The document you post is too large, please try again!" });
     }
   }
 }

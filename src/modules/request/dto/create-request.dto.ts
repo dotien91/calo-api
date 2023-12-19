@@ -75,8 +75,8 @@ export class CreateRequestDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  poll_ids?: any
+  poll_ids?: any;
 
-  data_json?: string
-  ref_id?: string
+  data_json?: string;
+  ref_id?: string;
 }

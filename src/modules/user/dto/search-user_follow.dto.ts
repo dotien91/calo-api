@@ -1,31 +1,31 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {IsString, IsOptional, IsNumberString, IsNumber, IsIn} from "class-validator";
+import { IsString, IsOptional, IsNumberString, IsNumber, IsIn } from "class-validator";
 
 export class SearchUserFollowDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  page?: number
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit?: number
+  limit?: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 
   @IsString()
   @ApiProperty()
-  user_id?: string
+  user_id?: string;
 
   @IsString()
   @ApiProperty()
-  channel_id?: string
+  channel_id?: string;
 
   @IsString()
   @ApiProperty()
-  auth_id?: string
+  auth_id?: string;
 }

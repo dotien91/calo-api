@@ -53,8 +53,8 @@ export class TicketHelper {
     private notificationHelper: NotificationHelper,
     private channelPermissionService: ChannelPermissionService,
     private readonly channelService: ChannelService,
-    private readonly eventHookNotificationService: EventHookNotificationService,
-  ) { }
+    private readonly eventHookNotificationService: EventHookNotificationService
+  ) {}
 
   async handleRedditCategory() {
     let urlToCrawl = "https://www.reddit.com/r/legaladvice";
@@ -574,7 +574,6 @@ export class TicketHelper {
       delete dataToFilter.order_by;
       let dataReturn = await this.ticketService.filter(dataToFilter, orderByOBject, page, limit);
 
-
       let dataCount = await this.ticketService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
@@ -621,7 +620,7 @@ export class TicketHelper {
         // console.log(error);
         return null;
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -640,11 +639,16 @@ export class TicketHelper {
       }
 
       let dataSlug = this.toSlug(createTicketData.post_title);
-      let getTotalAdmin = await this.channelPermissionService.filter({ channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" }, {}, 1, 100);
+      let getTotalAdmin = await this.channelPermissionService.filter(
+        { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
+        {},
+        1,
+        100
+      );
       let userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: Number) => {
-        return channelPermissionItem?.user_id?._id?.toString()
+        return channelPermissionItem?.user_id?._id?.toString();
       });
-      let totalArray = [...[userObject._id.toString()], ...userArray]
+      let totalArray = [...[userObject._id.toString()], ...userArray];
       let channelId = req?.channel_id || null;
       createTicketData = {
         ...createTicketData,
@@ -692,7 +696,7 @@ export class TicketHelper {
           return `${userObject?.display_name} tạo mới ticket`;
         },
         title: `${userObject?.display_name.toLocaleUpperCase()} TẠO MỚI TICKET THÀNH CÔNG`,
-      })
+      });
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -763,7 +767,7 @@ export class TicketHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + dataTicket?.post_slug,
           event_name: "send_mail_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -868,7 +872,7 @@ export class TicketHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + dataTicket?.post_slug,
           event_name: "reply_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -933,8 +937,8 @@ export class TicketHelper {
         throw new ForbiddenException("Ticket not exist!");
       }
       let dataUserObject = dataTicketObject?.user_id?.map((userObject: any, index: number) => {
-        return userObject?._id?.toString()
-      })
+        return userObject?._id?.toString();
+      });
 
       //check permission
       if (dataUserObject?.indexOf(userObject?._id?.toString()) === -1) {
@@ -1006,7 +1010,7 @@ export class TicketHelper {
           return `${userObject?.display_name} tạo mới ticket comment`;
         },
         title: `${userObject?.display_name.toLocaleUpperCase()} TẠO MỚI TICKET COMMENT`,
-      })
+      });
 
       setTimeout(async () => {
         // await this.handleSendNotification(userObject, dataTicket, dataCreate, authCode, dataPermission?.channel_id);
@@ -1355,8 +1359,8 @@ export class TicketHelper {
       let ticketObject = await this.ticketService.findById(dataUpdate?._id?.toString());
 
       let dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
-        return userObject?._id?.toString()
-      })
+        return userObject?._id?.toString();
+      });
 
       //check permission
       if (dataUserObject?.indexOf(userObject?._id?.toString()) === -1) {
@@ -1458,8 +1462,8 @@ export class TicketHelper {
       let channelId = ticketObject.channel_id;
 
       let dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
-        return userObject?._id?.toString()
-      })
+        return userObject?._id?.toString();
+      });
 
       //check permission
       if (dataUserObject?.indexOf(userObject?._id?.toString()) === -1) {
@@ -1472,7 +1476,6 @@ export class TicketHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
-
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1533,7 +1536,7 @@ export class TicketHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("comment/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("comment/delete") !== -1)
       ) {
         havePermission = true;
       }

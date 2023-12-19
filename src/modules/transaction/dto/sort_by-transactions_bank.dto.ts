@@ -1,3 +1,3 @@
 export class SortByTransactionBankDto {
-  createdAt?: string
+  createdAt?: string;
 }

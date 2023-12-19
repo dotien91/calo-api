@@ -1,3 +1,3 @@
 export class SortByCityDto {
-  createdAt?: string
+  createdAt?: string;
 }

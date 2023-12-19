@@ -31,5 +31,5 @@ export class ListChannelLevelDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 }

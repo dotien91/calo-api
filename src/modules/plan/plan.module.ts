@@ -25,7 +25,7 @@ import { SubscribeService } from "../subscribe/services/subscribe.service";
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: HandleService.name, schema: HandleServiceSchema },
-      { name: Subscribe.name, schema: SubscribeSchema }
+      { name: Subscribe.name, schema: SubscribeSchema },
     ]),
   ],
   controllers: [SubscribeController],
@@ -41,4 +41,4 @@ import { SubscribeService } from "../subscribe/services/subscribe.service";
     HandleServiceService,
   ],
 })
-export class PlanModule { }
+export class PlanModule {}

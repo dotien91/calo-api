@@ -100,14 +100,15 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: UserSession.name, schema: UserSessionSchema },
@@ -206,7 +207,8 @@ import { GiftHelper } from "../gift/helper/gift.helper";
     EventHookNotificationService,
     GiftHelper,
   ],
-  exports: [UserFilterHelper,
+  exports: [
+    UserFilterHelper,
     UserAnonymousService,
     UserAnonymousSessionService,
     UserBlockService,
@@ -219,6 +221,7 @@ import { GiftHelper } from "../gift/helper/gift.helper";
     UserQuestionService,
     UserSessionService,
     UserViewService,
-    UserService],
+    UserService,
+  ],
 })
-export class UserModule { }
+export class UserModule {}

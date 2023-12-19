@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class CreateUserFollowLawyerDto {
-	@IsString()
+  @IsString()
   @ApiPropertyOptional()
-	lawyer_id: string
+  lawyer_id: string;
 }

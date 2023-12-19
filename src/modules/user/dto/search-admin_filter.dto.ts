@@ -5,205 +5,205 @@ export class SearchAdminFilterDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  page: number
+  page: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit: number
+  limit: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  type?: string
+  type?: string;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  from?: string
+  from?: string;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  to?: string
+  to?: string;
 
-  @IsIn(['_id', 'user_login', 'display_name', 'user_email'])
+  @IsIn(["_id", "user_login", "display_name", "user_email"])
   @ApiPropertyOptional()
   @IsOptional(null)
-  select?: string
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  search?: string
+  select?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id?: string
+  search?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  country?: string
+  user_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  last_active?: string
+  country?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  status?: string
+  last_active?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  plan_id?: string
+  status?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  service_id?: string
+  plan_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  payment_method?: string
+  service_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_smart?: number
+  payment_method?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  base_height?: string
+  is_smart?: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  block_users?: any[]
+  base_height?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  follow_users?: any[]
+  block_users?: any[];
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_active?: string
+  follow_users?: any[];
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_birthday_year?: string
+  user_active?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_birthday_year_from?: string
+  user_birthday_year?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_birthday_year_to?: string
+  user_birthday_year_from?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  base_weight?: string
+  user_birthday_year_to?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  locking_for?: string
+  base_weight?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  base_role?: string
+  locking_for?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  body_type?: string
+  base_role?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  relationship_status?: string
+  body_type?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  online_time?: number
+  relationship_status?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  language?: string
+  online_time?: number;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  language?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  sexual_content?: string
+  sexual_content?: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  premium_level?: string
+  premium_level?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  free_number?: string
+  free_number?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  city?: string
+  city?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_guest?: string
+  is_guest?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_match?: string
+  is_match?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_spotlight?: string
+  user_spotlight?: string;
 
   //@IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  distance?: number
+  distance?: number;
 
   @IsLatitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  latitude?: number
+  latitude?: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  method?: string
+  method?: string;
 
   @IsLongitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  longitude?: number
+  longitude?: number;
 }

@@ -13,7 +13,7 @@ export class ChallengeService {
   constructor(
     @InjectModel(Challenge.name)
     private challengeModel: Model<ChallengeDocument>
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(ChallengeService.name);
 

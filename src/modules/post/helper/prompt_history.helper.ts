@@ -45,7 +45,7 @@ export class PromptHistoryHelper {
     private postPromptService: PostPromptService,
     private postAnonymousService: PostAnonymousService,
     private promptHistoryService: PromptHistoryService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -57,18 +57,17 @@ export class PromptHistoryHelper {
    */
   async createNewPromptHistory(createDataHistory: CreatePromptHistoryDto, res: Response, req: ExpressRequestDto) {
     try {
-
       let authCodeHeader = req?.headers;
       let authCodeString = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
       }
-      console.log(authCodeString, 'authCodeString')
+      console.log(authCodeString, "authCodeString");
 
       if (createDataHistory.media_data) {
         createDataHistory = { ...createDataHistory, ...{ media_data: JSON.parse(createDataHistory.media_data) } };
       }
-      console.log(createDataHistory, 'createDataHistory')
+      console.log(createDataHistory, "createDataHistory");
       let dataCreate = await this.promptHistoryService.create(createDataHistory);
       let dataReturn = await this.promptHistoryService.findById(dataCreate?._id?.toString());
       return res

@@ -14,26 +14,18 @@ import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 
 @Controller("course")
-@ApiTags('course')
-@ApiBearerAuth('ICEO')
+@ApiTags("course")
+@ApiBearerAuth("ICEO")
 export class CourseController {
-  constructor(private readonly courseHelper: CourseHelper) { }
+  constructor(private readonly courseHelper: CourseHelper) {}
 
   @Get("/list")
-  async getUserCourse(
-    @Query() query: ListCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserCourse(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseList(query, res, req);
   }
 
   @Get("/admin-list")
-  async getAdminCourse(
-    @Query() query: ListCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminCourse(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseListByAdmin(query, res, req);
   }
 
@@ -47,88 +39,57 @@ export class CourseController {
   }
 
   @Patch("/update")
-  async updateCourse(
-    @Body() dataUpdate: UpdateCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateCourse(@Body() dataUpdate: UpdateCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.updateCourse(dataUpdate, res, req);
   }
 
   @Post("view")
-  handleViewUser(
-    @Body() dataView: CreateCourseViewDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleViewUser(@Body() dataView: CreateCourseViewDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processViewCourse(dataView, req, res);
   }
 
   @Post("join")
-  handleFollowUser(
-    @Body() dataFollow: CreateCourseLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateCourseLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processFollowUser(dataFollow, req, res);
   }
 
   @Post("add-user")
-  handleAddUser(
-    @Body() addAdd: CreateCourseLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
-    return this.courseHelper.handleAddUserToCorse(addAdd, req, res)
+  handleAddUser(@Body() addAdd: CreateCourseLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return this.courseHelper.handleAddUserToCorse(addAdd, req, res);
   }
 
   @Get("list-join")
-  handleGetListLike(
-    @Query() query: ListCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleGetListLike(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.handleGetListLike(query, res, req);
   }
 
   @Get("list-member")
-  handleGetListMember(
-    @Query() query: ListMemberDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleGetListMember(@Query() query: ListMemberDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.handleGetListMember(query, res, req);
   }
 
   @Get("list-view")
-  handleGetListView(
-    @Query() query: ListCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleGetListView(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.handleGetListView(query, res, req);
   }
 
   @Post("un-join")
-  handleUnFollowUser(
-    @Body() dataFollow: CreateCourseLikeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleUnFollowUser(@Body() dataFollow: CreateCourseLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processUnFollowUser(dataFollow, req, res);
   }
 
   @Patch("/update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateCourseDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.handleUpdateCourseByAdmin(dataUpdate, res, req);
   }
 
   @Get("detail/:id")
-  async getDetailCourse(@Query() query: ListCourseDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailCourse(
+    @Query() query: ListCourseDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.courseHelper.handleGetDetailCourse(query, id, res, req);
   }
 
@@ -138,12 +99,8 @@ export class CourseController {
   }
 
   @Get("/list-module")
-  @ApiOperation({ summary: 'Variable: is_parent have 2 value is 0 and 1' })
-  async getListModule(
-    @Query() query: ListCourseModuleDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  @ApiOperation({ summary: "Variable: is_parent have 2 value is 0 and 1" })
+  async getListModule(@Query() query: ListCourseModuleDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseModuleList(query, res, req);
   }
 

@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,12 +31,12 @@ export class ListPodcastDto {
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  order_type: any
+  order_type: any;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  channel_id: any
+  channel_id: any;
 
   @IsString()
   @IsOptional(null)

@@ -37,7 +37,6 @@ export class ChallengeStage extends Document {
 }
 export const ChallengeStageSchema = SchemaFactory.createForClass(ChallengeStage);
 
-
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
@@ -213,11 +212,10 @@ export class Challenge {
     nullable: false,
   })
   add_all_user: Boolean;
-
 }
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge).index({
   description: "text",
   long_description: "text",
-  title: "text"
+  title: "text",
 });

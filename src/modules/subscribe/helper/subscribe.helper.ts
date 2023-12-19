@@ -30,7 +30,7 @@ export class SubscribeHelper {
     private appSubscribeService: SubscribeService,
     private userPermissionService: UserPermissionService,
     private planService: PlanService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

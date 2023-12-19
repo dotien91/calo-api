@@ -6,10 +6,7 @@ import { UpdateChatHistoryDto } from "../dto/update-chat_history.dto";
 import { Model } from "mongoose";
 import { ObjectId } from "mongodb";
 import { InjectModel } from "@nestjs/mongoose";
-import {
-  ChatHistory,
-  ChatHistoryDocument,
-} from "../schemas/chat_history.schema";
+import { ChatHistory, ChatHistoryDocument } from "../schemas/chat_history.schema";
 
 @Injectable()
 export class ChatHistoryService {
@@ -35,14 +32,14 @@ export class ChatHistoryService {
       condition = Object.assign(condition, { topic_post_id: filter.topic_post_id });
     }
     if (filter.from_id || filter.to_id) {
-      let dataFilter = {}
+      let dataFilter = {};
       if (filter.from_id) {
         let objectIdFrom = new ObjectId(filter?.from_id);
-        dataFilter = {...dataFilter, ...{ $gt: objectIdFrom}}
+        dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
         let objectIdTo = new ObjectId(filter?.to_id);
-        dataFilter = {...dataFilter, ...{ $lte: objectIdTo}}
+        dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
     }
@@ -77,9 +74,7 @@ export class ChatHistoryService {
    * @param createChatRoom
    * @returns
    */
-  async create(
-    createChatRoom: CreateChatHistoryDto
-  ): Promise<ChatHistoryDocument> {
+  async create(createChatRoom: CreateChatHistoryDto): Promise<ChatHistoryDocument> {
     const createChatRoomData = new this.chatHistoryModel(createChatRoom);
     return await createChatRoomData.save();
   }
@@ -100,12 +95,7 @@ export class ChatHistoryService {
    * @param limit
    * @returns
    */
-  async filter(
-    filter: FilterChatHistoryDto,
-    sortBy: SortByChatHistoryDto,
-    page: number,
-    limit: number
-  ) {
+  async filter(filter: FilterChatHistoryDto, sortBy: SortByChatHistoryDto, page: number, limit: number) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -119,7 +109,6 @@ export class ChatHistoryService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-
     let dataRoom = await this.chatHistoryModel
       .find(condition, projection)
       .populate({
@@ -131,8 +120,7 @@ export class ChatHistoryService {
       .populate({
         path: "media_ids",
         options: { strictPopulate: false },
-        select:
-          "media_url media_type media_thumbnail media_mime_type media_meta media_file_name createBy media_status",
+        select: "media_url media_type media_thumbnail media_mime_type media_meta media_file_name createBy media_status",
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -146,12 +134,8 @@ export class ChatHistoryService {
    * @param dataToSearch
    * @returns
    */
-  async findOneRoom(
-    dataToSearch: FilterChatHistoryDto
-  ): Promise<ChatHistoryDocument> {
-    return (
-      await this.chatHistoryModel.findOne(dataToSearch).exec()
-    );
+  async findOneRoom(dataToSearch: FilterChatHistoryDto): Promise<ChatHistoryDocument> {
+    return await this.chatHistoryModel.findOne(dataToSearch).exec();
   }
 
   /**

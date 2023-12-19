@@ -1,9 +1,9 @@
-import { IsString } from "class-validator"
+import { IsString } from "class-validator";
 
 export class updateStatusContactForm {
   @IsString()
-  _id: string
+  _id: string;
 
   @IsString()
-  form_status: string
+  form_status: string;
 }

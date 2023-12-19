@@ -1,4 +1,4 @@
 export class SortByFaceDetectionDto {
-  createdAt?: 'DESC'|'ASC'
-  updatedAt?: 'DESC'|'ASC'
+  createdAt?: "DESC" | "ASC";
+  updatedAt?: "DESC" | "ASC";
 }

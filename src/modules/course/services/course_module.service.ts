@@ -11,7 +11,7 @@ export class CourseModuleService {
   constructor(
     @InjectModel(CourseModule.name)
     private courseLikeModel: Model<CourseModuleDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -81,7 +81,8 @@ export class CourseModuleService {
       .populate(
         "user_id",
         "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      ).populate("course_id")
+      )
+      .populate("course_id");
     return dataReturn;
   }
 
@@ -101,7 +102,7 @@ export class CourseModuleService {
       .populate(
         "user_id",
         "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      )
+      );
     return dataReturn;
   }
 

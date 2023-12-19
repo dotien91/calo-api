@@ -222,5 +222,5 @@ export class Course {
 export const CourseSchema = SchemaFactory.createForClass(Course).index({
   description: "text",
   long_description: "text",
-  title: "text"
+  title: "text",
 });

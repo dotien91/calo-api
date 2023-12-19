@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { User } from "../../../modules/user/schemas/user.schema";
 
-
 @Schema()
 export class CountryLanguage extends Document {
   @Prop({
@@ -16,7 +15,6 @@ export class CountryLanguage extends Document {
   value: string;
 }
 export const CountryLanguageSchema = SchemaFactory.createForClass(CountryLanguage);
-
 
 export type EsimCountryDocument = EsimCountry & Document;
 
@@ -34,7 +32,7 @@ export class EsimCountry {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
@@ -47,14 +45,14 @@ export class EsimCountry {
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   name: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
   country_code: String;
 
@@ -66,5 +64,5 @@ export class EsimCountry {
 }
 
 export const EsimCountrySchema = SchemaFactory.createForClass(EsimCountry).index({
-  name: "text"
+  name: "text",
 });

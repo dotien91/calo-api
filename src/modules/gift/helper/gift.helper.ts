@@ -10,7 +10,7 @@ import {
   Req,
   Param,
   Inject,
-  forwardRef
+  forwardRef,
 } from "@nestjs/common";
 import { UserService } from "../../user/services/user.service";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -37,7 +37,6 @@ import { NotiGiveGiftDto } from "../dto/noti-give-gift.dto";
 import { QueueService } from "../../../modules/queue/queue.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 
-
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -59,8 +58,8 @@ export class GiftHelper {
     private readonly channelService: ChannelService,
     private notificationService: NotificationService,
     private readonly queueService: QueueService,
-    private readonly eventHookNotificationService: EventHookNotificationService,
-  ) { }
+    private readonly eventHookNotificationService: EventHookNotificationService
+  ) {}
 
   private readonly logger = new Logger(GiftHelper.name);
 
@@ -76,36 +75,43 @@ export class GiftHelper {
         // date_time: String(new Date()),
         date: String(new Date()),
         stock_qty: "0",
-        gift_type: "gift"
-      }
+        gift_type: "gift",
+      };
       let giftsDelivered = await this.giftService.filter(giftFilter, {}, 1, 100000);
 
       giftsDelivered.forEach(async (gift) => {
         let channelPermissionFilter = {
           channel_id: gift?.channel_id?.toString(),
-        }
+        };
         if (gift.gift_conditions.point) {
-          channelPermissionFilter = Object.assign(channelPermissionFilter, { point: { $gte: gift.gift_conditions.point }, })
+          channelPermissionFilter = Object.assign(channelPermissionFilter, {
+            point: { $gte: gift.gift_conditions.point },
+          });
         }
         if (gift.gift_conditions.like) {
-          channelPermissionFilter = Object.assign(channelPermissionFilter, { total_like: { $gte: gift.gift_conditions.like }, })
+          channelPermissionFilter = Object.assign(channelPermissionFilter, {
+            total_like: { $gte: gift.gift_conditions.like },
+          });
         }
         if (gift.gift_conditions.comment) {
-          channelPermissionFilter = Object.assign(channelPermissionFilter, { total_comment: { $gte: gift.gift_conditions.comment }, })
+          channelPermissionFilter = Object.assign(channelPermissionFilter, {
+            total_comment: { $gte: gift.gift_conditions.comment },
+          });
         }
         if (gift.gift_conditions.level) {
-          channelPermissionFilter = Object.assign(channelPermissionFilter, { level_number: { $gte: gift.gift_conditions.level }, })
+          channelPermissionFilter = Object.assign(channelPermissionFilter, {
+            level_number: { $gte: gift.gift_conditions.level },
+          });
         }
         let userSatisfy = await this.channelPermissionService.filter(channelPermissionFilter, {}, 1, 100000);
         if (userSatisfy.length > 0) {
-          console.log(userSatisfy.map(item => console.log(item?.user_id?._id)
-          ));
+          console.log(userSatisfy.map((item) => console.log(item?.user_id?._id)));
           let createGiveGiftDto: NotiGiveGiftDto = {
             quantity: gift.stock_qty.valueOf(),
             gift_id: gift,
-            partner_id: userSatisfy.map(item => item?.user_id?._id).join(',')
+            partner_id: userSatisfy.map((item) => item?.user_id?._id).join(","),
           };
-          this.queueService.addTaskGift(createGiveGiftDto)
+          this.queueService.addTaskGift(createGiveGiftDto);
         }
       });
     } catch (error) {
@@ -134,12 +140,15 @@ export class GiftHelper {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -165,7 +174,10 @@ export class GiftHelper {
         };
       }
 
-      if (createGiftData.hasOwnProperty("gift_digital_media") && (createGiftData?.gift_digital_media == "" || createGiftData?.gift_digital_media == undefined)) {
+      if (
+        createGiftData.hasOwnProperty("gift_digital_media") &&
+        (createGiftData?.gift_digital_media == "" || createGiftData?.gift_digital_media == undefined)
+      ) {
         delete createGiftData?.gift_digital_media;
       }
 
@@ -194,12 +206,15 @@ export class GiftHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -247,12 +262,15 @@ export class GiftHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -284,10 +302,9 @@ export class GiftHelper {
               case "cancel":
                 return `Quà tặng tại kênh ${params.channel_name} đã bị hủy`;
             }
-
           },
           title: `QUÀ CỦA BẠN ĐANG DI CHUYỂN`,
-        })
+        });
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -331,7 +348,7 @@ export class GiftHelper {
       let channelId = req?.channel_id || query?.channel_id;
 
       if (channelId) {
-        dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } }
+        dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
       }
 
       let dataReturn = await this.userGiftService.filter(dataToFilter, orderByOBject, page, limit);
@@ -428,14 +445,13 @@ export class GiftHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-
       //Check Permission
       let dataToFilter = query;
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
       if (req?.channel_id) {
-        dataToFilter = { ...dataToFilter, ...{ channel_id: req?.channel_id } }
+        dataToFilter = { ...dataToFilter, ...{ channel_id: req?.channel_id } };
       }
       let dataReturn = await this.giftService.filter(dataToFilter, orderByOBject, page, limit);
       let dataCount = await this.giftService.count(dataToFilter);
@@ -523,9 +539,7 @@ export class GiftHelper {
     }
   }
 
-  async handleSendNotiGiftsDerlivered(data: any) {
-
-  }
+  async handleSendNotiGiftsDerlivered(data: any) {}
 
   async handleAutoGiveGift(updateGiftData: NotiGiveGiftDto) {
     try {
@@ -547,10 +561,13 @@ export class GiftHelper {
           let totalQuantityUpdate = 0;
           let stock_qty = Number(dataGift?.stock_qty);
           for (let partnerObject of dataPartnerObject) {
-            let dataUserGift = await this.notificationService.findOne({ gift_id: dataGift._id.toString(), user_id: partnerObject });
+            let dataUserGift = await this.notificationService.findOne({
+              gift_id: dataGift._id.toString(),
+              user_id: partnerObject,
+            });
             if (!dataUserGift && stock_qty > 0) {
               let totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
-              let dataUser = await this.userService.findOne({ _id: partnerObject })
+              let dataUser = await this.userService.findOne({ _id: partnerObject });
 
               // let dataToReturn = null;
               let dataCoinUser = {
@@ -559,15 +576,15 @@ export class GiftHelper {
                 gift_id: dataGift._id.toString(),
                 quantity: updateGiftData?.quantity,
                 total_price: totalPrice,
-                gift_status: "received"
+                gift_status: "received",
               };
               totalQuantityUpdate = totalQuantityUpdate + Number(updateGiftData?.quantity);
               let dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
               this.logger.log("Send Gift To Memmer Success" + JSON.stringify(dataToReturnPartner));
-              await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift })
+              await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift });
               // await this.notificationHelper.sendNotificationAndEmailReceiveGift(dataChannel, dataUser, dataGift);
               await this.giftService.updateCount({ _id: dataGift?._id?.toString() }, { stock_qty: -1 });
-              stock_qty--
+              stock_qty--;
             }
           }
         }
@@ -606,8 +623,9 @@ export class GiftHelper {
         let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
         let havePermission = false;
         if (
-          userPermission?.channel_role == "mentor" || userPermission?.channel_role == "super_admin" ||
-          (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("gift/add") !== -1))
+          userPermission?.channel_role == "mentor" ||
+          userPermission?.channel_role == "super_admin" ||
+          (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("gift/add") !== -1)
         ) {
           havePermission = true;
         }
@@ -631,9 +649,8 @@ export class GiftHelper {
           let totalQuantityUpdate = 0;
 
           for (let partnerObject of dataPartnerObject) {
-
             let totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
-            let dataUser = await this.userService.findOne({ _id: partnerObject })
+            let dataUser = await this.userService.findOne({ _id: partnerObject });
 
             // let dataToReturn = null;
             let dataCoinUser = {
@@ -642,19 +659,22 @@ export class GiftHelper {
               quantity: updateGiftData?.quantity,
               channel_id: dataGift?.channel_id,
               total_price: totalPrice,
-              gift_status: "prepare"
+              gift_status: "prepare",
             };
             totalQuantityUpdate = totalQuantityUpdate + Number(updateGiftData?.quantity);
             let dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
-            dataToReturn.push(dataToReturnPartner?.toObject())
-            await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift })
+            dataToReturn.push(dataToReturnPartner?.toObject());
+            await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift });
             // await this.notificationHelper.sendNotificationAndEmailReceiveGift(dataChannel, dataUser, dataGift);
           }
           if (!dataToReturn || !dataToReturn?.length) {
             throw new BadRequestException("Can't give gift!");
           }
           //Update Count
-          await this.giftService.updateCount({ _id: dataGift?._id?.toString() }, { stock_qty: (0 - totalQuantityUpdate) })
+          await this.giftService.updateCount(
+            { _id: dataGift?._id?.toString() },
+            { stock_qty: 0 - totalQuantityUpdate }
+          );
         } else {
           throw new BadRequestException("Gift not found!");
         }
@@ -663,7 +683,6 @@ export class GiftHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataToReturn);
-
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -805,12 +824,15 @@ export class GiftHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -956,26 +978,29 @@ export class GiftHelper {
       const userOject = req?.user_object;
       const channelPermission = await this.channelPermissionService.findOne({
         channel_id: channelId,
-        user_id: userOject?._id.toString()
-      })
+        user_id: userOject?._id.toString(),
+      });
       if (channelPermission) {
-        await this.channelPermissionService.updateCount({
-          channel_id: channelId,
-          user_id: userOject?._id.toString()
-        }, {
-          coin_number: pointPlus
-        })
+        await this.channelPermissionService.updateCount(
+          {
+            channel_id: channelId,
+            user_id: userOject?._id.toString(),
+          },
+          {
+            coin_number: pointPlus,
+          }
+        );
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
           .json({
-            coin: pointPlus
+            coin: pointPlus,
           });
       } else {
         throw new BadRequestException("Không tìm thấy thông tin người dùng trong Kênh!");
       }
     } catch (error) {
-      this.logger.log("Plus Coin Box Fails : ", error?.message)
+      this.logger.log("Plus Coin Box Fails : ", error?.message);
       throw new NotFoundException(error.message);
     }
   }

@@ -1,3 +1,3 @@
 export class SortBySubscribeDto {
-  createdAt?: string
+  createdAt?: string;
 }

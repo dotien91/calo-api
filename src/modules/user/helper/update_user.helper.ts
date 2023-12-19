@@ -86,7 +86,7 @@ export class UpdateUserHelper {
     private userLocationService: UserLocationService,
     private userAnonymousService: UserAnonymousService,
     private readonly channelPermissionService: ChannelPermissionService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("call");
   /**
@@ -237,7 +237,7 @@ export class UpdateUserHelper {
             }
             try {
               await this.faceDetectionHelper.handleDetectFromServer(image1Object, image2Object, userObject, dataIds);
-            } catch (error) { }
+            } catch (error) {}
           }
         }
       }
@@ -252,7 +252,7 @@ export class UpdateUserHelper {
             entity_type: "update_profile",
             content: user?.display_name,
             user_id: user?._id,
-            point_number: 0
+            point_number: 0,
           },
           "update_profile"
         );
@@ -346,7 +346,8 @@ export class UpdateUserHelper {
           }
           // use val
         }
-        let authCode = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjY2NDcxMjAsImRhdGEiOnsiX2lkIjoiNjRkODc2M2Y1NjUxMTAxOWJlZTEyM2U4Iiwia2V5IjoiNWNjN2YzZmQ1ODVkNzBmZmI3YmYxZTRmMGI1ZDE5OTAiLCJzaWduYXR1cmUiOiJlOTk2OTkyYzU3N2YyZjQwOWQyMGEwZDYyYTBhZGRlZiIsInNlc3Npb24iOiI2NTA5NTdkMGJhNzU4M2FkODIyNzJjMzcifSwiaWF0IjoxNjk1MTExMTIwfQ.mxk4ZiIi8yXo5ul6RCYCuyngimMy6syUQUHGwHNtQfg';
+        let authCode =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjY2NDcxMjAsImRhdGEiOnsiX2lkIjoiNjRkODc2M2Y1NjUxMTAxOWJlZTEyM2U4Iiwia2V5IjoiNWNjN2YzZmQ1ODVkNzBmZmI3YmYxZTRmMGI1ZDE5OTAiLCJzaWduYXR1cmUiOiJlOTk2OTkyYzU3N2YyZjQwOWQyMGEwZDYyYTBhZGRlZiIsInNlc3Npb24iOiI2NTA5NTdkMGJhNzU4M2FkODIyNzJjMzcifSwiaWF0IjoxNjk1MTExMTIwfQ.mxk4ZiIi8yXo5ul6RCYCuyngimMy6syUQUHGwHNtQfg";
 
         for (let countryItem of countriesMorning) {
           this.handleSendMessageForTime(countryItem, countryItem + "_morning", authCode);
@@ -727,7 +728,7 @@ export class UpdateUserHelper {
         try {
           userInterest = JSON.parse(updateData.user_interest);
           await this.userInterestService.updatePriority(userInterest);
-        } catch (error) { }
+        } catch (error) {}
       }
 
       let privateAlbum = [];
@@ -2038,7 +2039,7 @@ export class UpdateUserHelper {
       }
 
       return true;
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**

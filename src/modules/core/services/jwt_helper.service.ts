@@ -7,9 +7,7 @@ import { Request } from "express";
 
 @Injectable()
 export class JwtHelperService {
-  constructor(
-    private userSessionService: UserSessionService
-  ) { }
+  constructor(private userSessionService: UserSessionService) {}
 
   /**
    * @author Tony Vu
@@ -22,8 +20,8 @@ export class JwtHelperService {
     try {
       let authCodeHeader = req?.headers;
       let authCodeString = "";
-      if (req?.cookies['x-authorization']) {
-        authCodeString = req?.cookies['x-authorization'];
+      if (req?.cookies["x-authorization"]) {
+        authCodeString = req?.cookies["x-authorization"];
       }
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"];
@@ -56,11 +54,16 @@ export class JwtHelperService {
           let keyToCheck = this.MD5(userObject._id.toString() + "" + hashPassword);
           let signature = this.MD5(userObject.user_email + "/" + hashPassword);
           if (keyToCheck === data.key && signature === data.signature) {
-            return this.handleGetDataAuth(true, {
-              ...data,
-              ...{ session_data: userSessionToCheck },
-              ...{ user_object: userObject },
-            }, authCodeString, data?.session);
+            return this.handleGetDataAuth(
+              true,
+              {
+                ...data,
+                ...{ session_data: userSessionToCheck },
+                ...{ user_object: userObject },
+              },
+              authCodeString,
+              data?.session
+            );
           } else {
             return this.handleGetDataAuth(false, null, null, null);
           }
@@ -80,7 +83,7 @@ export class JwtHelperService {
    */
   async validateChannel(req: Request) {
     try {
-      let channelId = '';
+      let channelId = "";
       let headerObject = req?.headers;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -136,7 +139,7 @@ export class JwtHelperService {
       status: status,
       data: data,
       auth_code: authCode,
-      session_id: sessionId
+      session_id: sessionId,
     };
   }
 

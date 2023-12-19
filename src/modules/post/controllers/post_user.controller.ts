@@ -27,7 +27,7 @@ export class PostUserController {
     private readonly postHelper: PostHelper,
     private readonly categoryHelper: PostCategoryHelper,
     private readonly promptHistoryHelper: PromptHistoryHelper
-  ) { }
+  ) {}
 
   @Post("/create-user-prompt")
   async createNewUserPrompt(
@@ -62,11 +62,7 @@ export class PostUserController {
   }
 
   @Get("/history-detail/:id")
-  async findAll(
-    @Req() req: ExpressRequestDto,
-    @Res() res: Response,
-    @Param("id") id: string
-  ) {
+  async findAll(@Req() req: ExpressRequestDto, @Res() res: Response, @Param("id") id: string) {
     try {
       return this.promptHistoryHelper.getDetailPromptHistory(id, res, req);
     } catch (error) {

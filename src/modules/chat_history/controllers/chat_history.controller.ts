@@ -31,7 +31,7 @@ export class ChatHistoryController {
     private readonly chatHistoryHelper: ChatHistoryHelper,
     private readonly userPermissionService: UserPermissionService,
     private readonly chatRoomHelper: ChatRoomHelper
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("chat_history_controller");
 

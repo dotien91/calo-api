@@ -80,8 +80,8 @@ export class UserFollowLawyerService {
    * @param dataToSearch
    * @returns
    */
-   async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowLawyer[]> {
-    let condition = { user_id: userId, lawyer_id: { $in: userPartners }};
+  async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowLawyer[]> {
+    let condition = { user_id: userId, lawyer_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -137,13 +137,12 @@ export class UserFollowLawyerService {
     }
   };
 
-
   /**
    * @author Tony Vu
    * @param sortBy
    * @returns
    */
-   getSort(sortBy: any) {
+  getSort(sortBy: any) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -171,7 +170,7 @@ export class UserFollowLawyerService {
       .find(condition)
       .populate({
         path: "lawyer_id",
-        options: { strictPopulate: false }
+        options: { strictPopulate: false },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -188,7 +187,12 @@ export class UserFollowLawyerService {
    * @param limit
    * @returns
    */
-   async filterUser(filter: FilterFollowLawyerDto, sortBy: any, page: number, limit: number): Promise<UserFollowLawyer[]> {
+  async filterUser(
+    filter: FilterFollowLawyerDto,
+    sortBy: any,
+    page: number,
+    limit: number
+  ): Promise<UserFollowLawyer[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -199,8 +203,9 @@ export class UserFollowLawyerService {
       .populate({
         path: "user_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -209,4 +214,3 @@ export class UserFollowLawyerService {
     return dataReturn;
   }
 }
-

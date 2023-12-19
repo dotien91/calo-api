@@ -13,10 +13,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { UpdateUserGiftDto } from "../dto/update-user_gift.dto";
 
 @Controller("gift")
-@ApiTags('gift')
-@ApiBearerAuth('ICEO')
+@ApiTags("gift")
+@ApiBearerAuth("ICEO")
 export class GiftController {
-  constructor(private readonly giftHelper: GiftHelper) { }
+  constructor(private readonly giftHelper: GiftHelper) {}
 
   @Post("/create-gift")
   async createNewGift(@Body() createGiftData: CreateGiftDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -44,11 +44,7 @@ export class GiftController {
   }
 
   @Get("/list-gift")
-  async getListGift(
-    @Query() query: ListGiftDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getListGift(@Query() query: ListGiftDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.giftHelper.getListGift(query, res, req);
   }
 

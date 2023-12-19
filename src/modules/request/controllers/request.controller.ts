@@ -18,12 +18,10 @@ import { FilterListVote } from "../dto/filter-list_vote.dto";
 import { ListRequestLikeDto } from "../dto/list-request_like.dto";
 
 @Controller("request")
-@ApiTags('homepage')
-@ApiBearerAuth('ICEO')
+@ApiTags("homepage")
+@ApiBearerAuth("ICEO")
 export class RequestController {
-  constructor(
-    private readonly requestHelper: RequestHelper
-  ) { }
+  constructor(private readonly requestHelper: RequestHelper) {}
 
   /**
    * ######## FOR REQUEST ######
@@ -63,7 +61,11 @@ export class RequestController {
    * @returns
    */
   @Post("/create")
-  async createNewRequest(@Body() createRequestBody: CreateRequestDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewRequest(
+    @Body() createRequestBody: CreateRequestDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.createNewRequest(createRequestBody, res, req);
   }
 
@@ -92,21 +94,25 @@ export class RequestController {
   }
 
   /**
-  *
-  * @param id
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
   @Get("detail/:id")
-  async getDetailRequest(@Query() query: ListRequestDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailRequest(
+    @Query() query: ListRequestDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.handleGetDetailRequest(id, query, res, req);
   }
 
-
   /**
-  * ######## FOR COMMENT ######
-  */
+   * ######## FOR COMMENT ######
+   */
 
   /**
    *
@@ -128,7 +134,11 @@ export class RequestController {
    * @returns
    */
   @Patch("/update-comment")
-  async updateRequestComment(@Body() dataUpdate: UpdateRequestCommentDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async updateRequestComment(
+    @Body() dataUpdate: UpdateRequestCommentDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.handleUpdateRequestComment(dataUpdate, res, req);
   }
 
@@ -164,14 +174,13 @@ export class RequestController {
     return await this.requestHelper.createLike(createRequestBody, res, req);
   }
 
-
   /**
-  *
-  * @param createRequestBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createRequestBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-dislike")
   async createDislike(
     @Body() createRequestBody: CreateRequestLikeDto,
@@ -181,14 +190,13 @@ export class RequestController {
     return await this.requestHelper.createDislike(createRequestBody, res, req);
   }
 
-
   /**
-  *
-  * @param createRequestBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createRequestBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-like-comment")
   async createLikeComment(
     @Body() createRequestBody: CreateRequestLikeDto,
@@ -199,12 +207,12 @@ export class RequestController {
   }
 
   /**
-  *
-  * @param createRequestBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createRequestBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-dislike-comment")
   async createDislikeComment(
     @Body() createRequestBody: CreateRequestLikeDto,
@@ -238,10 +246,9 @@ export class RequestController {
     return await this.requestHelper.handleGetDetailComment(id, res, req);
   }
 
-
   /**
-  * ######## FOR CATEGORY ######
-  */
+   * ######## FOR CATEGORY ######
+   */
 
   /**
    *
@@ -287,7 +294,6 @@ export class RequestController {
     return await this.requestHelper.handleUpdateCategory(dataUpdate, res, req);
   }
 
-
   /**
    *
    * @param id
@@ -299,7 +305,6 @@ export class RequestController {
   async getDetailCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.requestHelper.handleGetDetailCategory(id, res, req);
   }
-
 
   /**
    *
@@ -314,17 +319,29 @@ export class RequestController {
   }
 
   @Post("/create-poll")
-  async createNewRequestPool(@Body() createRequestBody: CreateRequestPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewRequestPool(
+    @Body() createRequestBody: CreateRequestPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.createNewRequestPoll(createRequestBody, res, req);
   }
 
   @Post("vote-poll")
-  async voteRequestPool(@Body() createRequestBody: CreateRequestPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async voteRequestPool(
+    @Body() createRequestBody: CreateRequestPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.voteRequestPoll(createRequestBody, res, req);
   }
 
   @Post("un-vote-poll")
-  async unVoteRequestPool(@Body() createRequestBody: CreateRequestPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async unVoteRequestPool(
+    @Body() createRequestBody: CreateRequestPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.requestHelper.unVoteRequestPoll(createRequestBody, res, req);
   }
 

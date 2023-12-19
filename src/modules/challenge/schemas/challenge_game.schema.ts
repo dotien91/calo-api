@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Challenge } from './challenge.schema';
-import { ChatMedia } from '../../../modules/chat_media/schemas/chat_media.schema';
-import { Channel } from '../../../modules/channel/schemas/channel.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Challenge } from "./challenge.schema";
+import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
+import { Channel } from "../../../modules/channel/schemas/channel.schema";
 
 export type ChallengeGameDocument = ChallengeGame & Document;
 
@@ -25,13 +25,12 @@ export class GameActivity extends Document {
   point_tracking: Number;
 
   @Prop({
-    type: String
+    type: String,
   })
   module_tracking: String;
 }
 
 export const GameActivitySchema = SchemaFactory.createForClass(GameActivity);
-
 
 @Schema()
 export class GameCustomField extends Document {
@@ -51,12 +50,12 @@ export class GameCustomField extends Document {
   default_value: Number;
 
   @Prop({
-    type: String
+    type: String,
   })
   max_value: String;
 
   @Prop({
-    type: String
+    type: String,
   })
   min_value: String;
 }
@@ -65,8 +64,8 @@ export const GameCustomFieldSchema = SchemaFactory.createForClass(GameCustomFiel
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChallengeGame {
@@ -76,10 +75,10 @@ export class ChallengeGame {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Channel', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
 
   @Prop({
@@ -103,11 +102,11 @@ export class ChallengeGame {
   })
   game_type: String;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChatMedia', index: true })
-  media_id: ChatMedia
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
+  media_id: ChatMedia;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChallengeGame', index: true })
-  parent_id: ChallengeGame
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChallengeGame", index: true })
+  parent_id: ChallengeGame;
 
   @Prop({
     type: [GameCustomFieldSchema],

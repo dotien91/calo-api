@@ -3,7 +3,7 @@ import { CreateEventTypeDto } from "./create.event_type.dto";
 
 export class UpdateEventTypeDto extends CreateEventTypeDto {
   @IsString()
-  _id: string
+  _id: string;
 
   @IsString()
   @IsOptional(null)

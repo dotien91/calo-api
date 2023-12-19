@@ -16,5 +16,5 @@ export class SearchPostDto {
   comment_number?: string;
   channel_id?: string;
   redeem_id?: string;
-  to_level?: string
+  to_level?: string;
 }

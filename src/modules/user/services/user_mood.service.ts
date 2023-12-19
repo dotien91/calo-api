@@ -41,7 +41,7 @@ export class UserMoodService {
    * @param dataToSearch
    * @returns
    */
-   async removeOne(dataToSearch: any): Promise<UserMood> {
+  async removeOne(dataToSearch: any): Promise<UserMood> {
     return await this.userFollowModel.findOneAndRemove(dataToSearch).exec();
   }
 
@@ -85,8 +85,8 @@ export class UserMoodService {
    * @param dataToSearch
    * @returns
    */
-   async filterByUserId(userId: string, userPartners: string[]): Promise<UserMood[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners }};
+  async filterByUserId(userId: string, userPartners: string[]): Promise<UserMood[]> {
+    let condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -142,13 +142,12 @@ export class UserMoodService {
     }
   };
 
-
   /**
    * @author Tony Vu
    * @param sortBy
    * @returns
    */
-   getSort(sortBy: any) {
+  getSort(sortBy: any) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -177,7 +176,8 @@ export class UserMoodService {
       .populate({
         path: "user_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -196,9 +196,9 @@ export class UserMoodService {
    */
   async filterWithId(filter: FilterFollowDto, page: number, limit: number): Promise<UserMood[]> {
     let condition = await this.getCondition(filter);
-    let sortObject: any = {_id: -1};
+    let sortObject: any = { _id: -1 };
     let dataReturn = await this.userFollowModel
-      .find(condition, {user_id: true})
+      .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -214,7 +214,7 @@ export class UserMoodService {
    * @param limit
    * @returns
    */
-   async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
+  async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -225,8 +225,9 @@ export class UserMoodService {
       .populate({
         path: "user_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -235,4 +236,3 @@ export class UserMoodService {
     return dataReturn;
   }
 }
-

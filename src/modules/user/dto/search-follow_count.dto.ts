@@ -4,5 +4,5 @@ import { IsNumberString, IsOptional, IsString, IsIn } from "class-validator";
 export class SearchFollowCountDto {
   @IsString()
   @ApiProperty()
-  user_id: string
+  user_id: string;
 }

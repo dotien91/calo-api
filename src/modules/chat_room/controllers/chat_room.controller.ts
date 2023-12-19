@@ -32,8 +32,8 @@ import { ChatRoomService } from "../services/chat_room.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller("chat-room")
-@ApiTags('chat')
-@ApiBearerAuth('ICEO')
+@ApiTags("chat")
+@ApiBearerAuth("ICEO")
 export class ChatRoomController {
   /**
    * @author Tony Vu
@@ -46,7 +46,7 @@ export class ChatRoomController {
     private readonly appUserService: UserService,
     private readonly chatRoomHelper: ChatRoomHelper,
     private readonly chatRoomService: ChatRoomService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("chat_room_controller");
 

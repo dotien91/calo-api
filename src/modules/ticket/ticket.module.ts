@@ -57,14 +57,15 @@ import { TransactionModule } from "../transaction/transaction.module";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Ticket.name, schema: TicketSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -90,7 +91,7 @@ import { TransactionModule } from "../transaction/transaction.module";
       { name: Redeem.name, schema: RedeemSchema },
       { name: RedeemMission.name, schema: RedeemMissionSchema },
     ]),
-    GiftModule
+    GiftModule,
   ],
   controllers: [TicketController],
   providers: [
@@ -123,4 +124,4 @@ import { TransactionModule } from "../transaction/transaction.module";
   ],
   exports: [TicketHelper, TicketCategoryService, TicketCommentService, TicketService],
 })
-export class TicketModule { }
+export class TicketModule {}

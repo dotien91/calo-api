@@ -13,7 +13,7 @@ import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 @ApiTags("order")
 @ApiBearerAuth("ICEO")
 export class OrderController {
-  constructor(private readonly orderHelper: OrderHelper) { }
+  constructor(private readonly orderHelper: OrderHelper) {}
 
   @Get("/user-list")
   async getUserOrder(@Query() query: ListOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -26,7 +26,11 @@ export class OrderController {
   }
 
   @Get("/list-payment-method")
-  async getListPaymentMethod(@Query() query: ListPaymentMethodDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getListPaymentMethod(
+    @Query() query: ListPaymentMethodDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.orderHelper.getListPaymentMethod(query, res, req);
   }
 

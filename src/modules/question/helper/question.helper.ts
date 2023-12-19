@@ -1,11 +1,5 @@
 import { Response } from "express";
-import {
-  ForbiddenException,
-  HttpStatus,
-  NotFoundException,
-  Injectable,
-  BadRequestException,
-} from "@nestjs/common";
+import { ForbiddenException, HttpStatus, NotFoundException, Injectable, BadRequestException } from "@nestjs/common";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateQuestionDto } from "../dto/create-question.dto";
 import { QuestionService } from "../services/question.service";
@@ -23,8 +17,8 @@ export class QuestionHelper {
   constructor(
     private questionService: QuestionService,
     private userPermissionService: UserPermissionService,
-    private answerService: AnswerService,
-  ) { }
+    private answerService: AnswerService
+  ) {}
 
   /**
    * @author Tony Vu
@@ -87,8 +81,8 @@ export class QuestionHelper {
           ...dataCreate,
           ...{
             parent_id: parentData,
-          }
-        }
+          },
+        };
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -154,16 +148,16 @@ export class QuestionHelper {
         for (let dataItem of dataReturn) {
           let dataFilter = {
             question_id: dataItem._id,
-            user_id: userId
-          }
+            user_id: userId,
+          };
           let answerObject = await this.answerService.findOneWithOutPopulate(dataFilter);
           let dataItemAdd = {
             ...dataItem?.toObject(),
             ...{
-              answer: answerObject
-            }
-          }
-          dataToAdd.push(dataItemAdd)
+              answer: answerObject,
+            },
+          };
+          dataToAdd.push(dataItemAdd);
         }
       }
       return res

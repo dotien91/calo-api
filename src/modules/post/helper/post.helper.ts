@@ -45,7 +45,7 @@ export class PostHelper {
   ) {
     setTimeout(async () => {
       // await this.handleUpdateLength();
-    }, 1000)
+    }, 1000);
   }
 
   async handleUpdateLength() {
@@ -56,16 +56,16 @@ export class PostHelper {
       }
       let dataLength = dataItem?.question?.length;
       let dataLengthAnswer = dataItem?.answer?.length;
-      console.log(dataLengthAnswer, 'dataLengthAnswer');
-      console.log(dataLength, 'dataLength')
+      console.log(dataLengthAnswer, "dataLengthAnswer");
+      console.log(dataLength, "dataLength");
 
       let dataToUpdate = {
         _id: dataItem?._id,
         question_length: dataLength,
-        answer_length: dataLengthAnswer
-      }
+        answer_length: dataLengthAnswer,
+      };
       console.log(dataToUpdate);
-      await this.postAnonymousService.update(dataToUpdate)
+      await this.postAnonymousService.update(dataToUpdate);
     }
   }
 
@@ -241,7 +241,7 @@ export class PostHelper {
       post_status: "",
       post_avatar: null,
       post_type: "prompt",
-      user_id: userId
+      user_id: userId,
     };
   }
 

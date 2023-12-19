@@ -10,26 +10,17 @@ import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { CreateLawyerRawDto } from "../dto/create.lawyer_raw.dto";
 
 @Controller("lawyer")
-@ApiTags('lawyer')
+@ApiTags("lawyer")
 export class LawyerController {
-  constructor(private readonly lawyerHelper: LawyerHelper) {
-  }
+  constructor(private readonly lawyerHelper: LawyerHelper) {}
 
   @Get("/list")
-  async getUserLawyer(
-    @Query() query: ListLawyerDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserLawyer(@Query() query: ListLawyerDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.lawyerHelper.getLawyerListByUser(query, res, req);
   }
 
   @Get("/admin-list")
-  async getAdminLawyer(
-    @Query() query: ListLawyerDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminLawyer(@Query() query: ListLawyerDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.lawyerHelper.getLawyerListByAdmin(query, res, req);
   }
 
@@ -54,11 +45,7 @@ export class LawyerController {
   }
 
   @Post("/update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateLawyerDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateLawyerDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.lawyerHelper.handleUpdateLawyerByAdmin(dataUpdate, res, req);
   }
 
@@ -68,11 +55,7 @@ export class LawyerController {
   }
 
   @Post("like")
-  handleFollowUser(
-    @Body() dataFollow: CreateUserFollowLawyerDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  handleFollowUser(@Body() dataFollow: CreateUserFollowLawyerDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.lawyerHelper.processFollowUser(dataFollow, req, res);
   }
 

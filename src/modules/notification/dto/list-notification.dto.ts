@@ -28,7 +28,7 @@ export class ListNotificationDto {
 
   @IsString()
   @IsOptional(null)
-  request_id?: string
+  request_id?: string;
 
   @IsString()
   @IsOptional(null)

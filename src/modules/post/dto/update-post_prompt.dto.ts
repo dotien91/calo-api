@@ -1,30 +1,30 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsIn, IsJSON} from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, IsIn, IsJSON } from "class-validator";
 
 export class UpdatePostPromptDto {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  _id?: string
+  _id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  text_to_view?: string
+  text_to_view?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  text_to_ai?: string
+  text_to_ai?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  text_to_image?: string
+  text_to_image?: string;
 
   @IsJSON()
   @ApiProperty()
-  placeholder?: any
+  placeholder?: any;
 
   @IsString()
   @IsOptional(null)

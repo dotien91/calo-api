@@ -14,7 +14,7 @@ export class RequestCommentService {
   constructor(
     @InjectModel(RequestComment.name)
     private requestModel: Model<RequestCommentDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -293,13 +293,14 @@ export class RequestCommentService {
     return await this.requestModel.findByIdAndDelete(id).exec();
   }
 
-
   async deleteManyByIds(ids: string[]) {
-    return await this.requestModel.deleteMany({
-      _id: {
-        $in: ids
-      }
-    }).exec();
+    return await this.requestModel
+      .deleteMany({
+        _id: {
+          $in: ids,
+        },
+      })
+      .exec();
   }
 
   /**

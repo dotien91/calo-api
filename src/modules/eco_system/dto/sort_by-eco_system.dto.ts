@@ -1,3 +1,3 @@
 export class SortByEcoSystemDto {
-  createdAt?: string
+  createdAt?: string;
 }

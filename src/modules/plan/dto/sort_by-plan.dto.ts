@@ -1,3 +1,3 @@
 export class SortByPlanDto {
-  createdAt?: string
+  createdAt?: string;
 }

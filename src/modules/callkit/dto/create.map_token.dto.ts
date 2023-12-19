@@ -4,17 +4,17 @@ import { IsString } from "class-validator";
 export class CreateMapTokenDto {
   @IsString()
   @ApiProperty()
-  access_token: string
+  access_token: string;
 
   @IsString()
   @ApiProperty()
-  token_type: string
+  token_type: string;
 
   @IsString()
   @ApiProperty()
-  expires_in: string
+  expires_in: string;
 
   @IsString()
   @ApiProperty()
-  user_id: string
+  user_id: string;
 }

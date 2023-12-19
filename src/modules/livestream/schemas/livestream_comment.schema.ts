@@ -32,7 +32,7 @@ export class LivestreamComment {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: "Livestream",
-    index: true
+    index: true,
   })
   livestream_id: Livestream;
 
@@ -44,7 +44,7 @@ export class LivestreamComment {
   chat_content: string;
 
   @Prop({
-    type:  MongooseSchema.Types.Array,
+    type: MongooseSchema.Types.Array,
     default: [],
     ref: "ChatMedia",
   })
@@ -72,4 +72,4 @@ export class LivestreamComment {
   createBy: MongooseSchema.Types.ObjectId;
 }
 
-export const LivestreamCommentSchema = SchemaFactory.createForClass(LivestreamComment).index({ chat_content: 'text' });
+export const LivestreamCommentSchema = SchemaFactory.createForClass(LivestreamComment).index({ chat_content: "text" });

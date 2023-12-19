@@ -13,7 +13,7 @@ export class CourseService {
   constructor(
     @InjectModel(Course.name)
     private courseModel: Model<CourseDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

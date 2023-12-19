@@ -1,3 +1,1 @@
-export class CreateCallkitDto {
-
-}
+export class CreateCallkitDto {}

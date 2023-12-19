@@ -1,9 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from './user.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "./user.schema";
 
 export type UserQuestionDocument = UserQuestion & Document;
-
 
 export type UserQuestionMetaDocument = UserQuestionMeta & Document;
 
@@ -21,12 +20,11 @@ export class UserQuestionMeta extends Document {
 }
 export const UserQuestionMetaSchema = SchemaFactory.createForClass(UserQuestionMeta);
 
-
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class UserQuestion {
@@ -36,7 +34,7 @@ export class UserQuestion {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({

@@ -13,7 +13,7 @@ export class EsimService {
   constructor(
     @InjectModel(Esim.name)
     private requestModel: Model<EsimDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -208,7 +208,6 @@ export class EsimService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<Esim> {
-
     let populateObject = {
       path: "country",
       populate: {

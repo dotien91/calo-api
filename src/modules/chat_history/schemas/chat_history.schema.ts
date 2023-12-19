@@ -34,14 +34,14 @@ export class ChatHistory {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: "ChatRoom",
-    index: true
+    index: true,
   })
   chat_room_id: ChatRoom;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     index: true,
-    default: null
+    default: null,
   })
   topic_post_id: TopicPost;
 
@@ -87,4 +87,4 @@ export class ChatHistory {
   createBy: MongooseSchema.Types.ObjectId;
 }
 
-export const ChatHistorySchema = SchemaFactory.createForClass(ChatHistory).index({ chat_content: 'text' });
+export const ChatHistorySchema = SchemaFactory.createForClass(ChatHistory).index({ chat_content: "text" });

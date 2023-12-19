@@ -61,5 +61,5 @@ export class CreateLawyerRatingDto {
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  rating_media?: string | string[]
+  rating_media?: string | string[];
 }

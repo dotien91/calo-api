@@ -10,7 +10,7 @@ import {
   Param,
   Logger,
   forwardRef,
-  Inject
+  Inject,
 } from "@nestjs/common";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
@@ -59,8 +59,8 @@ export class TransactionHelper {
     private _channelPermissionService: ChannelPermissionService,
     private userService: UserService,
     private readonly eventHookNotificationService: EventHookNotificationService,
-    private readonly channelService: ChannelService,
-  ) { }
+    private readonly channelService: ChannelService
+  ) {}
 
   private readonly logger = new Logger("chat_history_controller");
 
@@ -342,7 +342,7 @@ export class TransactionHelper {
           return `${userObject?.display_name} RÚT TIỀN `;
         },
         title: `${userObject?.display_name.toLocaleUpperCase()} RÚT TIỀN`,
-      })
+      });
 
       let dataCreate = await this.transactionService.create(newDataCreate);
       return res
@@ -386,7 +386,7 @@ export class TransactionHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -501,7 +501,7 @@ export class TransactionHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }

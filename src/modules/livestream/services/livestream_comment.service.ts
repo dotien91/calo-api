@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { LivestreamComment, LivestreamCommentDocument } from "../schemas/livestream_comment.schema";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose"
+import { Model } from "mongoose";
 import { UpdateLivestreamCommentDto } from "../dto/update-livestream_comment.dto";
 import { FilterLivestreamCommentDto } from "../dto/filter-comment_livestream.dto";
 import { ObjectId } from "mongodb";
@@ -38,14 +38,14 @@ export class LivestreamCommentService {
       condition = Object.assign(condition, { livestream_id: filter.livestream_id });
     }
     if (filter.from_id || filter.to_id) {
-      let dataFilter = {}
+      let dataFilter = {};
       if (filter.from_id) {
         let objectIdFrom = new ObjectId(filter?.from_id);
-        dataFilter = {...dataFilter, ...{ $gt: objectIdFrom}}
+        dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
         let objectIdTo = new ObjectId(filter?.to_id);
-        dataFilter = {...dataFilter, ...{ $lt: objectIdTo}}
+        dataFilter = { ...dataFilter, ...{ $lt: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
     }
@@ -209,7 +209,13 @@ export class LivestreamCommentService {
    * @param limit
    * @returns
    */
-  async filter(filter: FilterLivestreamCommentDto, sortBy: any, page: number, limit: number, projection: any = {}): Promise<LivestreamComment[]> {
+  async filter(
+    filter: FilterLivestreamCommentDto,
+    sortBy: any,
+    page: number,
+    limit: number,
+    projection: any = {}
+  ): Promise<LivestreamComment[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {

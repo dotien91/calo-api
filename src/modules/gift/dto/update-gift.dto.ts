@@ -1,11 +1,11 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateGiftDto } from './create-gift.dto';
-import { IsNumberString, IsOptional, IsString} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+import { CreateGiftDto } from "./create-gift.dto";
+import { IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class UpdateGiftDto extends CreateGiftDto {
   @IsString()
   @ApiProperty()
-  _id?: string
+  _id?: string;
 
   @IsString()
   @ApiPropertyOptional()

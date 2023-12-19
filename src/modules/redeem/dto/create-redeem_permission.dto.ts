@@ -20,6 +20,6 @@ export class CreateRedeemPermissionDto {
   @IsOptional(null)
   channel_id?: string;
 
-  start_time: Date
-  end_time: Date
+  start_time: Date;
+  end_time: Date;
 }

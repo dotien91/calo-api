@@ -1,4 +1,16 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsLatitude, IsLongitude, IsJSON } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsLatitude,
+  IsLongitude,
+  IsJSON,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,72 +33,72 @@ export class SearchEventDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id: string
+  user_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  auth_id: string
+  auth_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search: string
+  search: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  distance: number
+  distance: number;
 
   @IsLatitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  latitude?: number
+  latitude?: number;
 
   @IsLongitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  longitude?: number
+  longitude?: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  language?: string
+  language?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  city?: string
+  city?: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  type?: string
+  type?: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id?: string
+  channel_id?: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category?: string
+  category?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  date?: string
+  date?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  price?: string
+  price?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  currency?: string
+  currency?: string;
 
-  event_ids?: string[]
+  event_ids?: string[];
 }

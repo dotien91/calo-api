@@ -38,7 +38,7 @@ export class UserFollowEventService {
     }
 
     if (filter.event_ids) {
-      condition = Object.assign(condition, { event_id: {$in: filter.event_ids} });
+      condition = Object.assign(condition, { event_id: { $in: filter.event_ids } });
     }
 
     return condition;
@@ -84,8 +84,8 @@ export class UserFollowEventService {
    * @param dataToSearch
    * @returns
    */
-   async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowEvent[]> {
-    let condition = { user_id: userId, event_id: { $in: userPartners }};
+  async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowEvent[]> {
+    let condition = { user_id: userId, event_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -141,13 +141,12 @@ export class UserFollowEventService {
     }
   };
 
-
   /**
    * @author Tony Vu
    * @param sortBy
    * @returns
    */
-   getSort(sortBy: any) {
+  getSort(sortBy: any) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -178,9 +177,9 @@ export class UserFollowEventService {
         options: { strictPopulate: false },
         populate: [
           {
-            path:"public_album"
-          }
-        ]
+            path: "public_album",
+          },
+        ],
       })
       .populate(
         "user_id",
@@ -201,7 +200,7 @@ export class UserFollowEventService {
    * @param limit
    * @returns
    */
-   async filterUser(filter: FilterFollowEventDto, sortBy: any, page: number, limit: number): Promise<UserFollowEvent[]> {
+  async filterUser(filter: FilterFollowEventDto, sortBy: any, page: number, limit: number): Promise<UserFollowEvent[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -212,8 +211,9 @@ export class UserFollowEventService {
       .populate({
         path: "user_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -222,4 +222,3 @@ export class UserFollowEventService {
     return dataReturn;
   }
 }
-

@@ -39,8 +39,8 @@ export class MapTokenService {
     let currentTime = new Date();
     dataToSearch = {
       ...dataToSearch,
-      ...{ expired_at: { $lt: currentTime }}
-    }
+      ...{ expired_at: { $lt: currentTime } },
+    };
     return await this.mapTokenModel.findOne(dataToSearch).exec();
   }
 

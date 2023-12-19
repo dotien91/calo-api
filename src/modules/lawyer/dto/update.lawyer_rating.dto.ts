@@ -35,5 +35,5 @@ export class UpdateLawyerRatingDto extends CreateLawyerRatingDto {
   @ApiPropertyOptional()
   number_value: string;
 
-  createBy: string
+  createBy: string;
 }

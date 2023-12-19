@@ -65,7 +65,7 @@ export class UserFilterHelper {
     private userLocationService: UserLocationService,
     private requestService: RequestService,
     private channelPermissionService: ChannelPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -383,7 +383,6 @@ export class UserFilterHelper {
           if (dataToMerge && dataToMerge[0]) {
             dataReturn[dataItemIndex] = { ...dataReturn[dataItemIndex], ...{ partner_id: dataToMerge[0] } };
           }
-
         }
       }
       return res

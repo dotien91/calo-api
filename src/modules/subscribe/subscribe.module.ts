@@ -21,10 +21,18 @@ import { PlanService } from "../plan/services/plan.service";
       { name: Subscribe.name, schema: SubscribeSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
-      { name: Plan.name, schema: PlanSchema }
+      { name: Plan.name, schema: PlanSchema },
     ]),
   ],
   controllers: [SubscribeController],
-  providers: [UserService, SubscribeHelper, PlanService, SubscribeService, JwtHelperService, UserSessionService, UserPermissionService],
+  providers: [
+    UserService,
+    SubscribeHelper,
+    PlanService,
+    SubscribeService,
+    JwtHelperService,
+    UserSessionService,
+    UserPermissionService,
+  ],
 })
-export class SubscribeModule { }
+export class SubscribeModule {}

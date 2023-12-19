@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -36,18 +46,17 @@ export class ListRequestCommentDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  request_id: string
-
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  user_id: string
+  request_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  parent_id: string
+  user_id: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  parent_id: string;
 
   @IsString()
   @IsOptional(null)
@@ -62,7 +71,7 @@ export class ListRequestCommentDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search: string
+  search: string;
 
   @IsString()
   @IsOptional(null)

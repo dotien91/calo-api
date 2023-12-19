@@ -104,7 +104,7 @@ export class RequestCategory {
     nullable: false,
     index: true,
   })
-  version: Number
+  version: Number;
 
   @Prop({
     type: Number,
@@ -112,11 +112,10 @@ export class RequestCategory {
     nullable: false,
     index: true,
   })
-  public_status: Number
+  public_status: Number;
 }
 
 export const RequestCategorySchema = SchemaFactory.createForClass(RequestCategory).index({
   category_title: "text",
   category_content: "text",
 });
-

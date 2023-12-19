@@ -1,17 +1,17 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { ChatHistory } from '../../../modules/chat_history/schemas/chat_history.schema';
-import { ChatMedia } from '../../../modules/chat_media/schemas/chat_media.schema';
-import { Topic } from '../../../modules/topic/schemas/topic.schema';
-import { User } from '../../../modules/user/schemas/user.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { ChatHistory } from "../../../modules/chat_history/schemas/chat_history.schema";
+import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
+import { Topic } from "../../../modules/topic/schemas/topic.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 
 export type ChatRoomDocument = ChatRoom & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChatRoom {
@@ -23,21 +23,21 @@ export class ChatRoom {
 
   @Prop({
     type: "String",
-    default: 'personal'
+    default: "personal",
   })
-  room_type: string
+  room_type: string;
 
   @Prop({
     type: "String",
-    default: '',
+    default: "",
   })
-  room_name: string
+  room_name: string;
 
   @Prop({
     type: "String",
-    default: '',
+    default: "",
   })
-  room_thumb: string
+  room_thumb: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -48,67 +48,67 @@ export class ChatRoom {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: "Topic",
-    index: true
+    index: true,
   })
   topic_id: Topic;
 
   @Prop({
     type: "String",
-    default: '',
+    default: "",
   })
-  room_description: string
+  room_description: string;
 
   @Prop({
     type: "Number",
     unsigned: true,
-    default: 10000
+    default: 10000,
   })
-  room_limit_number: number
+  room_limit_number: number;
 
   @Prop({
     type: "Number",
     unsigned: true,
     index: true,
-    default: 1
+    default: 1,
   })
-  room_private: number
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    default: null
-  })
-  order_id: MongooseSchema.Types.ObjectId
-
-  @Prop({ type: MongooseSchema.Types.Date })
-  start_time: MongooseSchema.Types.Date
-
-  @Prop({ type: MongooseSchema.Types.Date })
-  end_time: MongooseSchema.Types.Date
-
-  @Prop({
-    type: "String",
-    default: '',
-  })
-  last_message: string
+  room_private: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatHistory"
   })
-  first_history: ChatHistory
+  order_id: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.Date })
+  start_time: MongooseSchema.Types.Date;
+
+  @Prop({ type: MongooseSchema.Types.Date })
+  end_time: MongooseSchema.Types.Date;
+
+  @Prop({
+    type: "String",
+    default: "",
+  })
+  last_message: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    default: null
+    default: null,
+    ref: "ChatHistory",
   })
-  last_history: MongooseSchema.Types.ObjectId
+  first_history: ChatHistory;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    default: null
+    default: null,
   })
-  report_id: MongooseSchema.Types.ObjectId
+  last_history: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+  })
+  report_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: "Number",
@@ -116,27 +116,27 @@ export class ChatRoom {
     default: 0,
     index: true,
   })
-  chat_history_count: number
+  chat_history_count: number;
 
   @Prop({
     type: "Number",
     unsigned: true,
     default: 0,
   })
-  is_count: number
+  is_count: number;
 
-  @Prop({ type: MongooseSchema.Types.Array, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.Array, ref: "User", index: true })
   group_partners: User[];
 
   @Prop({
     type: "Number",
     unsigned: true,
     default: 0,
-    index: true
+    index: true,
   })
-  partner_count: number
+  partner_count: number;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User" })
   user_id: MongooseSchema.Types.ObjectId;
 }
 

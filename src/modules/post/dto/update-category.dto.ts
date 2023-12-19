@@ -1,70 +1,70 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsIn} from 'class-validator';
-import { CreateCategoryDto } from './create-category.dto';
-import { CreatePostDto } from './create-post.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, IsIn } from "class-validator";
+import { CreateCategoryDto } from "./create-category.dto";
+import { CreatePostDto } from "./create-post.dto";
 
 export class UpdateCategoryDto extends CreateCategoryDto {
   @IsString()
   @ApiProperty()
-  _id: string
+  _id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_language: string
+  category_language: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_content: string
+  category_content: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_title: string
+  category_title: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_excerpt: string
+  category_excerpt: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_parent: string
+  category_parent: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_status: string
+  category_status: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_avatar: string
+  category_avatar: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_type: string
+  category_type: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  seo_title: string
+  seo_title: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  category_slug: string
+  category_slug: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  seo_description: string
+  seo_description: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  seo_keyword: string
+  seo_keyword: string;
 }

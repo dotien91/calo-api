@@ -11,12 +11,10 @@ import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @Controller("podcast")
-@ApiTags('podcast')
-@ApiBearerAuth('ICEO')
+@ApiTags("podcast")
+@ApiBearerAuth("ICEO")
 export class PodcastController {
-  constructor(
-    private readonly podcastHelper: PodcastHelper
-  ) { }
+  constructor(private readonly podcastHelper: PodcastHelper) {}
 
   /**
    * ######## FOR REQUEST ######
@@ -42,7 +40,11 @@ export class PodcastController {
    * @returns
    */
   @Post("/create")
-  async createNewPodcast(@Body() createPodcastBody: CreatePodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewPodcast(
+    @Body() createPodcastBody: CreatePodcastDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.podcastHelper.createNewPodcast(createPodcastBody, res, req);
   }
 
@@ -71,19 +73,24 @@ export class PodcastController {
   }
 
   /**
-  *
-  * @param id
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
   @Get("detail/:id")
-  async getDetailPodcast(@Query() query: ListPodcastDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailPodcast(
+    @Query() query: ListPodcastDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.podcastHelper.handleGetDetailPodcast(id, query, res, req);
   }
   /**
-  * ######## FOR CATEGORY ######
-  */
+   * ######## FOR CATEGORY ######
+   */
 
   /**
    *
@@ -129,7 +136,6 @@ export class PodcastController {
     return await this.podcastHelper.handleUpdateCategory(dataUpdate, res, req);
   }
 
-
   /**
    *
    * @param id
@@ -141,7 +147,6 @@ export class PodcastController {
   async getDetailCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleGetDetailCategory(id, res, req);
   }
-
 
   /**
    *

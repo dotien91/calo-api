@@ -1,23 +1,23 @@
-import {IsString, IsOptional, IsNumberString, IsNumber, IsIn} from "class-validator";
+import { IsString, IsOptional, IsNumberString, IsNumber, IsIn } from "class-validator";
 
 export class SearchUserJoinCityDto {
   @IsNumberString()
   @IsOptional(null)
-  page?: number
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
-  limit?: number
+  limit?: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 
   @IsString()
   @IsOptional(null)
-  user_id: string
+  user_id: string;
 
   @IsString()
   @IsOptional(null)
-  city_id: string
+  city_id: string;
 }

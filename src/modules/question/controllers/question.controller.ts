@@ -12,7 +12,7 @@ import { UpdateAnswerDto } from "../dto/update-answer.dto";
 
 @Controller("question")
 export class QuestionController {
-  constructor(private readonly topicHelper: QuestionHelper, private readonly postHelper: AnswerHelper) { }
+  constructor(private readonly topicHelper: QuestionHelper, private readonly postHelper: AnswerHelper) {}
 
   @Get("/list")
   async getUserQuestion(@Query() query: ListQuestionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {

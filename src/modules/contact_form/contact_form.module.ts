@@ -24,10 +24,19 @@ import { PostService } from "../post/services/post.service";
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserOption.name, schema: UserOptionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
-      { name: Post.name, schema: PostSchema }
+      { name: Post.name, schema: PostSchema },
     ]),
   ],
   controllers: [ContactFormController],
-  providers: [UserService, ContactFormHelper, ContactFormService, PostService, JwtHelperService, UserSessionService, UserPermissionService, UserOptionService],
+  providers: [
+    UserService,
+    ContactFormHelper,
+    ContactFormService,
+    PostService,
+    JwtHelperService,
+    UserSessionService,
+    UserPermissionService,
+    UserOptionService,
+  ],
 })
-export class ContactFormModule { }
+export class ContactFormModule {}

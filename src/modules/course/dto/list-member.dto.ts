@@ -37,5 +37,4 @@ export class ListMemberDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   auth_id: string;
-
 }

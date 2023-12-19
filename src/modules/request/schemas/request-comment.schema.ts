@@ -40,7 +40,7 @@ export class RequestComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_id: String;
 
@@ -48,7 +48,7 @@ export class RequestComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_parent_id: String;
 
@@ -92,5 +92,5 @@ export class RequestComment {
 }
 
 export const RequestCommentSchema = SchemaFactory.createForClass(RequestComment).index({
-  content: "text"
+  content: "text",
 });

@@ -13,7 +13,7 @@ export class AnswerService {
   constructor(
     @InjectModel(Answer.name)
     private orderModel: Model<AnswerDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -173,10 +173,7 @@ export class AnswerService {
    * @returns
    */
   async findOneWithOutPopulate(dataToSearch: any): Promise<Answer> {
-    return await this.orderModel
-      .findOne(dataToSearch)
-      .sort({ _id: -1 })
-      .exec();
+    return await this.orderModel.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
   /**

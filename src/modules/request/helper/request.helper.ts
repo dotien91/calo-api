@@ -56,7 +56,6 @@ import HookExpress from "../../hook/hook_epress";
 let dataCrawl = `Other`;
 let initHook = false;
 
-
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -79,7 +78,7 @@ export class RequestHelper {
     private channelPermissionService: ChannelPermissionService,
     private userFollowService: UserFollowService,
     private channelService: ChannelService,
-    private readonly eventHookWorkerService: EventHookWorkerService,
+    private readonly eventHookWorkerService: EventHookWorkerService
   ) {
     if (!initHook) {
       this.initHook();
@@ -109,9 +108,9 @@ export class RequestHelper {
   }
 
   initHook() {
-    HookExpress.add_action('request.add-category', async (data: any) => {
+    HookExpress.add_action("request.add-category", async (data: any) => {
       await this.processCategoryWhenCreateChannel(data);
-    })
+    });
   }
 
   async handleUpdateCount() {
@@ -130,7 +129,7 @@ export class RequestHelper {
           await this.requestService.update(dataUpdate);
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   }
   async handleRedditCategory() {
     // let dataFilter: any = await this.requestService.filter({post_category: '64a672f9eee28fcd235ebe01'}, {}, 1, 100);
@@ -813,7 +812,7 @@ export class RequestHelper {
         };
         await this.requestService.update(dataToUpdate);
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -1196,7 +1195,7 @@ export class RequestHelper {
         // console.log(error);
         return null;
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
@@ -1223,16 +1222,21 @@ export class RequestHelper {
       };
       let channel = await this.channelService.findById(createRequestData.channel_id);
       let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
-      let channelMentor = await this.channelPermissionService.filter({
-        channel_id: createRequestData.channel_id,
-        channel_role: "mentor"
-      }, {}, 1, 99)
+      let channelMentor = await this.channelPermissionService.filter(
+        {
+          channel_id: createRequestData.channel_id,
+          channel_role: "mentor",
+        },
+        {},
+        1,
+        99
+      );
       let channelMentorId = channelMentor.map((x) => {
-        return x?.user_id?._id.toString()
-      })
+        return x?.user_id?._id.toString();
+      });
       if (dataPermission.channel_role === "user") {
         if (Boolean(channel.need_approval) === true) {
-          createRequestData.post_status = "pending"
+          createRequestData.post_status = "pending";
           setTimeout(async () => {
             await this.notificationHelper.sendNotification({
               user_id: channelMentorId,
@@ -1241,18 +1245,16 @@ export class RequestHelper {
               path: `/r/post/approval-list`,
               request_id: null,
               content: () => {
-                return `${userObject?.display_name} vừa đăng bài cần phê duyệt`
+                return `${userObject?.display_name} vừa đăng bài cần phê duyệt`;
               },
-              send_user_id: dataPermission?.user_id?._id.toString()
-            })
+              send_user_id: dataPermission?.user_id?._id.toString(),
+            });
           }, 500);
-
-        }
-        else {
-          createRequestData.post_status = "publish"
+        } else {
+          createRequestData.post_status = "publish";
         }
       } else {
-        createRequestData.post_status = "publish"
+        createRequestData.post_status = "publish";
       }
 
       // console.log(dataPermission, "dataPermission");
@@ -1340,7 +1342,6 @@ export class RequestHelper {
         );
       }
 
-
       //Update Notification
       setTimeout(async () => {
         //Check is Mentor
@@ -1354,7 +1355,7 @@ export class RequestHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, 'error');
+      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }
@@ -1420,7 +1421,7 @@ export class RequestHelper {
             user_id: fromUser?._id?.toString(),
             post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + dataRequest?.post_slug,
             event_name: "send_mail_notification",
-            is_send_email: false
+            is_send_email: false,
           };
 
           //Update
@@ -1458,10 +1459,7 @@ export class RequestHelper {
           };
           await this.notificationHelper.handleSendNotification(dataNotification, authCode);
         }
-
       }
-
-
 
       return true;
     } catch (error) {
@@ -1529,7 +1527,7 @@ export class RequestHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/v/post/" + dataRequest?.post_slug,
           event_name: "reply_notification",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -1650,7 +1648,14 @@ export class RequestHelper {
       await this.userService.updateArray(dataUpdateNotification, false);
 
       setTimeout(async () => {
-        await this.handleSendNotification(userObject, dataRequest, dataCreate, authCode, dataPermission?.channel_id, req);
+        await this.handleSendNotification(
+          userObject,
+          dataRequest,
+          dataCreate,
+          authCode,
+          dataPermission?.channel_id,
+          req
+        );
       }, 500);
 
       if (!dataCountUser) {
@@ -2089,17 +2094,25 @@ export class RequestHelper {
    */
   async processCategoryWhenCreateChannel(channelId: string) {
     try {
-      let allCagegory: any = await this.requestCategoryService.filter({ channel_id: process.env.DEFAULT_CHANNEL }, {}, 1, 100);
+      let allCagegory: any = await this.requestCategoryService.filter(
+        { channel_id: process.env.DEFAULT_CHANNEL },
+        {},
+        1,
+        100
+      );
       for (let categoryItem of allCagegory) {
         // console.log(categoryItem, 'categoryItem')
-        let categoryToAdd = { ...categoryItem?.toObject(), ...{ channel_id: channelId, category_avatar: categoryItem?.category_avatar?._id?.toString() } };
+        let categoryToAdd = {
+          ...categoryItem?.toObject(),
+          ...{ channel_id: channelId, category_avatar: categoryItem?.category_avatar?._id?.toString() },
+        };
         delete categoryToAdd?._id;
         delete categoryToAdd?.user_id;
         delete categoryToAdd?.__v;
         await this.requestCategoryService.create(categoryToAdd);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -2437,7 +2450,7 @@ export class RequestHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("comment/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("comment/delete") !== -1)
       ) {
         havePermission = true;
         canPin = true;
@@ -2469,12 +2482,11 @@ export class RequestHelper {
 
       let dataReturn = await this.requestService.update(dataUpdate);
       if (requestObject.post_status === "pending" && dataUpdate?.post_status === "publish") {
-
         //user post
         let dataPermission = await this.channelPermissionService.findOne({
           user_id: requestObject.user_id,
-          channel_id: channelId
-        })
+          channel_id: channelId,
+        });
         //Update
         let dataChannelPoint = dataPermission?.channel_id?.point_data;
         //Check point
@@ -2508,8 +2520,8 @@ export class RequestHelper {
           path: `/v/`,
           request_id: requestObject._id.toString(),
           content: () => {
-            return `Quản trị viên đã phê duyệt bài đăng của bạn`
-          }
+            return `Quản trị viên đã phê duyệt bài đăng của bạn`;
+          },
         });
       }
       return res
@@ -2602,7 +2614,7 @@ export class RequestHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("comment/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("comment/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -2683,7 +2695,7 @@ export class RequestHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("comment/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("comment/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -2708,9 +2720,14 @@ export class RequestHelper {
         }
 
         //check subcomment
-        let subcomments = await this.requestCommentService.filter({
-          parent_id: id
-        }, {}, 1, 999);
+        let subcomments = await this.requestCommentService.filter(
+          {
+            parent_id: id,
+          },
+          {},
+          1,
+          999
+        );
 
         //Update Count
         let dataUpdateCount = {
@@ -2732,9 +2749,11 @@ export class RequestHelper {
           );
         }
 
-        await this.requestCommentService.deleteManyByIds(subcomments.map((subcomment) => {
-          return subcomment?._id.toString();
-        }))
+        await this.requestCommentService.deleteManyByIds(
+          subcomments.map((subcomment) => {
+            return subcomment?._id.toString();
+          })
+        );
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -2779,7 +2798,6 @@ export class RequestHelper {
 
   async plusPointNNotiShareAction(id: string, res: Response, req: ExpressRequestDto) {
     try {
-
       let userObject = req?.user_object;
       let channelId = req?.channel_id;
       if (!userObject) {
@@ -2788,15 +2806,14 @@ export class RequestHelper {
       let userId = userObject._id.toString();
       let dataPermission = await this.channelPermissionService.findOne({
         user_id: userId,
-        channel_id: channelId
+        channel_id: channelId,
       });
       let dataUpdateCount = {
-        share_number: 1
-
-      }
-      await this.requestService.updateCount({ _id: id }, dataUpdateCount)
+        share_number: 1,
+      };
+      await this.requestService.updateCount({ _id: id }, dataUpdateCount);
       let channel = await this.channelService.findById(channelId);
-      let foundGameSetting = channel.point_data.find(obj => obj.key === "share")
+      let foundGameSetting = channel.point_data.find((obj) => obj.key === "share");
       let point = "";
       if (!foundGameSetting) {
         point = "4";
@@ -2812,14 +2829,12 @@ export class RequestHelper {
           entity_type: "share",
           point_number: point,
           user_id: userId,
-        }, "share"
+        },
+        "share"
       );
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json({
-          message: "Share successfully!"
-        });
+      return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
+        message: "Share successfully!",
+      });
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -2842,7 +2857,7 @@ export class RequestHelper {
     str = str.replace(/([^0-9a-z-\s])/g, "");
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
-    str = str.replace(/-+$/g, "") + (new Date()).getTime();
+    str = str.replace(/-+$/g, "") + new Date().getTime();
     return str;
   }
 }

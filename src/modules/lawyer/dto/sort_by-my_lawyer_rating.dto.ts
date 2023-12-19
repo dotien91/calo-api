@@ -1,3 +1,3 @@
 export class SortByMyLawyerRatingDto {
-  createdAt?: string
+  createdAt?: string;
 }

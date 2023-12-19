@@ -79,7 +79,7 @@ export class LawyerRatingService {
       let dataReturn = await this.lawyerRatingModel.findOneAndUpdate(
         {
           lawyer_id: dataUpdate.lawyer_id,
-          createBy: dataUpdate.createBy
+          createBy: dataUpdate.createBy,
         },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -94,13 +94,12 @@ export class LawyerRatingService {
     }
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   async getCondition(filter: SearchMyLawyerRatingDto) {
+  async getCondition(filter: SearchMyLawyerRatingDto) {
     let condition: any = {};
     if (filter.lawyer_id) {
       condition = Object.assign(condition, { lawyer_id: filter.lawyer_id });
@@ -148,13 +147,12 @@ export class LawyerRatingService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   public count = async (filter: SearchMyLawyerRatingDto) => {
+  public count = async (filter: SearchMyLawyerRatingDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {

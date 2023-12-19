@@ -91,9 +91,9 @@ export class Purchase {
   @Prop({
     type: String,
     nullable: true,
-    default: ""
+    default: "",
   })
-  developer_payload: String
+  developer_payload: String;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   purchase_time: MongooseSchema.Types.Date;

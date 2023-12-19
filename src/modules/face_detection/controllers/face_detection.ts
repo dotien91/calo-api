@@ -6,7 +6,7 @@ import { CreateFaceDetectionDto } from "../dto/create-face_detection.dto";
 
 @Controller("face-detection")
 export class CallKitController {
-  constructor(private readonly faceDetectionHelper: FaceDetectionHelper) { }
+  constructor(private readonly faceDetectionHelper: FaceDetectionHelper) {}
 
   @Post("validate-avatar")
   async validateAvatar(

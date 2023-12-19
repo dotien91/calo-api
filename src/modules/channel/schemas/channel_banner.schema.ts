@@ -1,16 +1,16 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Channel } from './channel.schema';
-import { ChatMedia } from '../../../modules/chat_media/schemas/chat_media.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Channel } from "./channel.schema";
+import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
 
 export type ChannelBannerDocument = ChannelBanner & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChannelBanner {
@@ -24,7 +24,7 @@ export class ChannelBanner {
     type: MongooseSchema.Types.ObjectId,
     default: null,
     nullable: false,
-    ref: "ChatMedia"
+    ref: "ChatMedia",
   })
   media_id: ChatMedia;
 
@@ -32,7 +32,7 @@ export class ChannelBanner {
     type: MongooseSchema.Types.ObjectId,
     default: null,
     nullable: false,
-    ref: "User"
+    ref: "User",
   })
   user_id: User;
 
@@ -47,7 +47,7 @@ export class ChannelBanner {
     type: MongooseSchema.Types.ObjectId,
     default: null,
     nullable: false,
-    ref: "Channel"
+    ref: "Channel",
   })
   channel_id: Channel;
 
@@ -55,10 +55,9 @@ export class ChannelBanner {
     type: String,
     default: "homepage",
     nullable: false,
-    index: true
+    index: true,
   })
   banner_type: String;
-
 }
 
 export const ChannelBannerSchema = SchemaFactory.createForClass(ChannelBanner);

@@ -68,8 +68,12 @@ export class UserInterestService {
    */
   async findOne(dataToSearch: SearchUserInterestDto, isWithUser: boolean = false): Promise<UserInterest> {
     if (isWithUser) {
-      return await this.userInterestModel.findOne(dataToSearch).populate("parent_id").populate("cover")
-      .populate("cover").exec();
+      return await this.userInterestModel
+        .findOne(dataToSearch)
+        .populate("parent_id")
+        .populate("cover")
+        .populate("cover")
+        .exec();
     } else {
       return await this.userInterestModel.findOne(dataToSearch).exec();
     }

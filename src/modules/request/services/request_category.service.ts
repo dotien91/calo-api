@@ -34,7 +34,7 @@ export class RequestCategoryService {
     }
 
     if (filter?.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id  });
+      condition = Object.assign(condition, { channel_id: filter.channel_id });
     }
 
     if (filter.hasOwnProperty("public_status")) {

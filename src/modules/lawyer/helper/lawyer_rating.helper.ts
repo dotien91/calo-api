@@ -20,7 +20,7 @@ export class LawyerRatingHelper {
     private readonly lawyerService: LawyerService,
     private readonly lawyerTypeService: LawyerTypeService,
     private readonly lawyerRatingService: LawyerRatingService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

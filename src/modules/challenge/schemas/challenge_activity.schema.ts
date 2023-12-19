@@ -20,22 +20,22 @@ export class ChallengeActivityMeta extends Document {
   meta_value: string;
 
   @Prop({
-    type: String
+    type: String,
   })
-  meta_type: string
+  meta_type: string;
 
   @Prop({
-    type: String
+    type: String,
   })
-  meta_title: string
+  meta_title: string;
 }
 export const ChallengeActivityMetaSchema = SchemaFactory.createForClass(ChallengeActivityMeta);
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChallengeActivity {

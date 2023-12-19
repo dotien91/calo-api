@@ -36,7 +36,7 @@ export class TopicHelper {
     private chatRoomService: ChatRoomService,
     private chatRoomUserOptionService: ChatRoomUserOptionService,
     private topicJoinService: TopicJoinService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -91,7 +91,7 @@ export class TopicHelper {
         room_name: createTopicData.name,
         room_description: createTopicData?.description,
         last_message: "New group",
-        room_image: createTopicData.image?.trim()
+        room_image: createTopicData.image?.trim(),
       };
       console.log(dataCreateRoom);
       let dataCreateReturnRoom = await this.chatRoomService.create(dataCreateRoom);
@@ -115,9 +115,9 @@ export class TopicHelper {
         dataToAdd = {
           ...dataToAdd,
           ...{
-            chat_room_id: groupId
-          }
-        }
+            chat_room_id: groupId,
+          },
+        };
       }
 
       let dataCreate: any = await this.topicService.create(dataToAdd);
@@ -125,29 +125,29 @@ export class TopicHelper {
       //Update Room Ref
       let dataUpdate = {
         _id: dataCreateReturnRoom._id.toString(),
-        topic_id: dataCreate._id.toString()
-      }
+        topic_id: dataCreate._id.toString(),
+      };
       await this.chatRoomService.update(dataUpdate);
       dataCreate = {
         ...dataCreate.toObject(),
         ...{
-          chat_room_id: dataCreateReturnRoom
-        }
-      }
+          chat_room_id: dataCreateReturnRoom,
+        },
+      };
       if (parentData) {
         dataCreate = {
           ...dataCreate,
           ...{
             parent_id: parentData,
-          }
-        }
+          },
+        };
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataCreate);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw new NotFoundException(error.message);
     }
   }
@@ -212,13 +212,13 @@ export class TopicHelper {
   }
 
   /**
-  * @author Tony Vu
-  * @param query
-  * @param id
-  * @param res
-  * @param req
-  * @returns
-  */
+   * @author Tony Vu
+   * @param query
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
   async getJoinList(query: ListTopicJoinDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject = req?.user_object;

@@ -31,7 +31,7 @@ export class PromptHistory {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: "PostAnonymous",
-    index: true
+    index: true,
   })
   prompt_user: PostAnonymous;
 
@@ -79,5 +79,5 @@ export class PromptHistory {
 }
 
 export const PromptHistorySchema = SchemaFactory.createForClass(PromptHistory).index({
-  chat_content: "text"
+  chat_content: "text",
 });

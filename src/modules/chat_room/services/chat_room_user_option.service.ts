@@ -60,7 +60,6 @@ export class ChatRoomUserOptionService {
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
 
-
     if (filter.read_count) {
       if (filter.read_count === "read") {
         condition = Object.assign(condition, { read_count: 0 });
@@ -369,7 +368,7 @@ export class ChatRoomUserOptionService {
    * @param dataUpdate
    * @returns
    */
-   async findOneAndUpdate(dataFind: any, dataUpdate: any) {
+  async findOneAndUpdate(dataFind: any, dataUpdate: any) {
     try {
       let dataReturn = await this.chatRoomUserOptionModel.findOneAndUpdate(
         dataFind,

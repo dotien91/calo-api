@@ -8,15 +8,14 @@ import { SearchLivestreamDto } from "../dto/search-livestream.dto";
 import { SortByLivestreamDto } from "../dto/sort_by-livestream.dto";
 import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
 
-
 const dataPopulateProduct = {
   path: "product_id",
   options: { strictPopulate: false },
   populate: [
     {
       path: "avatar",
-    }
-  ]
+    },
+  ],
 };
 
 @Injectable()
@@ -24,7 +23,7 @@ export class LivestreamService {
   constructor(
     @InjectModel(Livestream.name)
     private livestreamModel: Model<LivestreamDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

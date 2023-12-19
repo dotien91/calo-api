@@ -1,3 +1,3 @@
 export class SortByTopicJoinDto {
-  createdAt?: string
+  createdAt?: string;
 }

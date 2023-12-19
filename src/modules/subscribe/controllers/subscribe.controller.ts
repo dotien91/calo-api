@@ -9,7 +9,7 @@ import { UserUpdateSubscribeDto } from "../dto/update-user_subscribe.dto";
 
 @Controller("subscribe")
 export class SubscribeController {
-  constructor(private readonly subscribeHelper: SubscribeHelper) { }
+  constructor(private readonly subscribeHelper: SubscribeHelper) {}
 
   @Post("/create-subscribe")
   async createNewSubscribe(

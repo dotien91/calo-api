@@ -10,8 +10,8 @@ export type ChallengeNotificationDocument = ChallengeNotification & Document;
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChallengeNotification {

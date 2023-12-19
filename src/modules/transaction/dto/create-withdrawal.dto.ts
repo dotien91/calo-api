@@ -12,14 +12,14 @@ export class CreateWithdrawalDto {
 
   @IsString()
   @ApiProperty()
-  data_payment: string
+  data_payment: string;
 
   @IsString()
   @ApiProperty()
-  transaction_bank: string
+  transaction_bank: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  channel_id?: string
+  channel_id?: string;
 }

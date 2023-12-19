@@ -1,5 +1,5 @@
-import { BaseInterfaceRepository } from './base.interface.repository';
-import { Model } from 'mongoose';
+import { BaseInterfaceRepository } from "./base.interface.repository";
+import { Model } from "mongoose";
 
 export abstract class BaseAbstractRepository<T> implements BaseInterfaceRepository<T> {
   private entity: Model<any>;
@@ -28,13 +28,7 @@ export abstract class BaseAbstractRepository<T> implements BaseInterfaceReposito
     return this.entity.findByIdAndRemove(id).exec();
   }
 
-  paginate(
-    page: number,
-    limit: number,
-    filterCondition?: any,
-    projections?: any,
-    sort?: any
-  ): Promise<T[]> {
+  paginate(page: number, limit: number, filterCondition?: any, projections?: any, sort?: any): Promise<T[]> {
     return this.entity
       .find(filterCondition, projections)
       .sort(sort ? sort : { _id: -1 })

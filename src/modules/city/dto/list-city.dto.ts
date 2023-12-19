@@ -20,7 +20,7 @@ export class ListCityDto {
 
   @IsString()
   @IsOptional(null)
-  country_iso2?: string
+  country_iso2?: string;
 
   @IsString()
   @IsOptional(null)
@@ -28,23 +28,23 @@ export class ListCityDto {
 
   @IsNumberString()
   @IsOptional(null)
-  distance?: string
+  distance?: string;
 
   @IsLatitude()
   @IsOptional(null)
-  latitude?: number
+  latitude?: number;
 
   @IsLongitude()
   @IsOptional(null)
-  longitude?: number
+  longitude?: number;
 
-  capital?: string[]
-  point?: any[]
-  unset?: any[]
+  capital?: string[];
+  point?: any[];
+  unset?: any[];
 
   @IsString()
   @IsOptional(null)
-  is_nearby?: string
-  have_group?: number
-  have_image?: number
+  is_nearby?: string;
+  have_group?: number;
+  have_image?: number;
 }

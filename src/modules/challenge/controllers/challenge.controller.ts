@@ -26,7 +26,7 @@ import { UpdateChallengePermissionDto } from "../dto/update-challenge_permission
 @ApiTags("challenge")
 @ApiBearerAuth("ICEO")
 export class ChallengeController {
-  constructor(private readonly challengeHelper: ChallengeHelper) { }
+  constructor(private readonly challengeHelper: ChallengeHelper) {}
 
   @Get("/list")
   async getUserChallenge(@Query() query: ListChallengeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -90,7 +90,11 @@ export class ChallengeController {
   }
 
   @Get("my-permission")
-  handleGetMyPermission(@Query() query: ListChallengePermissionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  handleGetMyPermission(
+    @Query() query: ListChallengePermissionDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return this.challengeHelper.handleGetMyPermission(query, res, req);
   }
 

@@ -13,7 +13,7 @@ export class TopicPostService {
   constructor(
     @InjectModel(TopicPost.name)
     private orderModel: Model<TopicPostDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

@@ -9,9 +9,9 @@ import { SearchMyLawyerRatingDto } from "../dto/search.my_lawyer_rating.dto";
 import { ApiTags } from "@nestjs/swagger";
 
 @Controller("lawyer-rating")
-@ApiTags('lawyer')
+@ApiTags("lawyer")
 export class LawyerRatingController {
-  constructor(private readonly lawyerRatingHelper: LawyerRatingHelper) { }
+  constructor(private readonly lawyerRatingHelper: LawyerRatingHelper) {}
 
   @Post("/create")
   async createNewLawyerType(

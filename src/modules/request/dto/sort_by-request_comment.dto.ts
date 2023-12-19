@@ -1,3 +1,3 @@
 export class SortByRequestCommentDto {
-  createdAt?: string
+  createdAt?: string;
 }

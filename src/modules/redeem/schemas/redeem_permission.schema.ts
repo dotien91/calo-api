@@ -16,13 +16,13 @@ export class RedeemPointData extends Document {
 
   @Prop({
     type: String,
-    default: 0
+    default: 0,
   })
   point_number: String;
 
   @Prop({
     type: String,
-    default: "process"
+    default: "process",
   })
   status: String;
 

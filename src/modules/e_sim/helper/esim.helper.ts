@@ -36,7 +36,7 @@ export class EsimHelper {
     private planService: PlanService,
     private handleServiceService: HandleServiceService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -63,7 +63,7 @@ export class EsimHelper {
 
       if (query?.country_code) {
         let dataCountry = await this.esimCountryService.findOne({ country_code: query?.country_code });
-        dataToFilter = { ...dataToFilter, ...{ country: dataCountry?._id?.toString() } }
+        dataToFilter = { ...dataToFilter, ...{ country: dataCountry?._id?.toString() } };
       }
 
       delete dataToFilter.page;
@@ -134,7 +134,10 @@ export class EsimHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataPermission = await this.userPermissionService.isHavePermission(userObject?._id?.toString(), "esim/create");
+      let dataPermission = await this.userPermissionService.isHavePermission(
+        userObject?._id?.toString(),
+        "esim/create"
+      );
       if (!dataPermission) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
@@ -189,9 +192,8 @@ export class EsimHelper {
 
       //Check Permission
 
-
       let dataCreate: any = await this.esimService.create(createEsimData);
-      let dataService = await this.handleServiceService.findById(createEsimData?.service_id)
+      let dataService = await this.handleServiceService.findById(createEsimData?.service_id);
 
       //Update to Plan
       let dataToUpdate = {
@@ -258,7 +260,10 @@ export class EsimHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataPermission = await this.userPermissionService.isHavePermission(userObject?._id?.toString(), "esim/create");
+      let dataPermission = await this.userPermissionService.isHavePermission(
+        userObject?._id?.toString(),
+        "esim/create"
+      );
       if (!dataPermission) {
         throw new BadRequestException("You haven't permission for this Action!");
       }

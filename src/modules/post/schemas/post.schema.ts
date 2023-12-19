@@ -19,18 +19,18 @@ export class Post {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   post_language: String;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true })
   post_category: PostCategory;
 
   @Prop({
@@ -59,36 +59,36 @@ export class Post {
     default: "",
     nullable: false,
   })
-  post_excerpt: String
+  post_excerpt: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  post_slug: String
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  post_parent: String
+  post_slug: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String
+  post_parent: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  other_status: String
+  post_status: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  other_status: String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -123,43 +123,43 @@ export class Post {
     default: "",
     nullable: false,
   })
-  post_title: String
+  post_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_information: String
+  post_information: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  must_do: String
+  must_do: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_additional: String
+  post_additional: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_object: String
+  post_object: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  post_type: String
+  post_type: String;
 
   @Prop({
     type: Number,
@@ -167,7 +167,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  post_view: Number
+  post_view: Number;
 
   @Prop({
     type: Number,
@@ -175,7 +175,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  total_user: Number
+  total_user: Number;
 
   @Prop({
     type: Number,
@@ -183,63 +183,63 @@ export class Post {
     nullable: false,
     index: true,
   })
-  money_per_post: Number
+  money_per_post: Number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_title: String
+  seo_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_description: String
+  seo_description: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_keyword: String
+  seo_keyword: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  social: string
+  social: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  follow: string
+  follow: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  career_number: string
+  career_number: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  min_money: string
+  min_money: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  max_money: string
+  max_money: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post).index({

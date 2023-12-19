@@ -48,100 +48,100 @@ export class CreateEventDto {
   @IsLatitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  latitude?: number
+  latitude?: number;
 
   @IsLongitude()
   @IsOptional(null)
   @ApiPropertyOptional()
-  longitude?: number
+  longitude?: number;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_album?: string
+  public_album?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category: string
+  category: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  type: string
+  type: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  open_date: string
+  open_date: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  end_date: string
+  end_date: string;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  min_price: number
+  min_price: number;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  max_price: number
+  max_price: number;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  open_ticket_date: string
+  open_ticket_date: string;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  pre_order_date: string
+  pre_order_date: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  permission: string
+  permission: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  repeat_on: string
+  repeat_on: string;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  is_remind: number
+  is_remind: number;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  event_level: number
+  event_level: number;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  event_course: string
+  event_course: string;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  repeat_every: number
+  repeat_every: number;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  is_recurring: number
+  is_recurring: number;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  duration: number
+  duration: number;
 
   @IsNumberString()
   @IsOptional()
   @ApiPropertyOptional()
-  end_occurrences: number
+  end_occurrences: number;
 }

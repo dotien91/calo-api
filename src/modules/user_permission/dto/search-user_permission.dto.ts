@@ -1,5 +1,5 @@
 export class SearchUserPermissionDto {
-  permission?: string
-  user_id?: string
-  group?: string
+  permission?: string;
+  user_id?: string;
+  group?: string;
 }

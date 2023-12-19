@@ -13,18 +13,13 @@ import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
 import { ListUserIncomeDto } from "../dto/list-user-income.dto";
 
 @Controller("transaction")
-@ApiTags('transaction')
-@ApiBearerAuth('ICEO')
+@ApiTags("transaction")
+@ApiBearerAuth("ICEO")
 export class TransactionController {
-  constructor(private readonly transactionHelper: TransactionHelper) {
-  }
+  constructor(private readonly transactionHelper: TransactionHelper) {}
 
   @Get("/user-list")
-  async getUserTransaction(
-    @Query() query: ListTransactionDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserTransaction(@Query() query: ListTransactionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.getTransactionListByUser(query, res, req);
   }
 
@@ -38,20 +33,12 @@ export class TransactionController {
   }
 
   @Get("/admin-list")
-  async getAdminTransaction(
-    @Query() query: ListTransactionDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminTransaction(@Query() query: ListTransactionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.getTransactionListByAdmin(query, res, req);
   }
 
   @Get("/user-income")
-  async getUserIncome(
-    @Query() query: ListUserIncomeDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getUserIncome(@Query() query: ListUserIncomeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.getUserIncome(query, res, req);
   }
 
@@ -97,11 +84,7 @@ export class TransactionController {
   }
 
   @Patch("/admin-update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateTransactionDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateTransactionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleUpdateTransactionByAdmin(dataUpdate, res, req);
   }
 

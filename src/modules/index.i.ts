@@ -1,3 +1,3 @@
 export enum Controllers {
-	POST = 'post'
+  POST = "post",
 }

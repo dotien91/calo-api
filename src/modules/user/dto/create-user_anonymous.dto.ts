@@ -4,7 +4,7 @@ import { IsOptional, IsString } from "class-validator";
 export class CreateUserAnonymousDto {
   @IsString()
   @ApiProperty()
-  device_id?: string
+  device_id?: string;
 
   @IsString()
   @IsOptional(null)
@@ -44,8 +44,8 @@ export class CreateUserAnonymousDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  language?: string
+  language?: string;
 
-  _id?: string
-  is_ab_testing?: boolean
+  _id?: string;
+  is_ab_testing?: boolean;
 }

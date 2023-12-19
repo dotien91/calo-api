@@ -1,3 +1,3 @@
 export class SortByChallengeDto {
-  createdAt?: string
+  createdAt?: string;
 }

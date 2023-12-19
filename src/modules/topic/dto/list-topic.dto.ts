@@ -32,17 +32,17 @@ export class ListTopicDto {
 
   @IsNumberString()
   @IsOptional(null)
-  is_official: number
+  is_official: number;
 
   @IsNumberString()
   @IsOptional(null)
-  is_validate: number
+  is_validate: number;
 
   @IsNumberString()
   @IsOptional(null)
-  is_parent: number
+  is_parent: number;
 
   @IsNumberString()
   @IsOptional(null)
-  is_child: number
+  is_child: number;
 }

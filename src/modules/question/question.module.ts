@@ -21,17 +21,11 @@ import { AnswerHelper } from "./helper/answer.helper";
       { name: Question.name, schema: QuestionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Purchase.name, schema: PurchaseSchema },
-      { name: Answer.name, schema: AnswerSchema}
+      { name: Answer.name, schema: AnswerSchema },
     ]),
   ],
   controllers: [QuestionController],
-  providers: [
-    QuestionService,
-    AnswerService,
-    AnswerHelper,
-    QuestionHelper,
-    UserPermissionService
-  ],
+  providers: [QuestionService, AnswerService, AnswerHelper, QuestionHelper, UserPermissionService],
   exports: [QuestionHelper],
 })
 export class QuestionModule {}

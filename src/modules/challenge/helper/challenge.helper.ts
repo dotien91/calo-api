@@ -51,7 +51,7 @@ import { ChannelService } from "../../../modules/channel/services/channel.servic
 import { QueueService } from "../../../modules/queue/queue.service";
 import { async } from "rxjs";
 const { getFirestore } = require("firebase-admin/firestore");
-const cron = require('node-cron');
+const cron = require("node-cron");
 
 /**
  * @author Tony Vu
@@ -76,7 +76,7 @@ export class ChallengeHelper {
     private requestService: RequestService,
     private readonly channelService: ChannelService,
     private readonly eventHookNotificationService: EventHookNotificationService,
-    private readonly queueService: QueueService,
+    private readonly queueService: QueueService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -128,7 +128,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -191,16 +191,21 @@ export class ChallengeHelper {
       // let channel = await this.channelService.findById(channelId);
 
       if (createChallengeData.add_all_user === true && channelId) {
-        const listPermissions = await this.channelPermissionService.filter({
-          channel_id: channelId
-        }, {}, 1, 9999999);
+        const listPermissions = await this.channelPermissionService.filter(
+          {
+            channel_id: channelId,
+          },
+          {},
+          1,
+          9999999
+        );
         const challengeGame = await this.challengeGameService.findOne({ _id: createChallengeData.game_id.toString() });
-        console.log(listPermissions, 'listPermissions')
-        console.log(challengeGame, 'challengeGame')
+        console.log(listPermissions, "listPermissions");
+        console.log(challengeGame, "challengeGame");
         const listUserIds = listPermissions.map((x) => {
           return x.user_id?._id.toString();
-        })
-        console.log(listUserIds, 'listUserIds')
+        });
+        console.log(listUserIds, "listUserIds");
         this.queueService.addTaskChallengeAddAllUser({
           list_user_id: listUserIds,
           challenge_id: dataCreate._id,
@@ -208,7 +213,7 @@ export class ChallengeHelper {
           game_id: createChallengeData.game_id,
           game_type: challengeGame.game_type,
           official_status: 1,
-        })
+        });
       }
       setTimeout(async () => {
         // if (dataReturn?.start_time) {
@@ -220,7 +225,7 @@ export class ChallengeHelper {
         // year = new Date(dataReturn.start_time?.toString()).getFullYear();
         // cron.schedule(`0 ${minute} ${hour} ${day} ${month} * ${year}`, async () => {
         //     //Update dataPost
-        let dataTitle = "Thử thách " + dataReturn?.title + ' đang diễn ra!';
+        let dataTitle = "Thử thách " + dataReturn?.title + " đang diễn ra!";
         let dataSlug = this.toSlug(dataTitle);
 
         let dataCreatePost = {
@@ -237,9 +242,9 @@ export class ChallengeHelper {
           ref_id: dataCreate?._id,
           data_json: JSON.stringify(dataReturn),
           //@ts-ignore
-          post_avatar: dataReturn?.avatar?._id?.toString()
-        }
-        await this.requestService.create(dataCreatePost)
+          post_avatar: dataReturn?.avatar?._id?.toString(),
+        };
+        await this.requestService.create(dataCreatePost);
         // })
 
         // }
@@ -253,9 +258,8 @@ export class ChallengeHelper {
           yearEnd = new Date(dataReturn.end_time?.toString()).getFullYear();
           cron.schedule(`* ${minuteEnd} ${hourEnd} ${dayEnd} ${monthEnd} * ${yearEnd}`, async () => {
             await this.requestService.removeOne({ ref_id: dataCreate?._id?.toString() });
-          })
+          });
         }
-
       }, 200);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -278,7 +282,7 @@ export class ChallengeHelper {
     str = str.replace(/([^0-9a-z-\s])/g, "");
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
-    str = str.replace(/-+$/g, "") + (new Date()).getTime();
+    str = str.replace(/-+$/g, "") + new Date().getTime();
     return str;
   }
 
@@ -309,7 +313,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -416,7 +420,7 @@ export class ChallengeHelper {
           user_id: await this.handleGetUserBase(userObject),
         },
       };
-      const challenge = await this.challengeService.findById(createChallengeData?.challenge_id.toString())
+      const challenge = await this.challengeService.findById(createChallengeData?.challenge_id.toString());
       const channel = await this.channelService.findById(channelId);
       this.eventHookNotificationService.sendNotiNMailUpActivityChallenge({
         send_user_id: req?.user_id.toString(),
@@ -425,7 +429,9 @@ export class ChallengeHelper {
         path: `/r/challenge/detail/${createChallengeData?.challenge_id.toString()}?tab=activity_pending`,
         mail_template: "up_activity_challenge",
         content: (params: any) => {
-          return `Người dùng ${params?.display_name} điểm danh hoạt động trong thử thách ${challenge.title.toString()} của kênh ${params?.channel_name}`;
+          return `Người dùng ${
+            params?.display_name
+          } điểm danh hoạt động trong thử thách ${challenge.title.toString()} của kênh ${params?.channel_name}`;
         },
         title: `ĐIỂM DANH THỬ THÁCH ${challenge.title.toString().toLocaleUpperCase}`,
       });
@@ -471,7 +477,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -538,7 +544,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -599,7 +605,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -656,7 +662,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -699,7 +705,9 @@ export class ChallengeHelper {
         path: `/r/challenge/detail/${channelId}?tab=activity_pending`,
         mail_template: "up_activity_challenge",
         content: (params: any) => {
-          return `Điểm danh hoạt động trong thử thách ${challenge.title.toString()} kênh ${params?.channel_name} của bạn đã được phê duyệt`;
+          return `Điểm danh hoạt động trong thử thách ${challenge.title.toString()} kênh ${
+            params?.channel_name
+          } của bạn đã được phê duyệt`;
         },
         title: `ĐIỂM DANH THỬ THÁCH ${challenge.title.toString().toLocaleUpperCase} ĐÃ ĐƯỢC PHÊ DUYỆT`,
       });
@@ -865,12 +873,12 @@ export class ChallengeHelper {
   }
 
   /**
-  * @author Tony Vu
-  * @param query
-  * @param res
-  * @param req
-  * @returns
-  */
+   * @author Tony Vu
+   * @param query
+   * @param res
+   * @param req
+   * @returns
+   */
   async handleGetMyPermission(query: ListChallengePermissionDto, res: Response, req: ExpressRequestDto) {
     try {
       if (Number(query.limit) > 1000) {
@@ -886,7 +894,10 @@ export class ChallengeHelper {
         orderByOBject = { ...orderByOBject, ...{ total_point: "DESC" } };
       }
 
-      let myChallengePermission = await this.challengePermissionService.findOne({ user_id: req?.user_id, challenge_id: query?.challenge_id });
+      let myChallengePermission = await this.challengePermissionService.findOne({
+        user_id: req?.user_id,
+        challenge_id: query?.challenge_id,
+      });
       let dataToFilter = { ...query, ...{ max_point: myChallengePermission?.total_point?.toString() } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
@@ -1007,7 +1018,12 @@ export class ChallengeHelper {
           challenge_ids: dataChallengeIds,
           user_id: userId,
         };
-        let dataJoinPermisson: ChallengePermission[] = await this.challengePermissionService.filter(dataFilterPermission, {}, 1, 1000);
+        let dataJoinPermisson: ChallengePermission[] = await this.challengePermissionService.filter(
+          dataFilterPermission,
+          {},
+          1,
+          1000
+        );
 
         for (let dataIndexChallenge in dataReturn) {
           let dataObjectJoinCourse = dataJoinPermisson?.filter((value) => {
@@ -1060,7 +1076,7 @@ export class ChallengeHelper {
       let orderByOBject = {};
       let queryObject = {};
       if (query.game_type && query.game_type === "system") {
-        queryObject = { ...orderByOBject, ...{ game_type: { $nin: ["custom", ""] } } }
+        queryObject = { ...orderByOBject, ...{ game_type: { $nin: ["custom", ""] } } };
         delete query.game_type;
       }
       if (query.order_by) {
@@ -1290,12 +1306,15 @@ export class ChallengeHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -1349,7 +1368,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1363,7 +1382,7 @@ export class ChallengeHelper {
         let dataReturn = await this.challengeService.remove(id);
         setTimeout(async () => {
           await this.requestService.removeOne({ ref_id: id });
-        })
+        });
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1398,7 +1417,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1441,16 +1460,20 @@ export class ChallengeHelper {
           path: `/r/challenge/detail/${dataUpdate?.challenge_id}?tab=member`,
           mail_template: "apply_join_challenge",
           content: (params: any) => {
-            return `Yêu cầu muốn gia nhập thử thách ${requestObject.title.toString()} của kênh ${params?.channel_name} đã được quản trị viên phê duyệt`;
+            return `Yêu cầu muốn gia nhập thử thách ${requestObject.title.toString()} của kênh ${
+              params?.channel_name
+            } đã được quản trị viên phê duyệt`;
           },
-          title: `YÊU CẦU THAM GIA THỬ THÁCH ${requestObject.title.toString().toLocaleUpperCase} CỦA BẠN ĐÃ ĐƯỢC PHÊ DUYỆT`,
+          title: `YÊU CẦU THAM GIA THỬ THÁCH ${
+            requestObject.title.toString().toLocaleUpperCase
+          } CỦA BẠN ĐÃ ĐƯỢC PHÊ DUYỆT`,
         });
       }
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1522,7 +1545,7 @@ export class ChallengeHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("challenge/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1537,7 +1560,14 @@ export class ChallengeHelper {
         let dataUserArray = dataFollow?.user_id?.split(",");
         for (let dataUserId of dataUserArray) {
           let dataToCreateNew = { ...dataFollow, ...{ user_id: dataUserId } };
-          dataToCreateNew = { ...dataToCreateNew, ...{ game_type: challengeObject?.game_id?.game_type, game_id: challengeObject?.game_id?._id, channel_id: challengeObject?.channel_id?._id } }
+          dataToCreateNew = {
+            ...dataToCreateNew,
+            ...{
+              game_type: challengeObject?.game_id?.game_type,
+              game_id: challengeObject?.game_id?._id,
+              channel_id: challengeObject?.channel_id?._id,
+            },
+          };
           //Check permission
           let dataReturn = await this.challengePermissionService.update(dataToCreateNew);
           arrayReturn.push(dataReturn);
@@ -1593,8 +1623,8 @@ export class ChallengeHelper {
       if (req?.channel_id.toString() === challengeObject?.channel_id?._id.toString()) {
         let userChannelPermission = await this.channelPermissionService.findOne({
           user_id: userObject?._id.toString(),
-          channel_id: req?.channel_id.toString()
-        })
+          channel_id: req?.channel_id.toString(),
+        });
         if (!userChannelPermission) {
           throw new BadRequestException("You are not in channel of challenge!");
         }
@@ -1611,9 +1641,15 @@ export class ChallengeHelper {
       //Check Challenge
       if (challengeObject?.public_status == "private") {
         dataFollow = { ...dataFollow, ...{ official_status: 0 } };
-
       }
-      dataFollow = { ...dataFollow, ...{ game_type: challengeObject?.game_id?.game_type, game_id: challengeObject?.game_id?._id, channel_id: challengeObject?.channel_id?._id } };
+      dataFollow = {
+        ...dataFollow,
+        ...{
+          game_type: challengeObject?.game_id?.game_type,
+          game_id: challengeObject?.game_id?._id,
+          channel_id: challengeObject?.channel_id?._id,
+        },
+      };
       let dataReturn = await this.challengePermissionService.update(dataFollow);
 
       //Update count Video
@@ -1631,7 +1667,9 @@ export class ChallengeHelper {
         path: `/r/challenge/detail/${challengeObject?._id.toString()}?tab=member_pending`,
         mail_template: "required_join_challenge",
         content: (params: any) => {
-          return `Người dùng ${params?.display_name} muốn gia nhập thử thách ${challengeObject?.title.toString()} của kênh ${params?.channel_name}`;
+          return `Người dùng ${
+            params?.display_name
+          } muốn gia nhập thử thách ${challengeObject?.title.toString()} của kênh ${params?.channel_name}`;
         },
         title: "YÊU CẦU THAM GIA THỬ THÁCH",
       });
@@ -1835,7 +1873,6 @@ export class ChallengeHelper {
             break;
           }
         }
-
       }
 
       //Update Email
@@ -1854,7 +1891,7 @@ export class ChallengeHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/r/challenge/detail/" + dataChallenge?._id,
           event_name: "create_new_challenge",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update
@@ -1940,7 +1977,7 @@ export class ChallengeHelper {
           user_id: fromUser?._id?.toString(),
           post_url: (channelObject?.domain || "https://gamifa.vn") + "/r/challenge/detail/" + dataChallenge?._id,
           event_name: "add_to_challenge",
-          is_send_email: false
+          is_send_email: false,
         };
 
         //Update

@@ -13,7 +13,7 @@ export class ClockHistoryService {
   constructor(
     @InjectModel(ClockHistory.name)
     private orderModel: Model<ClockHistoryDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -161,10 +161,7 @@ export class ClockHistoryService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<ClockHistory> {
-    return await this.orderModel
-      .findOne(dataToSearch)
-      .sort({ _id: -1 })
-      .exec();
+    return await this.orderModel.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
   /**
@@ -173,10 +170,7 @@ export class ClockHistoryService {
    * @returns
    */
   async findOneWithOutPopulate(dataToSearch: any): Promise<ClockHistory> {
-    return await this.orderModel
-      .findOne(dataToSearch)
-      .sort({ _id: -1 })
-      .exec();
+    return await this.orderModel.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
   /**
@@ -192,9 +186,7 @@ export class ClockHistoryService {
     if (!objectId) {
       return null;
     }
-    return await this.orderModel
-      .findById(objectId)
-      .exec();
+    return await this.orderModel.findById(objectId).exec();
   }
 
   /**

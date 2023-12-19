@@ -77,14 +77,15 @@ import { ChatRoom, ChatRoomSchema } from "../chat_room/schemas/chat_room.schema"
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Request.name, schema: RequestSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -161,6 +162,14 @@ import { ChatRoom, ChatRoomSchema } from "../chat_room/schemas/chat_room.schema"
     ChatRoomUserOptionService,
     ChatRoomService,
   ],
-  exports: [RequestHelper, RequestCategoryService, RequestCommentService, RequestDisLikeService, RequestLikeService, RequestPollService, RequestService],
+  exports: [
+    RequestHelper,
+    RequestCategoryService,
+    RequestCommentService,
+    RequestDisLikeService,
+    RequestLikeService,
+    RequestPollService,
+    RequestService,
+  ],
 })
-export class RequestModule { }
+export class RequestModule {}

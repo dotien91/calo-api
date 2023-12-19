@@ -11,7 +11,7 @@ export class UserPermissionService {
   constructor(
     @InjectModel(UserPermission.name)
     private userPermissionModel: Model<UserPermissionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

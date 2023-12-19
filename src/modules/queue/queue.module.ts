@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { QueueService } from './queue.service';
-import { BullModule } from '@nestjs/bull';
-import { UserGiftService } from '../gift/services/user_gift.service';
-import { GiftService } from '../gift/services/gift.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserGift, UserGiftSchema } from '../gift/schemas/user_gift.schema';
-import { Gift, GiftSchema } from '../gift/schemas/gift.schema';
-import { ChannelPermission } from '../channel/schemas/channel_permission.schema';
-import { ChannelPermissionSchema } from '../channel/schemas/channel_permission.';
+import { Module } from "@nestjs/common";
+import { QueueService } from "./queue.service";
+import { BullModule } from "@nestjs/bull";
+import { UserGiftService } from "../gift/services/user_gift.service";
+import { GiftService } from "../gift/services/gift.service";
+import { MongooseModule } from "@nestjs/mongoose";
+import { UserGift, UserGiftSchema } from "../gift/schemas/user_gift.schema";
+import { Gift, GiftSchema } from "../gift/schemas/gift.schema";
+import { ChannelPermission } from "../channel/schemas/channel_permission.schema";
+import { ChannelPermissionSchema } from "../channel/schemas/channel_permission.";
 
 @Module({
   imports: [
@@ -18,19 +18,20 @@ import { ChannelPermissionSchema } from '../channel/schemas/channel_permission.'
     ]),
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: "cookbook"
+        name: "cookbook",
       },
       {
-        name: "challenge"
-      }),
+        name: "challenge",
+      }
+    ),
   ],
   providers: [QueueService, UserGiftService, GiftService],
-  exports: [QueueService]
+  exports: [QueueService],
 })
-export class QueueModule { }
+export class QueueModule {}

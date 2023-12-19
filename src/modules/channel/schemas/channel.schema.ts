@@ -286,7 +286,7 @@ export class Channel {
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
-    ref: "HandleService"
+    ref: "HandleService",
   })
   service_id: HandleService[];
 
@@ -301,19 +301,19 @@ export class Channel {
     type: MongooseSchema.Types.String,
     default: null,
   })
-  domain_id: MongooseSchema.Types.String
+  domain_id: MongooseSchema.Types.String;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: null,
   })
-  name_servers: MongooseSchema.Types.Array
+  name_servers: MongooseSchema.Types.Array;
 
   @Prop({
     type: MongooseSchema.Types.Boolean,
     default: false,
   })
-  need_approval: MongooseSchema.Types.Boolean
+  need_approval: MongooseSchema.Types.Boolean;
 }
 
 export const ChannelSchema = SchemaFactory.createForClass(Channel).index({

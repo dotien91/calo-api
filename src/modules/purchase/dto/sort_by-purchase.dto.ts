@@ -1,3 +1,3 @@
 export class SortByPurchaseDto {
-  createdAt?: string
+  createdAt?: string;
 }

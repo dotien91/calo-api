@@ -19,7 +19,7 @@ export class Topic {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
@@ -60,7 +60,7 @@ export class Topic {
     default: 0,
     index: true,
   })
-  is_official: Number
+  is_official: Number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -74,13 +74,13 @@ export class Topic {
     default: 0,
     index: true,
   })
-  is_validate: Number
+  is_validate: Number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  child_number: Number
+  child_number: Number;
 
   @Prop({
     type: String,

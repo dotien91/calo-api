@@ -8,7 +8,7 @@ import { UpdateConfigDto } from "../dto/update-config.dto";
 
 @Controller("config")
 export class ConfigController {
-  constructor(private readonly configHelper: ConfigHelper) { }
+  constructor(private readonly configHelper: ConfigHelper) {}
 
   @Get("/list/:type")
   async getUserConfig(
@@ -21,11 +21,7 @@ export class ConfigController {
   }
 
   @Get("/default-avatar/:type")
-  async getDefaultAvatar(
-    @Param("type") type: string,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getDefaultAvatar(@Param("type") type: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.getDefaultAvatar(type, res, req);
   }
 
@@ -52,11 +48,7 @@ export class ConfigController {
   }
 
   @Get("/admin-list")
-  async getAdminConfig(
-    @Query() query: ListConfigDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async getAdminConfig(@Query() query: ListConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.getConfigListByAdmin(query, res, req);
   }
 
@@ -70,11 +62,7 @@ export class ConfigController {
   }
 
   @Post("/admin-update")
-  async updateByAdmin(
-    @Body() dataUpdate: UpdateConfigDto,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
+  async updateByAdmin(@Body() dataUpdate: UpdateConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.handleUpdateConfigByAdmin(dataUpdate, res, req);
   }
 

@@ -1,4 +1,3 @@
 export class SortByHandleServiceDto {
-    createdAt?: string
-  }
-  
+  createdAt?: string;
+}

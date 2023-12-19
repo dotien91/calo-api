@@ -36,11 +36,10 @@ export class ListCourseDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  level_value: string
+  level_value: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  coin_value: string
-
+  coin_value: string;
 }

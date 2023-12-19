@@ -1,11 +1,11 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsIn} from 'class-validator';
-import { CreateTransactionBankDto } from './create-transaction_bank.dto';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsString, IsOptional, IsIn } from "class-validator";
+import { CreateTransactionBankDto } from "./create-transaction_bank.dto";
 
 export class UpdateTransactionBankDto extends CreateTransactionBankDto {
   @IsString()
   @ApiProperty()
-  _id?: String
+  _id?: String;
 
   @IsString()
   @IsOptional(null)

@@ -8,7 +8,7 @@ import { UpdateNeedHelpDto } from "../dto/update-need_help.dto";
 
 @Controller("need-help")
 export class NeedHelpController {
-  constructor(private readonly needHelpHelper: NeedHelpHelper) { }
+  constructor(private readonly needHelpHelper: NeedHelpHelper) {}
 
   @Post("/create")
   async createNewNeedHelp(

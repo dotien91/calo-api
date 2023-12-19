@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { NotificationService, } from "./services/notification.service";
+import { NotificationService } from "./services/notification.service";
 import { Notification, NotificationSchema } from "./schemas/notification.schema";
 import { NotificationHelper } from "./helper/notification.helper";
 import { NotificationController } from "./controllers/notification.controller";
@@ -35,7 +35,17 @@ import { EventHookNotificationService } from "../hook/services/hook_notification
     ]),
   ],
   controllers: [NotificationController],
-  providers: [NotificationService, NotificationHelper, UserPermissionService, UserSessionService, JwtHelperService, UserService, ChannelService, GiftService, EventHookNotificationService],
-  exports: [NotificationHelper, NotificationService]
+  providers: [
+    NotificationService,
+    NotificationHelper,
+    UserPermissionService,
+    UserSessionService,
+    JwtHelperService,
+    UserService,
+    ChannelService,
+    GiftService,
+    EventHookNotificationService,
+  ],
+  exports: [NotificationHelper, NotificationService],
 })
-export class NotificationModule { }
+export class NotificationModule {}

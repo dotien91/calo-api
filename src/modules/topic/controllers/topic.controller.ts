@@ -13,7 +13,7 @@ import { ListTopicJoinDto } from "../dto/list-topic_join.dto";
 
 @Controller("topic")
 export class TopicController {
-  constructor(private readonly topicHelper: TopicHelper, private readonly postHelper: TopicPostHelper) { }
+  constructor(private readonly topicHelper: TopicHelper, private readonly postHelper: TopicPostHelper) {}
 
   @Get("/list")
   async getUserTopic(@Query() query: ListTopicDto, @Res() res: Response, @Req() req: ExpressRequestDto) {

@@ -86,14 +86,15 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Subscribe.name, schema: SubscribeSchema },
       { name: Plan.name, schema: PlanSchema },
@@ -180,4 +181,4 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   ],
   exports: [PurchaseHelper, PurchaseService],
 })
-export class PurchaseModule { }
+export class PurchaseModule {}

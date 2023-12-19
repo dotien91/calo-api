@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator"
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class GetCallkitDto {
   @IsNumberString()
@@ -20,15 +20,15 @@ export class GetCallkitDto {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  room_name?: string
+  room_name?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  user_id?: string
+  user_id?: string;
 
   @IsString()
-  @IsOptional(null )
+  @IsOptional(null)
   @ApiProperty()
-  partner_id?: string
+  partner_id?: string;
 }

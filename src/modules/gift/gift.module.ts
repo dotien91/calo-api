@@ -69,14 +69,15 @@ import { ChannelModule } from "../channel/channel.module";
     forwardRef(() => ChannelModule),
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Gift.name, schema: GiftSchema },
@@ -158,6 +159,6 @@ import { ChannelModule } from "../channel/channel.module";
     EventHookWorkerService,
     EventHookNotificationService,
   ],
-  exports: [GiftHelper, GiftService, UserGiftService]
+  exports: [GiftHelper, GiftService, UserGiftService],
 })
-export class GiftModule { }
+export class GiftModule {}

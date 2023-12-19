@@ -25,7 +25,7 @@ export class PostCategory {
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   category_language: String;
 
@@ -41,29 +41,29 @@ export class PostCategory {
     default: "",
     nullable: false,
   })
-  category_excerpt: String
+  category_excerpt: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  category_slug: String
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  category_parent: String
+  category_slug: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_status: String
+  category_parent: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  category_status: String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -77,15 +77,15 @@ export class PostCategory {
     default: "",
     nullable: false,
   })
-  category_title: String
+  category_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  category_type: String
+  category_type: String;
 
   @Prop({
     type: Number,
@@ -93,28 +93,28 @@ export class PostCategory {
     nullable: false,
     index: true,
   })
-  category_view: Number
+  category_view: Number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_title: String
+  seo_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_description: String
+  seo_description: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_keyword: String
+  seo_keyword: String;
 }
 
 export const PostCategorySchema = SchemaFactory.createForClass(PostCategory).index({

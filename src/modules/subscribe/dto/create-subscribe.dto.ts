@@ -1,25 +1,25 @@
-import { IsOptional, IsDateString, IsString, IsIn} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsIn } from "class-validator";
 export class CreateSubscribeDto {
   @IsString()
-  plan_id: string
+  plan_id: string;
 
   @IsString()
-  user_id: string
-
-  @IsString()
-  @IsOptional(null)
-  coupon_code: string
+  user_id: string;
 
   @IsString()
   @IsOptional(null)
-  channel_id: string
+  coupon_code: string;
+
+  @IsString()
+  @IsOptional(null)
+  channel_id: string;
 
   @IsIn(["active", "deactivate", "expired"])
-  status: string
+  status: string;
 
   @IsDateString()
-  start_at: string
+  start_at: string;
 
   @IsDateString()
-  end_at: string
+  end_at: string;
 }

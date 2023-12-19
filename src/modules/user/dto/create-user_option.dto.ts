@@ -1,3 +1,1 @@
-export class CreateUserOptionDto {
-
-}
+export class CreateUserOptionDto {}

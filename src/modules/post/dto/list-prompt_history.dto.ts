@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 export class ListPromptHistoryDto {
-
   @IsNumberString()
   @IsOptional(null)
   @ApiProperty()

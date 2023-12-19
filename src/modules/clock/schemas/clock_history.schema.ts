@@ -26,93 +26,93 @@ export class ClockHistory {
   @Prop({
     type: String,
     nullable: false,
-    index: true
+    index: true,
   })
   device_id: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  sleep_time: String
+  sleep_time: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  wake_time_setup: String
+  wake_time_setup: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  sound: String
+  sound: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  temperature: String
+  temperature: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  oxy_ratio: String
+  oxy_ratio: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  wake_time: String
+  wake_time: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  brightness: String
+  brightness: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  air_pressure: String
+  air_pressure: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  breathing: String
+  breathing: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  heartbeat: String
+  heartbeat: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  magnetic: String
+  magnetic: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: false
+    nullable: false,
   })
-  note: String
+  note: String;
 }
 
 export const ClockHistorySchema = SchemaFactory.createForClass(ClockHistory);

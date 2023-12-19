@@ -14,10 +14,12 @@ const dataPopulateRedeem = {
   populate: [
     {
       path: "gift_data",
-      populate: [{
-        path: "media_id"
-      }]
-    }
+      populate: [
+        {
+          path: "media_id",
+        },
+      ],
+    },
   ],
 };
 const redeemPopulate = {
@@ -26,19 +28,21 @@ const redeemPopulate = {
   populate: [
     {
       path: "gift_data",
-      populate: [{
-        path: "media_id"
-      }]
-    }
+      populate: [
+        {
+          path: "media_id",
+        },
+      ],
+    },
   ],
-}
+};
 
 @Injectable()
 export class RedeemPermissionService {
   constructor(
     @InjectModel(RedeemPermission.name)
     private redeemModel: Model<RedeemPermissionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -199,14 +203,13 @@ export class RedeemPermissionService {
   }
 
   async upsert(createUser: CreateRedeemPermissionDto) {
-
     const createdMissionData = await this.redeemModel
       .findOneAndUpdate(
         {
           channel_id: createUser?.channel_id,
           user_id: createUser?.user_id,
           redeem_id: createUser?.redeem_id,
-          redeem_mission_id: createUser?.redeem_mission_id
+          redeem_mission_id: createUser?.redeem_mission_id,
         },
         { $set: createUser },
         { new: true, upsert: true }

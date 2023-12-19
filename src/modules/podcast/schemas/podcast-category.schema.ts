@@ -104,7 +104,7 @@ export class PodcastCategory {
     nullable: false,
     index: true,
   })
-  version: Number
+  version: Number;
 
   @Prop({
     type: Number,
@@ -112,11 +112,10 @@ export class PodcastCategory {
     nullable: false,
     index: true,
   })
-  public_status: Number
+  public_status: Number;
 }
 
 export const PodcastCategorySchema = SchemaFactory.createForClass(PodcastCategory).index({
   category_title: "text",
   category_content: "text",
 });
-

@@ -6,7 +6,7 @@ import { SearchMapDto } from "../dto/search.map.dto";
 
 @Controller("map")
 export class MapController {
-  constructor(private readonly mapHelper: MapHelper) { }
+  constructor(private readonly mapHelper: MapHelper) {}
 
   @Get("search")
   async handleLogout(@Query() query: SearchMapDto, @Req() req: ExpressRequestDto, @Res() res: Response) {

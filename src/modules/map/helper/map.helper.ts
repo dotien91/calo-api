@@ -13,7 +13,7 @@ import axios from "axios";
  */
 @Injectable()
 export class MapHelper {
-  constructor(private readonly mapTokenService: MapTokenService) { }
+  constructor(private readonly mapTokenService: MapTokenService) {}
 
   async handleSearch(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
     try {
@@ -31,7 +31,6 @@ export class MapHelper {
   async handleGetToken() {
     let tokenObject = await this.mapTokenService.findOne({});
     if (!tokenObject) {
-
       // const oauth = new OAuth({
       //   consumer: { key: process.env.HERE_MAP_ACCESS_KEY, secret: process.env.HERE_MAP_ACCESS_SECRET },
       //   signature_method: "HMAC-SHA1",

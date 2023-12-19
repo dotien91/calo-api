@@ -1,4 +1,16 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsLatitude, IsLongitude, IsJSON } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsLatitude,
+  IsLongitude,
+  IsJSON,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,10 +33,10 @@ export class SearchEventLikeDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  event_id: string
+  event_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  auth_id: string
+  auth_id: string;
 }

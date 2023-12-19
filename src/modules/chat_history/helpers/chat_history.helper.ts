@@ -23,8 +23,8 @@ export class ChatHistoryHelper {
     private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
     private readonly chatRoomService: ChatRoomService,
     private readonly chatMediaService: ChatMediaService,
-    private readonly notificationHelper: NotificationHelper,
-  ) { }
+    private readonly notificationHelper: NotificationHelper
+  ) {}
 
   private readonly logger = new Logger("chat_history");
 
@@ -318,7 +318,14 @@ export class ChatHistoryHelper {
       };
 
       if (userPartnerArrayNotification && userPartnerArrayNotification.length && isSendNotification) {
-        this.handleSendNotification(userObject, userPartnerArrayNotification, lastMessageString, dataReturn, authCode, req);
+        this.handleSendNotification(
+          userObject,
+          userPartnerArrayNotification,
+          lastMessageString,
+          dataReturn,
+          authCode,
+          req
+        );
       }
 
       this.handleSendMessage(dataReturn, dataReturnForPartner, userPartnerArray, userObject._id.toString(), authCode);
@@ -686,7 +693,14 @@ export class ChatHistoryHelper {
    * @param orderPnr
    * @returns
    */
-  async handleSendNotification(fromUser: User, toUser: User[], lastMessage: any, dataChat: any, authCode, req: ExpressRequestDto) {
+  async handleSendNotification(
+    fromUser: User,
+    toUser: User[],
+    lastMessage: any,
+    dataChat: any,
+    authCode,
+    req: ExpressRequestDto
+  ) {
     try {
       let notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       let chatContentToSend = "Tin nhắn: " + lastMessage;
@@ -715,8 +729,8 @@ export class ChatHistoryHelper {
       let dataToSendNotification = {
         chat_room_id: dataChat?.chat_room_id,
         path: "/chat/detail/",
-        data_id: dataChat?.chat_room_id
-      }
+        data_id: dataChat?.chat_room_id,
+      };
       let notificationContent = chatContentToSend;
       let dataNotification = {
         createdBy: fromUser._id.toString(),

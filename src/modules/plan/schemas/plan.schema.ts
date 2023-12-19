@@ -49,91 +49,91 @@ export class Plan {
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   handle: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   name: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   description: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   google_store_product_id: String;
 
   @Prop({
     type: Number,
     nullable: false,
-    default: 0
+    default: 0,
   })
   price: Number;
 
   @Prop({
     type: Number,
     nullable: false,
-    default: 0
+    default: 0,
   })
   amount_of_day: Number;
 
   @Prop({
     type: Number,
     nullable: false,
-    default: 0
+    default: 0,
   })
   trial_day: Number;
 
   @Prop({
     type: Number,
     nullable: false,
-    default: 0
+    default: 0,
   })
   amount_of_coin: Number;
 
   @Prop({
     type: String,
     nullable: false,
-    default: "recurring"
+    default: "recurring",
   })
   type: String;
 
   @Prop({
     type: String,
     nullable: true,
-    default: ""
+    default: "",
   })
   note: String;
 
   @Prop({
     type: Number,
     nullable: false,
-    default: 1
+    default: 1,
   })
   status: Number;
 
   @Prop({
     type: String,
     nullable: false,
-    default: ""
+    default: "",
   })
   image: String;
 
   @Prop({
     type: String,
     nullable: false,
-    default: "GLOBAL"
+    default: "GLOBAL",
   })
   country: String;
 
@@ -147,11 +147,9 @@ export class Plan {
     type: String,
     nullable: false,
     default: "",
-    index: true
+    index: true,
   })
   version: String;
-
-
 }
 
 export const PlanSchema = SchemaFactory.createForClass(Plan);

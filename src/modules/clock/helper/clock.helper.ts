@@ -33,7 +33,7 @@ export class ClockHelper {
     private clockService: ClockService,
     private clockHistoryService: ClockHistoryService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("notification");
 
@@ -63,7 +63,7 @@ export class ClockHelper {
   async handleSendNotificationClock() {
     try {
       let currentTime = new Date();
-      let timeString = currentTime.getHours() + ':' + currentTime.getMinutes();
+      let timeString = currentTime.getHours() + ":" + currentTime.getMinutes();
       let from = currentTime.toISOString();
       currentTime.setTime(currentTime.getTime() + 1000 * 60);
       let to = currentTime.toISOString();
@@ -100,7 +100,8 @@ export class ClockHelper {
           param: JSON.stringify({}),
           type_action: "screen",
           alarm: "true",
-          image: "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2023/03/02_1677728786721/62eca202693ce49299eb697b/REM.png",
+          image:
+            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2023/03/02_1677728786721/62eca202693ce49299eb697b/REM.png",
           channel: "user",
           param_string: "",
         };

@@ -16,7 +16,7 @@ export class OrderService {
     private orderModel: Model<OrderDocument>,
     @InjectModel(VnpayLog.name)
     private vnpayModel: Model<VnpayLogDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -313,7 +313,7 @@ export class OrderService {
         },
         {
           path: "avatar",
-        }
+        },
       ],
     };
 
@@ -353,14 +353,14 @@ export class OrderService {
           },
           {
             path: "avatar",
-          }
+          },
         ],
       };
       if (!dataUpdate._id) {
         return null;
       }
       if (dataUpdate?.status === "success") {
-        dataUpdate = { ...dataUpdate, ...{ billing_on: new Date() } }
+        dataUpdate = { ...dataUpdate, ...{ billing_on: new Date() } };
       }
       let dataReturn = await this.orderModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })

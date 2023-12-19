@@ -40,7 +40,7 @@ export class ShortHelper {
     private shortViewService: ShortViewService,
     private userOptionService: UserOptionService,
     private userSessionService: UserSessionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

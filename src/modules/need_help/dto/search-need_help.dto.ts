@@ -1,4 +1,4 @@
 export class SearchNeedHelpDto {
-  language?: string
-  user_id?: string
+  language?: string;
+  user_id?: string;
 }

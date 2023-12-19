@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -6,34 +6,32 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-} from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
-import { Server } from 'socket.io';
-import { JwtHelperService } from '../core/services/jwt_helper.service';
-import { SocketDataSocketĐto } from './dto/socket_data-socket.dto';
+} from "@nestjs/websockets";
+import { Logger } from "@nestjs/common";
+import { Server } from "socket.io";
+import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { SocketDataSocketĐto } from "./dto/socket_data-socket.dto";
 // import { ChatRoomUserOptionService } from '../chat_room/services/chat_room_user_option.service';
 // import { UserService } from '../user/services/user.service';
-import { User } from '../user/schemas/user.schema';
+import { User } from "../user/schemas/user.schema";
 // import { UserOptionService } from '../user/services/user_option.service';
 
 @Injectable()
 @WebSocketGateway(34559, {
   cors: {
-    origin: '*',
+    origin: "*",
   },
-  namespace: 'socket'
+  namespace: "socket",
 })
 export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     // private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
-    private readonly jwtHelper: JwtHelperService,
-    // private readonly userService: UserService,
-    // private readonly userOptionService: UserOptionService,
-  ) {
-  }
+    private readonly jwtHelper: JwtHelperService // private readonly userService: UserService,
+  ) // private readonly userOptionService: UserOptionService,
+  {}
 
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('chat_socket_service');
+  private logger: Logger = new Logger("chat_socket_service");
 
   // @SubscribeMessage('typingToServer')
   // async handleTyping(client: SocketDataSocketĐto, payload: string) {
@@ -74,7 +72,6 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
   //     this.logger.log("Error socket: " + JSON.stringify(error.message));
   //   }
   // }
-
 
   // @SubscribeMessage('joinRoom')
   // async handleJoinRoom(client: SocketDataSocketĐto, payload: string) {
@@ -125,7 +122,7 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
    * @param server
    */
   afterInit(server: Server) {
-    this.logger.log('Init');
+    this.logger.log("Init");
   }
 
   // /**
@@ -144,15 +141,14 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
   //   this.server.to('user_' + userId).emit('msgToUser', JSON.stringify(message))
   // }
 
-
   /**
    * @author Tony Vu
    * @param message
    * @param partnerId
    * @param userId
    */
-  handleSendOrder(orderObject: any, userId: string, ) {
-    this.server.to('user_' + userId).emit('paymentSuccess', orderObject)
+  handleSendOrder(orderObject: any, userId: string) {
+    this.server.to("user_" + userId).emit("paymentSuccess", orderObject);
   }
 
   // /**
@@ -218,19 +214,18 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
         let dataToUpdate = {
           _id: userObject._id.toString(),
           user_active: 0,
-          last_active: currentTime.toUTCString()
-        }
-        client.leave('user_' + userObject._id.toString());
-        this.logger.log('User ' + userObject._id.toString() + ' disconnect successfully!');
+          last_active: currentTime.toUTCString(),
+        };
+        client.leave("user_" + userObject._id.toString());
+        this.logger.log("User " + userObject._id.toString() + " disconnect successfully!");
         if (client.room) {
           if (!client.user_id.toString()) return;
           client.leave(client.room);
-          this.logger.log('Leave room: ' + client.room + ' successfully!');
+          this.logger.log("Leave room: " + client.room + " successfully!");
         }
         //await this.userService.update(dataToUpdate);
 
-
-        dataToUpdate = {...dataToUpdate, ...{user_id: userObject._id.toString()}}
+        dataToUpdate = { ...dataToUpdate, ...{ user_id: userObject._id.toString() } };
 
         delete dataToUpdate._id;
         //await this.userOptionService.update(dataToUpdate);
@@ -257,16 +252,16 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
         let userObject = authObject.data?.user_object;
 
         let currentTime = new Date();
-        this.logger.log('User ' + userObject._id.toString() + ' connect successfully!');
+        this.logger.log("User " + userObject._id.toString() + " connect successfully!");
         client.user_id = userObject._id.toString();
-        client.join('user_' + userObject._id.toString());
+        client.join("user_" + userObject._id.toString());
         let dataUpdate = {
           _id: userObject._id.toString(),
           user_active: 1,
-          last_active: currentTime.toUTCString()
-        }
+          last_active: currentTime.toUTCString(),
+        };
         //await this.userService.update(dataUpdate);
-        dataUpdate = {...dataUpdate, ...{user_id: userObject._id.toString()}}
+        dataUpdate = { ...dataUpdate, ...{ user_id: userObject._id.toString() } };
         delete dataUpdate._id;
         //await this.userOptionService.update(dataUpdate);
       } else {

@@ -5,39 +5,39 @@ export class CreateChallengeActivityDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  title: string
+  title: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  media_id: string
+  media_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  challenge_id: string
+  challenge_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id: string
+  channel_id: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  parent_id?: string
+  parent_id?: string;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  start_time: string
+  start_time: string;
 
   @IsJSON()
   @ApiPropertyOptional()
   @IsOptional(null)
-  data_activity?: any
+  data_activity?: any;
 
-  point_value?: number
-  user_id?: string
-  official_status?: number
+  point_value?: number;
+  user_id?: string;
+  official_status?: number;
 }

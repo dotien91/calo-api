@@ -7,8 +7,7 @@ import { CreateCourseViewDto } from "./create-course_view.dto";
 export class UpdateCourseViewDto extends PartialType(CreateCourseViewDto) {
   @IsString()
   @ApiProperty()
-  _id?: string
+  _id?: string;
 
-  user_id?: string
-
+  user_id?: string;
 }

@@ -13,7 +13,7 @@ export class EventIndexService {
   constructor(
     @InjectModel(EventIndex.name)
     private eventTypeModel: Model<EventIndexDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

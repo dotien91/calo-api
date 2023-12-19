@@ -31,7 +31,7 @@ export class ConfigService {
 
     if (filter.search) {
       let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i")
+      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       condition = Object.assign(condition, { $or: [{ package_name: dataRegex }, { type: dataRegex }] });
     }
     return condition;
@@ -156,9 +156,7 @@ export class ConfigService {
     if (!objectId) {
       return null;
     }
-    return await this.configModel
-      .findById(objectId)
-      .exec();
+    return await this.configModel.findById(objectId).exec();
   }
 
   /**
@@ -182,7 +180,6 @@ export class ConfigService {
       return null;
     }
   }
-
 
   /**
    * @author Tony Vu

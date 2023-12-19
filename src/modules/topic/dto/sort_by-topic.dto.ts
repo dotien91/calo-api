@@ -1,3 +1,3 @@
 export class SortByTopicDto {
-  createdAt?: string
+  createdAt?: string;
 }

@@ -21,7 +21,7 @@ export class CreateContactFormDto {
 
   @IsEmail()
   @IsOptional(null)
-  email?: string
+  email?: string;
 
   @IsString()
   @IsOptional(null)
@@ -30,7 +30,6 @@ export class CreateContactFormDto {
   @IsString()
   @IsOptional(null)
   form_status?: any;
-
 
   @IsString()
   @IsOptional(null)

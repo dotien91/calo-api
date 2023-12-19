@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsEmail, IsOptional, IsString } from "class-validator";
 
 /**
  * @author Tony Vu
@@ -46,7 +46,7 @@ export class LoginUserPasswordDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  g_recaptcha: string
+  g_recaptcha: string;
 
   @IsString()
   @ApiPropertyOptional()
@@ -57,5 +57,4 @@ export class LoginUserPasswordDto {
   @ApiPropertyOptional()
   @IsOptional(null)
   referal_user?: string;
-
 }

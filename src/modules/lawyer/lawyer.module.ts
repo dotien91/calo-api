@@ -64,10 +64,18 @@ import { CityService } from "../city/services/city.service";
     LawyerCategoryService,
     CityService,
     LawyerRawService,
-    ChatMediaService
+    ChatMediaService,
   ],
-  exports: [LawyerHelper, LawyerRatingHelper, LawyerService, LawyerTypeHelper,
-    LawyerReportService, LawyerTypeService, LawyerRatingService,
-    LawyerCategoryService, LawyerRawService],
+  exports: [
+    LawyerHelper,
+    LawyerRatingHelper,
+    LawyerService,
+    LawyerTypeHelper,
+    LawyerReportService,
+    LawyerTypeService,
+    LawyerRatingService,
+    LawyerCategoryService,
+    LawyerRawService,
+  ],
 })
-export class LawyerModule { }
+export class LawyerModule {}

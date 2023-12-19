@@ -1,4 +1,14 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsNumber } from "class-validator";
+import {
+  IsDate,
+  IsNumberString,
+  IsEmpty,
+  IsIn,
+  IsDefined,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  IsNumber,
+} from "class-validator";
 import { Type } from "class-transformer";
 
 export class ListTopicJoinDto {
@@ -16,15 +26,15 @@ export class ListTopicJoinDto {
 
   @IsString()
   @IsOptional(null)
-  is_parent: number
+  is_parent: number;
 
   @IsString()
   @IsOptional(null)
-  is_child: number
+  is_child: number;
 
   @IsString()
   @IsOptional(null)
-  user_id: string
+  user_id: string;
 
   @IsString()
   @IsOptional(null)
@@ -32,13 +42,13 @@ export class ListTopicJoinDto {
 
   @IsString()
   @IsOptional(null)
-  parent_id?: string
+  parent_id?: string;
 
   @IsNumberString()
   @IsOptional(null)
-  is_official?: number
+  is_official?: number;
 
   @IsString()
   @IsOptional(null)
-  status?: string
+  status?: string;
 }

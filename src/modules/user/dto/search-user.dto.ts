@@ -1,95 +1,95 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import {IsString, IsOptional, IsNumberString, IsNumber, IsIn, IsArray, IsDateString} from "class-validator";
+import { IsString, IsOptional, IsNumberString, IsNumber, IsIn, IsArray, IsDateString } from "class-validator";
 
 export class SearchUserDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_login?: string
+  user_login?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_email?: string
+  user_email?: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  page?: number
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit?: number
+  limit?: number;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search?: string
+  search?: string;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by?: "DESC"|"ASC"
+  order_by?: "DESC" | "ASC";
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: string
+  _id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  block_users?: string
+  block_users?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_phone?: string
+  user_phone?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_role?: string
+  user_role?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  locking_for?: string
+  locking_for?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_sound?: string
+  public_sound?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ids?: any
+  ids?: any;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  from?: string
+  from?: string;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  to?: string
+  to?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  have_sound?: string
+  have_sound?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_interest?: string
+  user_interest?: string;
 
   @IsString()
   @IsOptional(null)
-  notification_request?: string
+  notification_request?: string;
 
-  email_token?: string
+  email_token?: string;
 }

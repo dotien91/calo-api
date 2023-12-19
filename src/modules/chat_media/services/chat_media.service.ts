@@ -12,7 +12,7 @@ export class ChatMediaService {
   constructor(
     @InjectModel(ChatMedia.name)
     private chatMediaService: Model<ChatMediaDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -33,7 +33,6 @@ export class ChatMediaService {
       });
     }
     if (filter.media_status) {
-
       condition = Object.assign(condition, {
         media_status: filter.media_status,
       });
@@ -125,7 +124,6 @@ export class ChatMediaService {
     return await this.chatMediaService.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
@@ -139,7 +137,7 @@ export class ChatMediaService {
     sortBy: SortByChatMediaDto,
     page: number,
     limit: number,
-    projection: object = {},
+    projection: object = {}
   ) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
@@ -177,12 +175,8 @@ export class ChatMediaService {
    * @param dataToSearch
    * @returns
    */
-  async findOneRoom(
-    dataToSearch: FilterChatMediaDto
-  ): Promise<ChatMediaDocument> {
-    return (
-      await this.chatMediaService.findOne(dataToSearch).exec()
-    ).toObject();
+  async findOneRoom(dataToSearch: FilterChatMediaDto): Promise<ChatMediaDocument> {
+    return (await this.chatMediaService.findOne(dataToSearch).exec()).toObject();
   }
 
   /**
@@ -205,11 +199,7 @@ export class ChatMediaService {
 
   async update(dataUpdate: any) {
     try {
-      return this.chatMediaService.findByIdAndUpdate(
-        dataUpdate._id,
-        { $set: dataUpdate },
-        { new: true }
-      );
+      return this.chatMediaService.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
     } catch (e) {
       return null;
     }

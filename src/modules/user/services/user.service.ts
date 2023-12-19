@@ -9,13 +9,13 @@ import { SortByUserDto } from "../dto/sort_by-user.dto";
 import { UserOption, UserOptionDocument } from "../schemas/user_option.schema";
 import { UserOptionService } from "./user_option.service";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
-import parsePhoneNumber from 'libphonenumber-js'
+import parsePhoneNumber from "libphonenumber-js";
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private appUserModel: Model<UserDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -345,8 +345,6 @@ export class UserService {
     }
   }
 
-
-
   /**
    * @author Tony Vu
    * @param dataUpdate
@@ -389,13 +387,12 @@ export class UserService {
   }
 
   /**
- * @author SonLH
- * @returns
- */
+   * @author SonLH
+   * @returns
+   */
   async findUserById(id: any, resultData: any) {
     try {
       return await this.appUserModel.findById(id, resultData).exec();
-
     } catch (e) {
       return null;
     }

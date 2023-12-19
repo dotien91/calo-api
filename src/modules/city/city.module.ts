@@ -93,14 +93,15 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: City.name, schema: CitySchema },
       { name: User.name, schema: UserSchema },
@@ -195,4 +196,4 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   ],
   exports: [CityHelper, CityService, UserJoinCityService],
 })
-export class CityModule { }
+export class CityModule {}

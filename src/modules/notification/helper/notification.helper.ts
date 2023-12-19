@@ -50,8 +50,8 @@ export class NotificationHelper {
     private userPermissionService: UserPermissionService,
     private jwtHelper: JwtHelperService,
     private channelService: ChannelService,
-    private giftService: GiftService,
-  ) { }
+    private giftService: GiftService
+  ) {}
   private readonly logger = new Logger("notification");
 
   /**
@@ -101,8 +101,8 @@ export class NotificationHelper {
           "X-Authorization": auth,
         },
       };
-      this.logger.log(params, 'params');
-      this.logger.log(config, 'config');
+      this.logger.log(params, "params");
+      this.logger.log(config, "config");
 
       const urlLogin = process.env.SOCKET_API;
 
@@ -122,9 +122,8 @@ export class NotificationHelper {
         });
       return dataNotification;
     } catch (error) {
-      console.log(error, 'error');
+      console.log(error, "error");
     }
-
   }
 
   /**
@@ -199,7 +198,7 @@ export class NotificationHelper {
               } else {
                 dataUserId.push(userItemObject);
               }
-            } catch (error) { }
+            } catch (error) {}
           }
           dataUpdate = { ...dataUpdate, ...{ user_id: dataUserId } };
         }
@@ -273,7 +272,7 @@ export class NotificationHelper {
               } else {
                 dataUserId.push(userItemObject);
               }
-            } catch (error) { }
+            } catch (error) {}
           }
           dataCreate = { ...dataCreate, ...{ user_id: dataUserId } };
         }
@@ -632,7 +631,11 @@ export class NotificationHelper {
       let dataCount = await this.notificationService.count(dataToFilter);
       let readCount = await this.notificationService.count({ ...dataToFilter, ...{ read_status: "0" } });
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count, X-Total-Unread", "X-Total-Count": dataCount, "X-Total-Unread": readCount })
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count, X-Total-Unread",
+          "X-Total-Count": dataCount,
+          "X-Total-Unread": readCount,
+        })
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
@@ -653,7 +656,6 @@ export class NotificationHelper {
     return buf;
   }
 
-
   /**
    * @author SonLH
    */
@@ -671,7 +673,7 @@ export class NotificationHelper {
       user_id: dataUser?._id?.toString(),
       post_url: dataChannel?.domain + "/r/gift/receivers",
       event_name: "suprise_gift_notication",
-      is_send_email: false
+      is_send_email: false,
     };
 
     const dataUserStore = dataFirestore.collection("Users");
@@ -703,7 +705,7 @@ export class NotificationHelper {
       createdBy: process.env.INFO_USER,
       user_id: dataUser?._id.toString(),
       channel_id: dataChannel?._id?.toString(),
-      title: 'QUÀ TẶNG ĐẶC BIỆT',
+      title: "QUÀ TẶNG ĐẶC BIỆT",
       content: notificationContent,
       request_id: dataGift._id.toString(),
       param: JSON.stringify(dataToSendNotification),
@@ -726,9 +728,9 @@ export class NotificationHelper {
       let dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
       let dataChannel = await this.channelService.findById(data?.channel_id);
       if (!dataUser) {
-        this.logger.log(`Cannot found account with id ${data?.user_id}`)
+        this.logger.log(`Cannot found account with id ${data?.user_id}`);
       } else if (!dataChannel) {
-        this.logger.log(`Cannot found channel with id ${data?.channel_id}`)
+        this.logger.log(`Cannot found channel with id ${data?.channel_id}`);
       } else {
         let dataFirestore = getFirestore();
         let dataToUpdate = {
@@ -742,10 +744,10 @@ export class NotificationHelper {
           user_id: dataUser?._id?.toString(),
           post_url: dataChannel?.domain + data?.path,
           event_name: data?.mail_template,
-          is_send_email: false
+          is_send_email: false,
         };
         if (data?.event_name) {
-          dataToUpdate = { ...dataToUpdate, ...{ event: data?.event_name } }
+          dataToUpdate = { ...dataToUpdate, ...{ event: data?.event_name } };
         }
 
         const dataUserStore = dataFirestore.collection("Users");
@@ -771,11 +773,11 @@ export class NotificationHelper {
           request_id: "",
           path: dataChannel?.domain + data?.path,
           data_id: "",
-          order_id: data?.order_id
+          order_id: data?.order_id,
         };
         let notificationContent = data?.content({
           display_name: dataUser?.display_name.toString(),
-          channel_name: dataChannel?.name.toString()
+          channel_name: dataChannel?.name.toString(),
         });
         let dataNotification = {
           createdBy: data?.send_user_id,
@@ -794,14 +796,13 @@ export class NotificationHelper {
         await this.handleSendNotification(dataNotification, tokenReturn.toString());
       }
     } catch (error) {
-      this.logger.log(`Send mail and notification fails : ${error.message}`)
+      this.logger.log(`Send mail and notification fails : ${error.message}`);
     }
   }
 
-
   /**
-  * @author SonLH
-  */
+   * @author SonLH
+   */
   async sendNotification(data: any) {
     //Send notication to user received gift
     let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });

@@ -14,7 +14,7 @@ import * as _ from "lodash";
  */
 @Injectable()
 export class EcoSystemHelper {
-  constructor(private ecoSystemService: EcoSystemService, private userPermissionService: UserPermissionService) { }
+  constructor(private ecoSystemService: EcoSystemService, private userPermissionService: UserPermissionService) {}
 
   async updateEcosystem() {
     try {
@@ -52,7 +52,7 @@ export class EcoSystemHelper {
           await this.ecoSystemService.update(dataUpdate);
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   }
   /**
    * @author Tony Vu

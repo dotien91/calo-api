@@ -1,56 +1,56 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject } from "class-validator";
 export class CreateClockHistoryDto {
   @IsString()
-  clock_id: string
+  clock_id: string;
 
   @IsString()
-  device_id: string
-
-  @IsString()
-  @IsOptional(null)
-  sleep_time: string
+  device_id: string;
 
   @IsString()
   @IsOptional(null)
-  wake_time_setup: string
+  sleep_time: string;
 
   @IsString()
   @IsOptional(null)
-  sound: string
+  wake_time_setup: string;
 
   @IsString()
   @IsOptional(null)
-  temperature: string
+  sound: string;
 
   @IsString()
   @IsOptional(null)
-  oxy_ratio: string
+  temperature: string;
 
   @IsString()
   @IsOptional(null)
-  wake_time: string
+  oxy_ratio: string;
 
   @IsString()
   @IsOptional(null)
-  brightness: string
+  wake_time: string;
 
   @IsString()
   @IsOptional(null)
-  air_pressure: string
+  brightness: string;
 
   @IsString()
   @IsOptional(null)
-  breathing: string
+  air_pressure: string;
 
   @IsString()
   @IsOptional(null)
-  heartbeat: string
+  breathing: string;
 
   @IsString()
   @IsOptional(null)
-  magnetic: string
+  heartbeat: string;
 
   @IsString()
   @IsOptional(null)
-  note: string
+  magnetic: string;
+
+  @IsString()
+  @IsOptional(null)
+  note: string;
 }

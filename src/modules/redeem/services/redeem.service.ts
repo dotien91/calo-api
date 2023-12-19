@@ -17,7 +17,7 @@ export class RedeemService {
     private redeemModel: Model<RedeemDocument>,
     @InjectModel(RedeemMission.name)
     private redeemMissionModel: Model<RedeemMissionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -102,8 +102,8 @@ export class RedeemService {
       populate: [
         {
           path: "media_id",
-        }
-      ]
+        },
+      ],
     };
     let dataPopulateMission = {
       path: "mission_data",
@@ -113,12 +113,12 @@ export class RedeemService {
           path: "gift_data",
           populate: [
             {
-              path: "media_id"
-            }
-          ]
-        }
-      ]
-    }
+              path: "media_id",
+            },
+          ],
+        },
+      ],
+    };
     let dataReturn = await this.redeemModel
       .find(condition, projection)
       .populate(
@@ -276,8 +276,8 @@ export class RedeemService {
       populate: [
         {
           path: "media_id",
-        }
-      ]
+        },
+      ],
     };
     let dataMissionData = {
       path: "mission_data",
@@ -287,11 +287,11 @@ export class RedeemService {
           path: "gift_data",
           populate: [
             {
-              path: "media_id"
-            }
-          ]
-        }
-      ]
+              path: "media_id",
+            },
+          ],
+        },
+      ],
     };
     return await this.redeemModel
       .findOne(dataToSearch)

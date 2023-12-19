@@ -44,5 +44,5 @@ export class CreateRedeemDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  redeem_level: number
+  redeem_level: number;
 }

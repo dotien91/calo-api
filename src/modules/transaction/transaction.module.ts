@@ -59,14 +59,15 @@ import { ChannelModule } from "../channel/channel.module";
     forwardRef(() => ChannelModule),
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Transaction.name, schema: TransactionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -125,4 +126,4 @@ import { ChannelModule } from "../channel/channel.module";
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })
-export class TransactionModule { }
+export class TransactionModule {}

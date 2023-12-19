@@ -82,21 +82,21 @@ export class CreateEsimDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiProperty()
-  buy_number: string
+  buy_number: string;
 
   @IsNumberString()
   @ApiProperty()
-  amount_of_day: string
+  amount_of_day: string;
 
   @IsString()
   @ApiProperty()
-  service_id: string
+  service_id: string;
 
   @IsNumberString()
   @ApiProperty()
-  price: string
+  price: string;
 
   @IsString()
   @ApiProperty()
-  version: string
+  version: string;
 }

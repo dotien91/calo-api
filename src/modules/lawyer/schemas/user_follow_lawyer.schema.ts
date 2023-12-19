@@ -1,15 +1,15 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../../modules/user/schemas/user.schema';
-import { Lawyer } from './lawyer.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { Lawyer } from "./lawyer.schema";
 
 export type UserFollowLawyerDocument = UserFollowLawyer & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class UserFollowLawyer {
@@ -19,10 +19,10 @@ export class UserFollowLawyer {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Lawyer', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Lawyer", index: true })
   event_id: Lawyer;
 }
 

@@ -45,7 +45,7 @@ export class Question {
   @Prop({
     type: String,
     nullable: false,
-    index: true
+    index: true,
   })
   question_language: String;
 

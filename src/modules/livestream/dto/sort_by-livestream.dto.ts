@@ -1,3 +1,3 @@
 export class SortByLivestreamDto {
-  createdAt?: string
+  createdAt?: string;
 }

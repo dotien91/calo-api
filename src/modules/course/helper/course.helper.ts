@@ -113,7 +113,7 @@ export class CourseHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -138,9 +138,14 @@ export class CourseHelper {
 
       setTimeout(async () => {
         if (channel?.user_id.toString() === userObject?._id.toString() && channelId) {
-          let channelUserPermissions = await this.channelPermissionService.filter({
-            channel_id: channelId
-          }, {}, 1, 9999999)
+          let channelUserPermissions = await this.channelPermissionService.filter(
+            {
+              channel_id: channelId,
+            },
+            {},
+            1,
+            9999999
+          );
           for (let userPermission of channelUserPermissions) {
             this.eventHookNotificationService.sendNotiNewCourse({
               send_user_id: req?.user_id?.toString(),
@@ -152,7 +157,7 @@ export class CourseHelper {
                 return `${userObject.display_name} vừa tạo khóa học ${createCourseData.title} kênh ${params?.channel_name}`;
               },
               title: `${userObject.display_name.toLocaleUpperCase()} ĐÃ MỞ KHÓA HỌC ${createCourseData.title.toLocaleUpperCase()}`,
-            })
+            });
           }
         }
       }, 500);
@@ -266,13 +271,16 @@ export class CourseHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
 
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -326,12 +334,15 @@ export class CourseHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -383,12 +394,15 @@ export class CourseHelper {
       }
 
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -544,7 +558,7 @@ export class CourseHelper {
                 point: value?.point,
                 level_number: value?.level_number,
                 user_email: dataReturn[dataReturnItem]?.user_id?.user_email,
-                user_phone: dataReturn[dataReturnItem]?.user_id?.user_phone
+                user_phone: dataReturn[dataReturnItem]?.user_id?.user_phone,
               },
             });
           }
@@ -554,9 +568,8 @@ export class CourseHelper {
         if (dataToMerge && dataToMerge[0]) {
           dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ user_id: dataToMerge[0] } };
         }
-        dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ is_like: true, is_view: false } }
+        dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ is_like: true, is_view: false } };
       }
-
 
       let countData = await this.courseLikeService.count(dataToFilter);
       return res
@@ -567,7 +580,6 @@ export class CourseHelper {
       throw new NotFoundException(error.message);
     }
   }
-
 
   /**
    *
@@ -977,12 +989,15 @@ export class CourseHelper {
       }
 
       let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -1028,7 +1043,7 @@ export class CourseHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("course/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("course/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1074,7 +1089,7 @@ export class CourseHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("course/delete") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("course/delete") !== -1)
       ) {
         havePermission = true;
       }
@@ -1176,12 +1191,15 @@ export class CourseHelper {
 
       //Check Admin
       let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+      let userPermission = await this.channelPermissionService.findOne({
+        user_id: userId,
+        channel_id: req?.channel_id,
+      });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("course/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("course/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -1195,12 +1213,11 @@ export class CourseHelper {
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
-
       }
       //Check PlanObject
       if (Number(videoObject?.coin_value) && Number(videoObject?.coin_value) !== 1) {
-        if (dataFollow?.add_type === 'payment') {
-          dataFollow = { ...{ user_id: userId }, ...dataFollow }
+        if (dataFollow?.add_type === "payment") {
+          dataFollow = { ...{ user_id: userId }, ...dataFollow };
           await this.processAddUserToCoursePayment(dataFollow, videoObject);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1208,22 +1225,20 @@ export class CourseHelper {
             .json(dataFollow);
         } else {
           let dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
-          console.log(dataReturn, 'dataReturn')
+          console.log(dataReturn, "dataReturn");
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
             .json(dataReturn);
         }
-
       } else {
         let dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
-        console.log(dataReturn, 'dataReturn')
+        console.log(dataReturn, "dataReturn");
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
           .json(dataReturn);
       }
-
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -1248,7 +1263,12 @@ export class CourseHelper {
    * @param req
    * @returns
    */
-  async processAddUserToCourse(userObject: User, dataFollow: CreateCourseLikeDto, videoObject: Course, req: ExpressRequestDto) {
+  async processAddUserToCourse(
+    userObject: User,
+    dataFollow: CreateCourseLikeDto,
+    videoObject: Course,
+    req: ExpressRequestDto
+  ) {
     try {
       let userIdToAdd = dataFollow?.user_id || userObject?._id?.toString();
       let dataUpdate = {
@@ -1275,11 +1295,10 @@ export class CourseHelper {
           return `Chúc mừng người dùng ${userObjectNew.display_name} tham gia khóa học thành công khóa học ${videoObject.title} kênh ${params?.channel_name}`;
         },
         title: `${userObjectNew.display_name.toLocaleUpperCase()} THAM GIA KHÓA HỌC ${videoObject.title.toLocaleUpperCase()}`,
-      })
+      });
 
       await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
       return dataReturn;
-
     } catch (error) {
       throw new BadRequestException(error.message);
       return error;
@@ -1382,12 +1401,15 @@ export class CourseHelper {
       if (dataFollow?.user_id?.toString() !== userObject?._id?.toString()) {
         //Check Admin
         let userId = req?.user_id;
-        let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: req?.channel_id });
+        let userPermission = await this.channelPermissionService.findOne({
+          user_id: userId,
+          channel_id: req?.channel_id,
+        });
         let havePermission = false;
         if (
           userPermission?.channel_role == "mentor" ||
           userPermission?.channel_role == "super_admin" ||
-          (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("course/list") !== -1))
+          (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("course/list") !== -1)
         ) {
           havePermission = true;
         }

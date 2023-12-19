@@ -21,47 +21,46 @@ export class PostAnonymous {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserAnonymous", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserAnonymous", index: true })
   user_id: UserAnonymous;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostPrompt", index: true, })
-  prompt_id: PostPrompt
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostPrompt", index: true })
+  prompt_id: PostPrompt;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  question: String
+  question: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  answer: String
+  answer: String;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  history_count: Number
+  history_count: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  answer_length: Number
+  answer_length: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  question_length: Number
-
+  question_length: Number;
 }
 
 export const PostAnonymousSchema = SchemaFactory.createForClass(PostAnonymous);

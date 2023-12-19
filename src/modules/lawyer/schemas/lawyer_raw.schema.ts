@@ -20,7 +20,7 @@ export class LawyerRaw {
     type: String,
     nullable: false,
     default: "",
-    index: true
+    index: true,
   })
   url: String;
 

@@ -55,14 +55,15 @@ import { PostCategoryService } from "../post/services/post_category.service";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Podcast.name, schema: PodcastSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -87,7 +88,7 @@ import { PostCategoryService } from "../post/services/post_category.service";
       { name: Redeem.name, schema: RedeemSchema },
       { name: RedeemMission.name, schema: RedeemMissionSchema },
     ]),
-    GiftModule
+    GiftModule,
   ],
   controllers: [PodcastController],
   providers: [
@@ -118,4 +119,4 @@ import { PostCategoryService } from "../post/services/post_category.service";
   ],
   exports: [PodcastHelper, PodcastCategoryService, PodcastService],
 })
-export class PodcastModule { }
+export class PodcastModule {}

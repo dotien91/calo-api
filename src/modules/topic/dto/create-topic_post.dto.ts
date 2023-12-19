@@ -1,47 +1,47 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject } from "class-validator";
 export class CreateTopicPostDto {
   @IsString()
   @IsOptional(null)
-  post_language: string
+  post_language: string;
 
   @IsString()
-  post_content: string
+  post_content: string;
 
   @IsString()
-  post_title: string
-
-  @IsString()
-  @IsOptional(null)
-  post_excerpt: string
+  post_title: string;
 
   @IsString()
   @IsOptional(null)
-  post_parent: string
+  post_excerpt: string;
 
   @IsString()
   @IsOptional(null)
-  post_status: string
+  post_parent: string;
 
   @IsString()
   @IsOptional(null)
-  post_avatar: string
+  post_status: string;
 
   @IsString()
   @IsOptional(null)
-  post_type: string
+  post_avatar: string;
 
   @IsString()
   @IsOptional(null)
-  seo_title: string
+  post_type: string;
 
   @IsString()
   @IsOptional(null)
-  seo_description: string
+  seo_title: string;
 
   @IsString()
   @IsOptional(null)
-  seo_keyword: string
+  seo_description: string;
 
   @IsString()
-  topic_id: string
+  @IsOptional(null)
+  seo_keyword: string;
+
+  @IsString()
+  topic_id: string;
 }

@@ -22,10 +22,10 @@ export class Order {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
 
   @Prop({
@@ -66,7 +66,7 @@ export class Order {
     nullable: true,
     default: "recurring",
   })
-  plan_type: String
+  plan_type: String;
 
   @Prop({
     type: String,
@@ -103,36 +103,48 @@ export class Order {
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  description: String
+  description: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  deep_link: String
+  deep_link: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  product_url: String
+  product_url: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  payment_method: String
+  payment_method: String;
 
   @Prop({
     type: String,
     default: "pending",
     index: true,
-    enum: ["pending", "processing", "fraud", "success", "close", "draft", "trial", "error", "trial_false", "done", "free"],
+    enum: [
+      "pending",
+      "processing",
+      "fraud",
+      "success",
+      "close",
+      "draft",
+      "trial",
+      "error",
+      "trial_false",
+      "done",
+      "free",
+    ],
   })
   status: String;
 
@@ -140,44 +152,44 @@ export class Order {
     type: String,
     default: "",
     nullable: true,
-    index: true
+    index: true,
   })
-  trans_id: String
+  trans_id: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  error_message: String
+  error_message: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  data_payment: String
+  data_payment: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  redirect_url: String
+  redirect_url: String;
 
   @Prop({
     type: Number,
     default: 0,
-    nullable: true
+    nullable: true,
   })
-  trial_days: Number
+  trial_days: Number;
 
   @Prop({
     type: Number,
     default: 0,
     auto: true,
   })
-  short_id: Number
+  short_id: Number;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   vnpay_on: MongooseSchema.Types.Date;

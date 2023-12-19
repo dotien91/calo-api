@@ -36,10 +36,10 @@ export class ListChallengeNotificationDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_child: string
+  is_child: string;
 }

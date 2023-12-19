@@ -7,7 +7,7 @@ import { UpdateRequestDto } from "../dto/update-request.dto";
 import { SearchPostDto } from "../dto/search-request.dto";
 import { SortByPostDto } from "../dto/sort_by-request.dto";
 import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
-import HookExpress from '../../hook/hook_epress';
+import HookExpress from "../../hook/hook_epress";
 let initHook = false;
 
 @Injectable()
@@ -40,7 +40,7 @@ export class RequestService {
       condition = Object.assign(condition, { post_type: filter.post_type });
     }
 
-    if (!filter.post_status || filter.post_status.trim() === '') {
+    if (!filter.post_status || filter.post_status.trim() === "") {
       condition = { ...condition, ...{ post_status: "publish" } };
     } else {
       condition = { ...condition, ...{ post_status: filter.post_status } };
@@ -65,7 +65,6 @@ export class RequestService {
       } else {
         condition = Object.assign(condition, { data_json_type: filter.data_json_type });
       }
-
     }
     if (filter.post_parent) {
       condition = Object.assign(condition, { post_parent: filter.post_parent });
@@ -156,7 +155,7 @@ export class RequestService {
     if (sortBy) {
       if (filter.post_status === "cancel") {
         sortBy = Object.assign(sortBy, { updatedAt: "DESC" });
-        delete sortBy?.createdAt
+        delete sortBy?.createdAt;
         sortObject = this.getSort(sortBy);
       } else {
         sortObject = this.getSort(sortBy);
@@ -416,30 +415,29 @@ export class RequestService {
   }
 
   initHook() {
-    console.log('Make sure you work once request %s', Math.random())
-    HookExpress.add_action('request.delete-request-by-channel-permission', async (data: any) => {
+    console.log("Make sure you work once request %s", Math.random());
+    HookExpress.add_action("request.delete-request-by-channel-permission", async (data: any) => {
       try {
         await this.deleteMultipleRequestByChannelPermission(data);
       } catch (error) {
-        this.logger.log(error.message)
+        this.logger.log(error.message);
       }
-    })
+    });
   }
 
   /**
-     * @author SonLH
-     * @param channel_permission
-     * @returns
-     */
+   * @author SonLH
+   * @param channel_permission
+   * @returns
+   */
   async deleteMultipleRequestByChannelPermission(channel_permission: any) {
     try {
       await this.requestModel.deleteMany({
         channel_id: channel_permission?.channel_id,
-        user_id: channel_permission?.user_id
-      })
+        user_id: channel_permission?.user_id,
+      });
     } catch (e) {
       return null;
     }
   }
-
 }

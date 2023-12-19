@@ -2,5 +2,5 @@ import { IsString } from "class-validator";
 
 export class UpdateMapTokenDto {
   @IsString()
-  _id: string
+  _id: string;
 }

@@ -135,27 +135,27 @@ export class UpdatePostDto {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  social?: string
+  social?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  follow?: string
+  follow?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  career_number?: string
+  career_number?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  min_money?: string
+  min_money?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  max_money?: string
+  max_money?: string;
 
-  user_entity?: any
+  user_entity?: any;
 }

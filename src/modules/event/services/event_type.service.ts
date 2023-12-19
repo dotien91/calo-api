@@ -25,14 +25,12 @@ export class EventTypeService {
     return await createdUser.save();
   }
 
-
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   async getCondition(filter: SearchEventTypeDto) {
+  async getCondition(filter: SearchEventTypeDto) {
     let condition: any = {};
     return condition;
   }
@@ -73,13 +71,12 @@ export class EventTypeService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   public count = async (filter: SearchEventTypeDto) => {
+  public count = async (filter: SearchEventTypeDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {

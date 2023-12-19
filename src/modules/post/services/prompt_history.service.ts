@@ -90,8 +90,8 @@ export class PromptHistoryService {
       path: "prompt_user",
       populate: [
         {
-          path: "prompt_id"
-        }
+          path: "prompt_id",
+        },
       ],
     };
 

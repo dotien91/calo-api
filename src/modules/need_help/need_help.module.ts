@@ -25,6 +25,14 @@ import { UserOptionService } from "../user/services/user_option.service";
     ]),
   ],
   controllers: [NeedHelpController],
-  providers: [UserService, NeedHelpHelper, NeedHelpService, JwtHelperService, UserSessionService, UserPermissionService, UserOptionService],
+  providers: [
+    UserService,
+    NeedHelpHelper,
+    NeedHelpService,
+    JwtHelperService,
+    UserSessionService,
+    UserPermissionService,
+    UserOptionService,
+  ],
 })
-export class NeedHelpModule { }
+export class NeedHelpModule {}

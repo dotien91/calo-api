@@ -68,14 +68,15 @@ import { ChatMedia, ChatMediaSchema } from "../chat_media/schemas/chat_media.sch
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Redeem.name, schema: RedeemSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -146,4 +147,4 @@ import { ChatMedia, ChatMediaSchema } from "../chat_media/schemas/chat_media.sch
   ],
   exports: [RedeemHelper, RedeemHistoryService, RedeemPermissionService, RedeemService],
 })
-export class RedeemModule { }
+export class RedeemModule {}

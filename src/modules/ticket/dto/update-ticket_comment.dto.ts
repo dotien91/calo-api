@@ -8,5 +8,5 @@ export class UpdateTicketCommentDto extends PartialType(CreateTicketCommentDto) 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String
+  _id?: String;
 }

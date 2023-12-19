@@ -2,15 +2,15 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class CreateUserMoodDto {
-	@IsString()
+  @IsString()
   @ApiProperty()
-	user_id: string
+  user_id: string;
 
   @IsString()
   @ApiProperty()
-  text: string
+  text: string;
 
   @IsString()
   @ApiProperty()
-  image: string
+  image: string;
 }

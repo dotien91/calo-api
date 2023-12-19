@@ -12,5 +12,4 @@ export class PlusPointChannelDto {
   channel_id?: string;
 
   type_action?: string;
-
 }

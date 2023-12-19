@@ -74,14 +74,15 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: ChatRoom.name, schema: ChatRoomSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
@@ -155,4 +156,4 @@ import { GiftHelper } from "../gift/helper/gift.helper";
   ],
   exports: [CallKitHelper, CallkitService],
 })
-export class CallKitModule { }
+export class CallKitModule {}

@@ -4,45 +4,45 @@ import { IsJSON, IsOptional, IsString } from "class-validator";
 export class CreateChallengeGameDto {
   @IsString()
   @ApiProperty()
-  title: string
+  title: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  description: string
+  description: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  media_id: string
+  media_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  challenge_id: string
+  challenge_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id: string
+  channel_id: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  parent_id?: string
+  parent_id?: string;
 
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  game_type?: string
+  game_type?: string;
 
   @IsJSON()
   @ApiPropertyOptional()
   @IsOptional(null)
-  custom_field?: any
+  custom_field?: any;
 
   @IsJSON()
   @ApiPropertyOptional()
   @IsOptional(null)
-  game_activity?: any
+  game_activity?: any;
 }

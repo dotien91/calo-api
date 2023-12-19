@@ -44,5 +44,5 @@ export class ListQuestionDto {
 
   @IsNumberString()
   @IsOptional(null)
-  is_official: number
+  is_official: number;
 }

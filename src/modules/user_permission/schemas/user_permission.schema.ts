@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
 
 export type UserPermissionDocument = UserPermission & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class UserPermission {
@@ -17,24 +17,24 @@ export class UserPermission {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User" })
   user_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  permission: String
+  permission: String;
 
   @Prop({
     type: String,
-    default: '',
+    default: "",
     nullable: true,
   })
-  group: String
+  group: String;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
-  expired_at: MongooseSchema.Types.Date
+  expired_at: MongooseSchema.Types.Date;
 }
 
 export const UserPermissionSchema = SchemaFactory.createForClass(UserPermission);

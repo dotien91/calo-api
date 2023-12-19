@@ -2,13 +2,13 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 
 export class CreateRequestLikeDto {
-	@IsString()
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-	request_id?: string
+  request_id?: string;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-	comment_id?: string
+  comment_id?: string;
 }

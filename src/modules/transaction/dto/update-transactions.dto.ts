@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsIn} from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsOptional, IsIn } from "class-validator";
 
 export class UpdateTransactionDto {
   @IsString()
   @ApiProperty()
-  _id?: String
+  _id?: String;
 
   @IsString()
   @ApiProperty()
-  status: String
+  status: String;
 }

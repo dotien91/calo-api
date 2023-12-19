@@ -36,11 +36,10 @@ export class ListChallengeDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  official_status: string
+  official_status: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  challenge_status: string
-
+  challenge_status: string;
 }

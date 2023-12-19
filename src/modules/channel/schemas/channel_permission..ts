@@ -1,16 +1,16 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Channel } from './channel.schema';
-import { ChannelLevel } from './channel_level.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Channel } from "./channel.schema";
+import { ChannelLevel } from "./channel_level.schema";
 
 export type ChannelPermissionDocument = ChannelPermission & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ChannelPermission {
@@ -20,28 +20,28 @@ export class ChannelPermission {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Channel', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ChannelLevel', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChannelLevel", index: true })
   channel_level: ChannelLevel;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: "user",
     nullable: false,
-    index: true
+    index: true,
   })
-  permission: String[]
+  permission: String[];
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
-    index: true
+    index: true,
   })
   old_point: Number;
 
@@ -49,7 +49,7 @@ export class ChannelPermission {
     type: Number,
     default: 0,
     nullable: false,
-    index: true
+    index: true,
   })
   point_month: Number;
 
@@ -57,7 +57,7 @@ export class ChannelPermission {
     type: Number,
     default: 0,
     nullable: false,
-    index: true
+    index: true,
   })
   point_week: Number;
 
@@ -65,7 +65,7 @@ export class ChannelPermission {
     type: Number,
     default: 0,
     nullable: false,
-    index: true
+    index: true,
   })
   point: Number;
 
@@ -73,7 +73,7 @@ export class ChannelPermission {
     type: Number,
     default: 1,
     nullable: false,
-    index: true
+    index: true,
   })
   level_number: Number;
 
@@ -81,9 +81,9 @@ export class ChannelPermission {
     type: String,
     default: "user",
     nullable: false,
-    index: true
+    index: true,
   })
-  channel_role: String
+  channel_role: String;
 
   @Prop({
     type: Number,

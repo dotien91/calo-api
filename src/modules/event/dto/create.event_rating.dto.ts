@@ -32,5 +32,5 @@ export class CreateEventRatingDto {
 
   @IsJSON()
   @IsOptional(null)
-  rating_media?: string | string[]
+  rating_media?: string | string[];
 }

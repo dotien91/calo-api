@@ -19,17 +19,12 @@ import { ClockHelper } from "./helper/clock.helper";
       { name: Plan.name, schema: PlanSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Purchase.name, schema: PurchaseSchema },
-      { name: Clock.name, schema: ClockSchema},
-      { name: ClockHistory.name, schema: ClockHistorySchema}
+      { name: Clock.name, schema: ClockSchema },
+      { name: ClockHistory.name, schema: ClockHistorySchema },
     ]),
   ],
   controllers: [ClockController],
-  providers: [
-    ClockService,
-    ClockHistoryService,
-    ClockHelper,
-    UserPermissionService,
-  ],
+  providers: [ClockService, ClockHistoryService, ClockHelper, UserPermissionService],
   exports: [ClockHelper],
 })
 export class ClockModule {}

@@ -13,5 +13,5 @@ export class UpdateEventRatingDto extends CreateEventRatingDto {
   @IsOptional(null)
   number_value: string;
 
-  user_id: string
+  user_id: string;
 }

@@ -36,20 +36,20 @@ export class ListChallengeGameDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  game_type?: string
+  game_type?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id?: string
+  channel_id?: string;
 
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_child: string
+  is_child: string;
 }

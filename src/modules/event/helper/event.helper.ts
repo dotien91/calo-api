@@ -40,7 +40,7 @@ export class EventHelper {
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly channelService: ChannelService,
     private readonly courseLikeService: CourseLikeService
-  ) { }
+  ) {}
 
   async handleSearch(query: SearchEventDto, req: ExpressRequestDto, res: Response) {
     try {
@@ -116,7 +116,7 @@ export class EventHelper {
             }
           }
 
-          let dataToPush = { ...dataPrepareItem, ...{ is_like: isFollow } }
+          let dataToPush = { ...dataPrepareItem, ...{ is_like: isFollow } };
           if (dataToFilter?.date) {
             //Get Date Object
             let dataToFindEventTime = {
@@ -136,18 +136,23 @@ export class EventHelper {
         } else {
           return false;
         }
-      })
+      });
 
       if (dataCourseArray?.length) {
         let dataCourseIds = dataCourseArray.map((itemCourse: Event, index: number) => {
           return itemCourse?.event_course?._id?.toString();
-        })
+        });
         //Get Course Join
         if (req?.user_id) {
-          let dataJoinCourse = await this.courseLikeService.filter({ course_ids: dataCourseIds, user_id: req?.user_id }, {}, 1, 1000);
+          let dataJoinCourse = await this.courseLikeService.filter(
+            { course_ids: dataCourseIds, user_id: req?.user_id },
+            {},
+            1,
+            1000
+          );
           let dataToCheck = dataJoinCourse?.map((dataCourseJoin: CourseLike, index: number) => {
-            return dataCourseJoin?.course_id?.toString()
-          })
+            return dataCourseJoin?.course_id?.toString();
+          });
           for (let itemReturnIndex in dataFinalReturn) {
             // console.log(dataFinalReturn[itemReturnIndex]?.event_course, 'dataFinalReturn[itemReturnIndex]?.event_course')
             if (!dataFinalReturn[itemReturnIndex]?.event_course) {
@@ -155,13 +160,18 @@ export class EventHelper {
             }
             //Check course
             if (dataToCheck.indexOf(dataFinalReturn[itemReturnIndex]?.event_course?._id?.toString()) !== -1) {
-              dataFinalReturn[itemReturnIndex].event_course = { ...dataFinalReturn[itemReturnIndex]?.event_course, ...{ is_join: true } }
+              dataFinalReturn[itemReturnIndex].event_course = {
+                ...dataFinalReturn[itemReturnIndex]?.event_course,
+                ...{ is_join: true },
+              };
             } else {
-              dataFinalReturn[itemReturnIndex].event_course = { ...dataFinalReturn[itemReturnIndex]?.event_course, ...{ is_join: false } }
+              dataFinalReturn[itemReturnIndex].event_course = {
+                ...dataFinalReturn[itemReturnIndex]?.event_course,
+                ...{ is_join: false },
+              };
             }
           }
         }
-
       }
 
       return res
@@ -248,7 +258,7 @@ export class EventHelper {
       if (
         userPermission?.channel_role == "mentor" ||
         userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && (userPermission?.permission?.indexOf("mentor/list") !== -1))
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
       ) {
         havePermission = true;
       }
@@ -314,7 +324,6 @@ export class EventHelper {
         //   });
         // }
       }, 500);
-
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -461,9 +470,9 @@ export class EventHelper {
         let dataObjectFollow = await this.userFollowEventService.findOne(dataFollowFilter);
 
         if (dataObjectFollow) {
-          dataReturn = { ...dataReturn?.toObject(), ...{ is_like: true } }
+          dataReturn = { ...dataReturn?.toObject(), ...{ is_like: true } };
         } else {
-          dataReturn = { ...dataReturn?.toObject(), ...{ is_like: false } }
+          dataReturn = { ...dataReturn?.toObject(), ...{ is_like: false } };
         }
       }
 
@@ -500,7 +509,10 @@ export class EventHelper {
       let channelId = requestObject.channel_id;
       let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
-      if (userPermission?.channel_role == 'mentor' || (userPermission?.channel_role == 'user' && (userPermission?.permission?.indexOf("event/update") !== -1))) {
+      if (
+        userPermission?.channel_role == "mentor" ||
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("event/update") !== -1)
+      ) {
         havePermission = true;
       }
       if (requestObject?.user_id?.toString() == userId) {
@@ -564,7 +576,10 @@ export class EventHelper {
       let channelId = requestObject.channel_id;
       let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
-      if (userPermission?.channel_role == 'mentor' || (userPermission?.channel_role == 'user' && (userPermission?.permission?.indexOf("event/delete") !== -1))) {
+      if (
+        userPermission?.channel_role == "mentor" ||
+        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("event/delete") !== -1)
+      ) {
         havePermission = true;
       }
       if (requestObject?.user_id?.toString() == userId) {

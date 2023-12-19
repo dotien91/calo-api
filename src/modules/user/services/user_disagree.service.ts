@@ -79,18 +79,17 @@ export class UserDisagreeService {
    * @param dataToSearch
    * @returns
    */
-   async removeOne(dataToSearch: any): Promise<UserDisagree> {
+  async removeOne(dataToSearch: any): Promise<UserDisagree> {
     return await this.userDisagreeModel.findOneAndRemove(dataToSearch).exec();
   }
-
 
   /**
    * @author Tony Vu
    * @param dataToSearch
    * @returns
    */
-   async filterByUserId(userId: string, userPartners: string[]): Promise<UserDisagree[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners }};
+  async filterByUserId(userId: string, userPartners: string[]): Promise<UserDisagree[]> {
+    let condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userDisagreeModel.find(condition, {}).exec();
   }
 
@@ -146,13 +145,12 @@ export class UserDisagreeService {
     }
   };
 
-
   /**
    * @author Tony Vu
    * @param sortBy
    * @returns
    */
-   getSort(sortBy: any) {
+  getSort(sortBy: any) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -181,8 +179,9 @@ export class UserDisagreeService {
       .populate({
         path: "partner_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -199,7 +198,7 @@ export class UserDisagreeService {
    * @param limit
    * @returns
    */
-   async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
+  async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -210,14 +209,16 @@ export class UserDisagreeService {
       .populate({
         path: "user_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .populate({
         path: "partner_id",
         options: { strictPopulate: false },
-        select: "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: 'user_option_id' }
+        select:
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+        populate: { path: "user_option_id" },
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -226,4 +227,3 @@ export class UserDisagreeService {
     return dataReturn;
   }
 }
-

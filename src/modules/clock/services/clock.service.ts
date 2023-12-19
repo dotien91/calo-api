@@ -154,10 +154,7 @@ export class ClockService {
     if (!objectId) {
       return null;
     }
-    return await this.topicModel
-      .findById(objectId)
-      .populate("last_clock_history")
-      .exec();
+    return await this.topicModel.findById(objectId).populate("last_clock_history").exec();
   }
 
   /**

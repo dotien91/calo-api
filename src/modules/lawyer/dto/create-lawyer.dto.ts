@@ -1,87 +1,87 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsJSON, IsNumber} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsJSON, IsNumber } from "class-validator";
 export class CreateLawyerDto {
   @IsString()
   @ApiProperty()
-  name: string
+  name: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  avatar: string
+  avatar: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  address: string
+  address: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  licensed: any
+  licensed: any;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  about: string
+  about: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  categories: any
+  categories: any;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  maps: string
+  maps: string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  cost: number
+  cost: number;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  work_experience: string
+  work_experience: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  education: string
+  education: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  legal_case: string
+  legal_case: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  associations: string
+  associations: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  language_spoken: any
+  language_spoken: any;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  honors_awards: any
+  honors_awards: any;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  publications: string
+  publications: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  engagements: string
+  engagements: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiPropertyOptional()
-  contact: any
+  contact: any;
 }

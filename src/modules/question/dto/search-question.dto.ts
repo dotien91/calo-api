@@ -3,8 +3,8 @@ export class SearchQuestionDto {
   status?: string;
   search?: string;
   user_id?: string;
-  is_official?: number
-  ref_id?: string
-  question_language?: string
-  question_key?: string
+  is_official?: number;
+  ref_id?: string;
+  question_language?: string;
+  question_key?: string;
 }

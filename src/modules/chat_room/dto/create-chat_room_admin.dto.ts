@@ -1,4 +1,4 @@
-import { IsIn, IsOptional, IsString, IsJSON } from 'class-validator';
+import { IsIn, IsOptional, IsString, IsJSON } from "class-validator";
 
 export class CreateChatRoomAdminDto {
   @IsString()
@@ -6,15 +6,15 @@ export class CreateChatRoomAdminDto {
   user_id: string;
 
   @IsString()
-  partner_id: string
+  partner_id: string;
 
-  @IsIn(['personal', 'group', 'anonymous'])
+  @IsIn(["personal", "group", "anonymous"])
   @IsOptional(null)
-  chat_type: 'personal' | 'group' | 'anonymous'
+  chat_type: "personal" | "group" | "anonymous";
 
   @IsString()
   @IsOptional(null)
-  room_name: string
+  room_name: string;
 
   @IsString()
   @IsOptional(null)
@@ -26,5 +26,5 @@ export class CreateChatRoomAdminDto {
 
   @IsJSON()
   @IsOptional(null)
-  media_data?: string
+  media_data?: string;
 }

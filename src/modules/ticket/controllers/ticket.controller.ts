@@ -14,12 +14,10 @@ import { UpdateTicketCategoryDto } from "../dto/update-ticket_category.dto";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @Controller("ticket")
-@ApiTags('ticket')
-@ApiBearerAuth('ICEO')
+@ApiTags("ticket")
+@ApiBearerAuth("ICEO")
 export class TicketController {
-  constructor(
-    private readonly ticketHelper: TicketHelper
-  ) { }
+  constructor(private readonly ticketHelper: TicketHelper) {}
 
   /**
    * ######## FOR REQUEST ######
@@ -45,7 +43,11 @@ export class TicketController {
    * @returns
    */
   @Post("/create")
-  async createNewTicket(@Body() createTicketBody: CreateTicketDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewTicket(
+    @Body() createTicketBody: CreateTicketDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.ticketHelper.createNewTicket(createTicketBody, res, req);
   }
 
@@ -74,21 +76,25 @@ export class TicketController {
   }
 
   /**
-  *
-  * @param id
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
   @Get("detail/:id")
-  async getDetailTicket(@Query() query: ListTicketDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailTicket(
+    @Query() query: ListTicketDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.ticketHelper.handleGetDetailTicket(id, query, res, req);
   }
 
-
   /**
-  * ######## FOR COMMENT ######
-  */
+   * ######## FOR COMMENT ######
+   */
 
   /**
    *
@@ -110,7 +116,11 @@ export class TicketController {
    * @returns
    */
   @Patch("/update-comment")
-  async updateTicketComment(@Body() dataUpdate: UpdateTicketCommentDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async updateTicketComment(
+    @Body() dataUpdate: UpdateTicketCommentDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.ticketHelper.handleUpdateTicketComment(dataUpdate, res, req);
   }
 
@@ -154,10 +164,9 @@ export class TicketController {
     return await this.ticketHelper.handleGetDetailComment(id, res, req);
   }
 
-
   /**
-  * ######## FOR CATEGORY ######
-  */
+   * ######## FOR CATEGORY ######
+   */
 
   /**
    *
@@ -203,7 +212,6 @@ export class TicketController {
     return await this.ticketHelper.handleUpdateCategory(dataUpdate, res, req);
   }
 
-
   /**
    *
    * @param id
@@ -215,7 +223,6 @@ export class TicketController {
   async getDetailCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.ticketHelper.handleGetDetailCategory(id, res, req);
   }
-
 
   /**
    *

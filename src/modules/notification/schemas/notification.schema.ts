@@ -23,7 +23,7 @@ export class Notification {
     type: MongooseSchema.Types.Array,
     default: null,
     ref: "User",
-    index: true
+    index: true,
   })
   user_id: MongooseSchema.Types.ObjectId[];
 
@@ -32,17 +32,17 @@ export class Notification {
     default: null,
     ref: "Channel",
     nullable: true,
-    index: true
+    index: true,
   })
-  channel_id: MongooseSchema.Types.ObjectId
+  channel_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
     ref: "Request",
-    nullable: true
+    nullable: true,
   })
-  request_id: Request
+  request_id: Request;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   createdBy: User;
@@ -77,7 +77,7 @@ export class Notification {
     type: String,
     nullable: false,
     index: true,
-    default: "system"
+    default: "system",
   })
   notification_type: String;
 

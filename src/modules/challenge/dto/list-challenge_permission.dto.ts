@@ -31,15 +31,15 @@ export class ListChallengePermissionDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id?: string
+  user_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search?: string
+  search?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id?: string
+  channel_id?: string;
 }

@@ -1,53 +1,53 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsJSON} from 'class-validator';
+import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsJSON } from "class-validator";
 export class CreateConfigDto {
   @IsString()
-  type: any
+  type: any;
 
   @IsString()
   @IsOptional(null)
-  near_by_free: any
+  near_by_free: any;
 
   @IsString()
   @IsOptional(null)
-  chat_free: any
+  chat_free: any;
 
   @IsString()
   @IsOptional(null)
-  call_free: any
+  call_free: any;
 
   @IsString()
   @IsOptional(null)
-  call_pro: any
+  call_pro: any;
 
   @IsString()
   @IsOptional(null)
-  follow_free: any
+  follow_free: any;
 
   @IsString()
   @IsOptional(null)
-  view_today_free: any
+  view_today_free: any;
 
   @IsJSON()
   @IsOptional(null)
-  filter_free: any
+  filter_free: any;
 
   @IsJSON()
   @IsOptional(null)
-  data_filter: any
+  data_filter: any;
 
   @IsString()
   @IsOptional(null)
-  data_content: any
+  data_content: any;
 
   @IsJSON()
   @IsOptional(null)
-  filter_pro: any
+  filter_pro: any;
 
   @IsJSON()
   @IsOptional(null)
-  filter_premium: any
+  filter_premium: any;
 
   @IsJSON()
   @IsOptional(null)
-  option_content: any
+  option_content: any;
 }

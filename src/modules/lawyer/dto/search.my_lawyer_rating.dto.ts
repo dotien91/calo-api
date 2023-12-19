@@ -23,5 +23,5 @@ export class SearchMyLawyerRatingDto {
   @ApiPropertyOptional()
   lawyer_id: string;
 
-  createBy: string
+  createBy: string;
 }

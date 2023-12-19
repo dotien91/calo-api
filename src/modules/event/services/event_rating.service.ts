@@ -81,7 +81,7 @@ export class EventRatingService {
       let dataReturn = await this.eventRatingModel.findOneAndUpdate(
         {
           event_id: dataUpdate.event_id,
-          user_id: dataUpdate.user_id
+          user_id: dataUpdate.user_id,
         },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -96,13 +96,12 @@ export class EventRatingService {
     }
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   async getCondition(filter: SearchMyEventRatingDto) {
+  async getCondition(filter: SearchMyEventRatingDto) {
     let condition: any = {};
     if (filter.event_id) {
       condition = Object.assign(condition, { event_id: filter.event_id });
@@ -150,13 +149,12 @@ export class EventRatingService {
     return dataReturn;
   }
 
-
   /**
    * @author Tony Vu
    * @param filter
    * @returns
    */
-   public count = async (filter: SearchMyEventRatingDto) => {
+  public count = async (filter: SearchMyEventRatingDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {

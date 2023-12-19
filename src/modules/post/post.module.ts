@@ -29,7 +29,7 @@ import { PromptHistoryHelper } from "./helper/prompt_history.helper";
       { name: PostCrawl.name, schema: PostCrawlSchema },
       { name: PostPrompt.name, schema: PostPromptSchema },
       { name: PostAnonymous.name, schema: PostAnonymousSchema },
-      { name: PromptHistory.name, schema: PromptHistorySchema }
+      { name: PromptHistory.name, schema: PromptHistorySchema },
     ]),
   ],
   controllers: [PostController, PostUserController],
@@ -47,4 +47,4 @@ import { PromptHistoryHelper } from "./helper/prompt_history.helper";
   ],
   exports: [PostHelper],
 })
-export class PostModule { }
+export class PostModule {}

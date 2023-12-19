@@ -11,7 +11,7 @@ export class CourseLikeService {
   constructor(
     @InjectModel(CourseLike.name)
     private courseLikeModel: Model<CourseLikeDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -251,7 +251,7 @@ export class CourseLikeService {
         },
         {
           path: "avatar",
-        }
+        },
       ],
     };
     let dataReturn: any = await this.courseLikeModel
@@ -270,7 +270,11 @@ export class CourseLikeService {
       for (let dataItem of dataReturn) {
         delete dataItem.course_id?.user_id;
         if (dataItem.course_id?._id) {
-          let dataItemToReturn = { ...dataItem.course_id?.toObject(), ...dataItem?.toObject(), ...{ _id: dataItem.course_id?._id?.toString() } };
+          let dataItemToReturn = {
+            ...dataItem.course_id?.toObject(),
+            ...dataItem?.toObject(),
+            ...{ _id: dataItem.course_id?._id?.toString() },
+          };
           delete dataItemToReturn.course_id;
           dataFinalToReturn.push(dataItemToReturn);
         }

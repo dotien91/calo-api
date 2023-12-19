@@ -7,8 +7,7 @@ import { CreateChallengeViewDto } from "./create-challenge_view.dto";
 export class UpdateChallengeViewDto extends PartialType(CreateChallengeViewDto) {
   @IsString()
   @ApiProperty()
-  _id?: string
+  _id?: string;
 
-  user_id?: string
-
+  user_id?: string;
 }

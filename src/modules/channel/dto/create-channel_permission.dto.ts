@@ -2,20 +2,20 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsJSON, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class CreateChannelPermissionDto {
-	@IsString()
+  @IsString()
   @ApiProperty()
-	channel_id?: string
+  channel_id?: string;
 
   @IsString()
   @ApiProperty()
-  user_id?: string
+  user_id?: string;
 
   @IsJSON()
   @ApiPropertyOptional()
   @IsOptional(null)
-  permission?: any
+  permission?: any;
 
   @IsString()
   @ApiProperty()
-  channel_role?: any
+  channel_role?: any;
 }

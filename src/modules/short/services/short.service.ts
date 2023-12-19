@@ -13,7 +13,7 @@ export class ShortService {
   constructor(
     @InjectModel(Short.name)
     private shortModel: Model<ShortDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

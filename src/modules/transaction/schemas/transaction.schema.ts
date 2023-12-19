@@ -21,16 +21,16 @@ export class Transaction {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   from_user: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "TransactionBank", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "TransactionBank", index: true })
   transaction_bank: TransactionBank;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true, })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
 
   @Prop({
@@ -45,28 +45,28 @@ export class Transaction {
     nullable: true,
     default: "",
   })
-  ref_type: String
+  ref_type: String;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  ref_name: String
+  ref_name: String;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  ref_url: String
+  ref_url: String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     index: true,
     nullable: true,
   })
-  ref_avatar: ChatMedia
+  ref_avatar: ChatMedia;
 
   @Prop({
     type: Number,
@@ -115,33 +115,33 @@ export class Transaction {
     nullable: true,
     default: "plus",
   })
-  method: String
+  method: String;
 
   @Prop({
     type: String,
     nullable: true,
     default: "system",
   })
-  type_system: String
+  type_system: String;
 
   @Prop({
     type: String,
     nullable: true,
     default: "output",
   })
-  transaction_type: String
+  transaction_type: String;
 
   @Prop({
     type: String,
-    nullable: true
+    nullable: true,
   })
-  note: String
+  note: String;
 
   @Prop({
     type: String,
-    nullable: true
+    nullable: true,
   })
-  admin_note: String
+  admin_note: String;
 
   @Prop({
     type: String,
@@ -153,23 +153,23 @@ export class Transaction {
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  trans_id: String
+  trans_id: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  error_message: String
+  error_message: String;
 
   @Prop({
     type: String,
     default: "",
-    nullable: true
+    nullable: true,
   })
-  data_payment: String
+  data_payment: String;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   billing_on: MongooseSchema.Types.Date;

@@ -7,7 +7,7 @@ export class CreatePromptHistoryDto {
 
   @IsString()
   @ApiProperty()
-  createBy: string
+  createBy: string;
 
   @IsString()
   @IsOptional(null)
@@ -17,7 +17,7 @@ export class CreatePromptHistoryDto {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  chat_content_to_ai?: string
+  chat_content_to_ai?: string;
 
   @IsString()
   @IsOptional(null)

@@ -1,3 +1,3 @@
 export class SortByClockDto {
-  createdAt?: string
+  createdAt?: string;
 }
