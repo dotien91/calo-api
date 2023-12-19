@@ -7,7 +7,6 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import axios from "axios";
-import TimeZone from "countries-and-timezones";
 import { createHash } from "crypto";
 import { Response } from "express";
 import * as _ from "lodash";
@@ -291,62 +290,6 @@ export class UpdateUserHelper {
         .json(dataReturn);
     } catch (error) {
       throw new BadRequestException(error.message);
-    }
-  }
-
-  /**
-   * @author Tony Vu
-   */
-  async processUserCron() {
-    try {
-      if (process.env.BRANCH_NAME === "live_video" || process.env.BRANCH_NAME === "chat_gpt") {
-        const dataCountries = TimeZone.getAllCountries();
-
-        const countriesMorning = [];
-        const countriesNoon = [];
-        const countriesAfternoon = [];
-        const countriesEvening = [];
-
-        const date = new Date();
-        const utcHour = date.getUTCHours();
-
-        for (const key of Object.keys(dataCountries)) {
-          const val = dataCountries[key];
-          const dataTimeZone = TimeZone.getTimezone(val.timezones[0]);
-          const dataHour = dataTimeZone?.utcOffset / 60;
-
-          if (utcHour + dataHour === 7) {
-            countriesMorning.push(key);
-          }
-          if (utcHour + dataHour === 12) {
-            countriesNoon.push(key);
-          }
-          if (utcHour + dataHour === 16) {
-            countriesAfternoon.push(key);
-          }
-          if (utcHour + dataHour === 20) {
-            countriesEvening.push(key);
-          }
-          // use val
-        }
-        const authCode =
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjY2NDcxMjAsImRhdGEiOnsiX2lkIjoiNjRkODc2M2Y1NjUxMTAxOWJlZTEyM2U4Iiwia2V5IjoiNWNjN2YzZmQ1ODVkNzBmZmI3YmYxZTRmMGI1ZDE5OTAiLCJzaWduYXR1cmUiOiJlOTk2OTkyYzU3N2YyZjQwOWQyMGEwZDYyYTBhZGRlZiIsInNlc3Npb24iOiI2NTA5NTdkMGJhNzU4M2FkODIyNzJjMzcifSwiaWF0IjoxNjk1MTExMTIwfQ.mxk4ZiIi8yXo5ul6RCYCuyngimMy6syUQUHGwHNtQfg";
-
-        for (const countryItem of countriesMorning) {
-          this.handleSendMessageForTime(countryItem, countryItem + "_morning", authCode);
-        }
-        for (const countryItem of countriesAfternoon) {
-          this.handleSendMessageForTime(countryItem, countryItem + "_afternoon", authCode);
-        }
-        for (const countryItem of countriesNoon) {
-          this.handleSendMessageForTime(countryItem, countryItem + "_noon", authCode);
-        }
-        for (const countryItem of countriesEvening) {
-          this.handleSendMessageForTime(countryItem, countryItem + "_evening", authCode);
-        }
-      }
-    } catch (error) {
-      console.log(error.message, "Error cron 283");
     }
   }
 

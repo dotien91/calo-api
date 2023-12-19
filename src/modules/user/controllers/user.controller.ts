@@ -1,10 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
-import { CronExpression } from "@nestjs/schedule";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
-import { schedule } from "node-cron";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { ConfigService } from "../../../modules/config/services/config.service";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPassword } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
@@ -38,92 +35,37 @@ import { ValidatePhoneDto } from "../dto/validate-phone.dto";
 import { UpdateUserHelper } from "../helper/update_user.helper";
 import { UserFilterHelper } from "../helper/user_filter.helper";
 import { UserLoginHelper } from "../helper/user_login.helper";
-import { UserService } from "../services/user.service";
-import { UserOptionService } from "../services/user_option.service";
 
 @Controller("user")
-@ApiTags("user")
-@ApiBearerAuth("ICEO")
 export class UserController {
   constructor(
-    private readonly appUserService: UserService,
     private readonly userLoginHelper: UserLoginHelper,
     private readonly updateUserHelper: UpdateUserHelper,
     private readonly userFilterHelper: UserFilterHelper,
-    private readonly configService: ConfigService,
-    private readonly userOptionService: UserOptionService
   ) {
-    this.handleProcessCron();
-    this.updateEvent();
   }
 
   /**
-   *
-   */
-  async updateEvent() {
-    //update Event
-    console.log(process.env.BRANCH_NAME, ";process.env.BRANCH_NAME");
-    // this.userLoginHelper.updateEvent();
-    if (process.env.BRANCH_NAME === "chat_gpt") {
-      // this.userFilterHelper.handleCronJob();
-      const cronJob = schedule(CronExpression.EVERY_DAY_AT_3PM, async () => {
-        try {
-          // await this.bar();
-          console.log("Start Cron Job Every Day at 1am");
-          this.userLoginHelper.updateEvent();
-        } catch (e) {
-          console.error(e);
-        }
-      });
-      // Start job
-      // if (!cronJob.running) {
-      //   cronJob.start();
-      // }
-    }
-  }
-
-  /**
+   * @description Login with Google
    * @author Tony Vu
+   * @param loginData 
+   * @param res 
+   * @param req 
+   * @returns 
    */
-  async handleProcessCron() {
-    const cronJobOneHour = schedule(CronExpression.EVERY_HOUR, async () => {
-      try {
-        // await this.bar();
-        console.log("Start Cron Job Every Hour");
-        this.updateUserHelper.processUserCron();
-      } catch (e) {
-        console.error(e);
-      }
-    });
-    // Start job
-    // if (!cronJobOneHour.running) {
-    //   cronJobOneHour.start();
-    // }
-    cronJobOneHour.start();
-
-    // this.userFilterHelper.handleCronJob();
-
-    const cronJob = schedule(CronExpression.EVERY_DAY_AT_1AM, async () => {
-      try {
-        // await this.bar();
-        console.log("Start Cron Job Every Day at 1am");
-        this.userFilterHelper.handleCronJob();
-      } catch (e) {
-        console.error(e);
-      }
-    });
-    // Start job
-    // if (!cronJob.running) {
-    //   cronJob.start();
-    // }
-    cronJob.start();
-  }
-
   @Post("login/google")
   loginWithGoogle(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.loginWithGoogle(loginData, res, req);
   }
 
+  /**
+   * @description Login with Apple
+   * @author Tony Vu
+   * @param loginData 
+   * @param res 
+   * @param req 
+   * @returns 
+   */
   @Post("login/apple")
   @ApiOperation({ summary: "Login with Apple" })
   loginWithApple(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
