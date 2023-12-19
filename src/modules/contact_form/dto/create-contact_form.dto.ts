@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsEmail } from "class-validator";
+import { IsEmail, IsOptional, IsString } from "class-validator";
 export class CreateContactFormDto {
   @IsString()
   form_type: string;

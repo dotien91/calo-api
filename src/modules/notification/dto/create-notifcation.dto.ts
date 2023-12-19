@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsNumber } from "class-validator";
+import { IsDateString, IsIn, IsOptional, IsString } from "class-validator";
 export class CreateNotificationDto {
   @IsString()
   title: string;

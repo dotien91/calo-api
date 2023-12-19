@@ -116,7 +116,7 @@ import { UserViewService } from "./services/user_view.service";
     UserAnonymousSessionService,
     QueueService,
     EventHookWorkerService,
-    EventHookNotificationService
+    EventHookNotificationService,
   ],
   exports: [
     UserFilterHelper,

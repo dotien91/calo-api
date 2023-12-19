@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsDateString, IsString, IsNumberString, Min, Max, IsInt } from "class-validator";
+import { IsNumberString, IsOptional, IsString } from "class-validator";
 export class CreateWithdrawalDto {
   @IsString()
   @IsOptional(null)

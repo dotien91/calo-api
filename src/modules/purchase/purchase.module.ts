@@ -67,7 +67,7 @@ import { PurchaseService } from "./services/purchase.service";
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: HandleService.name, schema: HandleServiceSchema },
-      { name: VnpayLog.name, schema: VnpayLogSchema }
+      { name: VnpayLog.name, schema: VnpayLogSchema },
     ]),
   ],
   controllers: [PurchaseController],
@@ -92,7 +92,7 @@ import { PurchaseService } from "./services/purchase.service";
     UserAnonymousService,
     QueueService,
     EventHookWorkerService,
-    EventHookNotificationService
+    EventHookNotificationService,
   ],
   exports: [PurchaseHelper, PurchaseService],
 })

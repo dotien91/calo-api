@@ -1,5 +1,5 @@
-import { Injectable, NestMiddleware, UnauthorizedException, HttpStatus, Module } from "@nestjs/common";
-import { NextFunction, Request, Response } from "express";
+import { Injectable, Module, NestMiddleware } from "@nestjs/common";
+import { NextFunction, Response } from "express";
 import { JwtHelperService } from "../modules/core/services/jwt_helper.service";
 
 /**

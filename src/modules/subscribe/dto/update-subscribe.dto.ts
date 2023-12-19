@@ -1,6 +1,4 @@
-import { PartialType } from "@nestjs/swagger";
-import { CreateSubscribeDto } from "./create-subscribe.dto";
-import { IsOptional, IsString, IsIn, IsDateString } from "class-validator";
+import { IsDateString, IsIn, IsOptional, IsString } from "class-validator";
 
 export class UpdateSubscribeDto {
   @IsString()

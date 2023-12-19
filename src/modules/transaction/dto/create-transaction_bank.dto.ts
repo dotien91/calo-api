@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, Min, Max } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 export class CreateTransactionBankDto {
   @IsString()
   @ApiPropertyOptional()

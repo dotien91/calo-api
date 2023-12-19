@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString } from "class-validator";
+import { IsDateString, IsOptional, IsString } from "class-validator";
 export class CreateUserPermissionDto {
   @IsString()
   permission: string;

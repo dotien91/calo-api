@@ -8,7 +8,7 @@ import {
   Req,
   Res,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
 import { Response } from "express";
@@ -25,9 +25,9 @@ import { PurchaseHelper } from "../helper/purchase.helper";
 export class PurchaseController {
   constructor(
     private readonly purchaseHelper: PurchaseHelper,
-    private readonly orderService: OrderService,
-    // private readonly orderHelper: OrderHelper
-  ) {
+    private readonly orderService: OrderService
+  ) // private readonly orderHelper: OrderHelper
+  {
     this.handleProcessCron();
   }
 

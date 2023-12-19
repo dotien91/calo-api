@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Plan } from "../../../modules/plan/schemas/plan.schema";
-import { User } from "../../../modules/user/schemas/user.schema";
 
 @Schema()
 export class OptionContent extends Document {

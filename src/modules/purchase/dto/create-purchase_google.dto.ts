@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsNumber } from "class-validator";
+import { IsNumberString, IsOptional, IsString } from "class-validator";
 export class CreatePurchaseGoogleDto {
   @IsString()
   @IsOptional(null)

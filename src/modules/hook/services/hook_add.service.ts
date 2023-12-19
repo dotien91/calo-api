@@ -4,9 +4,7 @@ import { UserService } from "../../../modules/user/services/user.service";
 let alreadyWork = false;
 @Injectable()
 export class EventHookAdderService {
-  constructor(
-    private readonly userService: UserService
-  ) {
+  constructor(private readonly userService: UserService) {
     if (alreadyWork !== true) {
       this.initHook();
       alreadyWork = true;

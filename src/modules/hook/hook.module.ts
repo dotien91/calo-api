@@ -43,7 +43,7 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionSchema },
-      { name: UserOption.name, schema: UserOptionSchema }
+      { name: UserOption.name, schema: UserOptionSchema },
     ]),
   ],
   providers: [

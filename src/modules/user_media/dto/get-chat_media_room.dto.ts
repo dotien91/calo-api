@@ -1,4 +1,4 @@
-import { IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class GetChatMediaRoomDto {
   @IsNumberString()

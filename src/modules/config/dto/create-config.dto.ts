@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsJSON } from "class-validator";
+import { IsJSON, IsOptional, IsString } from "class-validator";
 export class CreateConfigDto {
   @IsString()
   type: any;

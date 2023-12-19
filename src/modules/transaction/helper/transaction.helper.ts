@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  NotFoundException
+  NotFoundException,
 } from "@nestjs/common";
 import axios from "axios";
 import { Response } from "express";
@@ -34,7 +34,6 @@ import { TransactionBankService } from "../services/transaction_bank.service";
  */
 @Injectable()
 export class TransactionHelper {
-
   constructor(
     private transactionService: TransactionService,
     private transactionBankService: TransactionBankService,

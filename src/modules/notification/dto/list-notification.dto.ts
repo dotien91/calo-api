@@ -1,5 +1,4 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListNotificationDto {
   @IsNumberString()

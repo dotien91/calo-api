@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsIn } from "class-validator";
+import { IsDateString, IsIn, IsOptional, IsString } from "class-validator";
 export class CreateSubscribeDto {
   @IsString()
   plan_id: string;

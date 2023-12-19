@@ -21,7 +21,7 @@ import { ContactFormService } from "./services/contact_form.service";
       { name: ContactForm.name, schema: ContactFormSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserOption.name, schema: UserOptionSchema },
-      { name: UserPermission.name, schema: UserPermissionSchema }
+      { name: UserPermission.name, schema: UserPermissionSchema },
     ]),
   ],
   controllers: [ContactFormController],

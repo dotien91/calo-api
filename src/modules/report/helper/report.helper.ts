@@ -1,24 +1,15 @@
-import { Response, Request, response } from "express";
-import {
-  ForbiddenException,
-  BadRequestException,
-  HttpStatus,
-  NotFoundException,
-  Injectable,
-  Res,
-  Req,
-  Param,
-} from "@nestjs/common";
-import { UserService } from "../../user/services/user.service";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateReportDto } from "../dto/create-report.dto";
-import { ReportService } from "../services/report.service";
-import { ListReportDto } from "../dto/list-report.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateReportDto } from "../dto/update-report.dto";
-import { CreateContactUsDto } from "../dto/create-contact_us.dto";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import axios from "axios";
+import { Response } from "express";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserOptionService } from "../../../modules/user/services/user_option.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { UserService } from "../../user/services/user.service";
+import { CreateContactUsDto } from "../dto/create-contact_us.dto";
+import { CreateReportDto } from "../dto/create-report.dto";
+import { ListReportDto } from "../dto/list-report.dto";
+import { UpdateReportDto } from "../dto/update-report.dto";
+import { ReportService } from "../services/report.service";
 
 /**
  * @author Tony Vu

@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, UnauthorizedException, HttpStatus, Module } from "@nestjs/common";
+import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { NextFunction, Response } from "express";
 
 /**

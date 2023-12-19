@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 export class CreateReportDto {
   @IsString()
   report_type: string;

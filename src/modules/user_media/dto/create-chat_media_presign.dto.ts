@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsJSON, IsNumberString, IsIn } from "class-validator";
 import { UsePipes, ValidationPipe } from "@nestjs/common";
+import { IsIn, IsJSON, IsNumberString, IsOptional, IsString } from "class-validator";
 
 @UsePipes(
   new ValidationPipe({
