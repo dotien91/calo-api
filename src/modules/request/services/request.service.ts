@@ -1,13 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateRequestDto } from "../dto/create-request.dto";
-import { RequestDocument, Request } from "../schemas/request.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateRequestDto } from "../dto/update-request.dto";
+import HookExpress from "../../hook/hook_epress";
+import { CreateRequestDto } from "../dto/create-request.dto";
 import { SearchPostDto } from "../dto/search-request.dto";
 import { SortByPostDto } from "../dto/sort_by-request.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
-import HookExpress from "../../hook/hook_epress";
+import { UpdateRequestDto } from "../dto/update-request.dto";
+import { Request, RequestDocument } from "../schemas/request.schema";
 let initHook = false;
 
 @Injectable()
@@ -273,8 +272,8 @@ export class RequestService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Request[]> {
-    return this.requestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Request[]> {
+    return this.requestModel.find(dataToSearch).exec();
   }
 
   /**

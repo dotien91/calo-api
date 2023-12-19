@@ -1,15 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { SearchUserDto } from "../dto/search-user.dto";
-import { User, UserDocument } from "../schemas/user.schema";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { SortByUserDto } from "../dto/sort_by-user.dto";
-import { UserOption, UserOptionDocument } from "../schemas/user_option.schema";
-import { UserOptionService } from "./user_option.service";
-import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import parsePhoneNumber from "libphonenumber-js";
+import { Model } from "mongoose";
+import { CreateUserDto } from "../dto/create-user.dto";
+import { SearchUserDto } from "../dto/search-user.dto";
+import { SortByUserDto } from "../dto/sort_by-user.dto";
+import { UpdateUserDto } from "../dto/update-user.dto";
+import { User, UserDocument } from "../schemas/user.schema";
 @Injectable()
 export class UserService {
   constructor(
@@ -31,8 +28,8 @@ export class UserService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<User[]> {
-    return this.appUserModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<User[]> {
+    return this.appUserModel.find(dataToSearch).exec();
   }
 
   /**

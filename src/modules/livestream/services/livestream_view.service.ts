@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { LivestreamView, LivestreamViewDocument } from "../schemas/livestream_view.schema";
-import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateLivestreamViewDto } from "../dto/update-livestream_view.dto";
+import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { FilterViewLivestreamDto } from "../dto/filter-view_livestream.dto";
+import { UpdateLivestreamViewDto } from "../dto/update-livestream_view.dto";
+import { LivestreamView, LivestreamViewDocument } from "../schemas/livestream_view.schema";
 
 @Injectable()
 export class LivestreamViewService {
@@ -72,8 +72,8 @@ export class LivestreamViewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LivestreamView[]> {
-    return this.livestreamViewModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LivestreamView[]> {
+    return this.livestreamViewModel.find(dataToSearch).exec();
   }
 
   /**

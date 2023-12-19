@@ -1,12 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateChallengeDto } from "../dto/create-challenge.dto";
-import { ChallengeDocument, Challenge } from "../schemas/challenge.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateChallengeDto } from "../dto/update-challenge.dto";
+import { CreateChallengeDto } from "../dto/create-challenge.dto";
 import { SearchChallengeDto } from "../dto/search-challenge.dto";
 import { SortByChallengeDto } from "../dto/sort_by-challenge.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateChallengeDto } from "../dto/update-challenge.dto";
+import { Challenge, ChallengeDocument } from "../schemas/challenge.schema";
 
 @Injectable()
 export class ChallengeService {
@@ -267,8 +266,8 @@ export class ChallengeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Challenge[]> {
-    return this.challengeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Challenge[]> {
+    return this.challengeModel.find(dataToSearch).exec();
   }
 
   /**

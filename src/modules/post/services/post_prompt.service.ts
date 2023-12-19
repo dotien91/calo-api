@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePostDto } from "../dto/create-post.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdatePostDto } from "../dto/update-post.dto";
+import { CreatePostPromptDto } from "../dto/create-post_prompt.dto";
 import { SearchPostDto } from "../dto/search-post.dto";
 import { SortByPostDto } from "../dto/sort_by-post.dto";
-import { CreatePostPromptDto } from "../dto/create-post_prompt.dto";
+import { UpdatePostDto } from "../dto/update-post.dto";
 import { PostPrompt, PostPromptDocument } from "../schemas/post_prompt.schema";
 
 @Injectable()
@@ -188,8 +187,8 @@ export class PostPromptService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PostPrompt[]> {
-    return this.postPromptModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PostPrompt[]> {
+    return this.postPromptModel.find(dataToSearch).exec();
   }
 
   /**

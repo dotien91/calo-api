@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateAnswerDto } from "../dto/create-answer.dto";
-import { AnswerDocument, Answer } from "../schemas/answer.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateAnswerDto } from "../dto/update-answer.dto";
+import { CreateAnswerDto } from "../dto/create-answer.dto";
 import { SearchAnswerDto } from "../dto/search-answer.dto";
 import { SortByAnswerDto } from "../dto/sort_by-answer.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateAnswerDto } from "../dto/update-answer.dto";
+import { Answer, AnswerDocument } from "../schemas/answer.schema";
 
 @Injectable()
 export class AnswerService {
@@ -147,8 +146,8 @@ export class AnswerService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Answer[]> {
-    return this.orderModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Answer[]> {
+    return this.orderModel.find(dataToSearch).exec();
   }
 
   /**

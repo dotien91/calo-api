@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
-import { SearchChatRoom } from "../dto/search-chat_room.dto";
-import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { ChatRoom as ChatRoomMongoose, ChatRoomDocument } from "../schemas/chat_room.schema";
+import { Model } from "mongoose";
+import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
+import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
+import { SearchChatRoom } from "../dto/search-chat_room.dto";
+import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
 import { UpdateChatRoomDto } from "../dto/update-chat_room.dto";
 import { UpdateChatRoomUserDto } from "../dto/update-chat_room_user.dto";
-import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
-import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
+import { ChatRoomDocument, ChatRoom as ChatRoomMongoose } from "../schemas/chat_room.schema";
 
 @Injectable()
 export class ChatRoomService {
@@ -21,8 +21,8 @@ export class ChatRoomService {
     return await createChatRoomData.save();
   }
 
-  async findAll(): Promise<ChatRoomMongoose[]> {
-    return await this.chatRoomModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChatRoomMongoose[]> {
+    return await this.chatRoomModel.find(dataToSearch).exec();
   }
 
   async findOneRoom(dataToSearch: SearchChatRoom) {

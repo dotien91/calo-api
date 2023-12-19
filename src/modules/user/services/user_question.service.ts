@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserQuestion, UserQuestionDocument } from "../schemas/user_question.schema";
-import { CreateUserQuestionDto } from "../dto/create-user_question.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
+import { CreateUserQuestionDto } from "../dto/create-user_question.dto";
 import { FilterFollowDto } from "../dto/filter-follow.dto";
+import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
+import { UserQuestion, UserQuestionDocument } from "../schemas/user_question.schema";
 
 @Injectable()
 export class UserQuestionService {
@@ -63,8 +63,8 @@ export class UserQuestionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserQuestion[]> {
-    return this.userQuestionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserQuestion[]> {
+    return this.userQuestionModel.find(dataToSearch).exec();
   }
 
   /**

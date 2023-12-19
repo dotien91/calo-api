@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { UserLocationHistory, UserLocationHistoryDocument } from "../schemas/user_location_history.schema";
-import { CreateUserLocationDto } from "../dto/create-user_location.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserLocationDto } from "../dto/update-user_location.dto";
+import { CreateUserLocationDto } from "../dto/create-user_location.dto";
 import { FilterFollowDto } from "../dto/filter-follow.dto";
 import { FilterUserLocationDto } from "../dto/filter-user_location.dto";
+import { UpdateUserLocationDto } from "../dto/update-user_location.dto";
+import { UserLocationHistory, UserLocationHistoryDocument } from "../schemas/user_location_history.schema";
 
 @Injectable()
 export class UserLocationService {
@@ -90,8 +90,8 @@ export class UserLocationService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserLocationHistory[]> {
-    return this.userFollowModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserLocationHistory[]> {
+    return this.userFollowModel.find(dataToSearch).exec();
   }
 
   /**

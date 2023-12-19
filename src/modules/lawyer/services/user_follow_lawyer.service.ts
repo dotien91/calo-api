@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserFollowLawyer, UserFollowLawyerDocument } from "../schemas/user_follow_lawyer.schema";
-import { CreateUserFollowLawyerDto } from "../dto/create-user_follow_lawyer.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserFollowLawyerDto } from "../dto/update-user_follow_lawyer.dto";
+import { CreateUserFollowLawyerDto } from "../dto/create-user_follow_lawyer.dto";
 import { FilterFollowLawyerDto } from "../dto/filter-follow_lawyer.dto";
+import { UpdateUserFollowLawyerDto } from "../dto/update-user_follow_lawyer.dto";
+import { UserFollowLawyer, UserFollowLawyerDocument } from "../schemas/user_follow_lawyer.schema";
 
 @Injectable()
 export class UserFollowLawyerService {
@@ -58,8 +58,8 @@ export class UserFollowLawyerService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserFollowLawyer[]> {
-    return this.userFollowModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserFollowLawyer[]> {
+    return this.userFollowModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateLivestreamDto } from "../dto/create-livestream.dto";
-import { LivestreamDocument, Livestream } from "../schemas/livestream.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateLivestreamDto } from "../dto/update-livestream.dto";
+import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { SearchLivestreamDto } from "../dto/search-livestream.dto";
 import { SortByLivestreamDto } from "../dto/sort_by-livestream.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateLivestreamDto } from "../dto/update-livestream.dto";
+import { Livestream, LivestreamDocument } from "../schemas/livestream.schema";
 
 const dataPopulateProduct = {
   path: "product_id",
@@ -192,8 +191,8 @@ export class LivestreamService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Livestream[]> {
-    return this.livestreamModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Livestream[]> {
+    return this.livestreamModel.find(dataToSearch).exec();
   }
 
   /**

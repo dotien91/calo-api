@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateRedeemPermissionDto } from "../dto/create-redeem_permission.dto";
-import { RedeemPermissionDocument, RedeemPermission } from "../schemas/redeem_permission.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateRedeemPermissionDto } from "../dto/update-redeem_permission.dto";
+import { CreateRedeemPermissionDto } from "../dto/create-redeem_permission.dto";
 import { SearchPostDto } from "../dto/search-redeem.dto";
-import { SortByPostDto } from "../dto/sort_by-redeem.dto";
 import { SearchRedeemPermissionDto } from "../dto/search-redeem_permission.dto";
+import { SortByPostDto } from "../dto/sort_by-redeem.dto";
+import { UpdateRedeemPermissionDto } from "../dto/update-redeem_permission.dto";
+import { RedeemPermission, RedeemPermissionDocument } from "../schemas/redeem_permission.schema";
 
 const dataPopulateRedeem = {
   path: "redeem_mission_id",
@@ -243,8 +243,8 @@ export class RedeemPermissionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RedeemPermission[]> {
-    return this.redeemModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RedeemPermission[]> {
+    return this.redeemModel.find(dataToSearch).exec();
   }
 
   /**

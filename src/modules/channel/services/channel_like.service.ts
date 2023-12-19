@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ChannelLike, ChannelLikeDocument } from "../schemas/channel_like.schema";
-import { CreateChannelLikeDto } from "../dto/create-channel_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChannelLikeDto } from "../dto/update-channel_like.dto";
+import { CreateChannelLikeDto } from "../dto/create-channel_like.dto";
 import { FilterLikeChannelDto } from "../dto/filter-like_channel.dto";
+import { UpdateChannelLikeDto } from "../dto/update-channel_like.dto";
+import { ChannelLike, ChannelLikeDocument } from "../schemas/channel_like.schema";
 
 @Injectable()
 export class ChannelLikeService {
@@ -75,8 +75,8 @@ export class ChannelLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChannelLike[]> {
-    return this.channelLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChannelLike[]> {
+    return this.channelLikeModel.find(dataToSearch).exec();
   }
 
   /**

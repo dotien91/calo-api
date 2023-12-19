@@ -1,18 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectQueue } from "@nestjs/bull";
-import { Queue } from "bull";
-import { CreateGiftDto } from "../dto/create-gift.dto";
-import { Gift, GiftDocument } from "../schemas/gift.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateGiftDto } from "../dto/update-gift.dto";
-import { SearchGiftDto } from "../dto/search-gift.dto";
-import { SortByGiftDto } from "../dto/sort_by-gift.dto";
-import { CheckGiftPointLevelDto } from "../dto/check-gift-point-level.dto";
 import {
   ChannelPermission,
   ChannelPermissionDocument,
 } from "../../../modules/channel/schemas/channel_permission.schema";
+import { CheckGiftPointLevelDto } from "../dto/check-gift-point-level.dto";
+import { CreateGiftDto } from "../dto/create-gift.dto";
+import { SearchGiftDto } from "../dto/search-gift.dto";
+import { SortByGiftDto } from "../dto/sort_by-gift.dto";
+import { UpdateGiftDto } from "../dto/update-gift.dto";
+import { Gift, GiftDocument } from "../schemas/gift.schema";
 
 @Injectable()
 export class GiftService {
@@ -212,8 +210,8 @@ export class GiftService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Gift[]> {
-    return this.giftModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Gift[]> {
+    return this.giftModel.find(dataToSearch).exec();
   }
 
   /**

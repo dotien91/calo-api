@@ -1,5 +1,5 @@
-import { BaseInterfaceRepository } from "./base.interface.repository";
 import { Model } from "mongoose";
+import { BaseInterfaceRepository } from "./base.interface.repository";
 
 export abstract class BaseAbstractRepository<T> implements BaseInterfaceRepository<T> {
   private entity: Model<any>;
@@ -12,8 +12,8 @@ export abstract class BaseAbstractRepository<T> implements BaseInterfaceReposito
     return this.entity.create(data);
   }
 
-  async findAll(): Promise<T[]> {
-    return this.entity.find().exec();
+  async findAll(dataToSearch?: any): Promise<T[]> {
+    return this.entity.find(dataToSearch).exec();
   }
 
   findOneByCondition(filterCondition: any): Promise<T> {

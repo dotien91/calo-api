@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { EventReport, EventReportDocument } from "../schemas/event_report.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEventDto } from "../dto/update.event.dto";
 import { CreateEventDto } from "../dto/create.event.dto";
+import { UpdateEventDto } from "../dto/update.event.dto";
+import { EventReport, EventReportDocument } from "../schemas/event_report.schema";
 
 @Injectable()
 export class EventReportService {
@@ -26,8 +26,8 @@ export class EventReportService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EventReport[]> {
-    return this.eventReportModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EventReport[]> {
+    return this.eventReportModel.find(dataToSearch).exec();
   }
 
   /**

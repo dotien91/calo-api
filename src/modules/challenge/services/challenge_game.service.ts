@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ChallengeGame, ChallengeGameDocument } from "../schemas/challenge_game.schema";
-import { CreateChallengeGameDto } from "../dto/create-challenge_game.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChallengeGameDto } from "../dto/update-challenge_game.dto";
+import { CreateChallengeGameDto } from "../dto/create-challenge_game.dto";
 import { FilterModuleChallengeDto } from "../dto/filter-module_challenge.dto";
+import { UpdateChallengeGameDto } from "../dto/update-challenge_game.dto";
+import { ChallengeGame, ChallengeGameDocument } from "../schemas/challenge_game.schema";
 
 @Injectable()
 export class ChallengeGameService {
@@ -103,8 +103,8 @@ export class ChallengeGameService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChallengeGame[]> {
-    return this.challengeLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChallengeGame[]> {
+    return this.challengeLikeModel.find(dataToSearch).exec();
   }
 
   /**

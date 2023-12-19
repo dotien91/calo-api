@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Event, EventDocument } from "../schemas/event.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEventDto } from "../dto/update.event.dto";
 import { CreateEventDto } from "../dto/create.event.dto";
 import { SearchEventDto } from "../dto/search.event.dto";
 import { SortByEventDto } from "../dto/sort_by-event.dto";
-import { SearchEventTypeDto } from "../dto/search.event_type.dto";
+import { UpdateEventDto } from "../dto/update.event.dto";
+import { Event, EventDocument } from "../schemas/event.schema";
 
 const dataPopulateLivestream = {
   path: "livestream_id",
@@ -269,8 +268,8 @@ export class EventService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Event[]> {
-    return this.eventModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Event[]> {
+    return this.eventModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { PodcastCategory, PodcastCategoryDocument } from "../schemas/podcast-category.schema";
-import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
 import { CreatePodcastCategoryDto } from "../dto/create-podcast_category.dto";
 import { SearchPodcastCategoryDto } from "../dto/search-podcast_category.dto";
 import { SortByPodcastCategoryDto } from "../dto/sort_by-podcast_category.dto";
+import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
+import { PodcastCategory, PodcastCategoryDocument } from "../schemas/podcast-category.schema";
 
 @Injectable()
 export class PodcastCategoryService {
@@ -164,8 +164,8 @@ export class PodcastCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PodcastCategory[]> {
-    return this.podcastModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PodcastCategory[]> {
+    return this.podcastModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateRedeemHistoryDto } from "../dto/create-redeem_history.dto";
-import { RedeemHistoryDocument, RedeemHistory } from "../schemas/redeem_history.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateRedeemHistoryDto } from "../dto/update-redeem_history.dto";
+import { CreateRedeemHistoryDto } from "../dto/create-redeem_history.dto";
 import { SearchPostDto } from "../dto/search-redeem.dto";
-import { SortByPostDto } from "../dto/sort_by-redeem.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
 import { SearchRedeemHistoryDto } from "../dto/search-redeem_history.dto";
+import { SortByPostDto } from "../dto/sort_by-redeem.dto";
+import { UpdateRedeemHistoryDto } from "../dto/update-redeem_history.dto";
+import { RedeemHistory, RedeemHistoryDocument } from "../schemas/redeem_history.schema";
 
 @Injectable()
 export class RedeemHistoryService {
@@ -177,8 +176,8 @@ export class RedeemHistoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RedeemHistory[]> {
-    return this.redeemModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RedeemHistory[]> {
+    return this.redeemModel.find(dataToSearch).exec();
   }
 
   /**

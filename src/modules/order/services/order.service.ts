@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateOrderDto } from "../dto/create-order.dto";
-import { OrderDocument, Order } from "../schemas/order.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateOrderDto } from "../dto/update-order.dto";
+import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { CreateOrderDto } from "../dto/create-order.dto";
 import { SearchOrderDto } from "../dto/search-order.dto";
 import { SortByOrderDto } from "../dto/sort_by-order.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateOrderDto } from "../dto/update-order.dto";
+import { Order, OrderDocument } from "../schemas/order.schema";
 import { VnpayLog, VnpayLogDocument } from "../schemas/vnpay_log.schema";
 
 @Injectable()
@@ -278,8 +278,8 @@ export class OrderService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Order[]> {
-    return this.orderModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Order[]> {
+    return this.orderModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserBlock, UserBlockDocument } from "../schemas/user_block.schema";
-import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserBlockDto } from "../dto/update-user_block.dto";
+import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { FilterBlockDto } from "../dto/filter-block.dto";
-import { SearchBlockListDto } from "../dto/search-block_list.dto";
+import { UpdateUserBlockDto } from "../dto/update-user_block.dto";
+import { UserBlock, UserBlockDocument } from "../schemas/user_block.schema";
 
 @Injectable()
 export class UserBlockService {
@@ -59,8 +58,8 @@ export class UserBlockService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserBlock[]> {
-    return this.userBlockModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserBlock[]> {
+    return this.userBlockModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LivestreamComment, LivestreamCommentDocument } from "../schemas/livestream_comment.schema";
-import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { UpdateLivestreamCommentDto } from "../dto/update-livestream_comment.dto";
-import { FilterLivestreamCommentDto } from "../dto/filter-comment_livestream.dto";
 import { ObjectId } from "mongodb";
+import { Model } from "mongoose";
+import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
+import { FilterLivestreamCommentDto } from "../dto/filter-comment_livestream.dto";
+import { UpdateLivestreamCommentDto } from "../dto/update-livestream_comment.dto";
+import { LivestreamComment, LivestreamCommentDocument } from "../schemas/livestream_comment.schema";
 
 @Injectable()
 export class LivestreamCommentService {
@@ -83,8 +83,8 @@ export class LivestreamCommentService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LivestreamComment[]> {
-    return this.livestreamLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LivestreamComment[]> {
+    return this.livestreamLikeModel.find(dataToSearch).exec();
   }
 
   /**

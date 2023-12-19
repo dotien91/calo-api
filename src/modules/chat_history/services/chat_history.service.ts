@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { ObjectId } from "mongodb";
+import { Model } from "mongoose";
 import { CreateChatHistoryDto } from "../dto/create-chat_history.dto";
 import { FilterChatHistoryDto } from "../dto/filter-chat_history.dto";
 import { SortByChatHistoryDto } from "../dto/sort-by_chat_history.dto";
-import { UpdateChatHistoryDto } from "../dto/update-chat_history.dto";
-import { Model } from "mongoose";
-import { ObjectId } from "mongodb";
-import { InjectModel } from "@nestjs/mongoose";
 import { ChatHistory, ChatHistoryDocument } from "../schemas/chat_history.schema";
 
 @Injectable()
@@ -83,8 +82,8 @@ export class ChatHistoryService {
    *
    * @returns
    */
-  async findAll(): Promise<ChatHistoryDocument[]> {
-    return await this.chatHistoryModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChatHistoryDocument[]> {
+    return await this.chatHistoryModel.find(dataToSearch).exec();
   }
 
   /**

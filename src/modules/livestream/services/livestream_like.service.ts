@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { LivestreamLike, LivestreamLikeDocument } from "../schemas/livestream_like.schema";
-import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateLivestreamLikeDto } from "../dto/update-livestream_like.dto";
+import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
 import { FilterLikeLivestreamDto } from "../dto/filter-like_livestream.dto";
+import { UpdateLivestreamLikeDto } from "../dto/update-livestream_like.dto";
+import { LivestreamLike, LivestreamLikeDocument } from "../schemas/livestream_like.schema";
 
 @Injectable()
 export class LivestreamLikeService {
@@ -78,8 +78,8 @@ export class LivestreamLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LivestreamLike[]> {
-    return this.livestreamLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LivestreamLike[]> {
+    return this.livestreamLikeModel.find(dataToSearch).exec();
   }
 
   /**

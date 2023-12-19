@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserGiftDto } from "../dto/create-user_gift.dto";
-import { UserGift, UserGiftDocument } from "../schemas/user_gift.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserGiftDto } from "../dto/update-user_gift.dto";
+import { CreateUserGiftDto } from "../dto/create-user_gift.dto";
 import { SearchUserGiftDto } from "../dto/search-user_gift.dto";
 import { SortByUserGiftDto } from "../dto/sort_by-user_gift.dto";
+import { UpdateUserGiftDto } from "../dto/update-user_gift.dto";
+import { UserGift, UserGiftDocument } from "../schemas/user_gift.schema";
 
 @Injectable()
 export class UserGiftService {
@@ -118,8 +118,8 @@ export class UserGiftService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserGift[]> {
-    return this.userUserGiftModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserGift[]> {
+    return this.userUserGiftModel.find(dataToSearch).exec();
   }
 
   /**

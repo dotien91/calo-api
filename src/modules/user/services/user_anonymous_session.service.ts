@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserAnonymousSessionDto } from "../dto/create-user_anonymous_session.dto";
-import { UserAnonymousSession, UserAnonymousSessionDocument } from "../schemas/user_anonymous_session.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateUserAnonymousSessionDto } from "../dto/create-user_anonymous_session.dto";
 import { SortByUserAnonymousSessionDto } from "../dto/sort_by-user_anonymous_session.dto";
 import { UserAnonymousSessionFilterDto } from "../dto/user_anonymous_session_filter.dto";
-import { UpdateSessionDto } from "../dto/update-session.dto";
+import { UserAnonymousSession, UserAnonymousSessionDocument } from "../schemas/user_anonymous_session.schema";
 
 @Injectable()
 export class UserAnonymousSessionService {
@@ -42,8 +41,8 @@ export class UserAnonymousSessionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserAnonymousSession[]> {
-    return this.userAnonymousSession.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserAnonymousSession[]> {
+    return this.userAnonymousSession.find(dataToSearch).exec();
   }
 
   /**

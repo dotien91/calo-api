@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateContactFormDto } from "../dto/create-contact_form.dto";
-import { ContactForm, ContactFormDocument } from "../schemas/contact_form.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateContactFormDto } from "../dto/update-contact_form.dto";
+import { CreateContactFormDto } from "../dto/create-contact_form.dto";
 import { SearchContactFormDto } from "../dto/search-contact_form.dto";
 import { SortByContactFormDto } from "../dto/sort_by-contact_form.dto";
+import { UpdateContactFormDto } from "../dto/update-contact_form.dto";
+import { ContactForm, ContactFormDocument } from "../schemas/contact_form.schema";
 
 @Injectable()
 export class ContactFormService {
@@ -126,8 +126,8 @@ export class ContactFormService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ContactForm[]> {
-    return this.contactFormModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ContactForm[]> {
+    return this.contactFormModel.find(dataToSearch).exec();
   }
 
   /**

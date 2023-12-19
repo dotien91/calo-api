@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateEsimCountryDto } from "../dto/create-esim_country.dto";
-import { EsimCountryDocument, EsimCountry } from "../schemas/esim_country.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEsimCountryDto } from "../dto/update-esim_country.dto";
-import { SearchEsimCountryDto } from "../dto/search-esim_country.dto";
-import { SortByEsimCountryDto } from "../dto/sort_by-esim_country.dto";
+import { CreateEsimCountryDto } from "../dto/create-esim_country.dto";
 import { ListEsimCountryDto } from "../dto/list-esim_country.dto";
+import { SortByEsimCountryDto } from "../dto/sort_by-esim_country.dto";
+import { UpdateEsimCountryDto } from "../dto/update-esim_country.dto";
+import { EsimCountry, EsimCountryDocument } from "../schemas/esim_country.schema";
 
 @Injectable()
 export class EsimCountryService {
@@ -158,8 +157,8 @@ export class EsimCountryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EsimCountry[]> {
-    return this.requestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EsimCountry[]> {
+    return this.requestModel.find(dataToSearch).exec();
   }
 
   /**

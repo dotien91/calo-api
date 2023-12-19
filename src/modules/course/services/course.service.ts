@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCourseDto } from "../dto/create-course.dto";
-import { CourseDocument, Course } from "../schemas/course.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateCourseDto } from "../dto/update-course.dto";
+import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto } from "../dto/search-course.dto";
 import { SortByCourseDto } from "../dto/sort_by-course.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateCourseDto } from "../dto/update-course.dto";
+import { Course, CourseDocument } from "../schemas/course.schema";
 
 @Injectable()
 export class CourseService {
@@ -205,8 +204,8 @@ export class CourseService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Course[]> {
-    return this.courseModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Course[]> {
+    return this.courseModel.find(dataToSearch).exec();
   }
 
   /**

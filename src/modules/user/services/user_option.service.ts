@@ -1,16 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import * as _ from "lodash";
 import { Model } from "mongoose";
 import { CreateUserOptionDto } from "../dto/create-user_option.dto";
+import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
+import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SortByUserOptionDto } from "../dto/sort_by-user_option.dto";
 import { UserOption, UserOptionDocument } from "../schemas/user_option.schema";
-import { SearchBaseUserDto } from "../dto/search-base_user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
-import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
-import * as turf from "@turf/turf";
-import * as _ from "lodash";
-import parsePhoneNumber from "libphonenumber-js";
 
 @Injectable()
 export class UserOptionService {
@@ -33,8 +29,8 @@ export class UserOptionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserOption[]> {
-    return this.userOptionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserOption[]> {
+    return this.userOptionModel.find(dataToSearch).exec();
   }
 
   /**

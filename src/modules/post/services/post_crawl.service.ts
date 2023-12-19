@@ -1,13 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePostDto } from "../dto/create-post.dto";
-import { PostCrawlDocument, PostCrawl } from "../schemas/post_crawl.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdatePostDto } from "../dto/update-post.dto";
+import { CreatePostCrawlDto } from "../dto/create-post_crawl.dto";
 import { SearchPostDto } from "../dto/search-post.dto";
 import { SortByPostDto } from "../dto/sort_by-post.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
-import { CreatePostCrawlDto } from "../dto/create-post_crawl.dto";
+import { UpdatePostDto } from "../dto/update-post.dto";
+import { PostCrawl, PostCrawlDocument } from "../schemas/post_crawl.schema";
 
 @Injectable()
 export class PostCrawlService {
@@ -142,8 +140,8 @@ export class PostCrawlService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PostCrawl[]> {
-    return this.postCrawlModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PostCrawl[]> {
+    return this.postCrawlModel.find(dataToSearch).exec();
   }
 
   /**

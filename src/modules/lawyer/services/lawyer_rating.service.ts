@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LawyerRating, LawyerRatingDocument } from "../schemas/lawyer_rating.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreateLawyerRatingDto } from "../dto/create.lawyer_rating.dto";
-import { UpdateLawyerRatingDto } from "../dto/update.lawyer_rating.dto";
 import { SearchMyLawyerRatingDto } from "../dto/search.my_lawyer_rating.dto";
 import { SortByMyLawyerRatingDto } from "../dto/sort_by-my_lawyer_rating.dto";
+import { UpdateLawyerRatingDto } from "../dto/update.lawyer_rating.dto";
+import { LawyerRating, LawyerRatingDocument } from "../schemas/lawyer_rating.schema";
 
 @Injectable()
 export class LawyerRatingService {
@@ -28,8 +28,8 @@ export class LawyerRatingService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LawyerRating[]> {
-    return this.lawyerRatingModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LawyerRating[]> {
+    return this.lawyerRatingModel.find(dataToSearch).exec();
   }
 
   /**

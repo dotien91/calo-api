@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateEsimDto } from "../dto/create-esim.dto";
-import { EsimDocument, Esim } from "../schemas/esim.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEsimDto } from "../dto/update-esim.dto";
+import { CreateEsimDto } from "../dto/create-esim.dto";
 import { SearchEsimDto } from "../dto/search-esim.dto";
 import { SortByEsimDto } from "../dto/sort_by-esim.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateEsimDto } from "../dto/update-esim.dto";
+import { Esim, EsimDocument } from "../schemas/esim.schema";
 
 @Injectable()
 export class EsimService {
@@ -198,8 +197,8 @@ export class EsimService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Esim[]> {
-    return this.requestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Esim[]> {
+    return this.requestModel.find(dataToSearch).exec();
   }
 
   /**

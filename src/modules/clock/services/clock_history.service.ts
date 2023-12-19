@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateClockHistoryDto } from "../dto/create-clock_history.dto";
-import { ClockHistoryDocument, ClockHistory } from "../schemas/clock_history.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateClockHistoryDto } from "../dto/update-clock_history.dto";
+import { CreateClockHistoryDto } from "../dto/create-clock_history.dto";
 import { SearchClockHistoryDto } from "../dto/search-clock_history.dto";
 import { SortByClockHistoryDto } from "../dto/sort_by-clock_history.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateClockHistoryDto } from "../dto/update-clock_history.dto";
+import { ClockHistory, ClockHistoryDocument } from "../schemas/clock_history.schema";
 
 @Injectable()
 export class ClockHistoryService {
@@ -151,8 +150,8 @@ export class ClockHistoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ClockHistory[]> {
-    return this.orderModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ClockHistory[]> {
+    return this.orderModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateTopicJoinDto } from "../dto/update-topic_join.dto";
 import { SearchTopicJoinDto } from "../dto/search-topic_join.dto";
 import { SortByTopicJoinDto } from "../dto/sort_by-topic_join.dto";
+import { UpdateTopicJoinDto } from "../dto/update-topic_join.dto";
 import { TopicJoin, TopicJoinDocument } from "../schemas/topic_join.schema";
 
 @Injectable()
@@ -148,8 +148,8 @@ export class TopicJoinService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<TopicJoin[]> {
-    return this.topicJoinModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<TopicJoin[]> {
+    return this.topicJoinModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePlanDto } from "../dto/create-plan.dto";
-import { HandleService, HandleServiceDocument } from "../schemas/handle_service.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { CreateHandleServiceDto } from "../dto/create-handle_service.dto";
 import { SearchHandleServiceDto } from "../dto/search-handle_service.dto";
 import { SortByHandleServiceDto } from "../dto/sort_by-handle_service.dto";
 import { UpdateHandleServiceDto } from "../dto/update-handle_service.dto";
-import { CreateHandleServiceDto } from "../dto/create-handle_service.dto";
+import { HandleService, HandleServiceDocument } from "../schemas/handle_service.schema";
 @Injectable()
 export class HandleServiceService {
   constructor(
@@ -109,7 +108,7 @@ export class HandleServiceService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<HandleService[]> {
+  async findAll(dataToSearch?: any): Promise<HandleService[]> {
     return this.handleServiceModel
       .find()
       .populate("public_album")

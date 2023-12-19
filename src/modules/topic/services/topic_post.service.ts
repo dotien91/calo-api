@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateTopicPostDto } from "../dto/create-topic_post.dto";
-import { TopicPostDocument, TopicPost } from "../schemas/topic_post.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateTopicPostDto } from "../dto/update-topic_post.dto";
+import { CreateTopicPostDto } from "../dto/create-topic_post.dto";
 import { SearchTopicPostDto } from "../dto/search-topic_post.dto";
 import { SortByTopicPostDto } from "../dto/sort_by-topic_post.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateTopicPostDto } from "../dto/update-topic_post.dto";
+import { TopicPost, TopicPostDocument } from "../schemas/topic_post.schema";
 
 @Injectable()
 export class TopicPostService {
@@ -171,8 +170,8 @@ export class TopicPostService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<TopicPost[]> {
-    return this.orderModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<TopicPost[]> {
+    return this.orderModel.find(dataToSearch).exec();
   }
 
   /**

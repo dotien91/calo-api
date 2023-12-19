@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserMood, UserMoodDocument } from "../schemas/user_mood.schema";
-import { CreateUserMoodDto } from "../dto/create-user_mood.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserMoodDto } from "../dto/update-user_mood.dto";
+import { CreateUserMoodDto } from "../dto/create-user_mood.dto";
 import { FilterFollowDto } from "../dto/filter-follow.dto";
+import { UpdateUserMoodDto } from "../dto/update-user_mood.dto";
+import { UserMood, UserMoodDocument } from "../schemas/user_mood.schema";
 
 @Injectable()
 export class UserMoodService {
@@ -63,8 +63,8 @@ export class UserMoodService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserMood[]> {
-    return this.userFollowModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserMood[]> {
+    return this.userFollowModel.find(dataToSearch).exec();
   }
 
   /**

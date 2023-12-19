@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CourseView, CourseViewDocument } from "../schemas/course_view.schema";
-import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateCourseViewDto } from "../dto/update-course_view.dto";
+import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { FilterViewCourseDto } from "../dto/filter-view_course.dto";
+import { UpdateCourseViewDto } from "../dto/update-course_view.dto";
+import { CourseView, CourseViewDocument } from "../schemas/course_view.schema";
 
 @Injectable()
 export class CourseViewService {
@@ -81,8 +81,8 @@ export class CourseViewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseView[]> {
-    return this.courseViewModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<CourseView[]> {
+    return this.courseViewModel.find(dataToSearch).exec();
   }
 
   /**

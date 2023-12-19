@@ -1,13 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateChannelDto } from "../dto/create-channel.dto";
-import { ChannelDocument, Channel } from "../schemas/channel.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateChannelDto } from "../dto/update-channel.dto";
+import { CreateChannelDto } from "../dto/create-channel.dto";
 import { SearchChannelDto } from "../dto/search-channel.dto";
 import { SortByChannelDto } from "../dto/sort_by-channel.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
-import e from "express";
+import { UpdateChannelDto } from "../dto/update-channel.dto";
+import { Channel, ChannelDocument } from "../schemas/channel.schema";
 
 @Injectable()
 export class ChannelService {
@@ -204,8 +202,8 @@ export class ChannelService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Channel[]> {
-    return this.channelModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Channel[]> {
+    return this.channelModel.find(dataToSearch).exec();
   }
 
   /**

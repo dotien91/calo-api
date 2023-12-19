@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateQuestionDto } from "../dto/create-question.dto";
-import { QuestionDocument, Question } from "../schemas/question.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateQuestionDto } from "../dto/update-question.dto";
 import { SearchQuestionDto } from "../dto/search-question.dto";
 import { SortByQuestionDto } from "../dto/sort_by-question.dto";
+import { UpdateQuestionDto } from "../dto/update-question.dto";
+import { Question, QuestionDocument } from "../schemas/question.schema";
 
 @Injectable()
 export class QuestionService {
@@ -147,8 +146,8 @@ export class QuestionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Question[]> {
-    return this.topicModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Question[]> {
+    return this.topicModel.find(dataToSearch).exec();
   }
 
   /**

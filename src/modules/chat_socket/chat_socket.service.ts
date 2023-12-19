@@ -26,9 +26,8 @@ import { User } from "../user/schemas/user.schema";
 export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     // private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
-    private readonly jwtHelper: JwtHelperService // private readonly userService: UserService,
-  ) // private readonly userOptionService: UserOptionService,
-  {}
+    private readonly jwtHelper: JwtHelperService // private readonly userService: UserService, // private readonly userOptionService: UserOptionService,
+  ) {}
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger("chat_socket_service");

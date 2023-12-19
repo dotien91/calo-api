@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { RequestPoll, RequestPollDocument } from "../schemas/request_poll.schema";
-import { CreateRequestPollDto } from "../dto/create-request_poll.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateRequestPollDto } from "../dto/create-request_poll.dto";
 import { FilterRequestPollDto } from "../dto/filter-request_poll.dto";
 import { UpdateRequestPollDto } from "../dto/update-request_poll.dto";
+import { RequestPoll, RequestPollDocument } from "../schemas/request_poll.schema";
 
 @Injectable()
 export class RequestPollService {
@@ -75,8 +75,8 @@ export class RequestPollService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RequestPoll[]> {
-    return this.requestPollModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RequestPoll[]> {
+    return this.requestPollModel.find(dataToSearch).exec();
   }
 
   /**

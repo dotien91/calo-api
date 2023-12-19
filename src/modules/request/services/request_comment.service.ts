@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { ObjectId } from "mongodb";
 import { Model, Types } from "mongoose";
-import { RequestComment, RequestCommentDocument } from "../schemas/request-comment.schema";
+import { CreateRequestCommentDto } from "../dto/create-request_comment.dto";
 import { SearchRequestCategoryDto } from "../dto/search-request_category.dto";
 import { SearchRequestCommentDto } from "../dto/search-request_comment.dto";
-import { UpdateRequestCommentDto } from "../dto/update-request_comment.dto";
-import { CreateRequestCommentDto } from "../dto/create-request_comment.dto";
 import { SortByRequestCommentDto } from "../dto/sort_by-request_comment.dto";
-import { ObjectId } from "mongodb";
+import { UpdateRequestCommentDto } from "../dto/update-request_comment.dto";
+import { RequestComment, RequestCommentDocument } from "../schemas/request-comment.schema";
 
 @Injectable()
 export class RequestCommentService {
@@ -219,8 +219,8 @@ export class RequestCommentService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RequestComment[]> {
-    return this.requestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RequestComment[]> {
+    return this.requestModel.find(dataToSearch).exec();
   }
 
   /**

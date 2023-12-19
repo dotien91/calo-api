@@ -1,10 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ChallengePermission, ChallengePermissionDocument } from "../schemas/challenge_permission.schema";
-import { CreateChallengePermissionDto } from "../dto/create-challenge_permission.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChallengePermissionDto } from "../dto/update-challenge_permission.dto";
+import { CreateChallengePermissionDto } from "../dto/create-challenge_permission.dto";
 import { FilterPermissionChallengeDto } from "../dto/filter-permission_challenge.dto";
+import { UpdateChallengePermissionDto } from "../dto/update-challenge_permission.dto";
+import { ChallengePermission, ChallengePermissionDocument } from "../schemas/challenge_permission.schema";
 
 @Injectable()
 export class ChallengePermissionService {
@@ -89,8 +89,8 @@ export class ChallengePermissionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChallengePermission[]> {
-    return this.challengePermissionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChallengePermission[]> {
+    return this.challengePermissionModel.find(dataToSearch).exec();
   }
 
   /**

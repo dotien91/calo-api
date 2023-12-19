@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserSessionDto } from "../dto/create-user_session.dto";
-import { UserSession, UserSessionDocument } from "../schemas/user_session.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateUserSessionDto } from "../dto/create-user_session.dto";
 import { SortByUserSessionDto } from "../dto/sort_by-user_session.dto";
-import { UserSessionFilterDto } from "../dto/user_session_filter.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
+import { UserSessionFilterDto } from "../dto/user_session_filter.dto";
+import { UserSession, UserSessionDocument } from "../schemas/user_session.schema";
 
 @Injectable()
 export class UserSessionService {
@@ -42,8 +42,8 @@ export class UserSessionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserSession[]> {
-    return this.userSessionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserSession[]> {
+    return this.userSessionModel.find(dataToSearch).exec();
   }
 
   /**

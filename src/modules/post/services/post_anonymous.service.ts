@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePostDto } from "../dto/create-post.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdatePostDto } from "../dto/update-post.dto";
-import { SearchPostDto } from "../dto/search-post.dto";
-import { SortByPostDto } from "../dto/sort_by-post.dto";
-import { PostAnonymous, PostAnonymousDocument } from "../schemas/post_anonymous.schema";
-import { SearchPostAnonymousDto } from "../dto/search-post_anonymous.dto";
 import { CreateUserPromptDto } from "../dto/create-user_prompt.dto";
+import { SearchPostDto } from "../dto/search-post.dto";
+import { SearchPostAnonymousDto } from "../dto/search-post_anonymous.dto";
+import { SortByPostDto } from "../dto/sort_by-post.dto";
+import { UpdatePostDto } from "../dto/update-post.dto";
+import { PostAnonymous, PostAnonymousDocument } from "../schemas/post_anonymous.schema";
 
 @Injectable()
 export class PostAnonymousService {
@@ -177,8 +176,8 @@ export class PostAnonymousService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PostAnonymous[]> {
-    return this.postAnonymousModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PostAnonymous[]> {
+    return this.postAnonymousModel.find(dataToSearch).exec();
   }
 
   /**

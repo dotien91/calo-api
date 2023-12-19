@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePostDto } from "../dto/create-post.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { UpdatePostDto } from "../dto/update-post.dto";
-import { SortByPostDto } from "../dto/sort_by-post.dto";
-import { PromptHistory, PromptHistoryDocument } from "../schemas/prompt_history.schema";
-import { SearchPromptHistoryDto } from "../dto/search-prompt_history.dto";
 import { ObjectId } from "mongodb";
+import { Model, Types } from "mongoose";
 import { CreatePromptHistoryDto } from "../dto/create-prompt_history.dto";
+import { SearchPromptHistoryDto } from "../dto/search-prompt_history.dto";
+import { SortByPostDto } from "../dto/sort_by-post.dto";
+import { UpdatePostDto } from "../dto/update-post.dto";
+import { PromptHistory, PromptHistoryDocument } from "../schemas/prompt_history.schema";
 
 @Injectable()
 export class PromptHistoryService {
@@ -162,8 +161,8 @@ export class PromptHistoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PromptHistory[]> {
-    return this.promptHistoryModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PromptHistory[]> {
+    return this.promptHistoryModel.find(dataToSearch).exec();
   }
 
   /**

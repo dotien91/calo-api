@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateReportDto } from "../dto/create-report.dto";
-import { Report, ReportDocument } from "../schemas/report.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateReportDto } from "../dto/update-report.dto";
+import { CreateReportDto } from "../dto/create-report.dto";
 import { SearchReportDto } from "../dto/search-report.dto";
 import { SortByReportDto } from "../dto/sort_by-report.dto";
+import { UpdateReportDto } from "../dto/update-report.dto";
+import { Report, ReportDocument } from "../schemas/report.schema";
 
 @Injectable()
 export class ReportService {
@@ -112,8 +112,8 @@ export class ReportService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Report[]> {
-    return this.reportModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Report[]> {
+    return this.reportModel.find(dataToSearch).exec();
   }
 
   /**

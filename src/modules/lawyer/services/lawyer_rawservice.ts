@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LawyerRaw, LawyerRawDocument } from "../schemas/lawyer_raw.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreateLawyerRawDto } from "../dto/create.lawyer_raw.dto";
-import { UpdateLawyerRawDto } from "../dto/update.lawyer_raw.dto";
 import { SearchLawyerDto } from "../dto/search-lawyer.dto";
 import { SortByLawyerDto } from "../dto/sort_by-lawyer.dto";
+import { UpdateLawyerRawDto } from "../dto/update.lawyer_raw.dto";
+import { LawyerRaw, LawyerRawDocument } from "../schemas/lawyer_raw.schema";
 
 @Injectable()
 export class LawyerRawService {
@@ -28,8 +28,8 @@ export class LawyerRawService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LawyerRaw[]> {
-    return this.lawyerRawModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LawyerRaw[]> {
+    return this.lawyerRawModel.find(dataToSearch).exec();
   }
 
   /**

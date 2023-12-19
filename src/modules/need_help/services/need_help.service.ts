@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateNeedHelpDto } from "../dto/create-need_help.dto";
-import { NeedHelp, NeedHelpDocument } from "../schemas/need_help.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateNeedHelpDto } from "../dto/update-need_help.dto";
+import { CreateNeedHelpDto } from "../dto/create-need_help.dto";
 import { SearchNeedHelpDto } from "../dto/search-need_help.dto";
 import { SortByNeedHelpDto } from "../dto/sort_by-need_help.dto";
+import { UpdateNeedHelpDto } from "../dto/update-need_help.dto";
+import { NeedHelp, NeedHelpDocument } from "../schemas/need_help.schema";
 
 @Injectable()
 export class NeedHelpService {
@@ -102,8 +102,8 @@ export class NeedHelpService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<NeedHelp[]> {
-    return this.needHelperModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<NeedHelp[]> {
+    return this.needHelperModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { CreateRedeemDto } from "../dto/create-redeem.dto";
-import { RedeemDocument, Redeem } from "../schemas/redeem.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateRedeemDto } from "../dto/update-redeem.dto";
+import { CreateRedeemDto } from "../dto/create-redeem.dto";
+import { CreateRedeemMissionDto } from "../dto/create-redeem_mission.dto";
 import { SearchPostDto } from "../dto/search-redeem.dto";
 import { SortByPostDto } from "../dto/sort_by-redeem.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateRedeemDto } from "../dto/update-redeem.dto";
+import { Redeem, RedeemDocument } from "../schemas/redeem.schema";
 import { RedeemMission, RedeemMissionDocument } from "../schemas/redeem_mission.schema";
-import { CreateRedeemMissionDto } from "../dto/create-redeem_mission.dto";
 
 @Injectable()
 export class RedeemService {
@@ -260,8 +259,8 @@ export class RedeemService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Redeem[]> {
-    return this.redeemModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Redeem[]> {
+    return this.redeemModel.find(dataToSearch).exec();
   }
 
   /**

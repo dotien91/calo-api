@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCityDto } from "../dto/create-city.dto";
-import { CityDocument, City } from "../schemas/city.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateCityDto } from "../dto/update-city.dto";
-import { SearchCityDto } from "../dto/search-city.dto";
-import { SortByCityDto } from "../dto/sort_by-city.dto";
+import { CreateCityDto } from "../dto/create-city.dto";
 import { ListCityDto } from "../dto/list-city.dto";
+import { SortByCityDto } from "../dto/sort_by-city.dto";
+import { UpdateCityDto } from "../dto/update-city.dto";
+import { City, CityDocument } from "../schemas/city.schema";
 
 @Injectable()
 export class CityService {
@@ -208,8 +207,8 @@ export class CityService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<City[]> {
-    return this.cityModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<City[]> {
+    return this.cityModel.find(dataToSearch).exec();
   }
 
   /**

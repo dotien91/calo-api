@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { EventIndex, EventIndexDocument } from "../schemas/event_index.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEventDto } from "../dto/update.event.dto";
 import { CreateEventIndexDto } from "../dto/create.event_index.dto";
 import { SearchEventIndexDto } from "../dto/search.event_index.dto";
 import { SortByEventDto } from "../dto/sort_by-event.dto";
 import { UpdateEventIndexDto } from "../dto/update.event_index.dto";
+import { EventIndex, EventIndexDocument } from "../schemas/event_index.schema";
 
 @Injectable()
 export class EventIndexService {
@@ -106,8 +105,8 @@ export class EventIndexService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EventIndex[]> {
-    return this.eventTypeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EventIndex[]> {
+    return this.eventTypeModel.find(dataToSearch).exec();
   }
 
   /**

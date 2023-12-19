@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
-import { UserAnonymous, UserAnonymousDocument } from "../schemas/user_anonymous.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { SortByUserAnonymousDto } from "../dto/sort_by-user_anonymous.dto";
 import { UserAnonymousFilterDto } from "../dto/user_anonymous_filter.dto";
-import { UpdateSessionDto } from "../dto/update-session.dto";
+import { UserAnonymous, UserAnonymousDocument } from "../schemas/user_anonymous.schema";
 
 @Injectable()
 export class UserAnonymousService {
@@ -42,8 +41,8 @@ export class UserAnonymousService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserAnonymous[]> {
-    return this.userAnonymousModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserAnonymous[]> {
+    return this.userAnonymousModel.find(dataToSearch).exec();
   }
 
   /**

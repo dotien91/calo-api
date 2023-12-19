@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateConfigDto } from "../dto/create-config.dto";
-import { ConfigDocument, Config } from "../schemas/config.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateConfigDto } from "../dto/update-config.dto";
+import { CreateConfigDto } from "../dto/create-config.dto";
 import { SearchConfigDto } from "../dto/search-config.dto";
 import { SortByConfigDto } from "../dto/sort_by-config.dto";
+import { UpdateConfigDto } from "../dto/update-config.dto";
+import { Config, ConfigDocument } from "../schemas/config.schema";
 
 @Injectable()
 export class ConfigService {
@@ -130,8 +130,8 @@ export class ConfigService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Config[]> {
-    return this.configModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Config[]> {
+    return this.configModel.find(dataToSearch).exec();
   }
 
   /**

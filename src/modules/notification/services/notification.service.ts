@@ -1,12 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateNotificationDto } from "../dto/create-notifcation.dto";
-import { NotificationDocument, Notification } from "../schemas/notification.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateNotificationDto } from "../dto/update-notification.dto";
+import { CreateNotificationDto } from "../dto/create-notifcation.dto";
 import { SearchNotificationDto } from "../dto/search-notification.dto";
 import { SortByNotificationDto } from "../dto/sort_by-notification.dto";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { UpdateNotificationDto } from "../dto/update-notification.dto";
+import { Notification, NotificationDocument } from "../schemas/notification.schema";
 
 @Injectable()
 export class NotificationService {
@@ -179,8 +178,8 @@ export class NotificationService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Notification[]> {
-    return this.NotificationModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Notification[]> {
+    return this.NotificationModel.find(dataToSearch).exec();
   }
 
   /**

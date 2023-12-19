@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { PostCategory, PostCategoryDocument } from "../schemas/post_category.schema";
+import { CreateCategoryDto } from "../dto/create-category.dto";
 import { SearchCategoryDto } from "../dto/search-category.dto";
 import { SortByCategoryDto } from "../dto/sort_by-category.dto";
-import { CreateCategoryDto } from "../dto/create-category.dto";
 import { UpdateCategoryDto } from "../dto/update-category.dto";
+import { PostCategory, PostCategoryDocument } from "../schemas/post_category.schema";
 
 @Injectable()
 export class PostCategoryService {
@@ -169,8 +169,8 @@ export class PostCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PostCategory[]> {
-    return this.postCategoryModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<PostCategory[]> {
+    return this.postCategoryModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LawyerCategory, LawyerCategoryDocument } from "../schemas/lawyer_category.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreateLawyerTypeDto } from "../dto/create.lawyer_type.dto";
 import { SearchLawyerTypeDto } from "../dto/search.lawyer_type.dto";
 import { SortByLawyerDto } from "../dto/sort_by-lawyer.dto";
 import { UpdateLawyerTypeDto } from "../dto/update.lawyer_type.dto";
+import { LawyerCategory, LawyerCategoryDocument } from "../schemas/lawyer_category.schema";
 
 @Injectable()
 export class LawyerCategoryService {
@@ -28,8 +28,8 @@ export class LawyerCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LawyerCategory[]> {
-    return this.lawyerCategoryModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LawyerCategory[]> {
+    return this.lawyerCategoryModel.find(dataToSearch).exec();
   }
 
   /**

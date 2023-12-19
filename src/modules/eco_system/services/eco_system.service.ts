@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateEcoSystemDto } from "../dto/create-eco_system.dto";
-import { EcoSystemDocument, EcoSystem } from "../schemas/eco_system.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEcoSystemDto } from "../dto/update-eco_system.dto";
+import { CreateEcoSystemDto } from "../dto/create-eco_system.dto";
 import { SearchEcoSystemDto } from "../dto/search-eco_system.dto";
 import { SortByEcoSystemDto } from "../dto/sort_by-eco_system.dto";
+import { UpdateEcoSystemDto } from "../dto/update-eco_system.dto";
+import { EcoSystem, EcoSystemDocument } from "../schemas/eco_system.schema";
 
 @Injectable()
 export class EcoSystemService {
@@ -122,8 +122,8 @@ export class EcoSystemService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EcoSystem[]> {
-    return this.ecoSystemModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EcoSystem[]> {
+    return this.ecoSystemModel.find(dataToSearch).exec();
   }
 
   /**

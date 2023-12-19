@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
-import { Purchase, PurchaseDocument } from "../schemas/purchase.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { SortByPurchaseDto } from "../dto/sort_by-purchase.dto";
-import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
+import { Purchase, PurchaseDocument } from "../schemas/purchase.schema";
 
 @Injectable()
 export class PurchaseService {
@@ -113,8 +111,8 @@ export class PurchaseService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Purchase[]> {
-    return this.purchaseModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Purchase[]> {
+    return this.purchaseModel.find(dataToSearch).exec();
   }
 
   /**

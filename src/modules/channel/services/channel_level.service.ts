@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ChannelLevel, ChannelLevelDocument } from "../schemas/channel_level.schema";
-import { CreateChannelLevelDto } from "../dto/create-channel_level.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChannelLevelDto } from "../dto/update-channel_level.dto";
+import { CreateChannelLevelDto } from "../dto/create-channel_level.dto";
 import { FilterModuleChannelDto } from "../dto/filter-module_channel.dto";
+import { UpdateChannelLevelDto } from "../dto/update-channel_level.dto";
+import { ChannelLevel, ChannelLevelDocument } from "../schemas/channel_level.schema";
 
 @Injectable()
 export class ChannelLevelService {
@@ -81,8 +81,8 @@ export class ChannelLevelService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChannelLevel[]> {
-    return this.channelLevelModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChannelLevel[]> {
+    return this.channelLevelModel.find(dataToSearch).exec();
   }
 
   /**

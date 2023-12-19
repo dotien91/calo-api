@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateShortDto } from "../dto/create-short.dto";
-import { ShortDocument, Short } from "../schemas/short.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateShortDto } from "../dto/update-short.dto";
+import { CreateShortDto } from "../dto/create-short.dto";
 import { SearchShortDto } from "../dto/search-short.dto";
 import { SortByShortDto } from "../dto/sort_by-short.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateShortDto } from "../dto/update-short.dto";
+import { Short, ShortDocument } from "../schemas/short.schema";
 
 @Injectable()
 export class ShortService {
@@ -187,8 +186,8 @@ export class ShortService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Short[]> {
-    return this.shortModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Short[]> {
+    return this.shortModel.find(dataToSearch).exec();
   }
 
   /**

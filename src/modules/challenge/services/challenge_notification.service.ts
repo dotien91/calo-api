@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ChallengeNotification, ChallengeNotificationDocument } from "../schemas/challenge_notification.schema";
-import { CreateChallengeNotificationDto } from "../dto/create-challenge_notification.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChallengeNotificationDto } from "../dto/update-challenge_notification.dto";
+import { CreateChallengeNotificationDto } from "../dto/create-challenge_notification.dto";
 import { FilterModuleChallengeDto } from "../dto/filter-module_challenge.dto";
+import { UpdateChallengeNotificationDto } from "../dto/update-challenge_notification.dto";
+import { ChallengeNotification, ChallengeNotificationDocument } from "../schemas/challenge_notification.schema";
 
 @Injectable()
 export class ChallengeNotificationService {
@@ -113,8 +113,8 @@ export class ChallengeNotificationService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChallengeNotification[]> {
-    return this.challengeLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChallengeNotification[]> {
+    return this.challengeLikeModel.find(dataToSearch).exec();
   }
 
   /**

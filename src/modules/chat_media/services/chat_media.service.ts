@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { FilterChatMediaDto } from "../dto/filter-chat_media.dto";
-import { SortByChatMediaDto } from "../dto/sort_by-chat_media.dto";
-import { CreateChatMediaDto } from "../dto/create-chat_media.dto";
-import { ChatMedia, ChatMediaDocument } from "../schemas/chat_media.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateChatMediaDto } from "../dto/update-chat_media.dto";
+import { CreateChatMediaDto } from "../dto/create-chat_media.dto";
+import { FilterChatMediaDto } from "../dto/filter-chat_media.dto";
+import { SortByChatMediaDto } from "../dto/sort_by-chat_media.dto";
+import { ChatMedia, ChatMediaDocument } from "../schemas/chat_media.schema";
 
 @Injectable()
 export class ChatMediaService {
@@ -95,8 +94,8 @@ export class ChatMediaService {
    *
    * @returns
    */
-  async findAll(): Promise<ChatMediaDocument[]> {
-    return await this.chatMediaService.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChatMediaDocument[]> {
+    return await this.chatMediaService.find(dataToSearch).exec();
   }
 
   /**

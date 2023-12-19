@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { UserJoinCity, UserJoinCityDocument } from "../schemas/user_join_city.schema";
-import { CreateUserJoinCityDto } from "../dto/create-user_join_city.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserJoinCityDto } from "../dto/update-user_join_city.dto";
+import { CreateUserJoinCityDto } from "../dto/create-user_join_city.dto";
 import { SearchUserJoinCityDto } from "../dto/search-user_join_city.dto";
+import { UserJoinCity, UserJoinCityDocument } from "../schemas/user_join_city.schema";
 
 @Injectable()
 export class UserJoinCityService {
@@ -58,8 +57,8 @@ export class UserJoinCityService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserJoinCity[]> {
-    return this.userJoinCityModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserJoinCity[]> {
+    return this.userJoinCityModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserDisagree, UserDisagreeDocument } from "../schemas/user_disagree.schema";
-import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserFollowDto } from "../dto/update-user_follow.dto";
+import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { FilterFollowDto } from "../dto/filter-follow.dto";
+import { UpdateUserFollowDto } from "../dto/update-user_follow.dto";
+import { UserDisagree, UserDisagreeDocument } from "../schemas/user_disagree.schema";
 
 @Injectable()
 export class UserDisagreeService {
@@ -57,8 +57,8 @@ export class UserDisagreeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserDisagree[]> {
-    return this.userDisagreeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserDisagree[]> {
+    return this.userDisagreeModel.find(dataToSearch).exec();
   }
 
   /**

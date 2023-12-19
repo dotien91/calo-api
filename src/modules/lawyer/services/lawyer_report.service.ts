@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { LawyerReport, LawyerReportDocument } from "../schemas/lawyer_report.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateLawyerDto } from "../dto/update-lawyer.dto";
 import { CreateLawyerDto } from "../dto/create-lawyer.dto";
+import { UpdateLawyerDto } from "../dto/update-lawyer.dto";
+import { LawyerReport, LawyerReportDocument } from "../schemas/lawyer_report.schema";
 
 @Injectable()
 export class LawyerReportService {
@@ -26,8 +26,8 @@ export class LawyerReportService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LawyerReport[]> {
-    return this.lawyerReportModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LawyerReport[]> {
+    return this.lawyerReportModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { RequestCategory, RequestCategoryDocument } from "../schemas/request-category.schema";
+import { CreateRequestCategoryDto } from "../dto/create-request_category.dto";
 import { SearchRequestCategoryDto } from "../dto/search-request_category.dto";
 import { SortByRequestCommentDto } from "../dto/sort_by-request_comment.dto";
 import { UpdateRequestCategoryDto } from "../dto/update-request_category.dto";
-import { CreateRequestCategoryDto } from "../dto/create-request_category.dto";
+import { RequestCategory, RequestCategoryDocument } from "../schemas/request-category.schema";
 
 @Injectable()
 export class RequestCategoryService {
@@ -164,8 +164,8 @@ export class RequestCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RequestCategory[]> {
-    return this.requestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RequestCategory[]> {
+    return this.requestModel.find(dataToSearch).exec();
   }
 
   /**

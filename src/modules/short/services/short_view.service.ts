@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ShortView, ShortViewDocument } from "../schemas/short_view.schema";
-import { CreateShortViewDto } from "../dto/create-short_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateShortViewDto } from "../dto/update-short_view.dto";
+import { CreateShortViewDto } from "../dto/create-short_view.dto";
 import { FilterViewShortDto } from "../dto/filter-view_short.dto";
+import { UpdateShortViewDto } from "../dto/update-short_view.dto";
+import { ShortView, ShortViewDocument } from "../schemas/short_view.schema";
 
 @Injectable()
 export class ShortViewService {
@@ -72,8 +72,8 @@ export class ShortViewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ShortView[]> {
-    return this.shortViewModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ShortView[]> {
+    return this.shortViewModel.find(dataToSearch).exec();
   }
 
   /**

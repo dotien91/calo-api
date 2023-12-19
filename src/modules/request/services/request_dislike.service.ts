@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { RequestDisLike, RequestDisLikeDocument } from "../schemas/request_dislike.schema";
-import { CreateRequestDisLikeDto } from "../dto/create-request_dislike.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateRequestDisLikeDto } from "../dto/create-request_dislike.dto";
 import { FilterRequestDisLikeDto } from "../dto/filter-request_dislike.dto";
 import { UpdateRequestDisLikeDto } from "../dto/update-request_dislike.dto";
+import { RequestDisLike, RequestDisLikeDocument } from "../schemas/request_dislike.schema";
 
 @Injectable()
 export class RequestDisLikeService {
@@ -75,8 +75,8 @@ export class RequestDisLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RequestDisLike[]> {
-    return this.requestLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RequestDisLike[]> {
+    return this.requestLikeModel.find(dataToSearch).exec();
   }
 
   /**

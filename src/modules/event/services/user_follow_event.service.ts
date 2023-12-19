@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserFollowEvent, UserFollowEventDocument } from "../schemas/user_follow_event.schema";
-import { CreateUserFollowEventDto } from "../dto/create-user_follow_event.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserFollowEventDto } from "../dto/update-user_follow_event.dto";
+import { CreateUserFollowEventDto } from "../dto/create-user_follow_event.dto";
 import { FilterFollowEventDto } from "../dto/filter-follow_event.dto";
+import { UpdateUserFollowEventDto } from "../dto/update-user_follow_event.dto";
+import { UserFollowEvent, UserFollowEventDocument } from "../schemas/user_follow_event.schema";
 
 @Injectable()
 export class UserFollowEventService {
@@ -62,8 +62,8 @@ export class UserFollowEventService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserFollowEvent[]> {
-    return this.userFollowModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserFollowEvent[]> {
+    return this.userFollowModel.find(dataToSearch).exec();
   }
 
   /**

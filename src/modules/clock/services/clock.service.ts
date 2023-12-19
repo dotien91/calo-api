@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateClockDto } from "../dto/create-clock.dto";
-import { ClockDocument, Clock } from "../schemas/clock.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateClockDto } from "../dto/update-clock.dto";
 import { SearchClockDto } from "../dto/search-clock.dto";
 import { SortByClockDto } from "../dto/sort_by-clock.dto";
+import { UpdateClockDto } from "../dto/update-clock.dto";
+import { Clock, ClockDocument } from "../schemas/clock.schema";
 
 @Injectable()
 export class ClockService {
@@ -128,8 +127,8 @@ export class ClockService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Clock[]> {
-    return this.topicModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Clock[]> {
+    return this.topicModel.find(dataToSearch).exec();
   }
 
   /**

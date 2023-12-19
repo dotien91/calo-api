@@ -1,13 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { EventRating, EventRatingDocument } from "../schemas/event_rating.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEventDto } from "../dto/update.event.dto";
-import { CreateEventDto } from "../dto/create.event.dto";
 import { CreateEventRatingDto } from "../dto/create.event_rating.dto";
-import { UpdateEventRatingDto } from "../dto/update.event_rating.dto";
 import { SearchMyEventRatingDto } from "../dto/search.my_event_rating.dto";
 import { SortByMyEventRatingDto } from "../dto/sort_by-my_event_rating.dto";
+import { UpdateEventRatingDto } from "../dto/update.event_rating.dto";
+import { EventRating, EventRatingDocument } from "../schemas/event_rating.schema";
 
 @Injectable()
 export class EventRatingService {
@@ -30,8 +28,8 @@ export class EventRatingService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EventRating[]> {
-    return this.eventRatingModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EventRating[]> {
+    return this.eventRatingModel.find(dataToSearch).exec();
   }
 
   /**

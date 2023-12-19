@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ShortLike, ShortLikeDocument } from "../schemas/short_like.schema";
-import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateShortLikeDto } from "../dto/update-short_like.dto";
+import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { FilterLikeShortDto } from "../dto/filter-like_short.dto";
+import { UpdateShortLikeDto } from "../dto/update-short_like.dto";
+import { ShortLike, ShortLikeDocument } from "../schemas/short_like.schema";
 
 @Injectable()
 export class ShortLikeService {
@@ -75,8 +75,8 @@ export class ShortLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ShortLike[]> {
-    return this.shortLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ShortLike[]> {
+    return this.shortLikeModel.find(dataToSearch).exec();
   }
 
   /**

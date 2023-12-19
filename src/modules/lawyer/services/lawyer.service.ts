@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateLawyerDto } from "../dto/create-lawyer.dto";
-import { LawyerDocument, Lawyer } from "../schemas/lawyer.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateLawyerDto } from "../dto/update-lawyer.dto";
+import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { CreateLawyerDto } from "../dto/create-lawyer.dto";
 import { SearchLawyerDto } from "../dto/search-lawyer.dto";
 import { SortByLawyerDto } from "../dto/sort_by-lawyer.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateLawyerDto } from "../dto/update-lawyer.dto";
+import { Lawyer, LawyerDocument } from "../schemas/lawyer.schema";
 
 @Injectable()
 export class LawyerService {
@@ -301,8 +301,8 @@ export class LawyerService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Lawyer[]> {
-    return this.lawyerModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Lawyer[]> {
+    return this.lawyerModel.find(dataToSearch).exec();
   }
 
   /**

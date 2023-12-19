@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { MapToken, MapTokenDocument } from "../schemas/map_token.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateMapTokenDto } from "../dto/update.map_token.dto";
 import { CreateMapTokenDto } from "../dto/create.map_token.dto";
+import { UpdateMapTokenDto } from "../dto/update.map_token.dto";
+import { MapToken, MapTokenDocument } from "../schemas/map_token.schema";
 
 @Injectable()
 export class MapTokenService {
@@ -26,8 +26,8 @@ export class MapTokenService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<MapToken[]> {
-    return this.mapTokenModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<MapToken[]> {
+    return this.mapTokenModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LawyerType, LawyerTypeDocument } from "../schemas/lawyer_type.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreateLawyerTypeDto } from "../dto/create.lawyer_type.dto";
 import { SearchLawyerTypeDto } from "../dto/search.lawyer_type.dto";
 import { SortByLawyerDto } from "../dto/sort_by-lawyer.dto";
 import { UpdateLawyerTypeDto } from "../dto/update.lawyer_type.dto";
+import { LawyerType, LawyerTypeDocument } from "../schemas/lawyer_type.schema";
 
 @Injectable()
 export class LawyerTypeService {
@@ -92,8 +92,8 @@ export class LawyerTypeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<LawyerType[]> {
-    return this.lawyerTypeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<LawyerType[]> {
+    return this.lawyerTypeModel.find(dataToSearch).exec();
   }
 
   /**

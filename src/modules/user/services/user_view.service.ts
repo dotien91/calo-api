@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserView, UserViewDocument } from "../schemas/user_view.schema";
-import { CreateUserViewDto } from "../dto/create-user_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserViewDto } from "../dto/update-user_view.dto";
+import { CreateUserViewDto } from "../dto/create-user_view.dto";
 import { FilterViewDto } from "../dto/filter-view.dto";
+import { UpdateUserViewDto } from "../dto/update-user_view.dto";
+import { UserView, UserViewDocument } from "../schemas/user_view.schema";
 
 @Injectable()
 export class UserViewService {
@@ -64,8 +64,8 @@ export class UserViewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserView[]> {
-    return this.userViewModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserView[]> {
+    return this.userViewModel.find(dataToSearch).exec();
   }
 
   /**

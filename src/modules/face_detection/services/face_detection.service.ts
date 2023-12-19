@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateFaceDetectionDto } from "../dto/create-face_detection.dto";
-import { FaceDetectionDocument, FaceDetection } from "../schemas/face_detection.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateFaceDetectionDto } from "../dto/update-face_detection.dto";
+import { CreateFaceDetectionDto } from "../dto/create-face_detection.dto";
 import { SearchFaceDetectionDto } from "../dto/search-face_detection.dto";
 import { SortByFaceDetectionDto } from "../dto/sort_by-face_detection.dto";
+import { UpdateFaceDetectionDto } from "../dto/update-face_detection.dto";
+import { FaceDetection, FaceDetectionDocument } from "../schemas/face_detection.schema";
 
 @Injectable()
 export class FaceDetectionService {
@@ -123,8 +123,8 @@ export class FaceDetectionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<FaceDetection[]> {
-    return this.FaceDetectionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<FaceDetection[]> {
+    return this.FaceDetectionModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
-import { TransactionBankDocument, TransactionBank } from "../schemas/transaction_bank.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
+import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
 import { SearchTransactionBankDto } from "../dto/search-transaction_bank.dto";
 import { SortByTransactionBankDto } from "../dto/sort_by-transactions_bank.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
+import { TransactionBank, TransactionBankDocument } from "../schemas/transaction_bank.schema";
 
 @Injectable()
 export class TransactionBankService {
@@ -194,8 +194,8 @@ export class TransactionBankService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<TransactionBank[]> {
-    return this.transactionBankModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<TransactionBank[]> {
+    return this.transactionBankModel.find(dataToSearch).exec();
   }
 
   /**

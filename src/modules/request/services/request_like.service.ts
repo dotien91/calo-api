@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { RequestLike, RequestLikeDocument } from "../schemas/request_like.schema";
-import { CreateRequestLikeDto } from "../dto/create-request_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { CreateRequestLikeDto } from "../dto/create-request_like.dto";
 import { FilterRequestLikeDto } from "../dto/filter-request_like.dto";
 import { UpdateRequestLikeDto } from "../dto/update-request_like.dto";
+import { RequestLike, RequestLikeDocument } from "../schemas/request_like.schema";
 
 @Injectable()
 export class RequestLikeService {
@@ -75,8 +75,8 @@ export class RequestLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<RequestLike[]> {
-    return this.requestLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<RequestLike[]> {
+    return this.requestLikeModel.find(dataToSearch).exec();
   }
 
   /**

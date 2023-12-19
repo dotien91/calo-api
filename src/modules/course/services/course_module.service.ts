@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CourseModule, CourseModuleDocument } from "../schemas/course_module.schema";
-import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { FilterModuleCourseDto } from "../dto/filter-module_course.dto";
+import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { CourseModule, CourseModuleDocument } from "../schemas/course_module.schema";
 
 @Injectable()
 export class CourseModuleService {
@@ -110,8 +110,8 @@ export class CourseModuleService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseModule[]> {
-    return this.courseLikeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<CourseModule[]> {
+    return this.courseLikeModel.find(dataToSearch).exec();
   }
 
   /**

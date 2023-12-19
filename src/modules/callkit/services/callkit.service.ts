@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCallkitDto } from "../dto/create-callkit.dto";
-import { CallkitDocument, Callkit } from "../schemas/callkit.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateCallkitDto } from "../dto/update-callkit.dto";
+import { CreateCallkitDto } from "../dto/create-callkit.dto";
 import { SearchCallkitDto } from "../dto/search-callkit.dto";
 import { SortByCallkitDto } from "../dto/sort_by-callkit.dto";
+import { UpdateCallkitDto } from "../dto/update-callkit.dto";
+import { Callkit, CallkitDocument } from "../schemas/callkit.schema";
 
 @Injectable()
 export class CallkitService {
@@ -138,8 +138,8 @@ export class CallkitService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Callkit[]> {
-    return this.CallkitModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Callkit[]> {
+    return this.CallkitModel.find(dataToSearch).exec();
   }
 
   /**

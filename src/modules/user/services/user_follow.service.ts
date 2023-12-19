@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { UserFollow, UserFollowDocument } from "../schemas/user_follow.schema";
-import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserFollowDto } from "../dto/update-user_follow.dto";
+import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { FilterFollowDto } from "../dto/filter-follow.dto";
+import { UpdateUserFollowDto } from "../dto/update-user_follow.dto";
+import { UserFollow, UserFollowDocument } from "../schemas/user_follow.schema";
 
 @Injectable()
 export class UserFollowService {
@@ -76,8 +76,8 @@ export class UserFollowService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserFollow[]> {
-    return this.userFollowModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserFollow[]> {
+    return this.userFollowModel.find(dataToSearch).exec();
   }
 
   /**

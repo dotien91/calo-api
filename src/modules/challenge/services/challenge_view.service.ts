@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ChallengeView, ChallengeViewDocument } from "../schemas/challenge_view.schema";
-import { CreateChallengeViewDto } from "../dto/create-challenge_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateChallengeViewDto } from "../dto/update-challenge_view.dto";
+import { CreateChallengeViewDto } from "../dto/create-challenge_view.dto";
 import { FilterViewChallengeDto } from "../dto/filter-view_challenge.dto";
+import { UpdateChallengeViewDto } from "../dto/update-challenge_view.dto";
+import { ChallengeView, ChallengeViewDocument } from "../schemas/challenge_view.schema";
 
 @Injectable()
 export class ChallengeViewService {
@@ -81,8 +81,8 @@ export class ChallengeViewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChallengeView[]> {
-    return this.challengeViewModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChallengeView[]> {
+    return this.challengeViewModel.find(dataToSearch).exec();
   }
 
   /**

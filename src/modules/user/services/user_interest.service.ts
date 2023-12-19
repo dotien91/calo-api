@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
+import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
 import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
+import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
 import { UserInterest, UserInterestDocument } from "../schemas/user_interest.schema";
 
 @Injectable()
@@ -57,8 +57,8 @@ export class UserInterestService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<UserInterest[]> {
-    return this.userInterestModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<UserInterest[]> {
+    return this.userInterestModel.find(dataToSearch).exec();
   }
 
   /**

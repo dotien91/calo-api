@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { ObjectId } from "mongodb";
 import { Model, Types } from "mongoose";
-import { TicketComment, TicketCommentDocument } from "../schemas/ticket-comment.schema";
+import { CreateTicketCommentDto } from "../dto/create-ticket_comment.dto";
 import { SearchTicketCategoryDto } from "../dto/search-ticket_category.dto";
 import { SearchTicketCommentDto } from "../dto/search-ticket_comment.dto";
-import { UpdateTicketCommentDto } from "../dto/update-ticket_comment.dto";
-import { CreateTicketCommentDto } from "../dto/create-ticket_comment.dto";
 import { SortByTicketCommentDto } from "../dto/sort_by-ticket_comment.dto";
-import { ObjectId } from "mongodb";
+import { UpdateTicketCommentDto } from "../dto/update-ticket_comment.dto";
+import { TicketComment, TicketCommentDocument } from "../schemas/ticket-comment.schema";
 
 @Injectable()
 export class TicketCommentService {
@@ -221,8 +221,8 @@ export class TicketCommentService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<TicketComment[]> {
-    return this.ticketModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<TicketComment[]> {
+    return this.ticketModel.find(dataToSearch).exec();
   }
 
   /**

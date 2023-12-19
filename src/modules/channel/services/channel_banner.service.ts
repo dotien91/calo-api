@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateChannelBannerDto } from "../dto/create-channel_banner.dto";
-import { ChannelBannerDocument, ChannelBanner } from "../schemas/channel_banner.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateChannelBannerDto } from "../dto/update-channel_banner.dto";
+import { CreateChannelBannerDto } from "../dto/create-channel_banner.dto";
 import { SearchChannelBannerDto } from "../dto/search-channel_banner.dto";
 import { SortByChannelBannerDto } from "../dto/sort_by-channel_banner.dto";
-import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { UpdateChannelBannerDto } from "../dto/update-channel_banner.dto";
+import { ChannelBanner, ChannelBannerDocument } from "../schemas/channel_banner.schema";
 
 @Injectable()
 export class ChannelBannerService {
@@ -162,8 +161,8 @@ export class ChannelBannerService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChannelBanner[]> {
-    return this.channelBannerModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChannelBanner[]> {
+    return this.channelBannerModel.find(dataToSearch).exec();
   }
 
   /**

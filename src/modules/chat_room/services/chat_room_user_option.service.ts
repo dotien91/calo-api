@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
-import { SearchChatRoomUserOption } from "../dto/search-chat_room_user_option.dto";
-import { ChatRoomUserOption, ChatRoomUserOptionDocument } from "../schemas/chat_room_user_option.schema";
 import { InjectModel } from "@nestjs/mongoose";
-import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
-import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
 import { Model } from "mongoose";
-import { ChatRoom } from "../schemas/chat_room.schema";
+import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
+import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
+import { SearchChatRoomUserOption } from "../dto/search-chat_room_user_option.dto";
+import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
+import { ChatRoomUserOption, ChatRoomUserOptionDocument } from "../schemas/chat_room_user_option.schema";
 
 @Injectable()
 export class ChatRoomUserOptionService {
@@ -101,8 +100,8 @@ export class ChatRoomUserOptionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll() {
-    return this.chatRoomUserOptionModel.find().exec();
+  async findAll(dataToSearch?: any) {
+    return this.chatRoomUserOptionModel.find(dataToSearch).exec();
   }
 
   /**

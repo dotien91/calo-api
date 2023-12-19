@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { EventType, EventTypeDocument } from "../schemas/event_type.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateEventDto } from "../dto/update.event.dto";
 import { CreateEventTypeDto } from "../dto/create.event_type.dto";
 import { SearchEventTypeDto } from "../dto/search.event_type.dto";
 import { SortByEventDto } from "../dto/sort_by-event.dto";
 import { UpdateEventTypeDto } from "../dto/update.event_type.dto";
+import { EventType, EventTypeDocument } from "../schemas/event_type.schema";
 
 @Injectable()
 export class EventTypeService {
@@ -93,8 +92,8 @@ export class EventTypeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<EventType[]> {
-    return this.eventTypeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<EventType[]> {
+    return this.eventTypeModel.find(dataToSearch).exec();
   }
 
   /**

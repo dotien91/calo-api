@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateTopicDto } from "../dto/create-topic.dto";
-import { TopicDocument, Topic } from "../schemas/topic.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateTopicDto } from "../dto/update-topic.dto";
 import { SearchTopicDto } from "../dto/search-topic.dto";
 import { SortByTopicDto } from "../dto/sort_by-topic.dto";
+import { UpdateTopicDto } from "../dto/update-topic.dto";
+import { Topic, TopicDocument } from "../schemas/topic.schema";
 
 @Injectable()
 export class TopicService {
@@ -148,8 +147,8 @@ export class TopicService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Topic[]> {
-    return this.topicModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Topic[]> {
+    return this.topicModel.find(dataToSearch).exec();
   }
 
   /**

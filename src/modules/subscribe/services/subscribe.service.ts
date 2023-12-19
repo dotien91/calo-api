@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { CreateSubscribeDto } from "../dto/create-subscribe.dto";
-import { Subscribe, SubscribeDocument } from "../schemas/subscribe.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateSubscribeDto } from "../dto/update-subscribe.dto";
 import { SearchSubscribeDto } from "../dto/search-subscribe.dto";
 import { SortBySubscribeDto } from "../dto/sort_by-subscribe.dto";
+import { Subscribe, SubscribeDocument } from "../schemas/subscribe.schema";
 @Injectable()
 export class SubscribeService {
   constructor(
@@ -139,8 +137,8 @@ export class SubscribeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Subscribe[]> {
-    return this.appSubscribeModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Subscribe[]> {
+    return this.appSubscribeModel.find(dataToSearch).exec();
   }
 
   /**

@@ -1,31 +1,22 @@
 import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
-import { ChannelPermission, ChannelPermissionDocument } from "../schemas/channel_permission.schema";
-import { CreateChannelPermissionDto } from "../dto/create-channel_permission.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { UpdateChannelPermissionDto } from "../dto/update-channel_permission.dto";
-import { FilterViewChannelDto } from "../dto/filter-view_channel.dto";
-import { ChannelLevel, ChannelLevelDocument } from "../schemas/channel_level.schema";
 import axios from "axios";
-import { Channel, ChannelDocument } from "../schemas/channel.schema";
-import { ChannelPointHistory, ChannelPointHistoryDocument } from "../schemas/channel_point_history.schema";
-import {
-  UserPermission,
-  UserPermissionDocument,
-} from "../../../modules/user_permission/schemas/user_permission.schema";
-import {
-  RedeemPermission,
-  RedeemPermissionDocument,
-  RedeemPointData,
-} from "../../../modules/redeem/schemas/redeem_permission.schema";
+import { Model, Types } from "mongoose";
 import { CheckGiftPointLevelDto } from "../../../modules/gift/dto/check-gift-point-level.dto";
-import { GiftService } from "../../../modules/gift/services/gift.service";
-import { QueueService } from "../../../modules/queue/queue.service";
-import { RedeemMission, RedeemMissionDocument } from "../../../modules/redeem/schemas/redeem_mission.schema";
-import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { GiftHelper } from "../../../modules/gift/helper/gift.helper";
+import { GiftService } from "../../../modules/gift/services/gift.service";
+import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
+import { QueueService } from "../../../modules/queue/queue.service";
 import { Redeem, RedeemDocument } from "../../../modules/redeem/schemas/redeem.schema";
-import * as moment from "moment-timezone";
+import { RedeemMission, RedeemMissionDocument } from "../../../modules/redeem/schemas/redeem_mission.schema";
+import { RedeemPermission, RedeemPermissionDocument } from "../../../modules/redeem/schemas/redeem_permission.schema";
+import { CreateChannelPermissionDto } from "../dto/create-channel_permission.dto";
+import { FilterViewChannelDto } from "../dto/filter-view_channel.dto";
+import { UpdateChannelPermissionDto } from "../dto/update-channel_permission.dto";
+import { Channel, ChannelDocument } from "../schemas/channel.schema";
+import { ChannelLevel, ChannelLevelDocument } from "../schemas/channel_level.schema";
+import { ChannelPermission, ChannelPermissionDocument } from "../schemas/channel_permission.schema";
+import { ChannelPointHistory, ChannelPointHistoryDocument } from "../schemas/channel_point_history.schema";
 @Injectable()
 export class ChannelPermissionService {
   constructor(
@@ -174,8 +165,8 @@ export class ChannelPermissionService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<ChannelPermission[]> {
-    return this.channelPermissionModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<ChannelPermission[]> {
+    return this.channelPermissionModel.find(dataToSearch).exec();
   }
 
   /**

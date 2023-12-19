@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { TicketCategory, TicketCategoryDocument } from "../schemas/ticket-category.schema";
+import { CreateTicketCategoryDto } from "../dto/create-ticket_category.dto";
 import { SearchTicketCategoryDto } from "../dto/search-ticket_category.dto";
 import { SortByTicketCommentDto } from "../dto/sort_by-ticket_comment.dto";
 import { UpdateTicketCategoryDto } from "../dto/update-ticket_category.dto";
-import { CreateTicketCategoryDto } from "../dto/create-ticket_category.dto";
+import { TicketCategory, TicketCategoryDocument } from "../schemas/ticket-category.schema";
 
 @Injectable()
 export class TicketCategoryService {
@@ -164,8 +164,8 @@ export class TicketCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<TicketCategory[]> {
-    return this.ticketModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<TicketCategory[]> {
+    return this.ticketModel.find(dataToSearch).exec();
   }
 
   /**

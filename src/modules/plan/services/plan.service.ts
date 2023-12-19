@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreatePlanDto } from "../dto/create-plan.dto";
-import { Plan, PlanDocument } from "../schemas/plan.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdatePlanDto } from "../dto/update-plan.dto";
+import { CreatePlanDto } from "../dto/create-plan.dto";
 import { SearchPlanDto } from "../dto/search-plan.dto";
 import { SortByPlanDto } from "../dto/sort_by-plan.dto";
+import { UpdatePlanDto } from "../dto/update-plan.dto";
+import { Plan, PlanDocument } from "../schemas/plan.schema";
 @Injectable()
 export class PlanService {
   constructor(
@@ -137,8 +137,8 @@ export class PlanService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Plan[]> {
-    return this.planModel.find().exec();
+  async findAll(dataToSearch?: any): Promise<Plan[]> {
+    return this.planModel.find(dataToSearch).exec();
   }
 
   /**
