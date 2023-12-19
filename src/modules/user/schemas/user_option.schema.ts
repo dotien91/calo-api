@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { City } from "../../../modules/city/schemas/city.schema";
 import { User } from "./user.schema";
 import { UserLocationHistory } from "./user_location_history.schema";
 import { UserQuestion } from "./user_question.schema";
@@ -133,10 +132,10 @@ export class UserOption {
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "City", default: null, index: true, nullable: true })
-  city: City;
+  city: String;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "City", default: null, index: true, nullable: true })
-  travel_city: City;
+  travel_city: String;
 
   @Prop({
     type: MongooseSchema.Types.Array,

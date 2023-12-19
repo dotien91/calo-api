@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { User } from "../../user/schemas/user.schema";
-import { Channel } from "../../../modules/channel/schemas/channel.schema";
 
 export type TransactionBankDocument = TransactionBank & Document;
 
@@ -23,7 +22,7 @@ export class TransactionBank {
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: Channel;
+  channel_id: String;
 
   @Prop({
     type: String,

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserPermissionDto } from "../dto/create-user_permission.dto";
-import { UserPermission, UserPermissionDocument } from "../schemas/user_permission.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateUserPermissionDto } from "../dto/update-user_permission.dto";
+import { CreateUserPermissionDto } from "../dto/create-user_permission.dto";
 import { SearchUserPermissionDto } from "../dto/search-user_permission.dto";
 import { SortByUserPermissionDto } from "../dto/sort_by-user_permission.dto";
+import { UpdateUserPermissionDto } from "../dto/update-user_permission.dto";
+import { UserPermission, UserPermissionDocument } from "../schemas/user_permission.schema";
 @Injectable()
 export class UserPermissionService {
   constructor(

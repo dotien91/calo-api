@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Channel } from "../../../modules/channel/schemas/channel.schema";
-import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
+// import { Channel } from "../../../modules/channel/schemas/channel.schema";
+// import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
@@ -26,7 +26,7 @@ export class Order {
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: Channel;
+  channel_id: String;
 
   @Prop({
     type: String,
@@ -46,7 +46,7 @@ export class Order {
     default: null,
     ref: "ChatMedia",
   })
-  media_id: ChatMedia;
+  media_id: String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,

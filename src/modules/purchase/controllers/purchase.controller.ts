@@ -1,35 +1,32 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-  Query,
-  Req,
-  UsePipes,
-  ValidationPipe,
+  Controller,
   ForbiddenException,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UsePipes,
+  ValidationPipe
 } from "@nestjs/common";
-import { PurchaseHelper } from "../helper/purchase.helper";
+import { CronExpression } from "@nestjs/schedule";
 import { Response } from "express";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
-import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
 import { schedule } from "node-cron";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import Stripe from "stripe";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { OrderService } from "../../../modules/order/services/order.service";
-import { OrderHelper } from "../../../modules/order/helper/OrderHelper";
+import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
+import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
+import { PurchaseHelper } from "../helper/purchase.helper";
+// import { OrderHelper } from "../../../modules/order/helper/OrderHelper";
 
 @Controller("purchase")
 export class PurchaseController {
   constructor(
     private readonly purchaseHelper: PurchaseHelper,
     private readonly orderService: OrderService,
-    private readonly orderHelper: OrderHelper
+    // private readonly orderHelper: OrderHelper
   ) {
     this.handleProcessCron();
   }
@@ -204,7 +201,7 @@ export class PurchaseController {
             };
             await this.orderService.update(dataUpdate);
             //Update order
-            await this.orderHelper.updateOrderAfter(dataOrder?._id?.toString());
+            // await this.orderHelper.updateOrderAfter(dataOrder?._id?.toString());
           }
         }
 

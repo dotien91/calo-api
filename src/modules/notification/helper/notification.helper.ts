@@ -1,37 +1,26 @@
-import { Response, Request } from "express";
 import {
-  HttpStatus,
-  NotFoundException,
   BadRequestException,
+  HttpStatus,
   Injectable,
-  Res,
-  Req,
-  Param,
   Logger,
+  NotFoundException
 } from "@nestjs/common";
-import { UserSessionService } from "../../../modules/user/services/user_session.service";
-import { NotificationService } from "../services/notification.service";
-import { Notification } from "../schemas/notification.schema";
 import axios from "axios";
+import { Response } from "express";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserSessionService } from "../../../modules/user/services/user_session.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateNotificationDto } from "../dto/create-notifcation.dto";
 import { ListNotificationDto } from "../dto/list-notification.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Notification } from "../schemas/notification.schema";
+import { NotificationService } from "../services/notification.service";
 
-import * as fs from "fs";
-import * as tls from "tls";
-import { Buffer } from "node:buffer";
-import { Model, Types } from "mongoose";
 import * as _ from "lodash";
-import { UpdateNotificationDto } from "../dto/update-notification.dto";
-import { Channel } from "../../../modules/channel/schemas/channel.schema";
-import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
-import { Gift } from "../../../modules/gift/schemas/gift.schema";
-import { UserService } from "../../../modules/user/services/user.service";
+import { Types } from "mongoose";
+import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
-import { GiftService } from "../../../modules/gift/services/gift.service";
-import { InjectModel } from "@nestjs/mongoose";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UpdateNotificationDto } from "../dto/update-notification.dto";
 const { getFirestore } = require("firebase-admin/firestore");
 const apn = require("apn");
 
@@ -42,15 +31,13 @@ const apn = require("apn");
 @Injectable()
 export class NotificationHelper {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
+    // @InjectModel(User.name)
+    // private userModel: Model<UserDocument>,
     private appUserService: UserService,
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
     private userPermissionService: UserPermissionService,
     private jwtHelper: JwtHelperService,
-    private channelService: ChannelService,
-    private giftService: GiftService
   ) {}
   private readonly logger = new Logger("notification");
 
@@ -656,149 +643,149 @@ export class NotificationHelper {
     return buf;
   }
 
-  /**
-   * @author SonLH
-   */
-  async sendNotificationAndEmailReceiveGift(dataChannel: Channel, dataUser: User, dataGift: Gift) {
-    //Send E-Mail Notication to user receive gift
-    const dataFirestore = getFirestore();
-    const dataToUpdate = {
-      brand_name: "Gamifa",
-      channel: dataChannel?.name?.toString(),
-      gift: dataGift?.name,
-      //@ts-ignore
-      // post_image: dataRedeem?.attach_files[0]?.media_url || "",
-      email: dataUser?.user_email,
-      fullname: dataUser?.display_name,
-      user_id: dataUser?._id?.toString(),
-      post_url: dataChannel?.domain + "/r/gift/receivers",
-      event_name: "suprise_gift_notication",
-      is_send_email: false,
-    };
+  // /**
+  //  * @author SonLH
+  //  */
+  // async sendNotificationAndEmailReceiveGift(dataChannel: Channel, dataUser: User, dataGift: Gift) {
+  //   //Send E-Mail Notication to user receive gift
+  //   const dataFirestore = getFirestore();
+  //   const dataToUpdate = {
+  //     brand_name: "Gamifa",
+  //     channel: dataChannel?.name?.toString(),
+  //     gift: dataGift?.name,
+  //     //@ts-ignore
+  //     // post_image: dataRedeem?.attach_files[0]?.media_url || "",
+  //     email: dataUser?.user_email,
+  //     fullname: dataUser?.display_name,
+  //     user_id: dataUser?._id?.toString(),
+  //     post_url: dataChannel?.domain + "/r/gift/receivers",
+  //     event_name: "suprise_gift_notication",
+  //     is_send_email: false,
+  //   };
 
-    const dataUserStore = dataFirestore.collection("Users");
-    await dataUserStore
-      .add(dataToUpdate)
-      .then(() => {
-        console.log("User added!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  //   const dataUserStore = dataFirestore.collection("Users");
+  //   await dataUserStore
+  //     .add(dataToUpdate)
+  //     .then(() => {
+  //       console.log("User added!");
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
 
-    //Send notication to user received gift
-    const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+  //   //Send notication to user received gift
+  //   const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
 
-    const tokenReturn = this.jwtHelper.generateJwt(
-      process.env.INFO_USER,
-      supportAccount?.user_email?.toString(),
-      process.env.INFO_SESSION,
-      true
-    );
-    const dataToSendNotification = {
-      request_id: "",
-      path: "/r/gift/receivers",
-      data_id: "",
-    };
-    const notificationContent = `Chúc mừng ${dataUser?.display_name} vừa được nhận ${dataGift?.name}`;
-    const dataNotification = {
-      createdBy: process.env.INFO_USER,
-      user_id: dataUser?._id.toString(),
-      channel_id: dataChannel?._id?.toString(),
-      title: "QUÀ TẶNG ĐẶC BIỆT",
-      content: notificationContent,
-      request_id: dataGift._id.toString(),
-      param: JSON.stringify(dataToSendNotification),
-      type_action: "link",
-      router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
-      click_action: "",
-      image: "",
-      channel: "user",
-    };
-    await this.handleSendNotification(dataNotification, tokenReturn.toString());
-  }
+  //   const tokenReturn = this.jwtHelper.generateJwt(
+  //     process.env.INFO_USER,
+  //     supportAccount?.user_email?.toString(),
+  //     process.env.INFO_SESSION,
+  //     true
+  //   );
+  //   const dataToSendNotification = {
+  //     request_id: "",
+  //     path: "/r/gift/receivers",
+  //     data_id: "",
+  //   };
+  //   const notificationContent = `Chúc mừng ${dataUser?.display_name} vừa được nhận ${dataGift?.name}`;
+  //   const dataNotification = {
+  //     createdBy: process.env.INFO_USER,
+  //     user_id: dataUser?._id.toString(),
+  //     channel_id: dataChannel?._id?.toString(),
+  //     title: "QUÀ TẶNG ĐẶC BIỆT",
+  //     content: notificationContent,
+  //     request_id: dataGift._id.toString(),
+  //     param: JSON.stringify(dataToSendNotification),
+  //     type_action: "link",
+  //     router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
+  //     click_action: "",
+  //     image: "",
+  //     channel: "user",
+  //   };
+  //   await this.handleSendNotification(dataNotification, tokenReturn.toString());
+  // }
 
-  /**
-   * @author SonLH
-   */
-  async sendNotificationAndEmail(data: any) {
-    try {
-      //Send E-Mail Notication to user receive gift
-      // let dataUser = await this.appUserService.findOne({ _id: data?.user_id });
-      const dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
-      const dataChannel = await this.channelService.findById(data?.channel_id);
-      if (!dataUser) {
-        this.logger.log(`Cannot found account with id ${data?.user_id}`);
-      } else if (!dataChannel) {
-        this.logger.log(`Cannot found channel with id ${data?.channel_id}`);
-      } else {
-        const dataFirestore = getFirestore();
-        let dataToUpdate = {
-          brand_name: "Gamifa",
-          channel: data?.dataChannel?.name?.toString() || dataChannel?.name?.toString(),
-          // gift: dataGift?.name,
-          //@ts-ignore
-          // post_image: dataRedeem?.attach_files[0]?.media_url || "",
-          email: dataUser?.user_email,
-          fullname: dataUser?.display_name,
-          user_id: dataUser?._id?.toString(),
-          post_url: dataChannel?.domain + data?.path,
-          event_name: data?.mail_template,
-          is_send_email: false,
-        };
-        if (data?.event_name) {
-          dataToUpdate = { ...dataToUpdate, ...{ event: data?.event_name } };
-        }
+  // /**
+  //  * @author SonLH
+  //  */
+  // async sendNotificationAndEmail(data: any) {
+  //   try {
+  //     //Send E-Mail Notication to user receive gift
+  //     // let dataUser = await this.appUserService.findOne({ _id: data?.user_id });
+  //     const dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
+  //     const dataChannel = await this.channelService.findById(data?.channel_id);
+  //     if (!dataUser) {
+  //       this.logger.log(`Cannot found account with id ${data?.user_id}`);
+  //     } else if (!dataChannel) {
+  //       this.logger.log(`Cannot found channel with id ${data?.channel_id}`);
+  //     } else {
+  //       const dataFirestore = getFirestore();
+  //       let dataToUpdate = {
+  //         brand_name: "Gamifa",
+  //         channel: data?.dataChannel?.name?.toString() || dataChannel?.name?.toString(),
+  //         // gift: dataGift?.name,
+  //         //@ts-ignore
+  //         // post_image: dataRedeem?.attach_files[0]?.media_url || "",
+  //         email: dataUser?.user_email,
+  //         fullname: dataUser?.display_name,
+  //         user_id: dataUser?._id?.toString(),
+  //         post_url: dataChannel?.domain + data?.path,
+  //         event_name: data?.mail_template,
+  //         is_send_email: false,
+  //       };
+  //       if (data?.event_name) {
+  //         dataToUpdate = { ...dataToUpdate, ...{ event: data?.event_name } };
+  //       }
 
-        const dataUserStore = dataFirestore.collection("Users");
-        await dataUserStore
-          .add(dataToUpdate)
-          .then(() => {
-            console.log("User added!");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+  //       const dataUserStore = dataFirestore.collection("Users");
+  //       await dataUserStore
+  //         .add(dataToUpdate)
+  //         .then(() => {
+  //           console.log("User added!");
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
+  //         });
 
-        //Send notication to user received gift
-        const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+  //       //Send notication to user received gift
+  //       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
 
-        const tokenReturn = this.jwtHelper.generateJwt(
-          process.env.INFO_USER,
-          supportAccount?.user_email?.toString(),
-          process.env.INFO_SESSION,
-          true
-        );
-        const dataToSendNotification = {
-          request_id: "",
-          path: dataChannel?.domain + data?.path,
-          data_id: "",
-          order_id: data?.order_id,
-        };
-        const notificationContent = data?.content({
-          display_name: dataUser?.display_name.toString(),
-          channel_name: dataChannel?.name.toString(),
-        });
-        const dataNotification = {
-          createdBy: data?.send_user_id,
-          user_id: dataUser?._id.toString(),
-          channel_id: dataChannel?._id?.toString(),
-          title: data?.title,
-          content: notificationContent,
-          request_id: data?.request_id,
-          param: JSON.stringify(dataToSendNotification),
-          type_action: "link",
-          router: data?.router,
-          click_action: "",
-          image: "",
-          channel: "user",
-        };
-        await this.handleSendNotification(dataNotification, tokenReturn.toString());
-      }
-    } catch (error) {
-      this.logger.log(`Send mail and notification fails : ${error.message}`);
-    }
-  }
+  //       const tokenReturn = this.jwtHelper.generateJwt(
+  //         process.env.INFO_USER,
+  //         supportAccount?.user_email?.toString(),
+  //         process.env.INFO_SESSION,
+  //         true
+  //       );
+  //       const dataToSendNotification = {
+  //         request_id: "",
+  //         path: dataChannel?.domain + data?.path,
+  //         data_id: "",
+  //         order_id: data?.order_id,
+  //       };
+  //       const notificationContent = data?.content({
+  //         display_name: dataUser?.display_name.toString(),
+  //         channel_name: dataChannel?.name.toString(),
+  //       });
+  //       const dataNotification = {
+  //         createdBy: data?.send_user_id,
+  //         user_id: dataUser?._id.toString(),
+  //         channel_id: dataChannel?._id?.toString(),
+  //         title: data?.title,
+  //         content: notificationContent,
+  //         request_id: data?.request_id,
+  //         param: JSON.stringify(dataToSendNotification),
+  //         type_action: "link",
+  //         router: data?.router,
+  //         click_action: "",
+  //         image: "",
+  //         channel: "user",
+  //       };
+  //       await this.handleSendNotification(dataNotification, tokenReturn.toString());
+  //     }
+  //   } catch (error) {
+  //     this.logger.log(`Send mail and notification fails : ${error.message}`);
+  //   }
+  // }
 
   /**
    * @author SonLH

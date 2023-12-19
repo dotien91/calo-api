@@ -1,48 +1,33 @@
-import { LoginUserDto } from "../dto/login-user.dto";
-import { UserService } from "../services/user.service";
-import { UserSessionService } from "../services/user_session.service";
-import { Logger, BadRequestException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
-import axios from "axios";
-import { Response, Request, response } from "express";
-import { User } from "../schemas/user.schema";
-import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { BadRequestException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserOptionService } from "../services/user_option.service";
-import { UpdateSessionDto } from "../dto/update-session.dto";
-import { CityService } from "../../../modules/city/services/city.service";
-import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
-import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
-import * as _ from "lodash";
-import { UserFollowService } from "../services/user_follow.service";
-import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.service";
-import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
-import { ConfigService } from "../../../modules/config/services/config.service";
-import { UserAnonymousSessionService } from "../services/user_anonymous_session.service";
-import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
-import { RegisterUserDto } from "../dto/register-user.dto";
-
-const functions = require("firebase-functions");
+import axios from "axios";
 import { createHash } from "crypto";
-import { CreateForgotPassword } from "../dto/create-forgot-password.dto";
-import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
-import { ChannelLevelService } from "../../../modules/channel/services/channel_level.service";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
+import { Request, Response } from "express";
 import * as admin from "firebase-admin";
-const { getFirestore } = require("firebase-admin/firestore");
 import { google } from "googleapis";
-import { SendPhoneDto } from "../dto/send-phone.dto";
-import { ValidatePhoneDto } from "../dto/validate-phone.dto";
-import { error } from "console";
-import { ChallengePermissionService } from "../../../modules/challenge/services/challenge_permission.service";
-import { ChallengeService } from "../../../modules/challenge/services/challenge.service";
-import { CreateChallengeActivityDto } from "../../../modules/challenge/dto/create-challenge_activity.dto";
-import { ChallengeActivityService } from "../../../modules/challenge/services/challenge_activity.service";
+import * as url from "url";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { ConfigService } from "../../../modules/config/services/config.service";
+import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { QueueService } from "../../../modules/queue/queue.service";
-import { Types } from "mongoose";
-import * as url from "url";
+import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
+import { CreateForgotPassword } from "../dto/create-forgot-password.dto";
+import { LoginUserDto } from "../dto/login-user.dto";
+import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
+import { RegisterUserDto } from "../dto/register-user.dto";
+import { SendPhoneDto } from "../dto/send-phone.dto";
+import { UpdateSessionDto } from "../dto/update-session.dto";
+import { ValidatePhoneDto } from "../dto/validate-phone.dto";
+import { User } from "../schemas/user.schema";
+import { UserService } from "../services/user.service";
+import { UserAnonymousSessionService } from "../services/user_anonymous_session.service";
+import { UserFollowService } from "../services/user_follow.service";
+import { UserOptionService } from "../services/user_option.service";
+import { UserSessionService } from "../services/user_session.service";
+
+const functions = require("firebase-functions");
+const { getFirestore } = require("firebase-admin/firestore");
 
 /**
  * @author Tony Vu
@@ -55,22 +40,10 @@ export class UserLoginHelper {
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
     private userOptionService: UserOptionService,
-    private cityService: CityService,
-    private chatRoomHelper: ChatRoomHelper,
-    private chatHistoryHelper: ChatHistoryHelper,
     private userFollowService: UserFollowService,
-    private chatRoomService: ChatRoomService,
-    private chatRoomUserOptionService: ChatRoomUserOptionService,
     private configService: ConfigService,
     private userAnonymousSessionService: UserAnonymousSessionService,
-    private channelPermissionService: ChannelPermissionService,
-    private channelLevelService: ChannelLevelService,
-    private channelService: ChannelService,
-    private challengePermissionService: ChallengePermissionService,
-    private challengeActivityService: ChallengeActivityService,
-    private challengeServie: ChallengeService,
     private readonly eventHookWorkerService: EventHookWorkerService,
-    private readonly challengeService: ChallengeService,
     private readonly queueService: QueueService
   ) {
     const serviceAccount = require(`../../../../${process.env.FIREBASE_CONFIG}`);
@@ -254,7 +227,7 @@ export class UserLoginHelper {
             const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
-            await this.handleUpdateGeoIP(req, res, userObject);
+            // await this.handleUpdateGeoIP(req, res, userObject);
           }
         }
         if (userObject && !Number(userObject.user_status)) {
@@ -273,18 +246,18 @@ export class UserLoginHelper {
             true
           );
           setTimeout(async () => {
-            const dataReferal = req.headers.referer;
-            if (dataReferal) {
-              // let data = new URL(dataReferal);
-              // let originUrl = data?.origin;
-              const channelDomain = await this.getDomainFromUrl(dataReferal);
-              await this.handleCountPointForUser(
-                dataLogin.referal_user,
-                channelDomain,
-                userObject,
-                tokenReturn?.toString()
-              );
-            }
+            // const dataReferal = req.headers.referer;
+            // if (dataReferal) {
+            //   // let data = new URL(dataReferal);
+            //   // let originUrl = data?.origin;
+            //   const channelDomain = await this.getDomainFromUrl(dataReferal);
+            //   await this.handleCountPointForUser(
+            //     dataLogin.referal_user,
+            //     channelDomain,
+            //     userObject,
+            //     tokenReturn?.toString()
+            //   );
+            // }
           }, 1000);
           return res
             .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
@@ -449,7 +422,7 @@ export class UserLoginHelper {
             const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
-            await this.handleUpdateGeoIP(req, res, userObject);
+            // await this.handleUpdateGeoIP(req, res, userObject);
           }
         }
         if (userObject && !Number(userObject.user_status)) {
@@ -472,13 +445,13 @@ export class UserLoginHelper {
             if (dataReferal) {
               // let data = new URL(dataReferal);
               // let originUrl = data?.origin;
-              const channelDomain = await this.getDomainFromUrl(dataReferal);
-              await this.handleCountPointForUser(
-                dataLogin.referal_user,
-                channelDomain,
-                userObject,
-                tokenReturn?.toString()
-              );
+              // const channelDomain = await this.getDomainFromUrl(dataReferal);
+              // await this.handleCountPointForUser(
+              //   dataLogin.referal_user,
+              //   channelDomain,
+              //   userObject,
+              //   tokenReturn?.toString()
+              // );
             }
           }, 1000);
           return res
@@ -536,7 +509,7 @@ export class UserLoginHelper {
             const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
-            await this.handleUpdateGeoIP(req, res, userObject);
+            // await this.handleUpdateGeoIP(req, res, userObject);
           }
         }
         if (userObject && !Number(userObject.user_status)) {
@@ -559,13 +532,13 @@ export class UserLoginHelper {
             if (dataReferal) {
               // let data = new URL(dataReferal);
               // let originUrl = data?.origin;
-              const channelDomain = await this.getDomainFromUrl(dataReferal);
-              await this.handleCountPointForUser(
-                dataLogin.referal_user,
-                channelDomain,
-                userObject,
-                tokenReturn?.toString()
-              );
+              // const channelDomain = await this.getDomainFromUrl(dataReferal);
+              // await this.handleCountPointForUser(
+              //   dataLogin.referal_user,
+              //   channelDomain,
+              //   userObject,
+              //   tokenReturn?.toString()
+              // );
             }
           }, 1000);
           return res
@@ -623,13 +596,13 @@ export class UserLoginHelper {
           if (dataReferal) {
             // let data = new URL(dataReferal);
             // let originUrl = data?.origin;
-            const channelDomain = await this.getDomainFromUrl(dataReferal);
-            await this.handleCountPointForUser(
-              dataLogin.referal_user,
-              channelDomain,
-              userObject,
-              tokenReturn?.toString()
-            );
+            // const channelDomain = await this.getDomainFromUrl(dataReferal);
+            // await this.handleCountPointForUser(
+            //   dataLogin.referal_user,
+            //   channelDomain,
+            //   userObject,
+            //   tokenReturn?.toString()
+            // );
           }
         }, 1000);
         return res
@@ -682,7 +655,7 @@ export class UserLoginHelper {
           const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
           userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
           //Update GEO IP
-          await this.handleUpdateGeoIP(req, res, userObject);
+          // await this.handleUpdateGeoIP(req, res, userObject);
         }
       }
       if (userObject && userObject._id) {
@@ -702,13 +675,13 @@ export class UserLoginHelper {
           if (dataReferal) {
             // let data = new URL(dataReferal);
             // let originUrl = data?.origin;
-            const channelDomain = await this.getDomainFromUrl(dataReferal);
-            await this.handleCountPointForUser(
-              dataLogin.referal_user,
-              channelDomain,
-              userObject,
-              tokenReturn?.toString()
-            );
+            // const channelDomain = await this.getDomainFromUrl(dataReferal);
+            // await this.handleCountPointForUser(
+            //   dataLogin.referal_user,
+            //   channelDomain,
+            //   userObject,
+            //   tokenReturn?.toString()
+            // );
           }
         }, 1000);
 
@@ -723,6 +696,9 @@ export class UserLoginHelper {
       this.logger.log("Login with Password Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
     }
+  }
+  handleUpdateGeoIP(req: Request<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>>, userObject: any) {
+    throw new Error("Method not implemented.");
   }
 
   /**
@@ -740,145 +716,145 @@ export class UserLoginHelper {
     }
   }
 
-  async handleCountPointForUser(fromUserLogin: string, domain: string, dataUser: User, authCode: string) {
-    try {
-      console.log(domain, "domain");
-      const channelObject = await this.channelService.findOne({ domain: domain });
-      const fromUser = await this.appUserService.findOne({ user_login: fromUserLogin });
+  // async handleCountPointForUser(fromUserLogin: string, domain: string, dataUser: User, authCode: string) {
+  //   try {
+  //     console.log(domain, "domain");
+  //     const channelObject = await this.channelService.findOne({ domain: domain });
+  //     const fromUser = await this.appUserService.findOne({ user_login: fromUserLogin });
 
-      if (channelObject && fromUser) {
-        const dataPermission = await this.channelPermissionService.findOne({
-          user_id: fromUser?._id?.toString(),
-          channel_id: channelObject?._id,
-        });
+  //     if (channelObject && fromUser) {
+  //       const dataPermission = await this.channelPermissionService.findOne({
+  //         user_id: fromUser?._id?.toString(),
+  //         channel_id: channelObject?._id,
+  //       });
 
-        let currentPermission = await this.channelPermissionService.findOne({
-          user_id: dataUser?._id?.toString(),
-          channel_id: channelObject?._id,
-        });
+  //       let currentPermission = await this.channelPermissionService.findOne({
+  //         user_id: dataUser?._id?.toString(),
+  //         channel_id: channelObject?._id,
+  //       });
 
-        console.log(dataPermission, "dataPermissionie");
-        //Count
-        //Update
-        const dataChannelPoint = channelObject?.point_data;
-        //Check point
-        let dataPoint = 5;
-        if (dataChannelPoint && dataChannelPoint?.length) {
-          for (const dataChannelPointItem of dataChannelPoint) {
-            if (dataChannelPointItem?.key == "invite_user") {
-              dataPoint = parseInt(dataChannelPointItem?.value);
-            }
-          }
-        }
+  //       console.log(dataPermission, "dataPermissionie");
+  //       //Count
+  //       //Update
+  //       const dataChannelPoint = channelObject?.point_data;
+  //       //Check point
+  //       let dataPoint = 5;
+  //       if (dataChannelPoint && dataChannelPoint?.length) {
+  //         for (const dataChannelPointItem of dataChannelPoint) {
+  //           if (dataChannelPointItem?.key == "invite_user") {
+  //             dataPoint = parseInt(dataChannelPointItem?.value);
+  //           }
+  //         }
+  //       }
 
-        //Create new Permisison
-        if (!currentPermission) {
-          const levelUser = await this.channelLevelService.findOne({
-            level_number: 1,
-            channel_id: channelObject?._id?.toString(),
-          });
-          //Create Channel Permission
-          let dataToCreateChannel = {
-            user_id: dataUser?._id?.toString(),
-            channel_id: channelObject?._id?.toString(),
-            official_status: 1,
-            channel_role: "user",
-            level_number: 1,
-            channel_level: levelUser?._id?.toString(),
-            permission: ["request/create", "request/update"],
-          };
-          if (channelObject?.public_status == "private") {
-            dataToCreateChannel = { ...dataToCreateChannel, ...{ official_status: 0 } };
-          }
-          currentPermission = await this.channelPermissionService.create(dataToCreateChannel);
-          //Update count user
+  //       //Create new Permisison
+  //       if (!currentPermission) {
+  //         const levelUser = await this.channelLevelService.findOne({
+  //           level_number: 1,
+  //           channel_id: channelObject?._id?.toString(),
+  //         });
+  //         //Create Channel Permission
+  //         let dataToCreateChannel = {
+  //           user_id: dataUser?._id?.toString(),
+  //           channel_id: channelObject?._id?.toString(),
+  //           official_status: 1,
+  //           channel_role: "user",
+  //           level_number: 1,
+  //           channel_level: levelUser?._id?.toString(),
+  //           permission: ["request/create", "request/update"],
+  //         };
+  //         if (channelObject?.public_status == "private") {
+  //           dataToCreateChannel = { ...dataToCreateChannel, ...{ official_status: 0 } };
+  //         }
+  //         currentPermission = await this.channelPermissionService.create(dataToCreateChannel);
+  //         //Update count user
 
-          const listChallenge = await this.challengeService.filter(
-            {
-              channel_id: process.env.DEFAULT_CHANNEL,
-              add_all_user: true,
-            },
-            {},
-            1,
-            1000
-          );
+  //         const listChallenge = await this.challengeService.filter(
+  //           {
+  //             channel_id: process.env.DEFAULT_CHANNEL,
+  //             add_all_user: true,
+  //           },
+  //           {},
+  //           1,
+  //           1000
+  //         );
 
-          this.queueService.addTaskUserJoinChallenge({
-            user_id: dataUser?._id?.toString(),
-            list_challenge_id: listChallenge.map((x) => {
-              return {
-                challenge_id: x?._id.toString(),
-                game_id: x?.game_id?._id.toString(),
-                game_type: x?.game_id?.game_type,
-              };
-            }),
-            channel_id: channelObject?._id?.toString(),
-            official_status: 1,
-          });
-        }
+  //         this.queueService.addTaskUserJoinChallenge({
+  //           user_id: dataUser?._id?.toString(),
+  //           list_challenge_id: listChallenge.map((x) => {
+  //             return {
+  //               challenge_id: x?._id.toString(),
+  //               game_id: x?.game_id?._id.toString(),
+  //               game_type: x?.game_id?.game_type,
+  //             };
+  //           }),
+  //           channel_id: channelObject?._id?.toString(),
+  //           official_status: 1,
+  //         });
+  //       }
 
-        if (!currentPermission || (!currentPermission?.from_user && !currentPermission?.from_mentor)) {
-          //Update user
-          let dataUpdate = {};
+  //       if (!currentPermission || (!currentPermission?.from_user && !currentPermission?.from_mentor)) {
+  //         //Update user
+  //         let dataUpdate = {};
 
-          if (dataPermission?.mentor_role === "mentor") {
-            dataUpdate = { ...dataUpdate, ...{ from_mentor: fromUser?._id?.toString() } };
+  //         if (dataPermission?.mentor_role === "mentor") {
+  //           dataUpdate = { ...dataUpdate, ...{ from_mentor: fromUser?._id?.toString() } };
 
-            const dataUpdateCount = {
-              number_of_user: 1,
-            };
-            await this.channelPermissionService.updateCount({ _id: dataPermission._id?.toString() }, dataUpdateCount);
-          } else {
-            dataUpdate = { ...dataUpdate, ...{ from_user: fromUser?._id?.toString() } };
-          }
+  //           const dataUpdateCount = {
+  //             number_of_user: 1,
+  //           };
+  //           await this.channelPermissionService.updateCount({ _id: dataPermission._id?.toString() }, dataUpdateCount);
+  //         } else {
+  //           dataUpdate = { ...dataUpdate, ...{ from_user: fromUser?._id?.toString() } };
+  //         }
 
-          const dataFilterUpdate = {
-            user_id: dataUser?._id?.toString(),
-            channel_id: channelObject?._id?.toString(),
-          };
-          await this.channelPermissionService.updateOne(dataFilterUpdate, dataUpdate);
+  //         const dataFilterUpdate = {
+  //           user_id: dataUser?._id?.toString(),
+  //           channel_id: channelObject?._id?.toString(),
+  //         };
+  //         await this.channelPermissionService.updateOne(dataFilterUpdate, dataUpdate);
 
-          //Check
-          //Update user level
-          //Update Count
-          await this.channelPermissionService.updateCount(
-            { _id: dataPermission?._id?.toString(), channel_id: channelObject._id.toString() },
-            { point: dataPoint, point_month: dataPoint, point_week: dataPoint },
-            authCode,
-            {
-              entity_id: dataUser?._id,
-              entity_type: "invite_user",
-              content: dataUser?.display_name,
-              point_number: dataPoint,
-              user_id: fromUser?._id?.toString(),
-            },
-            "invite_user"
-          );
-          const dataHistory = await this.channelPermissionService.findOneHistory({
-            entientity_id: dataUser?._id,
-            entity_type: "invite_user",
-          });
-          if (!dataHistory) {
-            //plus point for challenge invite user
-            this.eventHookWorkerService.PlusPointChallengePusher({
-              user_id: fromUser?._id?.toString(),
-              game_type: "invite_user",
-              channel_id: channelObject?._id.toString(),
-              point_value: 1,
-              display_name: fromUser?.display_name?.toString(),
-            });
-            this.eventHookWorkerService.PlusPointChallengePusher({
-              user_id: fromUser?._id?.toString(),
-              game_type: "point",
-              channel_id: channelObject?._id.toString(),
-              display_name: fromUser?.display_name?.toString(),
-              point_value: 20,
-            });
-          }
-        }
-      }
-    } catch (error) {}
-  }
+  //         //Check
+  //         //Update user level
+  //         //Update Count
+  //         await this.channelPermissionService.updateCount(
+  //           { _id: dataPermission?._id?.toString(), channel_id: channelObject._id.toString() },
+  //           { point: dataPoint, point_month: dataPoint, point_week: dataPoint },
+  //           authCode,
+  //           {
+  //             entity_id: dataUser?._id,
+  //             entity_type: "invite_user",
+  //             content: dataUser?.display_name,
+  //             point_number: dataPoint,
+  //             user_id: fromUser?._id?.toString(),
+  //           },
+  //           "invite_user"
+  //         );
+  //         const dataHistory = await this.channelPermissionService.findOneHistory({
+  //           entientity_id: dataUser?._id,
+  //           entity_type: "invite_user",
+  //         });
+  //         if (!dataHistory) {
+  //           //plus point for challenge invite user
+  //           this.eventHookWorkerService.PlusPointChallengePusher({
+  //             user_id: fromUser?._id?.toString(),
+  //             game_type: "invite_user",
+  //             channel_id: channelObject?._id.toString(),
+  //             point_value: 1,
+  //             display_name: fromUser?.display_name?.toString(),
+  //           });
+  //           this.eventHookWorkerService.PlusPointChallengePusher({
+  //             user_id: fromUser?._id?.toString(),
+  //             game_type: "point",
+  //             channel_id: channelObject?._id.toString(),
+  //             display_name: fromUser?.display_name?.toString(),
+  //             point_value: 20,
+  //           });
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {}
+  // }
 
   async handleGetUserAvatarRandom() {
     const iconList =
@@ -1292,227 +1268,6 @@ export class UserLoginHelper {
 
   /**
    *
-   * @param req
-   * @param userObject
-   */
-  async handleUpdateGeoIP(req: ExpressRequestDto, res: Response, userObject: User) {
-    setTimeout(async () => {
-      const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-      const ipInfoArray = process.env.IPINFO_TOKEN?.split(",");
-      const random = Math.floor(Math.random() * ipInfoArray.length);
-      if (userIp && ipInfoArray && ipInfoArray[random]) {
-        const ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
-        const dataIp = await axios
-          .get(ipUrl)
-          .then((response) => {
-            if (response && response.data) {
-              return response.data;
-            } else {
-              return null;
-            }
-          })
-          .catch((error) => {
-            return null;
-          });
-        if (dataIp) {
-          //Update Country && User Option
-          //Update New City
-          const dataCitySearch = {
-            search: dataIp.city,
-          };
-
-          const getCityObject = await this.cityService.filter(dataCitySearch, {}, 1, 1);
-
-          let dataUpdate = {
-            _id: userObject?._id?.toString(),
-            country: dataIp.country,
-          };
-          if (getCityObject && getCityObject.length) {
-            dataUpdate = { ...dataUpdate, ...{ city: getCityObject[0]?._id?.toString() } };
-          }
-
-          if (getCityObject && getCityObject.length) {
-            //Update Old City
-            await this.cityService.handleUpdateUserInc(getCityObject[0]?._id.toString(), true);
-            const cityName = getCityObject[0]?.city_name?.toString();
-            const countryName = getCityObject[0]?.country?.toString();
-            this.sendNotificationNew(userObject, req, res, cityName, countryName);
-            //Update City Object
-            let groupId = "";
-            let dataCreateReturn = null;
-
-            //Join Group => Only WhiteG, Masked Chat
-
-            if (process.env.BRANCH_NAME === "whiteg" || process.env.BRANCH_NAME === "masked_chat") {
-              try {
-                if (getCityObject && getCityObject[0]?.chat_group) {
-                  groupId = getCityObject[0]?.chat_group?.toString();
-                  dataCreateReturn = await this.chatRoomService.findOneRoom({ _id: groupId });
-                } else {
-                  //Update Chat Group
-                  const dataCreate = {
-                    user_id: process.env.INFO_SESSION,
-                    room_type: "group",
-                    room_limit_number: 100000,
-                    room_private: 0,
-                    chat_history_count: 0,
-                    group_partners: [userObject._id.toString()],
-                    partner_count: 1,
-                    room_name: cityName + " group",
-                    room_image: getCityObject[0]?.city_image?.toString(),
-                    last_message: "New group in " + cityName,
-                  };
-                  dataCreateReturn = await this.chatRoomService.create(dataCreate);
-                  if (dataCreateReturn) {
-                    groupId = dataCreateReturn._id.toString();
-                    const dataCityUpdate = {
-                      _id: getCityObject[0]?._id?.toString(),
-                      chat_group: groupId,
-                    };
-                    await this.cityService.update(dataCityUpdate);
-                  }
-                  //Ad User Support in To New City
-                  //Process Save User & Advisor To Option
-                  const dataOptionUser = {
-                    chat_room_id: dataCreateReturn?._id.toString(),
-                    user_role: "admin",
-                    user_permission: "write",
-                    room_type: "group",
-                    user_id: userObject._id.toString(),
-                    room_title: "",
-                    room_image: "",
-                    chat_history_count: 1,
-                  };
-                  await this.chatRoomUserOptionService.create(dataOptionUser);
-                }
-
-                if (dataCreateReturn) {
-                  //Process Save User & Advisor To Option
-                  const dataOptionUser = {
-                    chat_room_id: dataCreateReturn?._id.toString(),
-                    user_role: "user",
-                    user_permission: "write",
-                    room_type: "group",
-                    user_id: userObject._id.toString(),
-                    room_title: "",
-                    room_image: "",
-                    chat_history_count: 1,
-                  };
-                  await this.chatRoomUserOptionService.create(dataOptionUser);
-                  const newGroupPartner = [...dataCreateReturn.group_partners, ...[userObject._id.toString()]];
-                  const dataToUpdate = {
-                    _id: dataCreateReturn._id.toString(),
-                    group_partners: newGroupPartner,
-                    partner_count: newGroupPartner.length,
-                  };
-                  await this.chatRoomService.update(dataToUpdate);
-                }
-              } catch (error) {
-                console.log("ERROR when Create Room");
-                console.log(error);
-              }
-            }
-          }
-
-          //Update Auto Like for WhiteG && Honee
-          if (dataIp.loc) {
-            const dataLoc = dataIp.loc?.split(",");
-            if (dataLoc[0] && dataLoc[1]) {
-              const dataToFilter = {
-                latitude: parseFloat(dataLoc[0]?.toString()),
-                longitude: parseFloat(dataLoc[1]?.toString()),
-                is_match: "1",
-              };
-              const orderByOBject = {};
-              const page = 1;
-              const limit = 10;
-
-              const dataToUpdate = {
-                user_id: userObject?._id?.toString(),
-                loc: {
-                  type: "Point",
-                  coordinates: [
-                    parseFloat(dataToFilter.longitude.toString()),
-                    parseFloat(dataToFilter.latitude.toString()),
-                  ],
-                },
-              };
-              await this.userOptionService.update(dataToUpdate);
-
-              if (process.env.BRANCH_NAME === "whiteg") {
-                const dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
-                if (dataReturn && dataReturn.length) {
-                  for (const dataUserItem of dataReturn) {
-                    //Set like
-                    let dataUpdate = {
-                      user_id: dataUserItem._id.toString(),
-                      partner_id: userObject._id.toString(),
-                      match_status: 0,
-                    };
-                    let dataFollowUpdate = [userObject._id.toString()];
-                    if (userObject?.follow_users) {
-                      dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
-                    }
-                    dataUpdate = { ...dataUpdate, ...{ follow_users: dataFollowUpdate } };
-                    const dataReturn = await this.userFollowService.update(dataUpdate);
-                  }
-                }
-              }
-
-              setTimeout(async () => {
-                //Send Message Auto for CallU
-                if (process.env.BRANCH_NAME === "live_video") {
-                  //Get User Role
-                  const dataUserObject: any = await this.appUserService.findOneLogin({
-                    _id: userObject?._id?.toString(),
-                  });
-                  console.log(dataUserObject, "dataUserObject");
-                  if ((dataUserObject && dataUserObject.base_role === "man") || !dataUserObject.base_role) {
-                    const dataToFilterCallU = {
-                      //latitude: parseFloat(dataLoc[0]?.toString()),
-                      //longitude: parseFloat(dataLoc[1]?.toString()),
-                      // is_match: "1",
-                      base_role: "women",
-                      country: dataUserObject?.country,
-                    };
-                    const dataReturn = await this.userOptionService.filterFree(
-                      dataToFilterCallU,
-                      orderByOBject,
-                      page,
-                      limit
-                    );
-                    if (dataReturn && dataReturn.length) {
-                      for (const dataUserItem of dataReturn) {
-                        //Set like
-                        //Send Message
-                        const randomSecond = Math.random() * (200 - 20) + 20;
-                        console.log(randomSecond, "randomSecond");
-                        const self = this;
-                        setTimeout(() => {
-                          //Send Message to User
-                          self.sendMessageCallU(dataUserObject, req, res, dataUserItem);
-                        }, randomSecond * 1000);
-                      }
-                    }
-                  }
-                }
-              }, 180000);
-            }
-            //Update Group Chat
-          }
-
-          await this.appUserService.update(dataUpdate);
-          delete dataUpdate._id;
-          dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id.toString() } };
-          await this.userOptionService.update(dataUpdate);
-        }
-      }
-    }, 1000);
-    return true;
-  }
-
-  /**
-   *
    * @param dataUpdate
    * @param res
    * @param req
@@ -1558,46 +1313,46 @@ export class UserLoginHelper {
       };
       await this.appUserService.update(dataUpdate);
       const dataReferal = req.headers.referer;
-      let dataChannel = null;
-      if (dataReferal) {
-        const data = new URL(dataReferal);
-        console.log(data?.search);
-        // Lấy giá trị tham số "base_url" từ URL
-        const baseUrl = data.searchParams.get("base_url");
+      // let dataChannel = null;
+      // if (dataReferal) {
+      //   const data = new URL(dataReferal);
+      //   console.log(data?.search);
+      //   // Lấy giá trị tham số "base_url" từ URL
+      //   const baseUrl = data.searchParams.get("base_url");
 
-        dataChannel = await this.channelService.findOne({ domain: dataChannel });
-        if (!dataChannel) {
-          dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
-        }
-      } else {
-        dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
-      }
-      const dataFirestore = getFirestore();
-      if (dataChannel) {
-        //Let dataToUpdate
-        const dataToUpdate = {
-          brand_name: "Gamifa",
-          channel: dataChannel?.name,
-          country: userObject?.country,
-          email: userObject?.user_email,
-          event_name: `send_mail_forgot`,
-          fullname: userObject?.display_name,
-          user_id: userObject?._id?.toString(),
-          email_token: dataToken,
-          token_url: `${process.env.LOGIN_URL}/v/reset-password?token=${dataToken}&base_url=${
-            dataChannel?.domain ? dataChannel?.domain : "https://gamifa.vn"
-          }`,
-          is_send_email: false,
-        };
+      //   dataChannel = await this.channelService.findOne({ domain: dataChannel });
+      //   if (!dataChannel) {
+      //     dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
+      //   }
+      // } else {
+      //   dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
+      // }
+      // const dataFirestore = getFirestore();
+      // if (dataChannel) {
+      //   //Let dataToUpdate
+      //   const dataToUpdate = {
+      //     brand_name: "Gamifa",
+      //     channel: dataChannel?.name,
+      //     country: userObject?.country,
+      //     email: userObject?.user_email,
+      //     event_name: `send_mail_forgot`,
+      //     fullname: userObject?.display_name,
+      //     user_id: userObject?._id?.toString(),
+      //     email_token: dataToken,
+      //     token_url: `${process.env.LOGIN_URL}/v/reset-password?token=${dataToken}&base_url=${
+      //       dataChannel?.domain ? dataChannel?.domain : "https://gamifa.vn"
+      //     }`,
+      //     is_send_email: false,
+      //   };
 
-        console.log(dataToUpdate, "dataToUpdate");
+      //   console.log(dataToUpdate, "dataToUpdate");
 
-        //Update
-        const dataUserStore = dataFirestore.collection("Users");
-        await dataUserStore.add(dataToUpdate).then(() => {
-          console.log("User added!");
-        });
-      }
+      //   //Update
+      //   const dataUserStore = dataFirestore.collection("Users");
+      //   await dataUserStore.add(dataToUpdate).then(() => {
+      //     console.log("User added!");
+      //   });
+      // }
 
       const dataReturn = {
         data_success: "Done!",
@@ -1754,179 +1509,179 @@ export class UserLoginHelper {
     }
   }
 
-  /**
-   *
-   * @param userId
-   * @param cityName
-   * @param countryName
-   */
-  async sendNotificationNew(
-    partnerObject: User,
-    req: ExpressRequestDto,
-    res: Response,
-    cityName: string,
-    countryName: string
-  ) {
-    if (process.env.BRANCH_NAME === "live_video") {
-      return true;
-    }
-    setTimeout(async () => {
-      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-      //Create new
-      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
-        supportAccount,
-        partnerObject._id.toString(),
-        "personal",
-        "",
-        true
-      );
+//   /**
+//    *
+//    * @param userId
+//    * @param cityName
+//    * @param countryName
+//    */
+//   async sendNotificationNew(
+//     partnerObject: User,
+//     req: ExpressRequestDto,
+//     res: Response,
+//     cityName: string,
+//     countryName: string
+//   ) {
+//     if (process.env.BRANCH_NAME === "live_video") {
+//       return true;
+//     }
+//     setTimeout(async () => {
+//       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+//       //Create new
+//       const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+//         supportAccount,
+//         partnerObject._id.toString(),
+//         "personal",
+//         "",
+//         true
+//       );
 
-      if (!dataCreateReturnRoom) {
-        console.log("Not found");
-      } else {
-        //@ts-ignore
-        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        const currentTime = new Date().getTime();
+//       if (!dataCreateReturnRoom) {
+//         console.log("Not found");
+//       } else {
+//         //@ts-ignore
+//         const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+//         const currentTime = new Date().getTime();
 
-        //console.log(currentTime - updatedAt);
-        const leftTime = currentTime - updatedAt;
-        //@ts-ignore
-        if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-          console.log("Not return");
-          return null;
-        }
+//         //console.log(currentTime - updatedAt);
+//         const leftTime = currentTime - updatedAt;
+//         //@ts-ignore
+//         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+//           console.log("Not return");
+//           return null;
+//         }
 
-        let chatContent = "";
-        const tokenReturn = this.jwtHelper.generateJwt(
-          process.env.INFO_USER,
-          supportAccount?.user_email?.toString(),
-          process.env.INFO_SESSION,
-          true
-        );
-        let branchName = "WhiteG";
-        if (process.env.BRANCH_NAME === "honee") {
-          branchName = "Honee";
-        }
-        if (countryName === "Vietnam") {
-          const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
-          chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
-👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
-👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
-✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
-🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
-🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
-        } else {
-          const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
-          chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
-👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
-👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
-✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
-🔔 If you have any problems, contact us directly using the Support feature.
-🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
-        }
-        const createChatHistoryDto = {
-          chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-          chat_content: chatContent,
-        };
+//         let chatContent = "";
+//         const tokenReturn = this.jwtHelper.generateJwt(
+//           process.env.INFO_USER,
+//           supportAccount?.user_email?.toString(),
+//           process.env.INFO_SESSION,
+//           true
+//         );
+//         let branchName = "WhiteG";
+//         if (process.env.BRANCH_NAME === "honee") {
+//           branchName = "Honee";
+//         }
+//         if (countryName === "Vietnam") {
+//           const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
+//           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
+// 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
+// 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
+// ✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
+// 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
+// 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
+//         } else {
+//           const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
+//           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
+// 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
+// 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
+// ✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
+// 🔔 If you have any problems, contact us directly using the Support feature.
+// 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
+//         }
+//         const createChatHistoryDto = {
+//           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+//           chat_content: chatContent,
+//         };
 
-        req.user_id = supportAccount?._id.toString();
-        req.user_object = supportAccount;
-        req.session_id = process.env.INFO_SESSION;
-        req.auth_code = tokenReturn.toString();
+//         req.user_id = supportAccount?._id.toString();
+//         req.user_object = supportAccount;
+//         req.session_id = process.env.INFO_SESSION;
+//         req.auth_code = tokenReturn.toString();
 
-        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-          req,
-          res,
-          createChatHistoryDto,
-          false,
-          true
-        );
-      }
-    }, 2000);
+//         const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+//           req,
+//           res,
+//           createChatHistoryDto,
+//           false,
+//           true
+//         );
+//       }
+//     }, 2000);
 
-    return true;
-  }
+//     return true;
+//   }
 
-  /**
-   *
-   * @param userId
-   * @param cityName
-   * @param countryName
-   */
-  async sendMessageCallU(partnerObject: User, req: ExpressRequestDto, res: Response, userObject: any) {
-    //Create new
-    const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
-      userObject,
-      partnerObject._id.toString(),
-      "personal",
-      "",
-      true
-    );
+  // /**
+  //  *
+  //  * @param userId
+  //  * @param cityName
+  //  * @param countryName
+  //  */
+  // async sendMessageCallU(partnerObject: User, req: ExpressRequestDto, res: Response, userObject: any) {
+  //   //Create new
+  //   const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+  //     userObject,
+  //     partnerObject._id.toString(),
+  //     "personal",
+  //     "",
+  //     true
+  //   );
 
-    if (!dataCreateReturnRoom) {
-      console.log("Not found");
-    } else {
-      //@ts-ignore
-      const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-      const currentTime = new Date().getTime();
+  //   if (!dataCreateReturnRoom) {
+  //     console.log("Not found");
+  //   } else {
+  //     //@ts-ignore
+  //     const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+  //     const currentTime = new Date().getTime();
 
-      //console.log(currentTime - updatedAt);
-      const leftTime = currentTime - updatedAt;
-      //@ts-ignore
-      if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-        console.log("Not return");
-        return null;
-      }
+  //     //console.log(currentTime - updatedAt);
+  //     const leftTime = currentTime - updatedAt;
+  //     //@ts-ignore
+  //     if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+  //       console.log("Not return");
+  //       return null;
+  //     }
 
-      let chatContent = "";
+  //     let chatContent = "";
 
-      //Get User Options
-      if (userObject?.chat_content) {
-        chatContent = userObject?.chat_content;
-      } else {
-        //Get config Chat Content
-        //Get country
-        if (partnerObject?.country) {
-          const configData = partnerObject?.country + "_message";
-          const dataFind = {
-            type: configData,
-          };
-          const dataConfig = await this.configService.findOne(dataFind);
-          if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-            const arrayMessage = dataConfig?.data_filter;
-            chatContent = _.sample(arrayMessage);
-          }
-        }
-      }
-      if (chatContent) {
-        //FindOne Session
-        const oneSession = await this.userSessionService.findOne({ user_id: userObject._id?.toString() });
-        const tokenReturn = this.jwtHelper.generateJwt(
-          userObject?._id?.toString(),
-          userObject?.user_email?.toString(),
-          oneSession?._id?.toString(),
-          true
-        );
-        const createChatHistoryDto = {
-          chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-          chat_content: chatContent,
-        };
+  //     //Get User Options
+  //     if (userObject?.chat_content) {
+  //       chatContent = userObject?.chat_content;
+  //     } else {
+  //       //Get config Chat Content
+  //       //Get country
+  //       if (partnerObject?.country) {
+  //         const configData = partnerObject?.country + "_message";
+  //         const dataFind = {
+  //           type: configData,
+  //         };
+  //         const dataConfig = await this.configService.findOne(dataFind);
+  //         if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
+  //           const arrayMessage = dataConfig?.data_filter;
+  //           chatContent = _.sample(arrayMessage);
+  //         }
+  //       }
+  //     }
+  //     if (chatContent) {
+  //       //FindOne Session
+  //       const oneSession = await this.userSessionService.findOne({ user_id: userObject._id?.toString() });
+  //       const tokenReturn = this.jwtHelper.generateJwt(
+  //         userObject?._id?.toString(),
+  //         userObject?.user_email?.toString(),
+  //         oneSession?._id?.toString(),
+  //         true
+  //       );
+  //       const createChatHistoryDto = {
+  //         chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+  //         chat_content: chatContent,
+  //       };
 
-        req.user_id = userObject?._id.toString();
-        req.user_object = userObject;
-        req.session_id = process.env.INFO_SESSION;
-        req.auth_code = tokenReturn.toString();
+  //       req.user_id = userObject?._id.toString();
+  //       req.user_object = userObject;
+  //       req.session_id = process.env.INFO_SESSION;
+  //       req.auth_code = tokenReturn.toString();
 
-        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-          req,
-          res,
-          createChatHistoryDto,
-          false,
-          true
-        );
-      }
-    }
+  //       const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+  //         req,
+  //         res,
+  //         createChatHistoryDto,
+  //         false,
+  //         true
+  //       );
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 }

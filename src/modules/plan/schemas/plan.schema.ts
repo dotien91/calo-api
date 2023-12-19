@@ -1,9 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { HandleService } from "./handle_service.schema";
-import { Esim } from "../../../modules/e_sim/schemas/esim.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { Channel } from "../../../modules/channel/schemas/channel.schema";
+import { HandleService } from "./handle_service.schema";
 
 export type PlanDocument = Plan & Document;
 @Schema()
@@ -41,10 +39,10 @@ export class Plan {
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: Channel;
+  channel_id: String;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Esim", index: true })
-  ref_id: Esim;
+  ref_id: String;
 
   @Prop({
     type: String,

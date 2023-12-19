@@ -1,59 +1,50 @@
-import { response, Response } from "express";
 import {
-  ForbiddenException,
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
-  NotFoundException,
   Injectable,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { UserService } from "../services/user.service";
-import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
-import { UserOptionService } from "../services/user_option.service";
-import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
-import { UserFollowService } from "../services/user_follow.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { CreateUserBlockDto } from "../dto/create-user_block.dto";
-import { UserBlockService } from "../services/user_block.service";
-import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
-import { UserSessionService } from "../services/user_session.service";
-import { CreateUserViewDto } from "../dto/create-user_view.dto";
-import { UserViewService } from "../services/user_view.service";
+import axios from "axios";
+import TimeZone from "countries-and-timezones";
+import { createHash } from "crypto";
+import { Response } from "express";
 import * as _ from "lodash";
-import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
-import { UserDisagreeService } from "../services/user_disagree.service";
-import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
-import { CityService } from "../../../modules/city/services/city.service";
-import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
-import { UserInterestService } from "../services/user_interest.service";
-import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
-import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
-import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
-import { NotificationService } from "../../../modules/notification/services/notification.service";
-import { User } from "../schemas/user.schema";
-import { FaceDetectionService } from "../../../modules/face_detection/services/face_detection.service";
-import { FaceDetectionHelper } from "../../../modules/face_detection/helper/face_detection.helper";
-import { ChatMediaService } from "../../../modules/chat_media/services/chat_media.service";
-import { UserMoodService } from "../services/user_mood.service";
-import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
-import { UserQuestionService } from "../services/user_question.service";
-import { CreateUserQuestionDto } from "../dto/create-user_question.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
-import TimeZone from "countries-and-timezones";
-import { CreateUserLocationDto } from "../dto/create-user_location.dto";
-import { UserLocationService } from "../services/user_location.service";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { NotificationService } from "../../../modules/notification/services/notification.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
-import { UserAnonymousService } from "../services/user_anonymous.service";
+import { CreateUserBlockDto } from "../dto/create-user_block.dto";
+import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
+import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
+import { CreateUserLocationDto } from "../dto/create-user_location.dto";
+import { CreateUserQuestionDto } from "../dto/create-user_question.dto";
+import { CreateUserViewDto } from "../dto/create-user_view.dto";
 import { RequestDataDto } from "../dto/request-data.dto";
-import axios from "axios";
-import { createHash } from "crypto";
+import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
+import { UpdateUserDto } from "../dto/update-user.dto";
+import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
+import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
+import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
+import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
+import { User } from "../schemas/user.schema";
 import { UserLocationHistory } from "../schemas/user_location_history.schema";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
-import { Types } from "mongoose";
+import { UserService } from "../services/user.service";
+import { UserAnonymousService } from "../services/user_anonymous.service";
+import { UserBlockService } from "../services/user_block.service";
+import { UserDisagreeService } from "../services/user_disagree.service";
+import { UserFollowService } from "../services/user_follow.service";
+import { UserInterestService } from "../services/user_interest.service";
+import { UserLocationService } from "../services/user_location.service";
+import { UserMoodService } from "../services/user_mood.service";
+import { UserOptionService } from "../services/user_option.service";
+import { UserQuestionService } from "../services/user_question.service";
+import { UserSessionService } from "../services/user_session.service";
+import { UserViewService } from "../services/user_view.service";
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -67,14 +58,8 @@ export class UpdateUserHelper {
     private userViewService: UserViewService,
     private userDisagreeService: UserDisagreeService,
     private userPermissionService: UserPermissionService,
-    private chatRoomHelper: ChatRoomHelper,
     private userBlockService: UserBlockService,
     private userSessionService: UserSessionService,
-    private chatRoomUserOptionService: ChatRoomUserOptionService,
-    private chatMediaService: ChatMediaService,
-    private faceDetectionHelper: FaceDetectionHelper,
-    private faceDetectionService: FaceDetectionService,
-    private cityService: CityService,
     private notificationHelper: NotificationHelper,
     private userInterestService: UserInterestService,
     private notificationService: NotificationService,
@@ -82,10 +67,8 @@ export class UpdateUserHelper {
     private userQuestionService: UserQuestionService,
     private jwtHelper: JwtHelperService,
     private configService: ConfigService,
-    private chatHistoryHelper: ChatHistoryHelper,
     private userLocationService: UserLocationService,
-    private userAnonymousService: UserAnonymousService,
-    private readonly channelPermissionService: ChannelPermissionService
+    private userAnonymousService: UserAnonymousService
   ) {}
 
   private readonly logger = new Logger("call");
@@ -121,23 +104,23 @@ export class UpdateUserHelper {
         ...{ _id: updateData._id },
         ...updateData,
       };
-      if (updateData?.travel_city) {
-        const dataCity = await this.cityService.findById(updateData?.travel_city);
-        if (!dataCity) {
-          throw new BadRequestException("City not found!");
-        }
-        if (dataCity.loc && dataCity?.loc?.coordinates) {
-          const dataToUpdate = {
-            user_id: updateData._id,
-            travel_city: updateData?.travel_city,
-            loc: {
-              type: "Point",
-              coordinates: dataCity?.loc?.coordinates,
-            },
-          };
-          await this.userOptionService.update(dataToUpdate);
-        }
-      }
+      // if (updateData?.travel_city) {
+      //   const dataCity = await this.cityService.findById(updateData?.travel_city);
+      //   if (!dataCity) {
+      //     throw new BadRequestException("City not found!");
+      //   }
+      //   if (dataCity.loc && dataCity?.loc?.coordinates) {
+      //     const dataToUpdate = {
+      //       user_id: updateData._id,
+      //       travel_city: updateData?.travel_city,
+      //       loc: {
+      //         type: "Point",
+      //         coordinates: dataCity?.loc?.coordinates,
+      //       },
+      //     };
+      //     await this.userOptionService.update(dataToUpdate);
+      //   }
+      // }
       //Check Password
       if (dataUpdate?.old_password && dataUpdate?.user_password) {
         //Check Old Password
@@ -180,82 +163,82 @@ export class UpdateUserHelper {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
-      if (isUpdateAvatar) {
-        //Check Data
-        //Update
-        //Validate
-        const avatarUrl = dataUpdate?.user_avatar;
-        const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
+      // if (isUpdateAvatar) {
+      //   //Check Data
+      //   //Update
+      //   //Validate
+      //   const avatarUrl = dataUpdate?.user_avatar;
+      //   const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
 
-        let genderPoint = 0;
-        if (image1Object && image1Object?.gender) {
-          if (image1Object?.gender === "male") {
-            genderPoint = -10;
-          } else {
-            if (image1Object?.gender === "female") {
-              genderPoint = 0;
-            } else {
-              genderPoint = 10;
-            }
-          }
-        } else {
-          genderPoint = 10;
-        }
+      //   let genderPoint = 0;
+      //   if (image1Object && image1Object?.gender) {
+      //     if (image1Object?.gender === "male") {
+      //       genderPoint = -10;
+      //     } else {
+      //       if (image1Object?.gender === "female") {
+      //         genderPoint = 0;
+      //       } else {
+      //         genderPoint = 10;
+      //       }
+      //     }
+      //   } else {
+      //     genderPoint = 10;
+      //   }
 
-        const userOptionData = await this.userOptionService.findOne({ user_id: updateData._id?.toString() });
-        const oldPoint = userOptionData?.avatar_point;
+      //   const userOptionData = await this.userOptionService.findOne({ user_id: updateData._id?.toString() });
+      //   const oldPoint = userOptionData?.avatar_point;
 
-        //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-        const pointToPlus =
-          parseFloat(userOptionData?.circle_point?.toString()) -
-          parseFloat(oldPoint?.toString()) +
-          parseFloat(genderPoint?.toString());
+      //   //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
+      //   const pointToPlus =
+      //     parseFloat(userOptionData?.circle_point?.toString()) -
+      //     parseFloat(oldPoint?.toString()) +
+      //     parseFloat(genderPoint?.toString());
 
-        //Update Gender Point
-        const dataUpdateAfter = {
-          user_id: updateData._id?.toString(),
-          avatar_point: genderPoint,
-          avatar_gender: image1Object?.gender,
-          circle_point: pointToPlus,
-        };
+      //   //Update Gender Point
+      //   const dataUpdateAfter = {
+      //     user_id: updateData._id?.toString(),
+      //     avatar_point: genderPoint,
+      //     avatar_gender: image1Object?.gender,
+      //     circle_point: pointToPlus,
+      //   };
 
-        await this.userOptionService.update(dataUpdateAfter);
+      //   await this.userOptionService.update(dataUpdateAfter);
 
-        const dataValidate = await this.faceDetectionService.findOne({
-          user_id: userObject._id.toString(),
-          validate_status: 1,
-        });
+      //   const dataValidate = await this.faceDetectionService.findOne({
+      //     user_id: userObject._id.toString(),
+      //     validate_status: 1,
+      //   });
 
-        if (dataValidate) {
-          const image2Object = await this.chatMediaService.findById(dataValidate.id_compare?.toString());
-          if (image1Object && image2Object) {
-            const dataIds = [];
-            if (dataValidate.media_ids) {
-              for (const mediaItem of dataValidate.media_ids) {
-                dataIds.push(mediaItem.toString());
-              }
-            }
-            try {
-              await this.faceDetectionHelper.handleDetectFromServer(image1Object, image2Object, userObject, dataIds);
-            } catch (error) {}
-          }
-        }
-      }
+      //   if (dataValidate) {
+      //     const image2Object = await this.chatMediaService.findById(dataValidate.id_compare?.toString());
+      //     if (image1Object && image2Object) {
+      //       const dataIds = [];
+      //       if (dataValidate.media_ids) {
+      //         for (const mediaItem of dataValidate.media_ids) {
+      //           dataIds.push(mediaItem.toString());
+      //         }
+      //       }
+      //       try {
+      //         await this.faceDetectionHelper.handleDetectFromServer(image1Object, image2Object, userObject, dataIds);
+      //       } catch (error) {}
+      //     }
+      //   }
+      // }
       const user = await this.appUserService.updateCount({ _id: updateData?._id }, { user_version: 1 });
       if (user.display_name !== "" && user.user_phone !== "") {
-        await this.channelPermissionService.updateCount(
-          { user_id: user?._id?.toString(), channel_id: req?.channel_id.toString() },
-          { point: 0, point_month: 0, point_week: 0 },
-          req?.auth_code,
-          {
-            entity_id: new Types.ObjectId(),
-            entity_type: "update_profile",
-            content: user?.display_name,
-            user_id: user?._id,
-            point_number: 0,
-          },
-          "update_profile"
-        );
+        // await this.channelPermissionService.updateCount(
+        //   { user_id: user?._id?.toString(), channel_id: req?.channel_id.toString() },
+        //   { point: 0, point_month: 0, point_week: 0 },
+        //   req?.auth_code,
+        //   {
+        //     entity_id: new Types.ObjectId(),
+        //     entity_type: "update_profile",
+        //     content: user?.display_name,
+        //     user_id: user?._id,
+        //     point_number: 0,
+        //   },
+        //   "update_profile"
+        // );
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -482,9 +465,9 @@ export class UpdateUserHelper {
         //   }
         // }
         if (dataReturnConfig) {
-          const dataMessage = dataReturnConfig.data_content;
+          // const dataMessage = dataReturnConfig.data_content;
           //Send Message
-          this.sendMessage(userObject, req, res, dataMessage);
+          // this.sendMessage(userObject, req, res, dataMessage);
         }
       }
 
@@ -1228,18 +1211,18 @@ export class UpdateUserHelper {
       //Query 03
       await this.userDisagreeService.removeOne(dataUpdate);
       let dataReturn = await this.userFollowService.update(dataUpdate);
-      if (dataReturn.match_status) {
-        //Query 04
-        const chatRoomObject = await this.chatRoomHelper.handleCreateRoom(
-          userObject,
-          dataFollow.partner_id,
-          "personal"
-        );
-        //Create Room
-        dataReturn = { ...dataReturn, ...{ create_room: chatRoomObject } };
-      } else {
-        dataReturn = { ...dataReturn, ...{ create_room: null } };
-      }
+      // if (dataReturn.match_status) {
+      //   //Query 04
+      //   const chatRoomObject = await this.chatRoomHelper.handleCreateRoom(
+      //     userObject,
+      //     dataFollow.partner_id,
+      //     "personal"
+      //   );
+      //   //Create Room
+      //   dataReturn = { ...dataReturn, ...{ create_room: chatRoomObject } };
+      // } else {
+      //   dataReturn = { ...dataReturn, ...{ create_room: null } };
+      // }
 
       if (isSendNotification) {
         await this.sendNotificationToPartner(dataFollow.partner_id.toString(), userObject, authCode, req);
@@ -1509,16 +1492,16 @@ export class UpdateUserHelper {
       };
       const dataReturn = await this.userBlockService.update(dataUpdate);
 
-      const chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
-      if (chatRoomData) {
-        const dataToUpdate = {
-          user_block: userObject._id.toString(),
-        };
-        await this.chatRoomUserOptionService.updateMany(
-          { chat_room_id: chatRoomData.chat_room_id._id.toString() },
-          dataToUpdate
-        );
-      }
+      // const chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
+      // if (chatRoomData) {
+      //   const dataToUpdate = {
+      //     user_block: userObject._id.toString(),
+      //   };
+      //   await this.chatRoomUserOptionService.updateMany(
+      //     { chat_room_id: chatRoomData.chat_room_id._id.toString() },
+      //     dataToUpdate
+      //   );
+      // }
 
       let dataBlockUpdate = [dataBlock.partner_id.toString()];
       if (userObject?.block_users) {
@@ -1571,66 +1554,66 @@ export class UpdateUserHelper {
     }
   }
 
-  /**
-   *
-   * @param userId
-   * @param cityName
-   * @param countryName
-   */
-  async sendMessage(partnerObject: User, req: ExpressRequestDto, res: Response, dataMessage: string) {
-    setTimeout(async () => {
-      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-      //Create new
-      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
-        supportAccount,
-        partnerObject._id.toString(),
-        "personal",
-        "",
-        true
-      );
+  // /**
+  //  *
+  //  * @param userId
+  //  * @param cityName
+  //  * @param countryName
+  //  */
+  // async sendMessage(partnerObject: User, req: ExpressRequestDto, res: Response, dataMessage: string) {
+  //   setTimeout(async () => {
+  //     const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+  //     //Create new
+  //     const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+  //       supportAccount,
+  //       partnerObject._id.toString(),
+  //       "personal",
+  //       "",
+  //       true
+  //     );
 
-      if (!dataCreateReturnRoom) {
-        console.log("Not found");
-      } else {
-        // let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        // let currentTime = new Date().getTime();
+  //     if (!dataCreateReturnRoom) {
+  //       console.log("Not found");
+  //     } else {
+  //       // let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+  //       // let currentTime = new Date().getTime();
 
-        //console.log(currentTime - updatedAt);
-        // let leftTime = currentTime - updatedAt;
-        // if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-        //   console.log("Not return");
-        //   return null;
-        // }
+  //       //console.log(currentTime - updatedAt);
+  //       // let leftTime = currentTime - updatedAt;
+  //       // if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+  //       //   console.log("Not return");
+  //       //   return null;
+  //       // }
 
-        const chatContent = dataMessage;
-        const tokenReturn = this.jwtHelper.generateJwt(
-          process.env.INFO_USER,
-          supportAccount?.user_email?.toString(),
-          process.env.INFO_SESSION,
-          true
-        );
-        const createChatHistoryDto = {
-          chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-          chat_content: chatContent,
-        };
+  //       const chatContent = dataMessage;
+  //       const tokenReturn = this.jwtHelper.generateJwt(
+  //         process.env.INFO_USER,
+  //         supportAccount?.user_email?.toString(),
+  //         process.env.INFO_SESSION,
+  //         true
+  //       );
+  //       const createChatHistoryDto = {
+  //         chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+  //         chat_content: chatContent,
+  //       };
 
-        req.user_id = supportAccount?._id.toString();
-        req.user_object = supportAccount;
-        req.session_id = process.env.INFO_SESSION;
-        req.auth_code = tokenReturn.toString();
+  //       req.user_id = supportAccount?._id.toString();
+  //       req.user_object = supportAccount;
+  //       req.session_id = process.env.INFO_SESSION;
+  //       req.auth_code = tokenReturn.toString();
 
-        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-          req,
-          res,
-          createChatHistoryDto,
-          false,
-          true
-        );
-      }
-    }, 2000);
+  //       const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+  //         req,
+  //         res,
+  //         createChatHistoryDto,
+  //         false,
+  //         true
+  //       );
+  //     }
+  //   }, 2000);
 
-    return true;
-  }
+  //   return true;
+  // }
 
   /**
    * @author Tony Vu
@@ -1655,18 +1638,18 @@ export class UpdateUserHelper {
       };
       const dataToCheck = await this.userBlockService.findOne(dataFindOne);
       if (dataToCheck) {
-        const dataReturn = await this.userBlockService.remove(dataToCheck._id.toString());
+        // const dataReturn = await this.userBlockService.remove(dataToCheck._id.toString());
 
-        const chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
-        if (chatRoomData) {
-          const dataToUpdate = {
-            user_block: "",
-          };
-          await this.chatRoomUserOptionService.updateMany(
-            { chat_room_id: chatRoomData.chat_room_id._id.toString() },
-            dataToUpdate
-          );
-        }
+        // const chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
+        // if (chatRoomData) {
+        //   const dataToUpdate = {
+        //     user_block: "",
+        //   };
+        //   await this.chatRoomUserOptionService.updateMany(
+        //     { chat_room_id: chatRoomData.chat_room_id._id.toString() },
+        //     dataToUpdate
+        //   );
+        // }
 
         if (userObject?.block_users) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
@@ -1691,6 +1674,7 @@ export class UpdateUserHelper {
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         }
+        let dataReturn = null;
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

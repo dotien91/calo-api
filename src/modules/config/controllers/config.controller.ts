@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req } from "@nestjs/common";
-import { ConfigHelper } from "../helper/config.helper";
+import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { ListConfigDto } from "../dto/list-config.dto";
 import { UpdateConfigDto } from "../dto/update-config.dto";
+import { ConfigHelper } from "../helper/config.helper";
 
 @Controller("config")
 export class ConfigController {
@@ -22,7 +22,7 @@ export class ConfigController {
 
   @Get("/default-avatar/:type")
   async getDefaultAvatar(@Param("type") type: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.configHelper.getDefaultAvatar(type, res, req);
+    // return await this.configHelper.getDefaultAvatar(type, res, req);
   }
 
   @Get("/:type/:package")

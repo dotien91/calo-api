@@ -1,24 +1,20 @@
-import { Response, Request, response } from "express";
-import { ForbiddenException, HttpStatus, NotFoundException, Injectable, Res, Req, Param } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
-import { PlanService } from "../../../modules/plan/services/plan.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { Purchase } from "../schemas/purchase.schema";
-import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
-import { PurchaseService } from "../services/purchase.service";
-import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
-import { OrderService } from "../../../modules/order/services/order.service";
-import Verifier from "google-play-billing-validator";
-import { OrderHelper } from "../../../modules/order/helper/OrderHelper";
-import { Order } from "../../../modules/order/schemas/order.schema";
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
 import axios from "axios";
-import { User } from "../../../modules/user/schemas/user.schema";
-import { UserService } from "../../../modules/user/services/user.service";
-import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
+import { Response } from "express";
+import Verifier from "google-play-billing-validator";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
+// import { OrderHelper } from "../../../modules/order/helper/OrderHelper";
+import { Order } from "../../../modules/order/schemas/order.schema";
+import { OrderService } from "../../../modules/order/services/order.service";
+import { PlanService } from "../../../modules/plan/services/plan.service";
+import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
+import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
+import { PurchaseService } from "../services/purchase.service";
 
 /**
  * @author Tony Vu
@@ -32,11 +28,9 @@ export class PurchaseHelper {
     private subscribeService: SubscribeService,
     private purchaseService: PurchaseService,
     private orderService: OrderService,
-    private orderHelper: OrderHelper,
+    // private orderHelper: OrderHelper,
     private appUserService: UserService,
-    private chatRoomHelper: ChatRoomHelper,
     private jwtHelper: JwtHelperService,
-    private chatHistoryHelper: ChatHistoryHelper,
     private transactionHelper: TransactionHelper
   ) {}
 
@@ -90,11 +84,11 @@ export class PurchaseHelper {
           order_note: orderObject.order_note,
         };
         await this.orderService.update(dataUpdate);
-        if (orderObject.plan_type !== "coin") {
-          //Update Subscribe
-          await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id);
-        }
-        await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
+        // if (orderObject.plan_type !== "coin") {
+        //   //Update Subscribe
+        //   await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id);
+        // }
+        // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
         const timeToSave = new Date(Number(createPurchaseData?.purchase_time) * 1000);
         if (timeToSave.getTime() > 0) {
         } else {
@@ -244,7 +238,7 @@ export class PurchaseHelper {
       };
       await this.orderService.update(dataUpdate);
 
-      await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
+      // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
 
       console.log(">> Paid from Apple: >>" + response.data.environment);
       const timeToSave = new Date(Number(dataCreate?.purchase_time) * 1000);
@@ -269,7 +263,7 @@ export class PurchaseHelper {
 
       if (orderObject.plan_type !== "coin") {
         //Update Subscribe
-        await this.orderHelper.updateOrderAfter(dataCreate?.local_order_id);
+        // await this.orderHelper.updateOrderAfter(dataCreate?.local_order_id);
       } else {
         await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataReturn, authCode);
       }
@@ -572,92 +566,92 @@ export class PurchaseHelper {
     }
   }
 
-  /**
-   *
-   * @param userId
-   * @param cityName
-   * @param countryName
-   */
-  async sendNotificationPublisher(partnerObject: User, req: ExpressRequestDto, res: Response, countryName: string) {
-    setTimeout(async () => {
-      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER_PREMIUM });
-      //Create new
-      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
-        supportAccount,
-        partnerObject._id.toString(),
-        "personal",
-        "",
-        true
-      );
+  // /**
+  //  *
+  //  * @param userId
+  //  * @param cityName
+  //  * @param countryName
+  //  */
+  // async sendNotificationPublisher(partnerObject: User, req: ExpressRequestDto, res: Response, countryName: string) {
+  //   setTimeout(async () => {
+  //     const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER_PREMIUM });
+  //     //Create new
+  //     const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+  //       supportAccount,
+  //       partnerObject._id.toString(),
+  //       "personal",
+  //       "",
+  //       true
+  //     );
 
-      if (!dataCreateReturnRoom) {
-        console.log("Not found");
-      } else {
-        //@ts-ignore
-        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        const currentTime = new Date().getTime();
+  //     if (!dataCreateReturnRoom) {
+  //       console.log("Not found");
+  //     } else {
+  //       //@ts-ignore
+  //       const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+  //       const currentTime = new Date().getTime();
 
-        //console.log(currentTime - updatedAt);
-        const leftTime = currentTime - updatedAt;
-        //@ts-ignore
-        if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-          console.log("Not return");
-          return null;
-        }
+  //       //console.log(currentTime - updatedAt);
+  //       const leftTime = currentTime - updatedAt;
+  //       //@ts-ignore
+  //       if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+  //         console.log("Not return");
+  //         return null;
+  //       }
 
-        let chatContent = "";
-        const tokenReturn = this.jwtHelper.generateJwt(
-          process.env.INFO_USER,
-          supportAccount?.user_email?.toString(),
-          process.env.INFO_SESSION,
-          true
-        );
-        if (process.env.BRANCH_NAME === "whiteg") {
-          if (countryName === "Vietnam") {
-            chatContent = `❤️ Chào mừng bạn đến với Đội hỗ trợ Premium. Hy vọng bạn có thêm kinh nghiệm về WhiteG. Nếu bạn có bất kỳ vấn đề gì, xin vui lòng liên hệ với chúng tôi tại đây. Chúc một ngày tốt lành, chàng trai của tôi!
-            —-
-  💬 WhiteG - Gay chat & call
-  🐦 Twitter: https://twitter.com/whiteGappinio
-  🫘 Instagram: https://twitter.com/whiteGappinio`;
-          } else {
-            chatContent = `❤️ Welcome to our Premium support. Hope you have more experience on WhiteG. If you have any problems, please contact us here. Have a good day, my boy!
-  —-
-  💬 WhiteG - Gay chat & call
-  🐦 Twitter: https://twitter.com/whiteGappinio
-  🫘 Instagram: https://twitter.com/whiteGappinio`;
-          }
-        } else {
-          if (countryName === "Vietnam") {
-            chatContent = `❤️ Chào mừng bạn đến với Đội hỗ trợ Premium. Hy vọng bạn có thêm kinh nghiệm về WhiteG. Nếu bạn có bất kỳ vấn đề gì, xin vui lòng liên hệ với chúng tôi tại đây. Chúc một ngày tốt lành, tình yêu của tôi!
-            —-
-  💬 Honee - Dating, Chat & Meet`;
-          } else {
-            chatContent = `❤️ Welcome to our Premium support. Hope you have more experience on WhiteG. If you have any problems, please contact us here. Have a good day, my honey!
-  —-
-  💬 Honee - Dating, Chat & Meet`;
-          }
-        }
+  //       let chatContent = "";
+  //       const tokenReturn = this.jwtHelper.generateJwt(
+  //         process.env.INFO_USER,
+  //         supportAccount?.user_email?.toString(),
+  //         process.env.INFO_SESSION,
+  //         true
+  //       );
+  //       if (process.env.BRANCH_NAME === "whiteg") {
+  //         if (countryName === "Vietnam") {
+  //           chatContent = `❤️ Chào mừng bạn đến với Đội hỗ trợ Premium. Hy vọng bạn có thêm kinh nghiệm về WhiteG. Nếu bạn có bất kỳ vấn đề gì, xin vui lòng liên hệ với chúng tôi tại đây. Chúc một ngày tốt lành, chàng trai của tôi!
+  //           —-
+  // 💬 WhiteG - Gay chat & call
+  // 🐦 Twitter: https://twitter.com/whiteGappinio
+  // 🫘 Instagram: https://twitter.com/whiteGappinio`;
+  //         } else {
+  //           chatContent = `❤️ Welcome to our Premium support. Hope you have more experience on WhiteG. If you have any problems, please contact us here. Have a good day, my boy!
+  // —-
+  // 💬 WhiteG - Gay chat & call
+  // 🐦 Twitter: https://twitter.com/whiteGappinio
+  // 🫘 Instagram: https://twitter.com/whiteGappinio`;
+  //         }
+  //       } else {
+  //         if (countryName === "Vietnam") {
+  //           chatContent = `❤️ Chào mừng bạn đến với Đội hỗ trợ Premium. Hy vọng bạn có thêm kinh nghiệm về WhiteG. Nếu bạn có bất kỳ vấn đề gì, xin vui lòng liên hệ với chúng tôi tại đây. Chúc một ngày tốt lành, tình yêu của tôi!
+  //           —-
+  // 💬 Honee - Dating, Chat & Meet`;
+  //         } else {
+  //           chatContent = `❤️ Welcome to our Premium support. Hope you have more experience on WhiteG. If you have any problems, please contact us here. Have a good day, my honey!
+  // —-
+  // 💬 Honee - Dating, Chat & Meet`;
+  //         }
+  //       }
 
-        const createChatHistoryDto = {
-          chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-          chat_content: chatContent,
-        };
+  //       const createChatHistoryDto = {
+  //         chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+  //         chat_content: chatContent,
+  //       };
 
-        req.user_id = supportAccount?._id.toString();
-        req.user_object = supportAccount;
-        req.session_id = process.env.INFO_SESSION;
-        req.auth_code = tokenReturn.toString();
+  //       req.user_id = supportAccount?._id.toString();
+  //       req.user_object = supportAccount;
+  //       req.session_id = process.env.INFO_SESSION;
+  //       req.auth_code = tokenReturn.toString();
 
-        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-          req,
-          res,
-          createChatHistoryDto,
-          false,
-          true
-        );
-      }
-    }, 2000);
+  //       // const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+  //       //   req,
+  //       //   res,
+  //       //   createChatHistoryDto,
+  //       //   false,
+  //       //   true
+  //       // );
+  //     }
+  //   }, 2000);
 
-    return true;
-  }
+  //   return true;
+  // }
 }

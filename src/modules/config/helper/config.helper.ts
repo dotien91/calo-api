@@ -1,31 +1,25 @@
-import { Response, Request } from "express";
 import {
+  BadRequestException,
   ForbiddenException,
   HttpStatus,
-  NotFoundException,
   Injectable,
-  BadRequestException,
-  Res,
-  Req,
-  Param,
+  NotFoundException
 } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateConfigDto } from "../dto/create-config.dto";
-import { ConfigService } from "../services/config.service";
-import { ListConfigDto } from "../dto/list-config.dto";
-import { PlanService } from "../../../modules/plan/services/plan.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateConfigDto } from "../dto/update-config.dto";
-import { Config } from "../schemas/config.schema";
-import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
-import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
-import axios from "axios";
-import { JwtService } from "@nestjs/jwt";
 import { ConfigService as ConfigServiceNest } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import axios from "axios";
+import { Response } from "express";
 import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
+import { PlanService } from "../../../modules/plan/services/plan.service";
+import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { UserService } from "../../../modules/user/services/user.service";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
-import { ChatMediaService } from "../../../modules/chat_media/services/chat_media.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { CreateConfigDto } from "../dto/create-config.dto";
+import { ListConfigDto } from "../dto/list-config.dto";
+import { UpdateConfigDto } from "../dto/update-config.dto";
+import { ConfigService } from "../services/config.service";
 
 /**
  * @author Tony Vu
@@ -33,6 +27,7 @@ import { ChatMediaService } from "../../../modules/chat_media/services/chat_medi
  */
 @Injectable()
 export class ConfigHelper {
+  channelService: any;
   constructor(
     private configService: ConfigService,
     private planService: PlanService,
@@ -40,8 +35,6 @@ export class ConfigHelper {
     private subscribeService: SubscribeService,
     private handleServiceService: HandleServiceService,
     private userService: UserService,
-    private channelService: ChannelService,
-    private chatMediaService: ChatMediaService
   ) {}
 
   /**
@@ -172,7 +165,7 @@ export class ConfigHelper {
       }
       let dataChannel: any = {};
       if (channelId) {
-        dataChannel = await this.channelService.findById(channelId);
+        // dataChannel = await this.channelService.findById(channelId);
         channelVersion = Number(dataChannel?.channel_version) || 0;
       }
       // let dataReturnSubscribe = await this.subscribeService.filter(dataToFilterSubscribe, configByOBject, page, limit);
@@ -264,40 +257,40 @@ export class ConfigHelper {
     }
   }
 
-  /**
-   * @author Tony Vu
-   * @param query
-   * @param id
-   * @param res
-   * @param req
-   * @returns
-   */
-  async getDefaultAvatar(type: string, res: Response, req: ExpressRequestDto) {
-    try {
-      const dataFilter = {
-        function_type: type,
-      };
-      const dataCount = await this.chatMediaService.count(dataFilter);
-      const max = dataCount;
-      const min = 1;
-      const pageRandom = Math.floor(Math.random() * (max - min + 1)) + min;
-      const dataReturn = "";
-      const dataImage = await this.chatMediaService.filter(dataFilter, {}, pageRandom, 1);
-      if (dataImage && dataImage?.length) {
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataImage[0]);
-      } else {
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.NO_CONTENT)
-          .json(dataReturn);
-      }
-    } catch (error) {
-      throw new NotFoundException(error.message);
-    }
-  }
+  // /**
+  //  * @author Tony Vu
+  //  * @param query
+  //  * @param id
+  //  * @param res
+  //  * @param _req
+  //  * @returns
+  //  */
+  // async getDefaultAvatar(type: string, res: Response, _req: ExpressRequestDto) {
+  //   try {
+  //     const dataFilter = {
+  //       function_type: type,
+  //     };
+  //     // const dataCount = await this.chatMediaService.count(dataFilter);
+  //     // const max = dataCount;
+  //     const min = 1;
+  //     const pageRandom = Math.floor(Math.random() * (max - min + 1)) + min;
+  //     const dataReturn = "";
+  //     const dataImage = await this.chatMediaService.filter(dataFilter, {}, pageRandom, 1);
+  //     if (dataImage && dataImage?.length) {
+  //       return res
+  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //         .status(HttpStatus.OK)
+  //         .json(dataImage[0]);
+  //     } else {
+  //       return res
+  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //         .status(HttpStatus.NO_CONTENT)
+  //         .json(dataReturn);
+  //     }
+  //   } catch (error) {
+  //     throw new NotFoundException(error.message);
+  //   }
+  // }
   /**
    * @author Tony Vu
    * @param req

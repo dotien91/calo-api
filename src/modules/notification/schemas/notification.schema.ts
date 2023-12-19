@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Request } from "../../../modules/request/schemas/request.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 
 export type NotificationDocument = Notification & Document;
@@ -42,7 +41,7 @@ export class Notification {
     ref: "Request",
     nullable: true,
   })
-  request_id: Request;
+  request_id: String;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   createdBy: User;

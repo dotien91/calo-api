@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, ObjectId, Schema as MongooseSchema } from "mongoose";
-import { Channel } from "../../../modules/channel/schemas/channel.schema";
-import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
+import { Document, Schema as MongooseSchema, ObjectId } from "mongoose";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { TransactionBank } from "./transaction_bank.schema";
 
@@ -31,7 +29,7 @@ export class Transaction {
   transaction_bank: TransactionBank;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: Channel;
+  channel_id: String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -66,7 +64,7 @@ export class Transaction {
     index: true,
     nullable: true,
   })
-  ref_avatar: ChatMedia;
+  ref_avatar: String;
 
   @Prop({
     type: Number,

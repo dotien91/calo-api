@@ -1,19 +1,13 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable, Logger } from "@nestjs/common";
 import { Queue } from "bull";
-import { CheckGiftPointLevelDto } from "../gift/dto/check-gift-point-level.dto";
-import { GiftService } from "../gift/services/gift.service";
-import { NotiGiveGiftDto } from "../gift/dto/noti-give-gift.dto";
-import { UserGiftService } from "../gift/services/user_gift.service";
 
 @Injectable()
 export class QueueService {
   constructor(
     @InjectQueue("gift") private giftQueue: Queue,
     @InjectQueue("noti") private notiQueue: Queue,
-    @InjectQueue("challenge") private challengeQueue: Queue,
-    private readonly giftService: GiftService,
-    private readonly userGiftService: UserGiftService
+    @InjectQueue("challenge") private challengeQueue: Queue
   ) {}
 
   private readonly logger = new Logger(QueueService.name);
@@ -43,27 +37,27 @@ export class QueueService {
     await this.notiQueue.add("noti-job", data);
   }
 
-  async addGiftToQueueForAccount(data: CheckGiftPointLevelDto) {
-    try {
-      console.log(JSON.stringify(data));
-      const giftsDerlivered = await this.giftService.checkGiftUserDelivered(data);
-      for (const gift of giftsDerlivered) {
-        console.log(JSON.stringify(gift));
-        const dataUserGift = await this.userGiftService.findOne({
-          gift_id: gift?._id.toString(),
-          user_id: data.user_id,
-        });
-        if (!dataUserGift) {
-          const createGiveGiftDto: NotiGiveGiftDto = {
-            quantity: gift.stock_qty.valueOf(),
-            gift_id: gift,
-            partner_id: data.user_id,
-          };
-          this.addTaskCheckGiftAccout(createGiveGiftDto);
-        }
-      }
-    } catch (error) {
-      this.logger.log("Send Gift To Customer Fails :", error.message);
-    }
-  }
+  // async addGiftToQueueForAccount(data: CheckGiftPointLevelDto) {
+  //   try {
+  //     console.log(JSON.stringify(data));
+  //     const giftsDerlivered = await this.giftService.checkGiftUserDelivered(data);
+  //     for (const gift of giftsDerlivered) {
+  //       console.log(JSON.stringify(gift));
+  //       const dataUserGift = await this.userGiftService.findOne({
+  //         gift_id: gift?._id.toString(),
+  //         user_id: data.user_id,
+  //       });
+  //       if (!dataUserGift) {
+  //         const createGiveGiftDto: NotiGiveGiftDto = {
+  //           quantity: gift.stock_qty.valueOf(),
+  //           gift_id: gift,
+  //           partner_id: data.user_id,
+  //         };
+  //         this.addTaskCheckGiftAccout(createGiveGiftDto);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     this.logger.log("Send Gift To Customer Fails :", error.message);
+  //   }
+  // }
 }

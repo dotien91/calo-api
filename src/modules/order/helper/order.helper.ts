@@ -1,46 +1,29 @@
-import { Response, Request } from "express";
 import {
+  BadRequestException,
   ForbiddenException,
   HttpStatus,
-  NotFoundException,
   Injectable,
-  BadRequestException,
-  Res,
-  Req,
-  Param,
+  NotFoundException
 } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateOrderDto } from "../dto/create-order.dto";
-import { OrderService } from "../services/order.service";
-import { ListOrderDto } from "../dto/list-order.dto";
-import { PlanService } from "../../../modules/plan/services/plan.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateOrderDto } from "../dto/update-order.dto";
-import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import axios from "axios";
-import { Order } from "../schemas/order.schema";
-import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
-import { ChatSocketService } from "../../../modules/chat_socket/chat_socket.service";
+import { Response } from "express";
 import * as moment from "moment";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
-import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
-import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
-import { CourseLikeService } from "../../../modules/course/services/course_like.service";
-import { CourseService } from "../../../modules/course/services/course.service";
-import { TransactionService } from "../../../modules/transaction/services/transaction.service";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
-import { Course } from "../../../modules/course/schemas/course.schema";
-import { ChallengePermissionService } from "../../../modules/challenge/services/challenge_permission.service";
-import { ChallengeActivityService } from "../../../modules/challenge/services/challenge_activity.service";
-import { CreateChallengeActivityDto } from "../../../modules/challenge/dto/create-challenge_activity.dto";
-import { ChallengeService } from "../../../modules/challenge/services/challenge.service";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
-import { TicketService } from "../../../modules/ticket/services/ticket.service";
-import { ChannelPermission } from "../../../modules/channel/schemas/channel_permission.schema";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
-import HookExpress from "../../hook/hook_epress";
-import { CreateCourseLikeDto } from "../../../modules/course/dto/create-course_like.dto";
+import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
+import { PlanService } from "../../../modules/plan/services/plan.service";
+import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
+import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
+import { TransactionService } from "../../../modules/transaction/services/transaction.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { CreateOrderDto } from "../dto/create-order.dto";
+import { ListOrderDto } from "../dto/list-order.dto";
+import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
+import { UpdateOrderDto } from "../dto/update-order.dto";
+import { Order } from "../schemas/order.schema";
+import { OrderService } from "../services/order.service";
 
 let initHook = false;
 /**
@@ -55,65 +38,56 @@ export class OrderHelper {
     private handleService: HandleServiceService,
     private userPermissionService: UserPermissionService,
     private subscribeService: SubscribeService,
-    private channelService: ChannelService,
-    private readonly socketService: ChatSocketService,
-    private courseLikeService: CourseLikeService,
-    private courseService: CourseService,
     private transactionService: TransactionService,
-    private channelPermissionService: ChannelPermissionService,
-    private challengePermissionService: ChallengePermissionService,
-    private challengeActivitiesService: ChallengeActivityService,
-    private challengeService: ChallengeService,
     private readonly eventHookWorkerService: EventHookWorkerService,
-    private ticketService: TicketService,
     private readonly eventHookNotificationService: EventHookNotificationService
   ) {
-    if (!initHook) {
-      this.initHook();
-      initHook = true;
-    }
+    // if (!initHook) {
+    //   this.initHook();
+    //   initHook = true;
+    // }
   }
 
-  initHook() {
-    HookExpress.add_action("course.add-payment", async (data: CreateCourseLikeDto, courseData: Course) => {
-      await this.processCreateOrderCourse(data, courseData);
-    });
-  }
+  // initHook() {
+  //   HookExpress.add_action("course.add-payment", async (data: CreateCourseLikeDto, courseData: Course) => {
+  //     await this.processCreateOrderCourse(data, courseData);
+  //   });
+  // }
 
-  /**
-   *
-   * @param dataJoin
-   * @param courseData
-   * @returns
-   */
-  async processCreateOrderCourse(dataJoin: CreateCourseLikeDto, courseData: Course) {
-    try {
-      const dataToAdd = {
-        channel_id: courseData?.channel_id?.toString(),
-        payment_method: "transfer",
-        user_id: dataJoin?.user_id,
-        service_name: courseData.title,
-        service_id: courseData?.service_id?.toString(),
-        plan_id: courseData?.plan_id?.toString(),
-        plan_type: "one_time",
-        status: "success",
-        short_id: null,
-        amount_of_package: 1,
-        order_note: "",
-        coupon_code: "",
-        description: "",
-        trans_id: "",
-        deep_link: "",
-        price: Number(courseData.coin_value),
-      };
-      let dataCreate: Order = await this.orderService.create(dataToAdd);
-      dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-      return dataCreate;
-    } catch (error) {
-      console.log(error);
-      return true;
-    }
-  }
+  // /**
+  //  *
+  //  * @param dataJoin
+  //  * @param courseData
+  //  * @returns
+  //  */
+  // async processCreateOrderCourse(dataJoin: CreateCourseLikeDto, courseData: Course) {
+  //   try {
+  //     const dataToAdd = {
+  //       channel_id: courseData?.channel_id?.toString(),
+  //       payment_method: "transfer",
+  //       user_id: dataJoin?.user_id,
+  //       service_name: courseData.title,
+  //       service_id: courseData?.service_id?.toString(),
+  //       plan_id: courseData?.plan_id?.toString(),
+  //       plan_type: "one_time",
+  //       status: "success",
+  //       short_id: null,
+  //       amount_of_package: 1,
+  //       order_note: "",
+  //       coupon_code: "",
+  //       description: "",
+  //       trans_id: "",
+  //       deep_link: "",
+  //       price: Number(courseData.coin_value),
+  //     };
+  //     let dataCreate: Order = await this.orderService.create(dataToAdd);
+  //     dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
+  //     return dataCreate;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return true;
+  //   }
+  // }
 
   /**
    *
@@ -296,10 +270,9 @@ export class OrderHelper {
       const dataOrder = await this.orderService.findById(orderId?.toString() || "");
 
       const channelId = dataOrder?.channel_id;
-      const channelObject = await this.channelService.findOne({ _id: channelId });
+      // const channelObject = await this.channelService.findOne({ _id: channelId });
 
-      let dataRedirect =
-        (channelObject?.domain || "https://gamifa.vn") + "/r/orders/detail/" + dataOrder?._id?.toString();
+      let dataRedirect = ("https://gamifa.vn") + "/r/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
         dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
       }
@@ -550,21 +523,21 @@ export class OrderHelper {
       //Check User Role
       const userId = userObject._id.toString();
       const channelId = req?.channel_id;
-      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
-      let havePermission = false;
-      if (
-        userPermission?.channel_role == "mentor" ||
-        userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
-      ) {
-        havePermission = true;
-      }
-      if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-        havePermission = true;
-      }
-      if (!havePermission) {
-        throw new ForbiddenException("You not have permission for this activity!");
-      }
+      // const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      // let havePermission = false;
+      // if (
+      //   userPermission?.channel_role == "mentor" ||
+      //   userPermission?.channel_role == "super_admin" ||
+      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
+      // ) {
+      //   havePermission = true;
+      // }
+      // if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
+      //   havePermission = true;
+      // }
+      // if (!havePermission) {
+      //   throw new ForbiddenException("You not have permission for this activity!");
+      // }
 
       // if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
       if (Number(query.limit) > 1000) {
@@ -621,7 +594,7 @@ export class OrderHelper {
         throw new ForbiddenException("Channel is invalid");
       }
       const serviceObject = await this.handleService.findById(query?.service_id);
-      const channelObject = await this.channelService.findById(channelId);
+      // const channelObject = await this.channelService.findById(channelId);
       if (serviceObject) {
         if (serviceObject?.service_type == "extension" || serviceObject?.service_type == "channel") {
           return res
@@ -629,7 +602,7 @@ export class OrderHelper {
             .status(HttpStatus.OK)
             .json(["vn_pay", "transfer"]);
         } else {
-          const dataPayment = channelObject?.payment_method;
+          // const dataPayment = channelObject?.payment_method;
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -740,21 +713,21 @@ export class OrderHelper {
         channelId = req?.channel_id;
       }
 
-      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
-      let havePermission = false;
-      if (
-        userPermission?.channel_role == "mentor" ||
-        userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
-      ) {
-        havePermission = true;
-      }
-      if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-        havePermission = true;
-      }
-      if (!havePermission) {
-        throw new ForbiddenException("You not have permission for this activity!");
-      }
+      // const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      // let havePermission = false;
+      // if (
+      //   userPermission?.channel_role == "mentor" ||
+      //   userPermission?.channel_role == "super_admin" ||
+      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("order/list") !== -1)
+      // ) {
+      //   havePermission = true;
+      // }
+      // if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
+      //   havePermission = true;
+      // }
+      // if (!havePermission) {
+      //   throw new ForbiddenException("You not have permission for this activity!");
+      // }
 
       //Check Order
       //Check Permission
@@ -809,12 +782,12 @@ export class OrderHelper {
           try {
             setTimeout(async () => {
               // let channel = await this.channelService.findById(channelId);
-              const channelObject = await this.channelService?.findById(req?.channel_id);
+              // const channelObject = await this.channelService?.findById(req?.channel_id);
               const dataToPost = {
                 text: `${orderObject?.user_id.display_name} vừa chuyển khoản thành công thanh toán với số tiền:  (${
                   orderObject.price
                 } VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${
-                  channelObject?.domain || "https://gamifa.vn"
+                  "https://gamifa.vn"
                 }/v/order/admin/${
                   dataUpdate?._id
                 }?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyOTUxNzIsImRhdGEiOnsiX2lkIjoiNjRkNWRlMmZhYTJmZWQxNzU4NDUxMGQyIiwia2V5IjoiYzViOTk1NmMxN2ZmNzRkMTQyMTUyMmUzNmRjNzQ4ZWUiLCJzaWduYXR1cmUiOiI3NDc3YjFjZDQxNzNjYzUxODUyYTUzODNjNWQ0ZmExMSIsInNlc3Npb24iOiI2NGU1NzQ4NDg0OGE3ZDc3YmVkZDQyZmEifSwiaWF0IjoxNjkyNzU5MTcyfQ.2guMNJ3SAjQYSIpbSAHVSh0tghAy_N0b7fmAJTgx9P8 để cập nhật trạng thái đơn hàng.`,
@@ -823,8 +796,8 @@ export class OrderHelper {
               await axios.post(url, dataToPost, {}).then(() => {});
 
               this.eventHookNotificationService.sendNotiNMailPaySuccess({
-                send_user_id: orderObject?.channel_id?.user_id?.toString(),
-                user_id: channelObject?.user_id?._id.toString(),
+                // send_user_id: orderObject?.channel_id?.user_id?.toString(),
+                // user_id: channelObject?.user_id?._id.toString(),
                 channel_id: orderObject?.channel_id?.toString(),
                 path: `/r/orders-admin/detail/${orderObject._id.toString()}`,
                 mail_template: "success_pay_order",
@@ -893,9 +866,9 @@ export class OrderHelper {
         ) {
           if (orderObject?.service_id?.service_type == "extension") {
             this.eventHookNotificationService.sendNotiNMailBuyExtensionSuccess({
-              send_user_id: orderObject?.channel_id?.user_id?.toString(),
+              // send_user_id: orderObject?.channel_id?.user_id?.toString(),
               user_id: orderObject?.user_id?._id.toString(),
-              channel_id: orderObject?.channel_id?._id?.toString(),
+              // channel_id: orderObject?.channel_id?._id?.toString(),
               path: `/r/orders/detail/${orderObject._id.toString()}`,
               mail_template: "success_order_extension",
               content: (params: any) => {
@@ -909,22 +882,22 @@ export class OrderHelper {
             _id: orderObject?.channel_id?.toString(),
             service_id: orderObject?.service_id?._id?.toString(),
           };
-          const dataUpdate = await this.channelService.updateArray(dataUdpate);
+          // const dataUpdate = await this.channelService.updateArray(dataUdpate);
           // console.log(dataUpdate, "dataUpdate");
         }
-        if (orderObject?.service_id?.service_type == "channel") {
-          //Update for Channel
-          const dataUdpate = {
-            _id: orderObject?.channel_id?.toString(),
-            official_status: 1,
-          };
-          await this.channelService.update(dataUdpate);
-          const dataUpdate = {
-            _id: orderObject?._id?.toString(),
-            product_url: "/r/domain/create",
-          };
-          orderObject = await this.orderService.update(dataUpdate);
-        }
+        // if (orderObject?.service_id?.service_type == "channel") {
+        //   //Update for Channel
+        //   const dataUdpate = {
+        //     _id: orderObject?.channel_id?.toString(),
+        //     official_status: 1,
+        //   };
+        //   await this.channelService.update(dataUdpate);
+        //   const dataUpdate = {
+        //     _id: orderObject?._id?.toString(),
+        //     product_url: "/r/domain/create",
+        //   };
+        //   orderObject = await this.orderService.update(dataUpdate);
+        // }
 
         if (orderObject?.service_id?.service_type === "extension") {
           const dataUpdate = {
@@ -933,54 +906,54 @@ export class OrderHelper {
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
-        if (orderObject?.service_id?.service_type == "mobile") {
-          const getTotalAdmin = await this.channelPermissionService.filter(
-            { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
-            {},
-            1,
-            100
-          );
-          const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
-            return channelPermissionItem?.user_id?._id?.toString();
-          });
-          const totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
-          const contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
-1: Tiếp nhận thông tin 1-2 ngày)\n2: Trao đổi & Thống nhất về App (2-5 ngày)\n3: Xây dựng App (3 - 4 tuần)\n4: Gửi bản Demo (1 tuần)\n5: Publish lên Store\nBạn có thể trao đổi với đội ngũ kĩ thuật tại đây, chúng tôi sẵn sàng thảo luận và hỗ trợ bạn. Ticket của bạn sẽ nhận được thông báo và Email khi có cập nhật mới!`;
-          //Create Ticket from trans_id
-          const dataCreateTicket = {
-            post_language: "vi",
-            post_content: contentTicket,
-            post_title: "Đơn đặt hàng ứng dụng Mobile mới",
-            post_category: process.env.TICKET_MOBILE_CATEGORY || "",
-            data_id: orderObject?.trans_id?.toString(),
-            user_id: totalArray,
-            channel_id: [orderObject?.channel_id?.toString(), process.env.DEFAULT_CHANNEL?.toString()],
-          };
-          const dataTicket = await this.ticketService.create(dataCreateTicket);
-          //Return
-          //Update Return
+//         if (orderObject?.service_id?.service_type == "mobile") {
+//           const getTotalAdmin = await this.channelPermissionService.filter(
+//             { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
+//             {},
+//             1,
+//             100
+//           );
+//           const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
+//             return channelPermissionItem?.user_id?._id?.toString();
+//           });
+//           const totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
+//           const contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
+// 1: Tiếp nhận thông tin 1-2 ngày)\n2: Trao đổi & Thống nhất về App (2-5 ngày)\n3: Xây dựng App (3 - 4 tuần)\n4: Gửi bản Demo (1 tuần)\n5: Publish lên Store\nBạn có thể trao đổi với đội ngũ kĩ thuật tại đây, chúng tôi sẵn sàng thảo luận và hỗ trợ bạn. Ticket của bạn sẽ nhận được thông báo và Email khi có cập nhật mới!`;
+//           //Create Ticket from trans_id
+//           const dataCreateTicket = {
+//             post_language: "vi",
+//             post_content: contentTicket,
+//             post_title: "Đơn đặt hàng ứng dụng Mobile mới",
+//             post_category: process.env.TICKET_MOBILE_CATEGORY || "",
+//             data_id: orderObject?.trans_id?.toString(),
+//             user_id: totalArray,
+//             channel_id: [orderObject?.channel_id?.toString(), process.env.DEFAULT_CHANNEL?.toString()],
+//           };
+//           const dataTicket = await this.ticketService.create(dataCreateTicket);
+//           //Return
+//           //Update Return
 
-          const dataUpdate = {
-            _id: orderObject?._id?.toString(),
-            redirect_url: "/r/support/" + dataTicket?._id?.toString(),
-            product_url: "/r/support/" + dataTicket?._id?.toString(),
-          };
-          orderObject = await this.orderService.update(dataUpdate);
-        }
+//           const dataUpdate = {
+//             _id: orderObject?._id?.toString(),
+//             redirect_url: "/r/support/" + dataTicket?._id?.toString(),
+//             product_url: "/r/support/" + dataTicket?._id?.toString(),
+//           };
+//           orderObject = await this.orderService.update(dataUpdate);
+//         }
 
-        if (orderObject?.service_id?.service_type == "course") {
-          await this.handleUpdateCourseAfter(orderObject);
-          const dataUpdate = {
-            _id: orderObject?._id?.toString(),
-            product_url: "/r/courses/view/" + orderObject?.service_id?.handle?.toString(),
-          };
-          orderObject = await this.orderService.update(dataUpdate);
-        }
+        // if (orderObject?.service_id?.service_type == "course") {
+        //   await this.handleUpdateCourseAfter(orderObject);
+        //   const dataUpdate = {
+        //     _id: orderObject?._id?.toString(),
+        //     product_url: "/r/courses/view/" + orderObject?.service_id?.handle?.toString(),
+        //   };
+        //   orderObject = await this.orderService.update(dataUpdate);
+        // }
 
         this.eventHookNotificationService.sendNotiNMailOrderSuccess({
-          send_user_id: orderObject?.channel_id?.user_id?.toString(),
+          // send_user_id: orderObject?.channel_id?.user_id?.toString(),
           user_id: orderObject?.user_id?._id.toString(),
-          channel_id: orderObject?.channel_id?._id?.toString(),
+          // channel_id: orderObject?.channel_id?._id?.toString(),
           path: `/r/orders/detail/${orderObject._id.toString()}`,
           router: "NAVIGATION_PURCHASE_SUCCESS_SCREEN",
           order_id: orderObject?._id?.toString(),
@@ -1002,243 +975,243 @@ export class OrderHelper {
     }
   }
 
-  /**
-   *
-   * @param orderObject
-   */
-  async handleUpdateCourseAfter(orderObject: Order) {
-    try {
-      const dataUpdate = {
-        user_id: orderObject?.user_id?._id.toString(),
-        course_id: orderObject?.service_id?.handle?.toString(),
-      };
-      const dataReturn = await this.courseLikeService.update(dataUpdate);
+  // /**
+  //  *
+  //  * @param orderObject
+  //  */
+  // async handleUpdateCourseAfter(orderObject: Order) {
+  //   try {
+  //     const dataUpdate = {
+  //       user_id: orderObject?.user_id?._id.toString(),
+  //       course_id: orderObject?.service_id?.handle?.toString(),
+  //     };
+  //     const dataReturn = await this.courseLikeService.update(dataUpdate);
 
-      //Update count Video
-      const dataUpdateFilter = {
-        _id: orderObject?.service_id?.handle?.toString(),
-      };
-      const dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
+  //     //Update count Video
+  //     const dataUpdateFilter = {
+  //       _id: orderObject?.service_id?.handle?.toString(),
+  //     };
+  //     const dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
 
-      //Update Transaction
-      //Channel ID
-      const channelId = dataCourse?.channel_id?.toString();
-      const dataChannel = await this.channelService.findById(channelId);
+  //     //Update Transaction
+  //     //Channel ID
+  //     const channelId = dataCourse?.channel_id?.toString();
+  //     const dataChannel = await this.channelService.findById(channelId);
 
-      const transactionValue = Number(orderObject?.price);
+  //     const transactionValue = Number(orderObject?.price);
 
-      //For User
-      //Get Current User permission Channel
-      const userPermissionFilter = {
-        user_id: orderObject?.user_id?._id.toString(),
-        channel_id: channelId,
-      };
-      const dataPermission = await this.channelPermissionService.findOneWithPopulate(userPermissionFilter);
-      let bossCommission = 100;
+  //     //For User
+  //     //Get Current User permission Channel
+  //     const userPermissionFilter = {
+  //       user_id: orderObject?.user_id?._id.toString(),
+  //       channel_id: channelId,
+  //     };
+  //     const dataPermission = await this.channelPermissionService.findOneWithPopulate(userPermissionFilter);
+  //     let bossCommission = 100;
 
-      const userCommision = Number(dataChannel?.user_commission) || 0;
-      let mentorCommission = Number(dataChannel?.mentor_commission) || 0;
+  //     const userCommision = Number(dataChannel?.user_commission) || 0;
+  //     let mentorCommission = Number(dataChannel?.mentor_commission) || 0;
 
-      let isUserCommision = false;
-      if (dataPermission?.from_user) {
-        //Check user From
-        const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
-          user_id: dataPermission?.from_user?.toString(),
-          channelId,
-        });
-        if (dataPermissionFromUser?.channel_role !== "mentor") {
-          isUserCommision = true;
+  //     let isUserCommision = false;
+  //     if (dataPermission?.from_user) {
+  //       //Check user From
+  //       const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+  //         user_id: dataPermission?.from_user?.toString(),
+  //         channelId,
+  //       });
+  //       if (dataPermissionFromUser?.channel_role !== "mentor") {
+  //         isUserCommision = true;
 
-          bossCommission = bossCommission - userCommision;
-          //Check
-          let transactionUser = transactionValue * (userCommision / 100);
-          transactionUser = Math.round(transactionUser * 100) / 100;
-          //Update for Bosss
-          await this.handleCreateTransaction(
-            dataPermission?.from_user?.toString(),
-            transactionUser,
-            orderObject,
-            dataCourse,
-            channelId,
-            userCommision
-          );
-          this.eventHookWorkerService.PlusPointChallengePusher({
-            user_id: dataPermission?.from_user?.toString(),
-            game_type: "revenue",
-            channel_id: channelId,
-            point_value: Number(transactionValue),
-            display_name: dataPermissionFromUser?.user_id?.display_name.toString(),
-          });
-          this.eventHookNotificationService.sendNotiMentorReceiveCommission({
-            send_user_id: dataChannel?.user_id?._id?.toString(),
-            user_id: dataPermission?.from_user?.toString(),
-            channel_id: channelId,
-            path: `r/mentor/income`,
-            mail_template: "commission_receive_mentor",
-            content: (params: any) => {
-              return `Chúc mừng người dùng ${dataPermissionFromUser?.user_id?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
-            },
-            title: `${dataPermissionFromUser?.user_id?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
-          });
-        }
-      }
+  //         bossCommission = bossCommission - userCommision;
+  //         //Check
+  //         let transactionUser = transactionValue * (userCommision / 100);
+  //         transactionUser = Math.round(transactionUser * 100) / 100;
+  //         //Update for Bosss
+  //         await this.handleCreateTransaction(
+  //           dataPermission?.from_user?.toString(),
+  //           transactionUser,
+  //           orderObject,
+  //           dataCourse,
+  //           channelId,
+  //           userCommision
+  //         );
+  //         this.eventHookWorkerService.PlusPointChallengePusher({
+  //           user_id: dataPermission?.from_user?.toString(),
+  //           game_type: "revenue",
+  //           channel_id: channelId,
+  //           point_value: Number(transactionValue),
+  //           display_name: dataPermissionFromUser?.user_id?.display_name.toString(),
+  //         });
+  //         this.eventHookNotificationService.sendNotiMentorReceiveCommission({
+  //           send_user_id: dataChannel?.user_id?._id?.toString(),
+  //           user_id: dataPermission?.from_user?.toString(),
+  //           channel_id: channelId,
+  //           path: `r/mentor/income`,
+  //           mail_template: "commission_receive_mentor",
+  //           content: (params: any) => {
+  //             return `Chúc mừng người dùng ${dataPermissionFromUser?.user_id?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
+  //           },
+  //           title: `${dataPermissionFromUser?.user_id?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
+  //         });
+  //       }
+  //     }
 
-      if (dataPermission?.from_mentor) {
-        //Check user From
-        const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
-          user_id: dataPermission?.from_mentor?.toString(),
-          channelId,
-        });
-        if (dataPermissionFromUser?.channel_role !== "mentor") {
-          if (isUserCommision) {
-            mentorCommission = mentorCommission - userCommision;
-          }
-          bossCommission = bossCommission - mentorCommission;
-          //Check
-          let transactionUser = transactionValue * (mentorCommission / 100);
-          transactionUser = Math.round(transactionUser * 100) / 100;
-          //Update for Bosss
-          await this.handleCreateTransaction(
-            dataPermission?.from_mentor?.toString(),
-            transactionUser,
-            orderObject,
-            dataCourse,
-            channelId,
-            mentorCommission
-          );
-          this.eventHookWorkerService.PlusPointChallengePusher({
-            user_id: dataPermission?.from_mentor?.toString(),
-            game_type: "revenue",
-            channel_id: channelId,
-            point_value: Number(transactionValue),
-            display_name: dataPermissionFromUser?.user_id?.display_name.toString(),
-          });
+  //     if (dataPermission?.from_mentor) {
+  //       //Check user From
+  //       const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+  //         user_id: dataPermission?.from_mentor?.toString(),
+  //         channelId,
+  //       });
+  //       if (dataPermissionFromUser?.channel_role !== "mentor") {
+  //         if (isUserCommision) {
+  //           mentorCommission = mentorCommission - userCommision;
+  //         }
+  //         bossCommission = bossCommission - mentorCommission;
+  //         //Check
+  //         let transactionUser = transactionValue * (mentorCommission / 100);
+  //         transactionUser = Math.round(transactionUser * 100) / 100;
+  //         //Update for Bosss
+  //         await this.handleCreateTransaction(
+  //           dataPermission?.from_mentor?.toString(),
+  //           transactionUser,
+  //           orderObject,
+  //           dataCourse,
+  //           channelId,
+  //           mentorCommission
+  //         );
+  //         this.eventHookWorkerService.PlusPointChallengePusher({
+  //           user_id: dataPermission?.from_mentor?.toString(),
+  //           game_type: "revenue",
+  //           channel_id: channelId,
+  //           point_value: Number(transactionValue),
+  //           display_name: dataPermissionFromUser?.user_id?.display_name.toString(),
+  //         });
 
-          this.eventHookNotificationService.sendNotiMentorReceiveCommission({
-            send_user_id: dataChannel?.user_id?._id?.toString(),
-            user_id: dataPermission?.from_mentor?.toString(),
-            channel_id: channelId,
-            path: `r/mentor/income`,
-            mail_template: "commission_receive_mentor",
-            content: (params: any) => {
-              return `Chúc mừng người dùng ${dataPermissionFromUser?.user_id?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
-            },
-            title: `${dataPermissionFromUser?.user_id?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
-          });
-        }
-      }
+  //         this.eventHookNotificationService.sendNotiMentorReceiveCommission({
+  //           send_user_id: dataChannel?.user_id?._id?.toString(),
+  //           user_id: dataPermission?.from_mentor?.toString(),
+  //           channel_id: channelId,
+  //           path: `r/mentor/income`,
+  //           mail_template: "commission_receive_mentor",
+  //           content: (params: any) => {
+  //             return `Chúc mừng người dùng ${dataPermissionFromUser?.user_id?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
+  //           },
+  //           title: `${dataPermissionFromUser?.user_id?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
+  //         });
+  //       }
+  //     }
 
-      let bossTransactionValue = transactionValue * (bossCommission / 100);
-      bossTransactionValue = Math.round(bossTransactionValue * 100) / 100;
+  //     let bossTransactionValue = transactionValue * (bossCommission / 100);
+  //     bossTransactionValue = Math.round(bossTransactionValue * 100) / 100;
 
-      //Plus money for boss
-      const bossUserPermissionArray = await this.channelPermissionService.filter(
-        { channel_id: channelId, channel_role: "mentor" },
-        {},
-        1,
-        100
-      );
+  //     //Plus money for boss
+  //     const bossUserPermissionArray = await this.channelPermissionService.filter(
+  //       { channel_id: channelId, channel_role: "mentor" },
+  //       {},
+  //       1,
+  //       100
+  //     );
 
-      for (const bossItem of bossUserPermissionArray) {
-        //Check User Permission
-        //Update for Bosss
+  //     for (const bossItem of bossUserPermissionArray) {
+  //       //Check User Permission
+  //       //Update for Bosss
 
-        await this.handleCreateTransaction(
-          bossItem?.user_id?._id?.toString(),
-          bossTransactionValue,
-          orderObject,
-          dataCourse,
-          channelId,
-          bossCommission
-        );
-        setTimeout(() => {
-          this.eventHookNotificationService.sendNotiUserBuyGoodsForBoss({
-            send_user_id: dataChannel?.user_id?._id?.toString(),
-            user_id: bossItem?.user_id?._id?.toString(),
-            channel_id: channelId,
-            path: `r/mentor/income`,
-            mail_template: "success_buy_goods",
-            content: (params: any) => {
-              return `Chúc mừng người dùng ${dataPermission?.user_id?.display_name} thanh toán hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
-            },
-            title: `${dataPermission?.user_id?.display_name?.toLocaleUpperCase()} THANH TOÁN HÓA ĐƠN`,
-          });
-        }, 500);
-      }
-    } catch (error) {
-      console.log(error, "error Transation");
-    }
-  }
+  //       await this.handleCreateTransaction(
+  //         bossItem?.user_id?._id?.toString(),
+  //         bossTransactionValue,
+  //         orderObject,
+  //         dataCourse,
+  //         channelId,
+  //         bossCommission
+  //       );
+  //       setTimeout(() => {
+  //         this.eventHookNotificationService.sendNotiUserBuyGoodsForBoss({
+  //           send_user_id: dataChannel?.user_id?._id?.toString(),
+  //           user_id: bossItem?.user_id?._id?.toString(),
+  //           channel_id: channelId,
+  //           path: `r/mentor/income`,
+  //           mail_template: "success_buy_goods",
+  //           content: (params: any) => {
+  //             return `Chúc mừng người dùng ${dataPermission?.user_id?.display_name} thanh toán hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
+  //           },
+  //           title: `${dataPermission?.user_id?.display_name?.toLocaleUpperCase()} THANH TOÁN HÓA ĐƠN`,
+  //         });
+  //       }, 500);
+  //     }
+  //   } catch (error) {
+  //     console.log(error, "error Transation");
+  //   }
+  // }
 
-  async handleCreateTransaction(
-    userIdTransaction: string,
-    transactionValue: number,
-    orderObject: Order,
-    dataCourse: Course,
-    channelId: string,
-    commmissionValue: number
-  ) {
-    const dataFilter = {
-      user_id: userIdTransaction,
-    };
-    const newDataTransaction = await this.transactionService.findOne(dataFilter);
-    let lastToken = 0;
-    if (newDataTransaction) {
-      lastToken = Number(newDataTransaction.current_token);
-    }
-    let currentToken = 0;
-    currentToken = lastToken + Number(transactionValue);
+  // async handleCreateTransaction(
+  //   userIdTransaction: string,
+  //   transactionValue: number,
+  //   orderObject: Order,
+  //   dataCourse: Course,
+  //   channelId: string,
+  //   commmissionValue: number
+  // ) {
+  //   const dataFilter = {
+  //     user_id: userIdTransaction,
+  //   };
+  //   const newDataTransaction = await this.transactionService.findOne(dataFilter);
+  //   let lastToken = 0;
+  //   if (newDataTransaction) {
+  //     lastToken = Number(newDataTransaction.current_token);
+  //   }
+  //   let currentToken = 0;
+  //   currentToken = lastToken + Number(transactionValue);
 
-    const dataTransactionToAdd = {
-      user_id: userIdTransaction,
-      channel_id: channelId,
-      ref_id: orderObject?.service_id?.handle?.toString(),
-      ref_type: "course",
-      ref_name: dataCourse?.title?.toString(),
-      ref_url: `/r/courses/view/${orderObject?.service_id?.handle?.toString()}`,
-      last_coin: 0,
-      current_coin: 0,
-      last_token: lastToken,
-      current_token: currentToken,
-      transaction_value: transactionValue,
-      commission_value: commmissionValue,
-      transaction_type: "output",
-      income_value: 0,
-      method: "plus",
-      note: `Recive ${transactionValue} coin from System ID: ${orderObject?.service_id?.handle?.toString()}`,
-      status: "done",
-      trans_id: "",
-      error_message: "",
-      data_payment: "",
-      billing_on: new Date(),
-      processing_on: null,
-      successfully_on: new Date(),
-      from_user: orderObject?.user_id?._id.toString(),
-      type_system: "system",
-    };
-    const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
-    // setTimeout(() => {
+  //   const dataTransactionToAdd = {
+  //     user_id: userIdTransaction,
+  //     channel_id: channelId,
+  //     ref_id: orderObject?.service_id?.handle?.toString(),
+  //     ref_type: "course",
+  //     ref_name: dataCourse?.title?.toString(),
+  //     ref_url: `/r/courses/view/${orderObject?.service_id?.handle?.toString()}`,
+  //     last_coin: 0,
+  //     current_coin: 0,
+  //     last_token: lastToken,
+  //     current_token: currentToken,
+  //     transaction_value: transactionValue,
+  //     commission_value: commmissionValue,
+  //     transaction_type: "output",
+  //     income_value: 0,
+  //     method: "plus",
+  //     note: `Recive ${transactionValue} coin from System ID: ${orderObject?.service_id?.handle?.toString()}`,
+  //     status: "done",
+  //     trans_id: "",
+  //     error_message: "",
+  //     data_payment: "",
+  //     billing_on: new Date(),
+  //     processing_on: null,
+  //     successfully_on: new Date(),
+  //     from_user: orderObject?.user_id?._id.toString(),
+  //     type_system: "system",
+  //   };
+  //   const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
+  //   // setTimeout(() => {
 
-    //   console.log("đã vào cộng điểm!!!");
-    //   this.eventHookWorkerService.PlusPointChallengePusher({
-    //     user_id: orderObject?.user_id?._id.toString(),
-    //     game_type: "revenue",
-    //     channel_id: channelId,
-    //     point_value: transactionValue,
-    //     display_name: orderObject?.user_id?.display_name.toString(),
-    //   });
-    //   this.eventHookNotificationService.sendNotiMentorReceiveCommission({
-    //     user_id: orderObject?.user_id?._id.toString(),
-    //     channel_id: channelId,
-    //     path: `r/mentor/income`,
-    //     mail_template: "commission_receive_mentor",
-    //     content: (params: any) => {
-    //       return `Chúc mừng người dùng ${dataPermission?.from_user?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
-    //     },
-    //     title: `${dataPermission?.from_user?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
-    //   })
-    // }, 300);
-  }
+  //   //   console.log("đã vào cộng điểm!!!");
+  //   //   this.eventHookWorkerService.PlusPointChallengePusher({
+  //   //     user_id: orderObject?.user_id?._id.toString(),
+  //   //     game_type: "revenue",
+  //   //     channel_id: channelId,
+  //   //     point_value: transactionValue,
+  //   //     display_name: orderObject?.user_id?.display_name.toString(),
+  //   //   });
+  //   //   this.eventHookNotificationService.sendNotiMentorReceiveCommission({
+  //   //     user_id: orderObject?.user_id?._id.toString(),
+  //   //     channel_id: channelId,
+  //   //     path: `r/mentor/income`,
+  //   //     mail_template: "commission_receive_mentor",
+  //   //     content: (params: any) => {
+  //   //       return `Chúc mừng người dùng ${dataPermission?.from_user?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
+  //   //     },
+  //   //     title: `${dataPermission?.from_user?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
+  //   //   })
+  //   // }, 300);
+  // }
 
   /**
    *
@@ -1323,9 +1296,9 @@ export class OrderHelper {
             //@ts-ignore
             // let dataSendSocket = {...subscribeObject?.toObject(), ...{dataUpdate}}
 
-            const dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
+            // const dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
             //Update socket
-            this.socketService.handleSendOrder(dataSendSocket, orderObject?.user_id?._id?.toString());
+            // this.socketService.handleSendOrder(dataSendSocket, orderObject?.user_id?._id?.toString());
             break;
         }
       }

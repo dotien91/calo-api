@@ -1,7 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
-import HookExpress from "../hook_epress";
+import { Injectable } from "@nestjs/common";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
-import { Cron, SchedulerRegistry } from "@nestjs/schedule";
+import HookExpress from "../hook_epress";
 const cron = require("node-cron");
 let alreadyWork = false;
 
@@ -21,7 +21,7 @@ export class EventHookNotificationService {
     console.log("Make sure you work once %s", Math.random());
     HookExpress.add_action("noti.challenge.required-join-challenge", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send required-join-challenge notification and email to user Fails :", error.message);
       }
@@ -37,7 +37,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.challenge.up-activity-challenge", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send up-activity-challenge notification and email to user Fails :", error.message);
       }
@@ -53,7 +53,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.challenge.top-user-challenge", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send top-user-challenge notification and email to user Fails :", error.message);
       }
@@ -69,7 +69,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.channel.required-join-channel", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send required-join-channel notification to user Fails :", error.message);
       }
@@ -101,15 +101,15 @@ export class EventHookNotificationService {
         }
         cron.schedule(`* ${minute} ${hour} ${day} ${month} * ${year}`, async () => {
           for (const user_id of data?.list_user_id) {
-            await this.notificationHelper.sendNotificationAndEmail({
-              user_id: user_id,
-              channel_id: data?.channel_id,
-              path: data?.path,
-              mail_template: data?.mail_template,
-              content: data?.content,
-              title: data?.title,
-              event_name: data?.event_name,
-            });
+            // await this.notificationHelper.sendNotificationAndEmail({
+            //   user_id: user_id,
+            //   channel_id: data?.channel_id,
+            //   path: data?.path,
+            //   mail_template: data?.mail_template,
+            //   content: data?.content,
+            //   title: data?.title,
+            //   event_name: data?.event_name,
+            // });
           }
         });
       } catch (error) {
@@ -119,7 +119,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.event.create-new-event", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send create-new-event notification to user Fails :", error.message);
       }
@@ -135,7 +135,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.course.apply-join-course", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send apply-join-course notification to user Fails :", error.message);
       }
@@ -143,7 +143,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.order.success-order", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send success-order notification to user Fails :", error.message);
       }
@@ -151,7 +151,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.order.success-pay-order", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send success-pay-order notification to user Fails :", error.message);
       }
@@ -159,7 +159,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.order.success-order-extension", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send success-order-extension notification to user Fails :", error.message);
       }
@@ -191,7 +191,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.ticket.create-new-ticket", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send create-new-ticket notification to user Fails :", error.message);
       }
@@ -199,7 +199,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.ticket.comment-ticket", async (data: any) => {
       try {
-        await this.notificationHelper.sendNotificationAndEmail(data);
+        // await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send comment-ticket notification to user Fails :", error.message);
       }

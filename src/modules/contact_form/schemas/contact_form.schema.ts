@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Post } from "../../../modules/post/schemas/post.schema";
 
 export type ContactFormDocument = ContactForm & Document;
 
@@ -25,7 +24,7 @@ export class ContactForm {
   partner_id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, index: true, ref: "Post" })
-  entity_id: Post;
+  entity_id: String;
 
   @Prop({
     type: String,

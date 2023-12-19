@@ -1,65 +1,47 @@
-import { Response, Request } from "express";
 import {
+  BadRequestException,
   ForbiddenException,
   HttpStatus,
-  NotFoundException,
   Injectable,
-  BadRequestException,
-  Res,
-  Req,
-  Param,
   Logger,
-  forwardRef,
-  Inject,
+  NotFoundException
 } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateTransactionDto } from "../dto/create-transaction.dto";
-import { TransactionService } from "../services/transaction.service";
-import { ListTransactionDto } from "../dto/list-transaction.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateTransactionDto } from "../dto/update-transactions.dto";
-import { Order } from "../../../modules/order/schemas/order.schema";
-import { User } from "../../../modules/user/schemas/user.schema";
-import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
-import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
 import axios from "axios";
-import { UserOptionService } from "../../../modules/user/services/user_option.service";
-import { Callkit } from "../../../modules/callkit/schemas/callkit.schema";
-import { ChatRoom } from "../../../modules/chat_room/schemas/chat_room.schema";
-import { Gift } from "../../../modules/gift/schemas/gift.schema";
-import { UserService } from "../../../modules/user/services/user.service";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
-import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
-import { TransactionBankService } from "../services/transaction_bank.service";
-import { ListTransactionBankDto } from "../dto/list-transaction_bank.dto";
-import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
-import { ListUserIncomeDto } from "../dto/list-user-income.dto";
-import * as moment from "moment-timezone";
+import { Response } from "express";
 import * as momentBase from "moment";
+import * as moment from "moment-timezone";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
-import { ChannelService } from "../../../modules/channel/services/channel.service";
+import { Order } from "../../../modules/order/schemas/order.schema";
+import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserOptionService } from "../../../modules/user/services/user_option.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { CreateTransactionDto } from "../dto/create-transaction.dto";
+import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
+import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
+import { ListTransactionDto } from "../dto/list-transaction.dto";
+import { ListTransactionBankDto } from "../dto/list-transaction_bank.dto";
+import { ListUserIncomeDto } from "../dto/list-user-income.dto";
+import { UpdateTransactionDto } from "../dto/update-transactions.dto";
+import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
+import { TransactionService } from "../services/transaction.service";
+import { TransactionBankService } from "../services/transaction_bank.service";
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
  */
 @Injectable()
 export class TransactionHelper {
-  public get channelPermissionService(): ChannelPermissionService {
-    return this._channelPermissionService;
-  }
-  public set channelPermissionService(value: ChannelPermissionService) {
-    this._channelPermissionService = value;
-  }
+
   constructor(
     private transactionService: TransactionService,
     private transactionBankService: TransactionBankService,
     private userPermissionService: UserPermissionService,
     private userOptionService: UserOptionService,
-    @Inject(forwardRef(() => ChannelPermissionService))
-    private _channelPermissionService: ChannelPermissionService,
     private userService: UserService,
-    private readonly eventHookNotificationService: EventHookNotificationService,
-    private readonly channelService: ChannelService
+    private readonly eventHookNotificationService: EventHookNotificationService
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
@@ -330,11 +312,11 @@ export class TransactionHelper {
       await this.handleProcessUpdateCoin(userObject, lastCoin, currentToken, authCode);
       //Send Notification
 
-      const channel = await this.channelService.findById(channelId);
+      // const channel = await this.channelService.findById(channelId);
 
       this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
         send_user_id: req?.user_id?.toString(),
-        user_id: channel?.user_id?._id.toString(),
+        // user_id: channel?.user_id?._id.toString(),
         channel_id: channelId,
         path: `/r/mentor/payment-management`,
         mail_template: "success_buy_goods",
@@ -378,21 +360,21 @@ export class TransactionHelper {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      const userPermission = await this.channelPermissionService.findOne({
-        user_id: userObject?._id?.toString(),
-        channel_id: channelId,
-      });
+      // const userPermission = await this.channelPermissionService.findOne({
+      //   user_id: userObject?._id?.toString(),
+      //   channel_id: channelId,
+      // });
       let havePermission = false;
-      if (
-        userPermission?.channel_role == "mentor" ||
-        userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
-      ) {
-        havePermission = true;
-      }
-      if (await this.userPermissionService.isHavePermission(userObject?._id?.toString(), "challenge/delete")) {
-        havePermission = true;
-      }
+      // if (
+      //   userPermission?.channel_role == "mentor" ||
+      //   userPermission?.channel_role == "super_admin" ||
+      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
+      // ) {
+      //   havePermission = true;
+      // }
+      // if (await this.userPermissionService.isHavePermission(userObject?._id?.toString(), "challenge/delete")) {
+      //   havePermission = true;
+      // }
 
       if (!query?.user_id) {
         query = { ...query, ...{ user_id: userObject?._id?.toString() } };
@@ -496,22 +478,22 @@ export class TransactionHelper {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      // const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
-      if (
-        userPermission?.channel_role == "mentor" ||
-        userPermission?.channel_role == "super_admin" ||
-        (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
-      ) {
-        havePermission = true;
-      }
-      if (await this.userPermissionService.isHavePermission(userId, "mentor/list")) {
-        havePermission = true;
-      }
+      // if (
+      //   userPermission?.channel_role == "mentor" ||
+      //   userPermission?.channel_role == "super_admin" ||
+      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
+      // ) {
+      //   havePermission = true;
+      // }
+      // if (await this.userPermissionService.isHavePermission(userId, "mentor/list")) {
+      //   havePermission = true;
+      // }
 
-      if (!havePermission) {
-        throw new ForbiddenException("You not have permission for this action!");
-      }
+      // if (!havePermission) {
+      //   throw new ForbiddenException("You not have permission for this action!");
+      // }
       if (havePermission) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
@@ -789,231 +771,6 @@ export class TransactionHelper {
       //Not Return
       console.log(error, "ERROR in 240 line, transaction helper");
       return null;
-    }
-  }
-
-  /**
-   *
-   * @param userObject
-   * @param coinToUpdate
-   * @param tokenToUpdate
-   * @param totalCall
-   * @param callObject
-   * @param auth
-   */
-  async handleProcessUpdateCoinBefore(
-    userObject: User,
-    coinToUpdate: number,
-    tokenToUpdate: number,
-    totalCall: number,
-    callObject: Callkit,
-    auth: string
-  ) {
-    try {
-      const dataFilterLastCoin = {
-        user_id: userObject._id.toString(),
-      };
-      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
-      let lastCoin = 0;
-      let lastToken = 0;
-      if (dataTransactionLastCoinObject) {
-        lastCoin = Number(dataTransactionLastCoinObject.current_coin);
-        lastToken = Number(dataTransactionLastCoinObject.current_token);
-      }
-
-      let dataValue = 0;
-      let newCoin = lastCoin;
-      let newToken = lastToken;
-      let noteTransaction = "";
-      let method = "plus";
-      if (coinToUpdate) {
-        dataValue = coinToUpdate;
-        noteTransaction = `Transaction ${dataValue} coin for call at: ${new Date().toISOString()}. Total ${totalCall} second for call.`;
-        newCoin = lastCoin - dataValue;
-        method = "minus";
-      } else {
-        dataValue = tokenToUpdate;
-        noteTransaction = `Received ${dataValue} coin for call at: ${new Date().toISOString()}. Total ${totalCall} second for call.`;
-        newToken = lastToken + dataValue;
-      }
-
-      if (newCoin < 0) {
-        newCoin = 0;
-      }
-
-      //Create New Transaction
-      const dataCreate = {
-        ref_id: callObject._id.toString(),
-        ref_type: "callkit",
-        method: method,
-        current_token: newToken,
-        last_token: lastToken,
-        current_coin: newCoin,
-        last_coin: lastCoin,
-        transaction_value: dataValue,
-        user_id: userObject._id.toString(),
-        note: noteTransaction,
-        status: "done",
-        data_payment: "",
-        trans_id: callObject._id.toString(),
-        successfully_on: new Date(),
-        billing_on: new Date(),
-      };
-
-      await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      const dataToReturn = await this.transactionService.create(dataCreate);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
-   *
-   * @param userObject
-   * @param coinToUpdate
-   * @param tokenToUpdate
-   * @param totalCall
-   * @param callObject
-   * @param auth
-   */
-  async handleProcessUpdateCoinMessage(
-    userObject: User,
-    coinToUpdate: number,
-    tokenToUpdate: number,
-    roomObject: ChatRoom,
-    auth: string
-  ) {
-    try {
-      const dataFilterLastCoin = {
-        user_id: userObject._id.toString(),
-      };
-      console.log(userObject, "userObject");
-      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
-      console.log(dataTransactionLastCoinObject, "dataTransactionLastCoinObject");
-      let lastCoin = 0;
-      let lastToken = 0;
-      if (dataTransactionLastCoinObject) {
-        lastCoin = Number(dataTransactionLastCoinObject.current_coin);
-        lastToken = Number(dataTransactionLastCoinObject.current_token);
-      }
-
-      let dataValue = 0;
-      let newCoin = lastCoin;
-      let newToken = lastToken;
-      let noteTransaction = "";
-      let method = "plus";
-      if (coinToUpdate) {
-        dataValue = coinToUpdate;
-        noteTransaction = `Transaction ${dataValue} coin for message at: ${new Date().toISOString()}.`;
-        newCoin = lastCoin - dataValue;
-        method = "minus";
-      } else {
-        dataValue = tokenToUpdate;
-        noteTransaction = `Received ${dataValue} coin for message at: ${new Date().toISOString()}`;
-        newToken = lastToken + dataValue;
-      }
-
-      //Create New Transaction
-      const dataCreate = {
-        ref_id: roomObject._id.toString(),
-        ref_type: "chat_room",
-        method: method,
-        current_token: newToken,
-        last_token: lastToken,
-        current_coin: newCoin,
-        last_coin: lastCoin,
-        transaction_value: dataValue,
-        user_id: userObject._id.toString(),
-        note: noteTransaction,
-        status: "done",
-        data_payment: "",
-        trans_id: roomObject._id.toString(),
-        successfully_on: new Date(),
-        billing_on: new Date(),
-      };
-      console.log(dataCreate, "dataCreate 559");
-
-      console.log(dataCreate, "dataCreate");
-
-      await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      const dataToReturn = await this.transactionService.create(dataCreate);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
-   *
-   * @param userObject
-   * @param coinToUpdate
-   * @param tokenToUpdate
-   * @param totalCall
-   * @param callObject
-   * @param auth
-   */
-  async handleProcessUpdateCoinGift(
-    userObject: User,
-    coinToUpdate: number,
-    tokenToUpdate: number,
-    giftObject: Gift,
-    auth: string
-  ) {
-    try {
-      const dataFilterLastCoin = {
-        user_id: userObject._id.toString(),
-      };
-      console.log(userObject, "userObject");
-      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
-      console.log(dataTransactionLastCoinObject, "dataTransactionLastCoinObject");
-      let lastCoin = 0;
-      let lastToken = 0;
-      if (dataTransactionLastCoinObject) {
-        lastCoin = Number(dataTransactionLastCoinObject.current_coin);
-        lastToken = Number(dataTransactionLastCoinObject.current_token);
-      }
-
-      let dataValue = 0;
-      let newCoin = lastCoin;
-      let newToken = lastToken;
-      let noteTransaction = "";
-      let method = "plus";
-      if (coinToUpdate) {
-        dataValue = coinToUpdate;
-        noteTransaction = `Use ${dataValue} coin for buy gift at: ${new Date().toISOString()}.`;
-        newCoin = lastCoin - dataValue;
-        method = "minus";
-      } else {
-        dataValue = tokenToUpdate;
-        noteTransaction = `Received ${dataValue} token for self gift: ${new Date().toISOString()}`;
-        newToken = lastToken + dataValue;
-      }
-
-      //Create New Transaction
-      const dataCreate = {
-        ref_id: giftObject._id.toString(),
-        ref_type: "gift",
-        method: method,
-        current_token: newToken,
-        last_token: lastToken,
-        current_coin: newCoin,
-        last_coin: lastCoin,
-        transaction_value: dataValue,
-        user_id: userObject._id.toString(),
-        note: noteTransaction,
-        status: "done",
-        data_payment: "",
-        trans_id: giftObject._id.toString(),
-        successfully_on: new Date(),
-        billing_on: new Date(),
-      };
-      console.log(dataCreate, "dataCreate 559");
-
-      console.log(dataCreate, "dataCreate");
-
-      await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      const dataToReturn = await this.transactionService.create(dataCreate);
-    } catch (error) {
-      console.log(error);
     }
   }
 

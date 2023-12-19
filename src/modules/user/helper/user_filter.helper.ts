@@ -1,43 +1,32 @@
-import { response, Response } from "express";
-import { ForbiddenException, HttpStatus, BadRequestException, NotFoundException, Injectable } from "@nestjs/common";
-import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { UserPermissionService } from "../../user_permission/services/user_permission.service";
-import { UserService } from "../services/user.service";
-import { SearchUserDto } from "../dto/search-user.dto";
-import { SearchBaseUserDto } from "../dto/search-base_user.dto";
-import { UserOptionService } from "../services/user_option.service";
-import { UserFollowService } from "../services/user_follow.service";
-import { SearchBlockListDto } from "../dto/search-block_list.dto";
-import { UserBlockService } from "../services/user_block.service";
-import { SearchUserFollowDto } from "../dto/search-user_follow.dto";
-import { UserViewService } from "../services/user_view.service";
-import { UserDisagreeService } from "../services/user_disagree.service";
-import { Types } from "mongoose";
-import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
-import { OrderService } from "../../../modules/order/services/order.service";
-import * as _ from "lodash";
-import { CityService } from "../../../modules/city/services/city.service";
-import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
-import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
-import { User } from "../schemas/user.schema";
-import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { UserSessionService } from "../services/user_session.service";
-import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
-import { UserMoodService } from "../services/user_mood.service";
-import { ShortService } from "../../../modules/short/services/short.service";
-import { UserQuestionService } from "../services/user_question.service";
-import { ChatMediaService } from "../../../modules/chat_media/services/chat_media.service";
-import axios from "axios";
-import { filter } from "rxjs";
-import { SearchUserLocationDto } from "../dto/search-user_location.dto";
-import { UserLocationService } from "../services/user_location.service";
-import { SearchFollowCountDto } from "../dto/search-follow_count.dto";
-import { RequestService } from "../../../modules/request/services/request.service";
-import { ChannelPermissionService } from "../../../modules/channel/services/channel_permission.service";
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService as ConfigServiceNest } from "@nestjs/config";
-import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { JwtService } from "@nestjs/jwt";
+import { Response } from "express";
+import * as _ from "lodash";
+import { Types } from "mongoose";
+import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { OrderService } from "../../../modules/order/services/order.service";
+import { UserPermissionService } from "../../user_permission/services/user_permission.service";
+import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
+import { SearchBaseUserDto } from "../dto/search-base_user.dto";
+import { SearchBlockListDto } from "../dto/search-block_list.dto";
+import { SearchFollowCountDto } from "../dto/search-follow_count.dto";
+import { SearchUserDto } from "../dto/search-user.dto";
+import { SearchUserFollowDto } from "../dto/search-user_follow.dto";
+import { SearchUserLocationDto } from "../dto/search-user_location.dto";
+import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
+import { UserService } from "../services/user.service";
+import { UserBlockService } from "../services/user_block.service";
+import { UserDisagreeService } from "../services/user_disagree.service";
+import { UserFollowService } from "../services/user_follow.service";
+import { UserLocationService } from "../services/user_location.service";
+import { UserMoodService } from "../services/user_mood.service";
+import { UserOptionService } from "../services/user_option.service";
+import { UserQuestionService } from "../services/user_question.service";
+import { UserSessionService } from "../services/user_session.service";
+import { UserViewService } from "../services/user_view.service";
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -53,18 +42,11 @@ export class UserFilterHelper {
     private orderService: OrderService,
     private userDisagreeService: UserDisagreeService,
     private userBlockService: UserBlockService,
-    private cityService: CityService,
-    private chatRoomHelper: ChatRoomHelper,
-    private chatHistoryHelper: ChatHistoryHelper,
     private jwtHelper: JwtHelperService,
     private userSessionService: UserSessionService,
     private userMoodService: UserMoodService,
-    private shortService: ShortService,
     private userQuestionService: UserQuestionService,
-    private chatMediaService: ChatMediaService,
     private userLocationService: UserLocationService,
-    private requestService: RequestService,
-    private channelPermissionService: ChannelPermissionService
   ) {}
 
   /**
@@ -189,23 +171,23 @@ export class UserFilterHelper {
       const dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
 
       let dataChannelPermission = [];
-      //Get Data level
-      if (query?.channel_id) {
-        const dataUserIds = dataReturn?.map((value) => {
-          return value?.partner_id?._id?.toString();
-        });
-        //get permission
-        const dataFilterMember = {
-          channel_id: query?.channel_id,
-          user_ids: dataUserIds,
-        };
-        dataChannelPermission = await this.channelPermissionService.filterWithoutChannel(
-          dataFilterMember,
-          {},
-          1,
-          limit
-        );
-      }
+      // //Get Data level
+      // if (query?.channel_id) {
+      //   const dataUserIds = dataReturn?.map((value) => {
+      //     return value?.partner_id?._id?.toString();
+      //   });
+      //   //get permission
+      //   const dataFilterMember = {
+      //     channel_id: query?.channel_id,
+      //     user_ids: dataUserIds,
+      //   };
+      //   dataChannelPermission = await this.channelPermissionService.filterWithoutChannel(
+      //     dataFilterMember,
+      //     {},
+      //     1,
+      //     limit
+      //   );
+      // }
 
       if (dataReturn) {
         const dataIds = dataReturn?.map((dataItem) => {
@@ -310,22 +292,22 @@ export class UserFilterHelper {
 
       let dataChannelPermission = [];
       //Get Data level
-      if (query?.channel_id) {
-        const dataUserIds = dataReturn?.map((value) => {
-          return value?.user_id?._id?.toString();
-        });
-        //get permission
-        const dataFilterMember = {
-          channel_id: query?.channel_id,
-          user_ids: dataUserIds,
-        };
-        dataChannelPermission = await this.channelPermissionService.filterWithoutChannel(
-          dataFilterMember,
-          {},
-          1,
-          limit
-        );
-      }
+      // if (query?.channel_id) {
+      //   const dataUserIds = dataReturn?.map((value) => {
+      //     return value?.user_id?._id?.toString();
+      //   });
+      //   //get permission
+      //   const dataFilterMember = {
+      //     channel_id: query?.channel_id,
+      //     user_ids: dataUserIds,
+      //   };
+      //   dataChannelPermission = await this.channelPermissionService.filterWithoutChannel(
+      //     dataFilterMember,
+      //     {},
+      //     1,
+      //     limit
+      //   );
+      // }
 
       if (dataReturn) {
         const dataIds = dataReturn?.map((dataItem) => {
@@ -694,452 +676,452 @@ export class UserFilterHelper {
     }
   }
 
-  async handleProcessUser(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
-    try {
-      const dataFilterMediaOld = {
-        base_role: "men",
-      };
-      const dataObjectOld = await this.userOptionService.filter(dataFilterMediaOld, {}, 1, 50000);
-      //console.log(dataObject);
-      if (dataObjectOld) {
-        let dataCount = 0;
-        for (const dataMedia of dataObjectOld) {
-          try {
-            const dataUpdate = {
-              user_id: dataMedia?.user_id?.toString(),
-              base_role: "man",
-            };
-            await this.userOptionService.update(dataUpdate);
-            dataCount++;
-            console.log(dataCount, "dataCount");
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      }
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({ status: "Done" });
+  // async handleProcessUser(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
+  //   try {
+  //     const dataFilterMediaOld = {
+  //       base_role: "men",
+  //     };
+  //     const dataObjectOld = await this.userOptionService.filter(dataFilterMediaOld, {}, 1, 50000);
+  //     //console.log(dataObject);
+  //     if (dataObjectOld) {
+  //       let dataCount = 0;
+  //       for (const dataMedia of dataObjectOld) {
+  //         try {
+  //           const dataUpdate = {
+  //             user_id: dataMedia?.user_id?.toString(),
+  //             base_role: "man",
+  //           };
+  //           await this.userOptionService.update(dataUpdate);
+  //           dataCount++;
+  //           console.log(dataCount, "dataCount");
+  //         } catch (error) {
+  //           console.log(error);
+  //         }
+  //       }
+  //     }
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({ status: "Done" });
 
-      const dataFilterMedia = {
-        from: "2022-05-01T04:02:39.976+00:00",
-        to: "2022-11-01T04:02:39.976+00:00",
-      };
-      const dataObject = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
-      //console.log(dataObject);
-      if (dataObject) {
-        let dataCount = 0;
-        for (const dataMedia of dataObject) {
-          try {
-            let dataUrl = dataMedia.media_url;
-            let dataThumb = dataMedia.media_thumbnail;
-            dataUrl = dataUrl.replace(
-              "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
-              "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
-            );
-            dataThumb = dataThumb.replace(
-              "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
-              "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
-            );
-            //console.log(dataMedia);
-            const dataToUpdate = {
-              media_url: dataUrl,
-              media_thumbnail: dataThumb,
-              _id: dataMedia._id.toString(),
-            };
-            await this.chatMediaService.update(dataToUpdate);
-            dataCount++;
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      }
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({ status: "Done" });
+  //     const dataFilterMedia = {
+  //       from: "2022-05-01T04:02:39.976+00:00",
+  //       to: "2022-11-01T04:02:39.976+00:00",
+  //     };
+  //     const dataObject = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
+  //     //console.log(dataObject);
+  //     if (dataObject) {
+  //       let dataCount = 0;
+  //       for (const dataMedia of dataObject) {
+  //         try {
+  //           let dataUrl = dataMedia.media_url;
+  //           let dataThumb = dataMedia.media_thumbnail;
+  //           dataUrl = dataUrl.replace(
+  //             "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
+  //             "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
+  //           );
+  //           dataThumb = dataThumb.replace(
+  //             "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
+  //             "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
+  //           );
+  //           //console.log(dataMedia);
+  //           const dataToUpdate = {
+  //             media_url: dataUrl,
+  //             media_thumbnail: dataThumb,
+  //             _id: dataMedia._id.toString(),
+  //           };
+  //           await this.chatMediaService.update(dataToUpdate);
+  //           dataCount++;
+  //         } catch (error) {
+  //           console.log(error);
+  //         }
+  //       }
+  //     }
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({ status: "Done" });
 
-      const dataObject2 = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
-      //console.log(dataObject);
-      if (dataObject) {
-        for (const dataMedia of dataObject) {
-          try {
-            const dataUrl = dataMedia.media_url;
+  //     const dataObject2 = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
+  //     //console.log(dataObject);
+  //     if (dataObject) {
+  //       for (const dataMedia of dataObject) {
+  //         try {
+  //           const dataUrl = dataMedia.media_url;
 
-            const base64SingleFaceObject = await axios
-              .get(dataUrl, {
-                responseType: "arraybuffer",
-              })
-              .then((response) => {
-                return response;
-              })
-              .catch((error) => {
-                return null;
-              });
-            if (!base64SingleFaceObject) {
-              continue;
-            }
-            const base64SingleFace1 = Buffer.from(base64SingleFaceObject.data).toString("base64");
+  //           const base64SingleFaceObject = await axios
+  //             .get(dataUrl, {
+  //               responseType: "arraybuffer",
+  //             })
+  //             .then((response) => {
+  //               return response;
+  //             })
+  //             .catch((error) => {
+  //               return null;
+  //             });
+  //           if (!base64SingleFaceObject) {
+  //             continue;
+  //           }
+  //           const base64SingleFace1 = Buffer.from(base64SingleFaceObject.data).toString("base64");
 
-            const apiUrl = process.env.GENDER_URL;
-            const subscriptionKey = process.env.FACE_COMPARE_KEY; //change subscription key
+  //           const apiUrl = process.env.GENDER_URL;
+  //           const subscriptionKey = process.env.FACE_COMPARE_KEY; //change subscription key
 
-            const FormData = require("form-data");
-            const data = new FormData();
-            data.append("secret_compare", subscriptionKey);
-            data.append("key_compare", "ABC");
-            data.append("image", base64SingleFace1);
+  //           const FormData = require("form-data");
+  //           const data = new FormData();
+  //           data.append("secret_compare", subscriptionKey);
+  //           data.append("key_compare", "ABC");
+  //           data.append("image", base64SingleFace1);
 
-            const config = {
-              method: "post",
-              url: apiUrl,
-              headers: {
-                ...data.getHeaders(),
-              },
-              data: data,
-            };
-            //console.log(config)
+  //           const config = {
+  //             method: "post",
+  //             url: apiUrl,
+  //             headers: {
+  //               ...data.getHeaders(),
+  //             },
+  //             data: data,
+  //           };
+  //           //console.log(config)
 
-            const dataResponse = await axios(config)
-              .then((response) => {
-                return response.data;
-              })
-              .catch((error) => {
-                return error;
-              });
+  //           const dataResponse = await axios(config)
+  //             .then((response) => {
+  //               return response.data;
+  //             })
+  //             .catch((error) => {
+  //               return error;
+  //             });
 
-            let gender = "unknown";
-            if (dataResponse?.is_female) {
-              gender = "female";
-            }
-            if (dataResponse?.is_male) {
-              gender = "male";
-            }
-            const dataAi = JSON.stringify(dataResponse);
+  //           let gender = "unknown";
+  //           if (dataResponse?.is_female) {
+  //             gender = "female";
+  //           }
+  //           if (dataResponse?.is_male) {
+  //             gender = "male";
+  //           }
+  //           const dataAi = JSON.stringify(dataResponse);
 
-            const dataToUpdate = {
-              gender: gender,
-              _id: dataMedia._id.toString(),
-              data_ai: dataAi,
-            };
-            await this.chatMediaService.update(dataToUpdate);
-            console.log(dataMedia._id.toString());
-          } catch (error) {
-            console.log(error);
-            const dataToUpdate = {
-              gender: "unknown",
-              _id: dataMedia._id.toString(),
-              data_ai: "",
-            };
-            await this.chatMediaService.update(dataToUpdate);
-          }
-        }
-      }
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({ status: "Done" });
+  //           const dataToUpdate = {
+  //             gender: gender,
+  //             _id: dataMedia._id.toString(),
+  //             data_ai: dataAi,
+  //           };
+  //           await this.chatMediaService.update(dataToUpdate);
+  //           console.log(dataMedia._id.toString());
+  //         } catch (error) {
+  //           console.log(error);
+  //           const dataToUpdate = {
+  //             gender: "unknown",
+  //             _id: dataMedia._id.toString(),
+  //             data_ai: "",
+  //           };
+  //           await this.chatMediaService.update(dataToUpdate);
+  //         }
+  //       }
+  //     }
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({ status: "Done" });
 
-      const dataFilter = {
-        from: "2022-07-20T04:02:39.976+00:00",
-        to: "2022-10-21T04:02:39.976+00:00",
-        is_avatar: "1",
-      };
-      const dataUser = await this.userOptionService.filterFree(dataFilter, {}, 1, 20000);
-      let countUpdate = 0;
-      for (const dataItem of dataUser) {
-        const isUpdate = false;
-        //console.log(dataItem);
-        const dataUpdate = {
-          _id: dataItem._id.toString(),
-        };
-        let dataUserOptionUpdate = {
-          user_id: dataItem._id.toString(),
-        };
-        if (dataItem?.user_avatar?.toString() === "https://wallpaper.whiteg.app/avatar_default.png") {
-          dataUserOptionUpdate = {
-            ...dataUserOptionUpdate,
-            ...{
-              is_avatar: 0,
-            },
-          };
+  //     const dataFilter = {
+  //       from: "2022-07-20T04:02:39.976+00:00",
+  //       to: "2022-10-21T04:02:39.976+00:00",
+  //       is_avatar: "1",
+  //     };
+  //     const dataUser = await this.userOptionService.filterFree(dataFilter, {}, 1, 20000);
+  //     let countUpdate = 0;
+  //     for (const dataItem of dataUser) {
+  //       const isUpdate = false;
+  //       //console.log(dataItem);
+  //       const dataUpdate = {
+  //         _id: dataItem._id.toString(),
+  //       };
+  //       let dataUserOptionUpdate = {
+  //         user_id: dataItem._id.toString(),
+  //       };
+  //       if (dataItem?.user_avatar?.toString() === "https://wallpaper.whiteg.app/avatar_default.png") {
+  //         dataUserOptionUpdate = {
+  //           ...dataUserOptionUpdate,
+  //           ...{
+  //             is_avatar: 0,
+  //           },
+  //         };
 
-          countUpdate++;
-          //await this.appUserService.update(dataUpdate);
-          await this.userOptionService.update(dataUserOptionUpdate);
-          console.log("DONE", countUpdate);
-        }
-        // if (await this.checkProcessData(dataItem?.user_avatar?.toString())) {
-        //   dataUpdate = {
-        //     ...dataUpdate,
-        //     ...{
-        //       user_avatar: "https://wallpaper.whiteg.app/avatar_default.png",
-        //       user_avatar_thumbnail: "https://wallpaper.whiteg.app/avatar_default.png",
-        //     },
-        //   };
-        //   dataUserOptionUpdate = {
-        //     ...dataUserOptionUpdate,
-        //     ...{
-        //       is_avatar: 1,
-        //     },
-        //   };
-        //   isUpdate = true;
-        // }
-        // if (await this.checkProcessData(dataItem?.public_sound?.toString())) {
-        //   dataUpdate = {
-        //     ...dataUpdate,
-        //     ...{
-        //       public_sound: "",
-        //     },
-        //   };
-        //   isUpdate = true;
-        // }
-        // if (dataItem?.public_album) {
-        //   let dataToUpdate = [];
-        //   for (let dataItemAlbum of dataItem?.public_album) {
-        //     //if (await this.checkProcessData(dataItemAlbum.))
-        //     //console.log(dataItemAlbum._id);
-        //     //console.log(this.checkProcessData(dataItemAlbum.media_url))
-        //     if (await this.checkProcessData(dataItemAlbum.media_url)) {
+  //         countUpdate++;
+  //         //await this.appUserService.update(dataUpdate);
+  //         await this.userOptionService.update(dataUserOptionUpdate);
+  //         console.log("DONE", countUpdate);
+  //       }
+  //       // if (await this.checkProcessData(dataItem?.user_avatar?.toString())) {
+  //       //   dataUpdate = {
+  //       //     ...dataUpdate,
+  //       //     ...{
+  //       //       user_avatar: "https://wallpaper.whiteg.app/avatar_default.png",
+  //       //       user_avatar_thumbnail: "https://wallpaper.whiteg.app/avatar_default.png",
+  //       //     },
+  //       //   };
+  //       //   dataUserOptionUpdate = {
+  //       //     ...dataUserOptionUpdate,
+  //       //     ...{
+  //       //       is_avatar: 1,
+  //       //     },
+  //       //   };
+  //       //   isUpdate = true;
+  //       // }
+  //       // if (await this.checkProcessData(dataItem?.public_sound?.toString())) {
+  //       //   dataUpdate = {
+  //       //     ...dataUpdate,
+  //       //     ...{
+  //       //       public_sound: "",
+  //       //     },
+  //       //   };
+  //       //   isUpdate = true;
+  //       // }
+  //       // if (dataItem?.public_album) {
+  //       //   let dataToUpdate = [];
+  //       //   for (let dataItemAlbum of dataItem?.public_album) {
+  //       //     //if (await this.checkProcessData(dataItemAlbum.))
+  //       //     //console.log(dataItemAlbum._id);
+  //       //     //console.log(this.checkProcessData(dataItemAlbum.media_url))
+  //       //     if (await this.checkProcessData(dataItemAlbum.media_url)) {
 
-        //     } else {
-        //       dataToUpdate.push(dataItemAlbum._id?.toString())
-        //     }
-        //   }
-        //   dataUserOptionUpdate = {
-        //     ...dataUserOptionUpdate,
-        //     ...{
-        //       public_album: dataToUpdate
-        //     }
-        //   }
-        //   isUpdate = true;
-        // }
+  //       //     } else {
+  //       //       dataToUpdate.push(dataItemAlbum._id?.toString())
+  //       //     }
+  //       //   }
+  //       //   dataUserOptionUpdate = {
+  //       //     ...dataUserOptionUpdate,
+  //       //     ...{
+  //       //       public_album: dataToUpdate
+  //       //     }
+  //       //   }
+  //       //   isUpdate = true;
+  //       // }
 
-        // if (isUpdate) {
-        //   countUpdate++;
-        //   await this.appUserService.update(dataUpdate);
-        //   await this.userOptionService.update(dataUserOptionUpdate);
-        //   console.log("DONE", countUpdate);
-        // }
-      }
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({ status: "Done" });
-    } catch (error) {
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({});
-    }
-  }
+  //       // if (isUpdate) {
+  //       //   countUpdate++;
+  //       //   await this.appUserService.update(dataUpdate);
+  //       //   await this.userOptionService.update(dataUserOptionUpdate);
+  //       //   console.log("DONE", countUpdate);
+  //       // }
+  //     }
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({ status: "Done" });
+  //   } catch (error) {
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({});
+  //   }
+  // }
 
-  async handleProcessFace(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
-    try {
-      let dataObject = null;
-      if (Number(query.page) === 1) {
-        //Update Like Point
-        const dataFilterMedia = {
-          not_circle_point: true,
-        };
-        dataObject = await this.userOptionService.filter(dataFilterMedia, {}, 1, 30000);
-        for (const dataItem of dataObject) {
-          let dataToUpdate = {
-            user_id: dataItem.user_id.toString(),
-          };
-          if (parseFloat(dataItem.circle_point) < -20) {
-            dataToUpdate = {
-              ...dataToUpdate,
-              ...{
-                circle_point: -20,
-                like_point: -20,
-              },
-            };
-          } else {
-            dataToUpdate = {
-              ...dataToUpdate,
-              ...{
-                circle_point: dataItem.circle_point,
-                like_point: dataItem.circle_point,
-              },
-            };
-          }
-          await this.userOptionService.update(dataToUpdate);
-        }
-      }
-      if (Number(query.page) === 2) {
-        //Update Avatar point
-        //Update Like Point
-        const dataFilterAvatar = {
-          is_avatar: "1",
-        };
-        dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 30000);
-        for (const dataItem of dataObject) {
-          const avatarUrl = dataItem?.user_avatar;
-          const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
+  // async handleProcessFace(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
+  //   try {
+  //     let dataObject = null;
+  //     if (Number(query.page) === 1) {
+  //       //Update Like Point
+  //       const dataFilterMedia = {
+  //         not_circle_point: true,
+  //       };
+  //       dataObject = await this.userOptionService.filter(dataFilterMedia, {}, 1, 30000);
+  //       for (const dataItem of dataObject) {
+  //         let dataToUpdate = {
+  //           user_id: dataItem.user_id.toString(),
+  //         };
+  //         if (parseFloat(dataItem.circle_point) < -20) {
+  //           dataToUpdate = {
+  //             ...dataToUpdate,
+  //             ...{
+  //               circle_point: -20,
+  //               like_point: -20,
+  //             },
+  //           };
+  //         } else {
+  //           dataToUpdate = {
+  //             ...dataToUpdate,
+  //             ...{
+  //               circle_point: dataItem.circle_point,
+  //               like_point: dataItem.circle_point,
+  //             },
+  //           };
+  //         }
+  //         await this.userOptionService.update(dataToUpdate);
+  //       }
+  //     }
+  //     if (Number(query.page) === 2) {
+  //       //Update Avatar point
+  //       //Update Like Point
+  //       const dataFilterAvatar = {
+  //         is_avatar: "1",
+  //       };
+  //       dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 30000);
+  //       for (const dataItem of dataObject) {
+  //         const avatarUrl = dataItem?.user_avatar;
+  //         const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
 
-          let genderPoint = 0;
-          if (image1Object && image1Object?.gender) {
-            if (image1Object?.gender === "male") {
-              genderPoint = -10;
-            } else {
-              if (image1Object?.gender === "female") {
-                genderPoint = 0;
-              } else {
-                genderPoint = 10;
-              }
-            }
-          } else {
-            genderPoint = 10;
-          }
+  //         let genderPoint = 0;
+  //         if (image1Object && image1Object?.gender) {
+  //           if (image1Object?.gender === "male") {
+  //             genderPoint = -10;
+  //           } else {
+  //             if (image1Object?.gender === "female") {
+  //               genderPoint = 0;
+  //             } else {
+  //               genderPoint = 10;
+  //             }
+  //           }
+  //         } else {
+  //           genderPoint = 10;
+  //         }
 
-          const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
-          const oldPoint = userOptionData?.avatar_point;
-          const pointToPlus =
-            parseFloat(userOptionData?.circle_point?.toString()) -
-            parseFloat(oldPoint?.toString()) +
-            parseFloat(genderPoint?.toString());
+  //         const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
+  //         const oldPoint = userOptionData?.avatar_point;
+  //         const pointToPlus =
+  //           parseFloat(userOptionData?.circle_point?.toString()) -
+  //           parseFloat(oldPoint?.toString()) +
+  //           parseFloat(genderPoint?.toString());
 
-          //Update Gender Point
-          const dataUpdateAfter = {
-            user_id: dataItem._id?.toString(),
-            avatar_point: genderPoint,
-            avatar_gender: image1Object?.gender,
-            circle_point: pointToPlus,
-          };
-          await this.userOptionService.update(dataUpdateAfter);
-        }
-      }
+  //         //Update Gender Point
+  //         const dataUpdateAfter = {
+  //           user_id: dataItem._id?.toString(),
+  //           avatar_point: genderPoint,
+  //           avatar_gender: image1Object?.gender,
+  //           circle_point: pointToPlus,
+  //         };
+  //         await this.userOptionService.update(dataUpdateAfter);
+  //       }
+  //     }
 
-      if (Number(query.page) === 3) {
-        //Update Day point
-        //Update Like Point
-        const dataFilterAvatar = {};
-        dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 80000);
-        for (const dataItem of dataObject) {
-          const lastActive = dataItem.last_active;
+  //     if (Number(query.page) === 3) {
+  //       //Update Day point
+  //       //Update Like Point
+  //       const dataFilterAvatar = {};
+  //       dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 80000);
+  //       for (const dataItem of dataObject) {
+  //         const lastActive = dataItem.last_active;
 
-          const dateLastActive = new Date(lastActive);
-          const currentTime = Date.now() - dateLastActive.getTime();
+  //         const dateLastActive = new Date(lastActive);
+  //         const currentTime = Date.now() - dateLastActive.getTime();
 
-          const leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
+  //         const leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
 
-          const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
-          const oldPoint = userOptionData?.time_point;
-          const pointToPlus =
-            parseFloat(userOptionData?.circle_point?.toString()) -
-            parseFloat(oldPoint?.toString()) +
-            parseFloat(leftTime?.toString());
+  //         const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
+  //         const oldPoint = userOptionData?.time_point;
+  //         const pointToPlus =
+  //           parseFloat(userOptionData?.circle_point?.toString()) -
+  //           parseFloat(oldPoint?.toString()) +
+  //           parseFloat(leftTime?.toString());
 
-          //Update Gender Point
-          const dataUpdateAfter = {
-            user_id: dataItem._id?.toString(),
-            circle_point: pointToPlus,
-            time_point: leftTime,
-          };
-          await this.userOptionService.update(dataUpdateAfter);
-        }
-      }
+  //         //Update Gender Point
+  //         const dataUpdateAfter = {
+  //           user_id: dataItem._id?.toString(),
+  //           circle_point: pointToPlus,
+  //           time_point: leftTime,
+  //         };
+  //         await this.userOptionService.update(dataUpdateAfter);
+  //       }
+  //     }
 
-      if (Number(query.page) === 4) {
-        //Update Like Point
-        const dataFilterMedia = {
-          from: "2022-09-30T04:02:39.976+00:00",
-          to: "2022-11-01T04:02:39.976+00:00",
-        };
-        dataObject = await this.appUserService.filter(dataFilterMedia, {}, 1, 50000);
-        let dataCount = 0;
-        for (const dataItem of dataObject) {
-          let userAvatar = dataItem.user_avatar;
-          let userThumb = dataItem.user_avatar_thumbnail;
-          let publicSound = dataItem.public_sound;
+  //     if (Number(query.page) === 4) {
+  //       //Update Like Point
+  //       const dataFilterMedia = {
+  //         from: "2022-09-30T04:02:39.976+00:00",
+  //         to: "2022-11-01T04:02:39.976+00:00",
+  //       };
+  //       dataObject = await this.appUserService.filter(dataFilterMedia, {}, 1, 50000);
+  //       let dataCount = 0;
+  //       for (const dataItem of dataObject) {
+  //         let userAvatar = dataItem.user_avatar;
+  //         let userThumb = dataItem.user_avatar_thumbnail;
+  //         let publicSound = dataItem.public_sound;
 
-          if (
-            userAvatar.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") ===
-            -1
-          ) {
-            console.log("change");
-            userAvatar = userAvatar.replace(
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
-            );
-          }
+  //         if (
+  //           userAvatar.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") ===
+  //           -1
+  //         ) {
+  //           console.log("change");
+  //           userAvatar = userAvatar.replace(
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
+  //           );
+  //         }
 
-          if (
-            userThumb.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") === -1
-          ) {
-            console.log("change");
-            userThumb = userThumb.replace(
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
-            );
-          }
-          if (
-            publicSound.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") ===
-            -1
-          ) {
-            console.log("change");
-            publicSound = publicSound.replace(
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-              "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
-            );
-          }
+  //         if (
+  //           userThumb.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") === -1
+  //         ) {
+  //           console.log("change");
+  //           userThumb = userThumb.replace(
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
+  //           );
+  //         }
+  //         if (
+  //           publicSound.indexOf("https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/2022") ===
+  //           -1
+  //         ) {
+  //           console.log("change");
+  //           publicSound = publicSound.replace(
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //             "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com/2022"
+  //           );
+  //         }
 
-          userAvatar = userAvatar.replace(
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
-          );
-          userThumb = userThumb.replace(
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
-          );
-          publicSound = publicSound.replace(
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
-            "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
-          );
+  //         userAvatar = userAvatar.replace(
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
+  //         );
+  //         userThumb = userThumb.replace(
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
+  //         );
+  //         publicSound = publicSound.replace(
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/",
+  //           "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
+  //         );
 
-          userAvatar = userAvatar.replace(
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
-          );
-          userThumb = userThumb.replace(
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
-          );
-          publicSound = publicSound.replace(
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
-            "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
-          );
+  //         userAvatar = userAvatar.replace(
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
+  //         );
+  //         userThumb = userThumb.replace(
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
+  //         );
+  //         publicSound = publicSound.replace(
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app",
+  //           "https://media.whiteg.app/lgbtapp.s3.ap-southeast-1.amazonaws.com"
+  //         );
 
-          let dataToUpdate = {
-            _id: dataItem._id.toString(),
-          };
+  //         let dataToUpdate = {
+  //           _id: dataItem._id.toString(),
+  //         };
 
-          dataToUpdate = {
-            ...dataToUpdate,
-            ...{
-              user_avatar: userAvatar,
-              user_avatar_thumbnail: userThumb,
-              public_sound: publicSound,
-            },
-          };
-          dataCount++;
-          await this.appUserService.update(dataToUpdate);
-        }
-      }
+  //         dataToUpdate = {
+  //           ...dataToUpdate,
+  //           ...{
+  //             user_avatar: userAvatar,
+  //             user_avatar_thumbnail: userThumb,
+  //             public_sound: publicSound,
+  //           },
+  //         };
+  //         dataCount++;
+  //         await this.appUserService.update(dataToUpdate);
+  //       }
+  //     }
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({ status: "Done" });
-    } catch (error) {
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send({});
-    }
-  }
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({ status: "Done" });
+  //   } catch (error) {
+  //     return res
+  //       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //       .status(HttpStatus.OK)
+  //       .send({});
+  //   }
+  // }
 
   async handleCronJob() {
     //Update Day point
@@ -1365,7 +1347,7 @@ export class UserFilterHelper {
       };
       const dataCountFollower = await this.userFollowService.count(dataToFilterFollower);
 
-      const dataContributeCount = await this.requestService.count({ user_id: dataQuery?.user_id });
+      // const dataContributeCount = await this.requestService.count({ user_id: dataQuery?.user_id });
 
       const dataToFilterView = {
         partner_id: dataQuery?.user_id,
@@ -1376,7 +1358,7 @@ export class UserFilterHelper {
         following: Number(dataCountFollowing),
         followers: Number(dataCountFollower),
         view_number: Number(dataCountView),
-        contribute: dataContributeCount,
+        // contribute: dataContributeCount,
       };
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1444,19 +1426,19 @@ export class UserFilterHelper {
       }
 
       const dataVideoReturn: any = [];
-      if (Number(dataUser?.video_number) > 0) {
-        const dataVideoObject: any = await this.shortService.filter(
-          { user_id: dataUser?._id.toString() },
-          { createdAt: "DESC" },
-          1,
-          3
-        );
-        if (dataVideoObject && dataVideoObject.length) {
-          for (const dataVideoItem of dataVideoObject) {
-            dataVideoReturn.push(dataVideoItem?.toObject());
-          }
-        }
-      }
+      // if (Number(dataUser?.video_number) > 0) {
+      //   const dataVideoObject: any = await this.shortService.filter(
+      //     { user_id: dataUser?._id.toString() },
+      //     { createdAt: "DESC" },
+      //     1,
+      //     3
+      //   );
+      //   if (dataVideoObject && dataVideoObject.length) {
+      //     for (const dataVideoItem of dataVideoObject) {
+      //       dataVideoReturn.push(dataVideoItem?.toObject());
+      //     }
+      //   }
+      // }
       dataUser = { ...dataUser, ...{ user_video: dataVideoReturn } };
 
       delete dataUser?.follow_users;
@@ -1791,7 +1773,7 @@ export class UserFilterHelper {
         dataWithIn.length &&
         process.env.BRANCH_NAME !== "live_video" &&
         process.env.BRANCH_NAME !== "ishare" &&
-        !userObject?.travel_city &&
+        // !userObject?.travel_city &&
         !dataToFilter?.is_map
       ) {
         const newDataFilter = {
@@ -1830,19 +1812,19 @@ export class UserFilterHelper {
             }
           }
           const dataVideoReturn: any = [];
-          if (Number(dataPrepareItem?.video_number) > 0) {
-            const dataVideoObject: any = await this.shortService.filter(
-              { user_id: dataPrepareItem?._id.toString() },
-              { createdAt: "DESC" },
-              1,
-              3
-            );
-            if (dataVideoObject && dataVideoObject.length) {
-              for (const dataVideoItem of dataVideoObject) {
-                dataVideoReturn.push(dataVideoItem?.toObject());
-              }
-            }
-          }
+          // if (Number(dataPrepareItem?.video_number) > 0) {
+          //   const dataVideoObject: any = await this.shortService.filter(
+          //     { user_id: dataPrepareItem?._id.toString() },
+          //     { createdAt: "DESC" },
+          //     1,
+          //     3
+          //   );
+          //   if (dataVideoObject && dataVideoObject.length) {
+          //     for (const dataVideoItem of dataVideoObject) {
+          //       dataVideoReturn.push(dataVideoItem?.toObject());
+          //     }
+          //   }
+          // }
           dataFinalReturn.push({
             ...dataPrepareItem,
             ...{ is_follow: isFollow, public_instagram: publicInstagram, user_video: dataVideoReturn },
@@ -1901,71 +1883,71 @@ export class UserFilterHelper {
         await this.userSessionService.update(dataSessionToUpdate);
       }
 
-      //Update City
-      if (
-        (!userObject?.city || !userObject?.country || !dataToFilter?.distance) &&
-        parseFloat(query?.latitude?.toString()) &&
-        parseFloat(query?.longitude?.toString()) &&
-        parseFloat(query?.latitude?.toString()) != -1 &&
-        parseFloat(query?.longitude?.toString()) != -1
-      ) {
-        const randomTimeout = Math.floor(Math.random() * 20);
-        setTimeout(async () => {
-          //Update User Option
-          let cityObject = await this.cityService.findOneWithFilter({
-            point: [parseFloat(query.longitude.toString()), parseFloat(query.latitude.toString())],
-          });
+      // //Update City
+      // if (
+      //   (!userObject?.city || !userObject?.country || !dataToFilter?.distance) &&
+      //   parseFloat(query?.latitude?.toString()) &&
+      //   parseFloat(query?.longitude?.toString()) &&
+      //   parseFloat(query?.latitude?.toString()) != -1 &&
+      //   parseFloat(query?.longitude?.toString()) != -1
+      // ) {
+      //   const randomTimeout = Math.floor(Math.random() * 20);
+      //   setTimeout(async () => {
+      //     //Update User Option
+      //     let cityObject = await this.cityService.findOneWithFilter({
+      //       point: [parseFloat(query.longitude.toString()), parseFloat(query.latitude.toString())],
+      //     });
 
-          if (!cityObject) {
-            //Find nearby
-            const filterCity = await this.cityService.filter(
-              { is_nearby: "1", latitude: query.latitude, longitude: query.longitude },
-              {},
-              1,
-              1
-            );
-            if (filterCity && filterCity[0]) {
-              cityObject = filterCity[0];
-            }
-          }
+      //     if (!cityObject) {
+      //       //Find nearby
+      //       const filterCity = await this.cityService.filter(
+      //         { is_nearby: "1", latitude: query.latitude, longitude: query.longitude },
+      //         {},
+      //         1,
+      //         1
+      //       );
+      //       if (filterCity && filterCity[0]) {
+      //         cityObject = filterCity[0];
+      //       }
+      //     }
 
-          let cityName = "";
-          let countryName = "";
+      //     let cityName = "";
+      //     let countryName = "";
 
-          if (cityObject) {
-            const oldCity = userObject?.city?.toString();
-            if (userObject?.city?.toString() !== cityObject?._id?.toString()) {
-              //Update New City
-              let dataUpdate = {
-                _id: userObject?._id?.toString(),
-                old_city: oldCity,
-                city: cityObject?._id?.toString(),
-                country: cityObject?.country_iso2?.toString(),
-              };
-              await this.appUserService.update(dataUpdate);
-              delete dataUpdate._id;
-              dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id.toString() } };
-              await this.userOptionService.update(dataUpdate);
-              //Update Old City
-              await this.cityService.handleUpdateUserInc(cityObject?._id.toString(), true);
-              await this.cityService.handleUpdateUserInc(oldCity, false);
-            }
-            cityName = cityObject?.city_name?.toString();
-            countryName = cityObject?.country?.toString();
-            this.sendNotificationNew(userObject, req, res, cityName, countryName);
-          } else {
-            let dataUpdate = {
-              _id: userObject?._id?.toString(),
-              country: "GLOBAL",
-            };
-            await this.appUserService.update(dataUpdate);
-            delete dataUpdate._id;
-            dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id?.toString() } };
-            await this.userOptionService.update(dataUpdate);
-            this.sendNotificationNew(userObject, req, res, cityName, countryName);
-          }
-        }, randomTimeout * 1000);
-      }
+      //     if (cityObject) {
+      //       const oldCity = userObject?.city?.toString();
+      //       if (userObject?.city?.toString() !== cityObject?._id?.toString()) {
+      //         //Update New City
+      //         let dataUpdate = {
+      //           _id: userObject?._id?.toString(),
+      //           old_city: oldCity,
+      //           city: cityObject?._id?.toString(),
+      //           country: cityObject?.country_iso2?.toString(),
+      //         };
+      //         await this.appUserService.update(dataUpdate);
+      //         delete dataUpdate._id;
+      //         dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id.toString() } };
+      //         await this.userOptionService.update(dataUpdate);
+      //         //Update Old City
+      //         await this.cityService.handleUpdateUserInc(cityObject?._id.toString(), true);
+      //         await this.cityService.handleUpdateUserInc(oldCity, false);
+      //       }
+      //       cityName = cityObject?.city_name?.toString();
+      //       countryName = cityObject?.country?.toString();
+      //       this.sendNotificationNew(userObject, req, res, cityName, countryName);
+      //     } else {
+      //       let dataUpdate = {
+      //         _id: userObject?._id?.toString(),
+      //         country: "GLOBAL",
+      //       };
+      //       await this.appUserService.update(dataUpdate);
+      //       delete dataUpdate._id;
+      //       dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id?.toString() } };
+      //       await this.userOptionService.update(dataUpdate);
+      //       this.sendNotificationNew(userObject, req, res, cityName, countryName);
+      //     }
+      //   }, randomTimeout * 1000);
+      // }
 
       //Filter user Not have Avatar
       if (
@@ -1993,91 +1975,91 @@ export class UserFilterHelper {
     }
   }
 
-  /**
-   *
-   * @param userId
-   * @param cityName
-   * @param countryName
-   */
-  async sendNotificationNew(
-    partnerObject: User,
-    req: ExpressRequestDto,
-    res: Response,
-    cityName: string,
-    countryName: string
-  ) {
-    setTimeout(async () => {
-      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-      //Create new
-      const dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
-        supportAccount,
-        partnerObject._id.toString(),
-        "personal",
-        "",
-        true
-      );
+//   /**
+//    *
+//    * @param userId
+//    * @param cityName
+//    * @param countryName
+//    */
+//   async sendNotificationNew(
+//     partnerObject: User,
+//     req: ExpressRequestDto,
+//     res: Response,
+//     cityName: string,
+//     countryName: string
+//   ) {
+//     setTimeout(async () => {
+//       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+//       //Create new
+//       const dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
+//         supportAccount,
+//         partnerObject._id.toString(),
+//         "personal",
+//         "",
+//         true
+//       );
 
-      if (!dataCreateReturnRoom) {
-        console.log("Not found");
-      } else {
-        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        const currentTime = new Date().getTime();
+//       if (!dataCreateReturnRoom) {
+//         console.log("Not found");
+//       } else {
+//         const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+//         const currentTime = new Date().getTime();
 
-        //console.log(currentTime - updatedAt);
-        const leftTime = currentTime - updatedAt;
-        if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-          console.log("Not return");
-          return null;
-        }
+//         //console.log(currentTime - updatedAt);
+//         const leftTime = currentTime - updatedAt;
+//         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+//           console.log("Not return");
+//           return null;
+//         }
 
-        let chatContent = "";
-        const tokenReturn = this.jwtHelper.generateJwt(
-          process.env.INFO_USER,
-          supportAccount?.user_email?.toString(),
-          process.env.INFO_SESSION,
-          true
-        );
-        let branchName = "WhiteG";
-        if (process.env.BRANCH_NAME === "honee") {
-          branchName = "Honee";
-        }
-        if (countryName === "Vietnam") {
-          const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
-          chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
-👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
-👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
-✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
-🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
-🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
-        } else {
-          const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
-          chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
-👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
-👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
-✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
-🔔 If you have any problems, contact us directly using the Support feature.
-🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
-        }
-        const createChatHistoryDto = {
-          chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-          chat_content: chatContent,
-        };
+//         let chatContent = "";
+//         const tokenReturn = this.jwtHelper.generateJwt(
+//           process.env.INFO_USER,
+//           supportAccount?.user_email?.toString(),
+//           process.env.INFO_SESSION,
+//           true
+//         );
+//         let branchName = "WhiteG";
+//         if (process.env.BRANCH_NAME === "honee") {
+//           branchName = "Honee";
+//         }
+//         if (countryName === "Vietnam") {
+//           const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
+//           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
+// 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
+// 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
+// ✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
+// 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
+// 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
+//         } else {
+//           const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
+//           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
+// 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
+// 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
+// ✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
+// 🔔 If you have any problems, contact us directly using the Support feature.
+// 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
+//         }
+//         const createChatHistoryDto = {
+//           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+//           chat_content: chatContent,
+//         };
 
-        req.user_id = supportAccount?._id.toString();
-        req.user_object = supportAccount;
-        req.session_id = process.env.INFO_SESSION;
-        req.auth_code = tokenReturn.toString();
+//         req.user_id = supportAccount?._id.toString();
+//         req.user_object = supportAccount;
+//         req.session_id = process.env.INFO_SESSION;
+//         req.auth_code = tokenReturn.toString();
 
-        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-          req,
-          res,
-          createChatHistoryDto,
-          false,
-          true
-        );
-      }
-    }, 2000);
+//         const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+//           req,
+//           res,
+//           createChatHistoryDto,
+//           false,
+//           true
+//         );
+//       }
+//     }, 2000);
 
-    return true;
-  }
+//     return true;
+//   }
 }

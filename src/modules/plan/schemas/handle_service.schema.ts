@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 
 @Schema()
@@ -129,14 +128,14 @@ export class HandleService {
     default: null,
     ref: "ChatMedia",
   })
-  avatar: ChatMedia;
+  avatar: String;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     ref: "ChatMedia",
   })
-  public_album: ChatMedia[];
+  public_album: String[];
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,

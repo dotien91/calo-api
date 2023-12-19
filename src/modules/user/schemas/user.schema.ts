@@ -1,13 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Channel } from "diagnostics_channel";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { City, CitySchema } from "../../../modules/city/schemas/city.schema";
 import { UserLocationHistory } from "./user_location_history.schema";
 import { UserOption } from "./user_option.schema";
-import { Channel } from "diagnostics_channel";
-import { ChannelSchema } from "../../../modules/channel/schemas/channel.schema";
-import { RequestSchema } from "../../../modules/request/schemas/request.schema";
-import { EventSchema } from "../../../modules/event/schemas/event.schema";
-import { Topic, TopicSchema } from "../../../modules/topic/schemas/topic.schema";
 
 export type UserDocument = User & Document;
 
@@ -165,19 +160,6 @@ export class User {
   })
   disagree_users: User[];
 
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-    ref: "City",
-  })
-  join_cities: City[];
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-    ref: "Topic",
-  })
-  join_topics: Topic[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -185,15 +167,6 @@ export class User {
     ref: "Event",
   })
   follow_event: Event[];
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "City", default: null, index: true, nullable: true })
-  city: City;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "City", default: null, index: true, nullable: true })
-  old_city: City;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "City", default: null, index: true, nullable: true })
-  travel_city: City;
 
   @Prop({
     type: Number,

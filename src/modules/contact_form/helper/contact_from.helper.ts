@@ -1,25 +1,20 @@
-import e, { Response, Request, response } from "express";
 import {
-  ForbiddenException,
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
-  NotFoundException,
   Injectable,
-  Res,
-  Req,
-  Param,
+  NotFoundException
 } from "@nestjs/common";
-import { UserService } from "../../user/services/user.service";
+import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateContactFormDto } from "../dto/create-contact_form.dto";
-import { ContactFormService } from "../services/contact_form.service";
-import { ListContactFormDto } from "../dto/list-contact_form.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UpdateContactFormDto } from "../dto/update-contact_form.dto";
-import axios from "axios";
 import { UserOptionService } from "../../../modules/user/services/user_option.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { UserService } from "../../user/services/user.service";
+import { CreateContactFormDto } from "../dto/create-contact_form.dto";
+import { ListContactFormDto } from "../dto/list-contact_form.dto";
+import { UpdateContactFormDto } from "../dto/update-contact_form.dto";
 import { updateStatusContactForm } from "../dto/update-status-contact_form.dto";
-import { PostService } from "../../../modules/post/services/post.service";
+import { ContactFormService } from "../services/contact_form.service";
 
 /**
  * @author Tony Vu
@@ -33,7 +28,6 @@ export class ContactFormHelper {
     private userService: UserService,
     private userOptionService: UserOptionService,
     private userPermissionService: UserPermissionService,
-    private postService: PostService
   ) {}
 
   /**
@@ -63,23 +57,23 @@ export class ContactFormHelper {
         dataUpdate = { ...dataUpdate, ...{ user_entity: createContactFormData.user_id } };
       }
 
-      //Check Entity
-      if (createContactFormData?.form_status) {
-        const dataEntity = await this.postService.findById(createContactFormData?.entity_id?.toString());
-        //Check
-        if (
-          dataEntity?.user_id?._id?.toString() === userId ||
-          (await this.userPermissionService.isHavePermission(userId, "contact_form/update"))
-        ) {
-          //
-        } else {
-          //Not have Permission
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
-      }
+      // //Check Entity
+      // if (createContactFormData?.form_status) {
+      //   const dataEntity = await this.postService.findById(createContactFormData?.entity_id?.toString());
+      //   //Check
+      //   if (
+      //     dataEntity?.user_id?._id?.toString() === userId ||
+      //     (await this.userPermissionService.isHavePermission(userId, "contact_form/update"))
+      //   ) {
+      //     //
+      //   } else {
+      //     //Not have Permission
+      //     throw new BadRequestException("You haven't permission for this Action!");
+      //   }
+      // }
 
       const dataReturn = await this.contactFormService.create(createContactFormData);
-      await this.postService.updateUserEntity(dataUpdate);
+      // await this.postService.updateUserEntity(dataUpdate);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -160,7 +154,7 @@ export class ContactFormHelper {
         const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
-        await this.postService.updateCount(dataToUpdate, { choose_user: 1 });
+        // await this.postService.updateCount(dataToUpdate, { choose_user: 1 });
       }
 
       if (updateStatusContactForm?.form_status === "noticed") {
@@ -168,7 +162,7 @@ export class ContactFormHelper {
         const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
-        await this.postService.updateCount(dataToUpdate, { done_user: 1 });
+        // await this.postService.updateCount(dataToUpdate, { done_user: 1 });
       }
 
       if (updateStatusContactForm?.form_status === "done") {
@@ -176,7 +170,7 @@ export class ContactFormHelper {
         const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
-        await this.postService.updateCount(dataToUpdate, { done_user: 1 });
+        // await this.postService.updateCount(dataToUpdate, { done_user: 1 });
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -298,25 +292,25 @@ export class ContactFormHelper {
         //Check Permission
         const dataReturn = await this.contactFormService.remove(id);
         //get entity
-        const dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
-        let userEntity = dataEntity.user_entity;
-        if (!userEntity) {
-          userEntity = [];
-        }
-        userEntity = userEntity.filter((value, index) => {
-          if (value?.toString() == dataReturn?.user_id?.toString()) {
-            return false;
-          } else {
-            return true;
-          }
-        });
-        const dataUpdate = {
-          _id: dataReturn?.entity_id?.toString(),
-          user_entity: userEntity,
-        };
+        // const dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
+        // let userEntity = dataEntity.user_entity;
+        // if (!userEntity) {
+        //   userEntity = [];
+        // }
+        // userEntity = userEntity.filter((value, index) => {
+        //   if (value?.toString() == dataReturn?.user_id?.toString()) {
+        //     return false;
+        //   } else {
+        //     return true;
+        //   }
+        // });
+        // const dataUpdate = {
+        //   _id: dataReturn?.entity_id?.toString(),
+        //   user_entity: userEntity,
+        // };
         // console.log(dataUpdate, 'dataUpdate')
         //Update Entity
-        await this.postService.update(dataUpdate);
+        // await this.postService.update(dataUpdate);
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
