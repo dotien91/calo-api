@@ -4,16 +4,16 @@ import { IsString, IsOptional, IsIn } from "class-validator";
 export class UpdateOrderUserDto {
   @IsString()
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_note?: String;
+  order_note?: string;
 
   @IsIn(["pending", "processing"])
   @ApiProperty()
-  status?: String;
+  status?: string;
 
   @IsString()
   @IsOptional(null)

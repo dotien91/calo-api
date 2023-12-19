@@ -21,14 +21,14 @@ export class LawyerReport {
     nullable: false,
     default: "",
   })
-  report_key: String;
+  report_key: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  report_value: String;
+  report_value: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Lawyer" })
   event_id: MongooseSchema.Types.ObjectId;

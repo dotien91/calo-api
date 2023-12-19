@@ -41,7 +41,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  post_language: String;
+  post_language: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "RequestCategory", index: true })
   post_category: RequestCategory;
@@ -54,21 +54,21 @@ export class Request {
     default: "",
     nullable: false,
   })
-  post_title: String;
+  post_title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_content: String;
+  post_content: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_excerpt: String;
+  post_excerpt: string;
 
   @Prop({
     type: String,
@@ -76,7 +76,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  post_slug: String;
+  post_slug: string;
 
   @Prop({
     type: String,
@@ -84,28 +84,28 @@ export class Request {
     nullable: false,
     index: true,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String;
+  post_status: string;
 
   @Prop({
     type: String,
     default: "{}",
     nullable: false,
   })
-  data_json: String;
+  data_json: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  data_json_type: String;
+  data_json_type: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -135,7 +135,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  post_type: String;
+  post_type: string;
 
   @Prop({
     type: Number,
@@ -143,7 +143,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  view_number: Number;
+  view_number: number;
 
   @Prop({
     type: Number,
@@ -151,7 +151,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: Number,
@@ -159,7 +159,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  share_number: Number;
+  share_number: number;
 
   @Prop({
     type: Number,
@@ -167,7 +167,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  is_pin: Number;
+  is_pin: number;
 
   @Prop({
     type: Number,
@@ -175,7 +175,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  is_comment: Number;
+  is_comment: number;
 
   @Prop({
     type: Number,
@@ -183,7 +183,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  dislike_number: Number;
+  dislike_number: number;
 
   @Prop({
     type: Number,
@@ -191,7 +191,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  comment_number: Number;
+  comment_number: number;
 
   @Prop({
     type: Number,
@@ -199,7 +199,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  vote_number: Number;
+  vote_number: number;
 
   @Prop({
     type: Number,
@@ -207,7 +207,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  trending_number: Number;
+  trending_number: number;
 
   @Prop({
     type: Number,
@@ -215,7 +215,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  popular_number: Number;
+  popular_number: number;
 
   @Prop({
     type: Number,
@@ -223,7 +223,7 @@ export class Request {
     nullable: false,
     index: true,
   })
-  points: Number;
+  points: number;
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request).index({

@@ -54,8 +54,8 @@ export class ChatRoomUserOptionService {
     }
 
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
 
@@ -110,7 +110,7 @@ export class ChatRoomUserOptionService {
    * @returns
    */
   async findOne(dataToSearch: SearchChatRoomUserOption) {
-    let populateObject = {
+    const populateObject = {
       path: "chat_room_id",
       populate: [
         {
@@ -163,13 +163,13 @@ export class ChatRoomUserOptionService {
    * @returns
    */
   async filter(filter: FilterChatRoomDto, sortBy: SortByChatRoomDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "chat_room_id",
       populate: [
         {
@@ -192,7 +192,7 @@ export class ChatRoomUserOptionService {
         },
       ],
     };
-    let dataRoom = await this.chatRoomUserOptionModel
+    const dataRoom = await this.chatRoomUserOptionModel
       .find(condition, { _id: false })
       .populate(
         "partner_id",
@@ -220,10 +220,10 @@ export class ChatRoomUserOptionService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let populateObject = {
+    const populateObject = {
       path: "chat_room_id",
     };
-    let dataRoom = await this.chatRoomUserOptionModel
+    const dataRoom = await this.chatRoomUserOptionModel
       .find(filter)
       .populate(
         "partner_id",
@@ -248,10 +248,10 @@ export class ChatRoomUserOptionService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let populateObject = {
+    const populateObject = {
       path: "chat_room_id",
     };
-    let dataRoom = await this.chatRoomUserOptionModel
+    const dataRoom = await this.chatRoomUserOptionModel
       .find(filter)
       .populate(
         "user_id",
@@ -276,7 +276,7 @@ export class ChatRoomUserOptionService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataRoom = await this.chatRoomUserOptionModel
+    const dataRoom = await this.chatRoomUserOptionModel
       .find(filter, { _id: false })
       .populate(
         "user_id",
@@ -296,7 +296,7 @@ export class ChatRoomUserOptionService {
    */
   public count = async (filter: FilterChatRoomDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.chatRoomUserOptionModel.estimatedDocumentCount();
       } else {
@@ -347,7 +347,7 @@ export class ChatRoomUserOptionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.chatRoomUserOptionModel.findByIdAndUpdate(
+      const dataReturn = await this.chatRoomUserOptionModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }
@@ -369,7 +369,7 @@ export class ChatRoomUserOptionService {
    */
   async findOneAndUpdate(dataFind: any, dataUpdate: any) {
     try {
-      let dataReturn = await this.chatRoomUserOptionModel.findOneAndUpdate(
+      const dataReturn = await this.chatRoomUserOptionModel.findOneAndUpdate(
         dataFind,
         { $set: dataUpdate },
         { new: true }
@@ -382,7 +382,7 @@ export class ChatRoomUserOptionService {
 
   async incCountView(filter: FilterChatRoomDto) {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       return this.chatRoomUserOptionModel.findOneAndUpdate(condition, { $inc: { read_count: 1 } }, { new: true });
     } catch (e) {
       return null;
@@ -408,8 +408,8 @@ export class ChatRoomUserOptionService {
    */
   async updateByCondition(filter: FilterChatRoomDto, dataUpdate: any) {
     try {
-      let condition = await this.getCondition(filter);
-      let dataReturn = await this.chatRoomUserOptionModel.findOneAndUpdate(
+      const condition = await this.getCondition(filter);
+      const dataReturn = await this.chatRoomUserOptionModel.findOneAndUpdate(
         condition,
         { $set: dataUpdate },
         { new: false }

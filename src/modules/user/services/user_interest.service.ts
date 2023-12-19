@@ -49,7 +49,7 @@ export class UserInterestService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userInterestModel.findById(id, projection);
+    const dataReturn = await this.userInterestModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -104,13 +104,13 @@ export class UserInterestService {
    * @returns
    */
   async filter(filter: SearchUserInterestDto, sortBy: any, page: number, limit: number): Promise<UserInterest[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
       sortObject = Object.assign(sortObject, { priority: -1 });
     }
-    let dataReturn = await this.userInterestModel
+    const dataReturn = await this.userInterestModel
       .find(condition)
       .sort(sortObject)
       .populate("parent_id")
@@ -127,7 +127,7 @@ export class UserInterestService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserInterest[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userInterestModel.find(condition, {}).exec();
   }
 
@@ -150,7 +150,7 @@ export class UserInterestService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.userInterestModel.findOneAndUpdate(
+      const dataReturn = await this.userInterestModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { new: true, setDefaultsOnInsert: true }
@@ -185,7 +185,7 @@ export class UserInterestService {
    */
   public count = async (filter: SearchUserInterestDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userInterestModel.estimatedDocumentCount();
       } else {

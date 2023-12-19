@@ -46,7 +46,7 @@ export class PlanService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -62,7 +62,7 @@ export class PlanService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -91,12 +91,12 @@ export class PlanService {
    * @returns
    */
   async filter(filter: SearchPlanDto, sortBy: SortByPlanDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.planModel
+    const dataReturn = await this.planModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -112,7 +112,7 @@ export class PlanService {
    */
   public count = async (filter: SearchPlanDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.planModel.estimatedDocumentCount();
       } else {
@@ -169,7 +169,7 @@ export class PlanService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.planModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.planModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

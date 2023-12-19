@@ -36,10 +36,10 @@ export class EventIndexService {
     }
     if (filter.date) {
       if (filter.date.indexOf(",") !== -1) {
-        let dataObject = filter.date?.split(",");
+        const dataObject = filter.date?.split(",");
         if (dataObject && dataObject[0] && dataObject[1]) {
-          let startDateObject = new Date(dataObject[0]);
-          let endDateObject = new Date(dataObject[1]);
+          const startDateObject = new Date(dataObject[0]);
+          const endDateObject = new Date(dataObject[1]);
           condition = Object.assign(condition, { event_date: { $gte: startDateObject, $lte: endDateObject } });
         }
       }
@@ -69,12 +69,12 @@ export class EventIndexService {
    * @returns
    */
   async filter(filter: SearchEventIndexDto, sortBy: SortByEventDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.eventTypeModel
+    const dataReturn = await this.eventTypeModel
       .find(condition, { event_date: true, event_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -90,7 +90,7 @@ export class EventIndexService {
    */
   public count = async (filter: SearchEventIndexDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.eventTypeModel.estimatedDocumentCount();
       } else {
@@ -136,7 +136,7 @@ export class EventIndexService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -162,7 +162,7 @@ export class EventIndexService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.eventTypeModel.findByIdAndUpdate(
+      const dataReturn = await this.eventTypeModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

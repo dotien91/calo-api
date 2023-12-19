@@ -24,12 +24,12 @@ export class UserLocation extends Document {
   @Prop({
     type: String,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
   })
-  coordinates: Number[];
+  coordinates: number[];
 }
 export const UserLocationSchema = SchemaFactory.createForClass(UserLocation);
 
@@ -39,34 +39,34 @@ export class TicketInforMation extends Document {
     type: String,
     default: "",
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  special_price: Number;
+  special_price: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  description: Number;
+  description: number;
 
   @Prop({
     type: String,
     default: "",
   })
-  image: String;
+  image: string;
 }
 export const TicketInforMationSchema = SchemaFactory.createForClass(TicketInforMation);
 
@@ -92,7 +92,7 @@ export class Event {
     nullable: false,
     default: "",
   })
-  country: String;
+  country: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, default: null, nullable: true, index: true })
   city: MongooseSchema.Types.ObjectId;
@@ -105,21 +105,21 @@ export class Event {
     nullable: false,
     default: "",
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  address_full: String;
+  address_full: string;
 
   @Prop({
     type: [EventAddressSchema],
@@ -140,7 +140,7 @@ export class Event {
     default: [],
     index: true,
   })
-  hash_tag: [String];
+  hash_tag: [string];
 
   @Prop({
     type: UserLocationSchema,
@@ -156,22 +156,14 @@ export class Event {
     nullable: false,
     default: 0,
   })
-  rating_value: Number;
+  rating_value: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  rating_number: Number;
-
-  @Prop({
-    type: Number,
-    nullable: false,
-    default: 0,
-    index: true,
-  })
-  max_price: Number;
+  rating_number: number;
 
   @Prop({
     type: Number,
@@ -179,7 +171,15 @@ export class Event {
     default: 0,
     index: true,
   })
-  min_price: Number;
+  max_price: number;
+
+  @Prop({
+    type: Number,
+    nullable: false,
+    default: 0,
+    index: true,
+  })
+  min_price: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -231,14 +231,14 @@ export class Event {
     nullable: false,
     default: 0,
   })
-  interested_number: Number;
+  interested_number: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -258,49 +258,49 @@ export class Event {
     nullable: false,
     default: 0,
   })
-  end_occurrences: Number;
+  end_occurrences: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  duration: Number;
+  duration: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  is_recurring: Number;
+  is_recurring: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  repeat_every: Number;
+  repeat_every: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  is_remind: Number;
+  is_remind: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     nullable: false,
     default: [],
   })
-  repeat_on: String[];
+  repeat_on: string[];
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  permission: String;
+  permission: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   open_ticket_date: MongooseSchema.Types.Date;
@@ -313,7 +313,7 @@ export class Event {
     nullable: false,
     default: 0,
   })
-  event_level: String;
+  event_level: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Course" })
   event_course: Course;

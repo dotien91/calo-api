@@ -92,12 +92,12 @@ export class UserLocation extends Document {
   @Prop({
     type: String,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
   })
-  coordinates: Number[];
+  coordinates: number[];
 }
 export const UserLocationSchema = SchemaFactory.createForClass(UserLocation);
 
@@ -106,12 +106,12 @@ export class PublicInstagram extends Document {
   @Prop({
     type: String,
   })
-  avatar: String;
+  avatar: string;
 
   @Prop({
     type: String,
   })
-  avatar_thumbnail: String;
+  avatar_thumbnail: string;
 }
 export const PublicInstagramSchema = SchemaFactory.createForClass(PublicInstagram);
 
@@ -149,129 +149,129 @@ export class UserOption {
     type: String,
     default: "",
   })
-  user_address: String;
+  user_address: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_birthday: String;
+  user_birthday: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_parent_name: String;
+  user_parent_name: string;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  user_birthday_year: Number;
+  user_birthday_year: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  longitude: Number;
+  longitude: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  latitude: Number;
+  latitude: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  base_height: Number;
+  base_height: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  base_weight: Number;
+  base_weight: number;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  base_role: String;
+  base_role: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  body_type: String;
+  body_type: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  relationship_status: String;
+  relationship_status: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  ethnicity: String;
+  ethnicity: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     index: true,
   })
-  language: [String];
+  language: [string];
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     index: true,
   })
-  locking_for: [String];
+  locking_for: [string];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     index: true,
   })
-  where_to_meet: [String];
+  where_to_meet: [string];
 
   @Prop({
     type: String,
     default: "",
   })
-  user_job: String;
+  user_job: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_department: String;
+  user_department: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  user_nation: String;
+  user_nation: string;
 
   @Prop({
     type: [UserOptionMetaSchema],
@@ -290,50 +290,50 @@ export class UserOption {
     default: "",
     index: true,
   })
-  user_gender: String;
+  user_gender: string;
 
   @Prop({
     type: Number,
     unsigned: true,
     index: true,
   })
-  ready_status: Number;
+  ready_status: number;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_education: String;
+  user_education: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_religion: String;
+  user_religion: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  like_alcoholic: String;
+  like_alcoholic: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  like_tobacco: String;
+  like_tobacco: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  have_children: String;
+  have_children: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  living_with: String;
+  living_with: string;
 
   @Prop({
     type: [UserQuestionMetaSchema],
@@ -346,7 +346,7 @@ export class UserOption {
     default: "",
     index: true,
   })
-  hiv_status: String;
+  hiv_status: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null, index: true })
   last_test: MongooseSchema.Types.Date;
@@ -356,7 +356,7 @@ export class UserOption {
     default: [],
     index: true,
   })
-  safety_practices: [String];
+  safety_practices: [string];
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now })
   last_active: MongooseSchema.Types.Date;
@@ -469,91 +469,91 @@ export class UserOption {
     default: 0,
     index: true,
   })
-  is_avatar: Number;
+  is_avatar: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  circle_point: Number;
+  circle_point: number;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  avatar_gender: String;
+  avatar_gender: string;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  avatar_point: Number;
+  avatar_point: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  like_point: Number;
+  like_point: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  time_point: Number;
+  time_point: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  number_sort: Number;
+  number_sort: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  payment_status: Number;
+  payment_status: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  disable_account: Number;
+  disable_account: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  validate_status: Number;
+  validate_status: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  video_number: Number;
+  video_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  current_token: Number;
+  current_token: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  current_coin: Number;
+  current_coin: number;
 
   @Prop({
     type: UserMoodOptionSchema,
@@ -571,19 +571,19 @@ export class UserOption {
     type: String,
     nullable: false,
   })
-  bank_name: String;
+  bank_name: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  bank_number: String;
+  bank_number: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  bank_account_name: String;
+  bank_account_name: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserLocationHistory", index: true, default: null })
   last_user_location: UserLocationHistory;

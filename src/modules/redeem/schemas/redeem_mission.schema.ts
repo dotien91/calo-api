@@ -12,12 +12,12 @@ export class MissionAction extends Document {
   @Prop({
     type: String,
   })
-  action_name: String;
+  action_name: string;
 
   @Prop({
     type: String,
   })
-  action_point: String;
+  action_point: string;
 }
 export const MissionActionSchema = SchemaFactory.createForClass(MissionAction);
 
@@ -43,7 +43,7 @@ export class RedeemMission extends Document {
     default: 0,
     nullable: false,
   })
-  number_of_day: Number;
+  number_of_day: number;
 
   @Prop({
     type: [MissionActionSchema],
@@ -62,14 +62,14 @@ export class RedeemMission extends Document {
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  action_name: String[];
+  action_name: string[];
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  gift_coin: Number;
+  gift_coin: number;
   createdAt: Date;
 }
 export const RedeemMissionSchema = SchemaFactory.createForClass(RedeemMission);

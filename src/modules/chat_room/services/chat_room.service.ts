@@ -38,7 +38,7 @@ export class ChatRoomService {
           { new: true }
         );
       } else {
-        let populateObject = [
+        const populateObject = [
           {
             path: "group_partners",
             select:
@@ -70,7 +70,7 @@ export class ChatRoomService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.chatRoomModel.findByIdAndUpdate(
+      const dataReturn = await this.chatRoomModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -133,7 +133,7 @@ export class ChatRoomService {
    */
   public count = async (filter: FilterChatRoomDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.chatRoomModel.estimatedDocumentCount();
       } else {
@@ -153,12 +153,12 @@ export class ChatRoomService {
    * @returns
    */
   async filter(filter: FilterChatRoomDto, sortBy: SortByChatRoomDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let populateObject = [
+    const populateObject = [
       {
         path: "group_partners",
         select:
@@ -171,7 +171,7 @@ export class ChatRoomService {
         path: "room_image",
       },
     ];
-    let dataRoom = await this.chatRoomModel
+    const dataRoom = await this.chatRoomModel
       .find(condition, {})
       .populate(populateObject)
       .sort(sortObject)

@@ -31,7 +31,7 @@ export class CourseModule {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
   media_id: ChatMedia;

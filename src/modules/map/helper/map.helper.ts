@@ -17,7 +17,7 @@ export class MapHelper {
 
   async handleSearch(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
     try {
-      let dataToken = await this.handleGetToken();
+      const dataToken = await this.handleGetToken();
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -29,7 +29,7 @@ export class MapHelper {
   }
 
   async handleGetToken() {
-    let tokenObject = await this.mapTokenService.findOne({});
+    const tokenObject = await this.mapTokenService.findOne({});
     if (!tokenObject) {
       // const oauth = new OAuth({
       //   consumer: { key: process.env.HERE_MAP_ACCESS_KEY, secret: process.env.HERE_MAP_ACCESS_SECRET },

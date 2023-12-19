@@ -7,7 +7,7 @@ export class UpdateRequestDto extends PartialType(CreateRequestDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)

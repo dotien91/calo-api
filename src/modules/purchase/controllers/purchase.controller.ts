@@ -50,11 +50,11 @@ export class PurchaseController {
   async createPaymentIntent(@Body() dataCreate: any, @Res() res: Response, @Req() req: ExpressRequestDto) {
     const { currency, request_three_d_secure, payment_method_types = [] } = dataCreate;
 
-    let userObject = req?.user_object;
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new ForbiddenException("User is invalid");
     }
-    let email = userObject?.user_email?.toString();
+    const email = userObject?.user_email?.toString();
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
       //@ts-ignore
@@ -92,11 +92,11 @@ export class PurchaseController {
   async paymentSheetSetupIntent(@Body() dataCreate: any, @Res() res: Response, @Req() req: ExpressRequestDto) {
     const { payment_method_types = [] } = dataCreate;
 
-    let userObject = req?.user_object;
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new ForbiddenException("User is invalid");
     }
-    let email = userObject?.user_email?.toString();
+    const email = userObject?.user_email?.toString();
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
       //@ts-ignore
@@ -121,11 +121,11 @@ export class PurchaseController {
   @Post("/payment-sheet")
   async paymentSheet(@Body() dataCreate: any, @Res() res: Response, @Req() req: ExpressRequestDto) {
     // const { email = `test${Math.floor(Math.random() * 9999) + 1}@domain.com` } = dataCreate;
-    let userObject = req?.user_object;
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new ForbiddenException("User is invalid");
     }
-    let email = userObject?.user_email?.toString();
+    const email = userObject?.user_email?.toString();
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
       //@ts-ignore
@@ -136,7 +136,7 @@ export class PurchaseController {
     const customer = await stripe.customers.create({ email });
 
     const ephemeralKey = await stripe.ephemeralKeys.create({ customer: customer.id }, { apiVersion: "2020-08-27" });
-    let dataOrder = await this.orderService.findOne({ _id: dataCreate?.order_id });
+    const dataOrder = await this.orderService.findOne({ _id: dataCreate?.order_id });
     let price = 2000;
     if (dataOrder) {
       price = Number(dataOrder?.price) * 100;
@@ -149,7 +149,7 @@ export class PurchaseController {
     });
     if (dataCreate?.order_id) {
       //Update order
-      let dataUpdate = {
+      const dataUpdate = {
         _id: dataCreate?.order_id,
         client_secret: paymentIntent.client_secret,
       };
@@ -195,9 +195,9 @@ export class PurchaseController {
         console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
         //Update Order ID;
         if (clientSecret) {
-          let dataOrder = await this.orderService.findOne({ client_secret: clientSecret });
+          const dataOrder = await this.orderService.findOne({ client_secret: clientSecret });
           if (dataOrder) {
-            let dataUpdate = {
+            const dataUpdate = {
               _id: dataOrder?._id?.toString(),
               status: "success",
               payment_method: "stripe",
@@ -217,9 +217,9 @@ export class PurchaseController {
         break;
       case "payment_intent.payment_failed":
         if (clientSecret) {
-          let dataOrder = await this.orderService.findOne({ client_secret: clientSecret });
+          const dataOrder = await this.orderService.findOne({ client_secret: clientSecret });
           if (dataOrder) {
-            let dataUpdate = {
+            const dataUpdate = {
               _id: dataOrder?._id?.toString(),
               status: "close",
               payment_method: "stripe",
@@ -286,7 +286,7 @@ export class PurchaseController {
    * @author Tony Vu
    */
   async handleProcessCron() {
-    let cronJob = schedule(CronExpression.EVERY_3_HOURS, async () => {
+    const cronJob = schedule(CronExpression.EVERY_3_HOURS, async () => {
       try {
         // await this.bar();
         console.log("Start Cron Job Every 6 Hours");

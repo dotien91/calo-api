@@ -23,20 +23,20 @@ export class NeedHelp {
     type: String,
     nullable: false,
   })
-  help_title: String;
+  help_title: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  help_description: String;
+  help_description: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "en",
   })
-  language: String;
+  language: string;
 }
 
 export const NeedHelpSchema = SchemaFactory.createForClass(NeedHelp);

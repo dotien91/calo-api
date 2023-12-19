@@ -51,91 +51,91 @@ export class Plan {
     nullable: false,
     default: "",
   })
-  handle: String;
+  handle: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  google_store_product_id: String;
+  google_store_product_id: string;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  amount_of_day: Number;
+  amount_of_day: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  trial_day: Number;
+  trial_day: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  amount_of_coin: Number;
+  amount_of_coin: number;
 
   @Prop({
     type: String,
     nullable: false,
     default: "recurring",
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  note: String;
+  note: string;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 1,
   })
-  status: Number;
+  status: number;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  image: String;
+  image: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "GLOBAL",
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: [PlanOptionMetaSchema],
@@ -149,7 +149,7 @@ export class Plan {
     default: "",
     index: true,
   })
-  version: String;
+  version: string;
 }
 
 export const PlanSchema = SchemaFactory.createForClass(Plan);

@@ -10,7 +10,7 @@ export class CreateChannelLevelDto {
 
   @IsString()
   @ApiProperty()
-  title?: string | String;
+  title?: string | string;
 
   @IsString()
   @IsOptional(null)
@@ -30,10 +30,10 @@ export class CreateChannelLevelDto {
   @IsNumberString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  level_point?: string | Number;
+  level_point?: string | number;
 
   @IsNumberString()
   @ApiProperty()
-  level_number?: string | Number;
-  total_member?: string | Number;
+  level_number?: string | number;
+  total_member?: string | number;
 }

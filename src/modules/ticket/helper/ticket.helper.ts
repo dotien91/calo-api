@@ -33,7 +33,7 @@ import { ChannelPermission } from "../../../modules/channel/schemas/channel_perm
 import { ChannelService } from "../../../modules/channel/services/channel.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 const { getFirestore } = require("firebase-admin/firestore");
-let dataCrawl = `Other`;
+const dataCrawl = `Other`;
 
 /**
  * @author Tony Vu
@@ -57,8 +57,8 @@ export class TicketHelper {
   ) {}
 
   async handleRedditCategory() {
-    let urlToCrawl = "https://www.reddit.com/r/legaladvice";
-    let dataAxios = await axios
+    const urlToCrawl = "https://www.reddit.com/r/legaladvice";
+    const dataAxios = await axios
       .get(urlToCrawl)
       .then((response) => {
         return response.data;
@@ -68,21 +68,21 @@ export class TicketHelper {
         return null;
       });
     if (dataAxios) {
-      let dataJquery = cheerio.load(dataAxios);
-      let dataScript = dataJquery("#data");
+      const dataJquery = cheerio.load(dataAxios);
+      const dataScript = dataJquery("#data");
       //  console.log(dataScript.html());
       const fs = require("fs");
 
       // // fs.writeFileSync("foo.txt", dataAxios);
       fs.writeFileSync("foo2.txt", dataScript.text());
-      let dataText = dataScript.text()?.replace("};", "}").replace("window.___r = ", "");
-      let dataJson = JSON.parse(dataText);
+      const dataText = dataScript.text()?.replace("};", "}").replace("window.___r = ", "");
+      const dataJson = JSON.parse(dataText);
       let count = 0;
       for (const [key, value] of Object.entries(dataJson?.posts?.models)) {
         //@ts-ignore
         if (value?.permalink?.indexOf("redditads") === -1) {
           //@ts-ignore
-          let dataUrl = value?.permalink;
+          const dataUrl = value?.permalink;
           // if (count == 0) {
           await this.handleProcessReditByUrl(dataUrl);
           // }
@@ -95,7 +95,7 @@ export class TicketHelper {
 
   async handleProcessReditByUrl(dataUrl: any) {
     try {
-      let dataAxios = await axios
+      const dataAxios = await axios
         .get(dataUrl)
         .then((response) => {
           return response.data;
@@ -109,33 +109,33 @@ export class TicketHelper {
         // // fs.writeFileSync("foo.txt", dataAxios);
         fs.writeFileSync("foo2.txt", dataAxios);
 
-        let dataJquery = cheerio.load(dataAxios);
-        let dataShReddit = dataJquery("shreddit-post");
+        const dataJquery = cheerio.load(dataAxios);
+        const dataShReddit = dataJquery("shreddit-post");
         // console.log(dataShReddit, "dataShReddit");
-        let dataAuthor = dataShReddit.attr("author");
-        let dataTitle = dataShReddit.attr("post-title");
-        let dataLanguage = dataShReddit.attr("post-language");
-        let dataComment = dataShReddit.attr("content-href");
+        const dataAuthor = dataShReddit.attr("author");
+        const dataTitle = dataShReddit.attr("post-title");
+        const dataLanguage = dataShReddit.attr("post-language");
+        const dataComment = dataShReddit.attr("content-href");
         let dataTextContent = dataJquery(".text-neutral-content.text-14").text();
         // console.log(dataTextContent, "dataTextContent");
         dataTextContent = dataTextContent.replace(/  +/g, " ");
         dataTextContent = dataTextContent.replace(/\n +/g, "\n");
         dataTextContent = dataTextContent.trim();
         // console.log(dataTextContent, "dataTextContent new");
-        let dataScores = dataShReddit.attr("score");
-        let commentCount = dataShReddit.attr("comment-count");
-        let postId = dataShReddit.attr("id");
+        const dataScores = dataShReddit.attr("score");
+        const commentCount = dataShReddit.attr("comment-count");
+        const postId = dataShReddit.attr("id");
         // console.log(postId, "postId");
         // console.log(dataTitle, "dataTitle");
 
-        let categories = "";
+        const categories = "";
 
         let categoryId = null;
         if (categories) {
-          let dataSearch = {
+          const dataSearch = {
             search: categories?.replace(".", ""),
           };
-          let dataCategory = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
+          const dataCategory = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
           // console.log(dataCategory, "dataCategory");
           if (dataCategory && dataCategory[0]) {
             categoryId = dataCategory[0]?._id?.toString();
@@ -144,7 +144,7 @@ export class TicketHelper {
           categoryId = "64a672f9eee28fcd235ebe01";
         }
 
-        let author = dataAuthor;
+        const author = dataAuthor;
         let email = "";
         if (author) {
           email = this.toSlug(author) + "@gmail.com";
@@ -155,7 +155,7 @@ export class TicketHelper {
 
         if (email) {
           //Create new User
-          let dataCreateUser = {
+          const dataCreateUser = {
             user_email: email,
             user_login: email,
             display_name: author,
@@ -181,13 +181,13 @@ export class TicketHelper {
           comment_number: commentCount,
         };
 
-        let dataSlug = this.toSlug(dataTitle);
+        const dataSlug = this.toSlug(dataTitle);
 
         if (dataSlug && userObject) {
           dataTicket = { ...dataTicket, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
         }
 
-        let dataTicketSearch = await this.ticketService.findOne({ post_slug: dataSlug });
+        const dataTicketSearch = await this.ticketService.findOne({ post_slug: dataSlug });
         // console.log(dataTicketSearch, "dataTicketSearch");
         // console.log(dataTicket, "dataTicket");
         let dataCreate = null;
@@ -218,7 +218,7 @@ export class TicketHelper {
    */
   async handleCreateUser(dataAuthor: string) {
     try {
-      let author = dataAuthor;
+      const author = dataAuthor;
       let email = "";
       if (author) {
         email = this.toSlug(author) + "@gmail.com";
@@ -229,7 +229,7 @@ export class TicketHelper {
 
       if (email) {
         //Create new User
-        let dataCreateUser = {
+        const dataCreateUser = {
           user_email: email,
           user_login: email,
           display_name: author,
@@ -250,7 +250,7 @@ export class TicketHelper {
   }
 
   async handleCrawlComment(dataUrl: string, localId: string) {
-    let dataAxios = await axios
+    const dataAxios = await axios
       .get(
         `https://gateway.reddit.com/desktopapi/v1/postcomments/${dataUrl}?rtj=only&emotes_as_images=true&redditWebClient=web2x&app=web2x-client-production&profile_img=true&include=identity&subredditName=legaladvice&hasSortParam=false&instanceId&include_categories=true&onOtherDiscussions=false&comment_awardings_by_current_user=true`
       )
@@ -270,22 +270,22 @@ export class TicketHelper {
     const fs = require("fs");
 
     fs.writeFileSync("foo3.txt", JSON.stringify(dataAxios));
-    let dataPost = dataAxios?.posts[dataUrl];
-    let dataFlair = dataPost?.flair;
+    const dataPost = dataAxios?.posts[dataUrl];
+    const dataFlair = dataPost?.flair;
     if (dataFlair && dataFlair[0]) {
-      let dataCategory = dataFlair[0]?.text?.toString();
+      const dataCategory = dataFlair[0]?.text?.toString();
       console.log(dataCategory, "dataCategory");
       if (dataCategory) {
         //Update
         if (dataCategory) {
-          let dataSearch = {
+          const dataSearch = {
             search: dataCategory?.replace(".", ""),
           };
-          let dataCategoryObject = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
+          const dataCategoryObject = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
           console.log(dataCategoryObject, "dataCategory");
           if (dataCategoryObject && dataCategoryObject[0]) {
-            let categoryId = dataCategoryObject[0]?._id?.toString();
-            let dataUpdateCategory = {
+            const categoryId = dataCategoryObject[0]?._id?.toString();
+            const dataUpdateCategory = {
               post_category: categoryId,
               _id: localId,
             };
@@ -294,23 +294,23 @@ export class TicketHelper {
         }
       }
     }
-    let dataComment: any = dataAxios?.comments;
+    const dataComment: any = dataAxios?.comments;
     console.log(dataComment, "dataComment");
 
     for (const [key, dataCommentItem] of Object.entries(dataComment)) {
       //Check comment in DB
       //@ts-ignore
-      let dataCheckComment = await this.ticketCommentService.findOne({ ref_id: dataCommentItem.id });
+      const dataCheckComment = await this.ticketCommentService.findOne({ ref_id: dataCommentItem.id });
       if (!dataCheckComment) {
         //Update
         //@ts-ignore
         // console.log(dataCommentItem?.media?.richtextContent, "rick");
         let dataText = "";
         //@ts-ignore
-        for (let dataItem of dataCommentItem?.media?.richtextContent?.document) {
+        for (const dataItem of dataCommentItem?.media?.richtextContent?.document) {
           // console.log(dataItem?.c);
-          let dataComment = dataItem?.c;
-          for (let dataItemCommentText of dataItem?.c) {
+          const dataComment = dataItem?.c;
+          for (const dataItemCommentText of dataItem?.c) {
             if (dataItemCommentText.t) {
               dataText = dataText + dataItemCommentText.t + "\n";
             }
@@ -328,22 +328,22 @@ export class TicketHelper {
             ref_parent_id: dataCommentItem?.parentId,
           };
           //@ts-ignore
-          let authorName = dataCommentItem?.author;
-          let dataUser = await this.handleCreateUser(authorName);
+          const authorName = dataCommentItem?.author;
+          const dataUser = await this.handleCreateUser(authorName);
           if (dataUser) {
             dataToCreate = { ...dataToCreate, ...{ user_id: dataUser?._id?.toString() } };
           }
           //@ts-ignore
           if (dataCommentItem?.parentId) {
             //@ts-ignore
-            let dataParent = await this.ticketCommentService.findOne({ ref_id: dataCommentItem?.parentId });
+            const dataParent = await this.ticketCommentService.findOne({ ref_id: dataCommentItem?.parentId });
             if (dataParent) {
               idParent = dataParent?._id?.toString();
               dataToCreate = { ...dataToCreate, ...{ parent_id: idParent } };
             }
           }
           console.log(dataToCreate, "dataToCreate");
-          let dataCreateComment = await this.ticketCommentService.create(dataToCreate);
+          const dataCreateComment = await this.ticketCommentService.create(dataToCreate);
         }
       }
     }
@@ -355,7 +355,7 @@ export class TicketHelper {
 
   async handleProcessReddit(dataUrl: any = "t2_8gksn5vzl") {
     console.log(dataUrl, "dataUrl");
-    let dataAxios = await axios
+    const dataAxios = await axios
       .get(
         `https://gateway.reddit.com/desktopapi/v1/postcomments/${dataUrl}?rtj=only&emotes_as_images=true&redditWebClient=web2x&app=web2x-client-production&profile_img=true&include=identity&subredditName=legaladvice&hasSortParam=false&instanceId&include_categories=true&onOtherDiscussions=false&comment_awardings_by_current_user=true`
       )
@@ -371,17 +371,17 @@ export class TicketHelper {
     }
 
     console.log(dataAxios, "dataAxios");
-    let dataPost = dataAxios?.posts[dataUrl];
+    const dataPost = dataAxios?.posts[dataUrl];
     console.log(dataPost, "dataPost");
     console.log(dataPost?.title);
-    let dataTitle = dataPost?.title;
+    const dataTitle = dataPost?.title;
     console.log(dataPost?.media?.richtextContent?.document);
 
     let dataText = "";
     if (dataPost?.media?.richtextContent?.document) {
-      for (let dataItem of dataPost?.media?.richtextContent?.document) {
+      for (const dataItem of dataPost?.media?.richtextContent?.document) {
         console.log(dataItem.c);
-        for (let dataItemC of dataItem.c) {
+        for (const dataItemC of dataItem.c) {
           console.log(dataItemC, "dataItemC");
           console.log(dataItemC.t);
           dataText = dataText + dataItemC.t + "\n";
@@ -389,14 +389,14 @@ export class TicketHelper {
       }
     }
 
-    let categories = dataPost?.dataCategories;
+    const categories = dataPost?.dataCategories;
 
     let categoryId = null;
     if (categories) {
-      let dataSearch = {
+      const dataSearch = {
         search: categories?.replace(".", ""),
       };
-      let dataCategory = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
+      const dataCategory = await this.ticketCategoryService.filter(dataSearch, {}, 1, 1);
       console.log(dataCategory, "dataCategory");
       if (dataCategory && dataCategory[0]) {
         categoryId = dataCategory[0]?._id?.toString();
@@ -405,7 +405,7 @@ export class TicketHelper {
       categoryId = "64a672f9eee28fcd235ebe01";
     }
 
-    let author = dataPost?.author;
+    const author = dataPost?.author;
     let email = "";
     if (author) {
       email = this.toSlug(author) + "@gmail.com";
@@ -416,7 +416,7 @@ export class TicketHelper {
 
     if (email) {
       //Create new User
-      let dataCreateUser = {
+      const dataCreateUser = {
         user_email: email,
         user_login: email,
         display_name: author,
@@ -439,13 +439,13 @@ export class TicketHelper {
       country: "US",
     };
 
-    let dataSlug = this.toSlug(dataTitle);
+    const dataSlug = this.toSlug(dataTitle);
 
     if (dataSlug && userObject) {
       dataTicket = { ...dataTicket, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
     }
 
-    let dataTicketSearch = await this.ticketService.findOne({ post_slug: dataSlug });
+    const dataTicketSearch = await this.ticketService.findOne({ post_slug: dataSlug });
     console.log(dataTicketSearch, "dataTicketSearch");
     console.log(dataTicket, "dataTicket");
     if (!dataTicketSearch && dataSlug) {
@@ -487,12 +487,12 @@ export class TicketHelper {
   }
 
   async handleUpdateUserOption(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUserOption = await this.userOptionService.create(dataCreate);
+    const dataUserOption = await this.userOptionService.create(dataCreate);
     if (dataUserOption) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUserOption._id.toString(),
       };
@@ -504,24 +504,24 @@ export class TicketHelper {
   }
 
   async handleCategory() {
-    let dataCategory = await this.ticketCategoryService.filter({}, {}, 1, 100);
-    for (let dataCategoryItem of dataCategory) {
-      let dataToUpdate = {
+    const dataCategory = await this.ticketCategoryService.filter({}, {}, 1, 100);
+    for (const dataCategoryItem of dataCategory) {
+      const dataToUpdate = {
         version: 82,
         _id: dataCategoryItem?._id?.toString(),
       };
       console.log(dataToUpdate, "dataToUpdate");
-      let dataUpdate = await this.ticketCategoryService.update(dataToUpdate);
+      const dataUpdate = await this.ticketCategoryService.update(dataToUpdate);
       console.log(dataUpdate, "dataUpdate");
     }
   }
 
   async processCategory() {
     try {
-      let dataCrawlArray = dataCrawl.split("\n");
+      const dataCrawlArray = dataCrawl.split("\n");
       console.log(dataCrawlArray);
-      for (let itemData of dataCrawlArray) {
-        let dataToCreate = {
+      for (const itemData of dataCrawlArray) {
+        const dataToCreate = {
           user_id: "642a49eb18acaeada350130e",
           category_language: "en",
           category_content: itemData,
@@ -556,8 +556,8 @@ export class TicketHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
 
@@ -565,16 +565,16 @@ export class TicketHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let userId = req?.user_id || "";
+      const userId = req?.user_id || "";
 
-      let dataToFilter = { ...query, ...{ channel_id: req?.channel_id || "", user_id: userId } };
+      const dataToFilter = { ...query, ...{ channel_id: req?.channel_id || "", user_id: userId } };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.ticketService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.ticketService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.ticketService.count(dataToFilter);
+      const dataCount = await this.ticketService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -591,7 +591,7 @@ export class TicketHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -601,7 +601,7 @@ export class TicketHelper {
       }
 
       try {
-        let hashPassword = process.env.HASH_PASSWORD;
+        const hashPassword = process.env.HASH_PASSWORD;
         const { data, exp } = (await new JwtService().decode(authCodeString)) as DecodeUserToken;
         if (!data || !exp) {
           return null;
@@ -611,8 +611,8 @@ export class TicketHelper {
           //Data User session
           dataSession = await this.userService.findById(data?._id?.toString(), {});
         } else {
-          let dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
-          let deviceId = dataAnonymousSession?.device_id;
+          const dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
+          const deviceId = dataAnonymousSession?.device_id;
           dataSession = await this.userAnonymousService.findOne({ device_id: deviceId });
         }
         return dataSession;
@@ -633,29 +633,29 @@ export class TicketHelper {
    */
   async createNewTicket(createTicketData: CreateTicketDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createTicketData.post_title);
-      let getTotalAdmin = await this.channelPermissionService.filter(
+      const dataSlug = this.toSlug(createTicketData.post_title);
+      const getTotalAdmin = await this.channelPermissionService.filter(
         { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
         {},
         1,
         100
       );
-      let userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: Number) => {
+      const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
         return channelPermissionItem?.user_id?._id?.toString();
       });
-      let totalArray = [...[userObject._id.toString()], ...userArray];
-      let channelId = req?.channel_id || null;
+      const totalArray = [...[userObject._id.toString()], ...userArray];
+      const channelId = req?.channel_id || null;
       createTicketData = {
         ...createTicketData,
         ...{ post_slug: dataSlug, user_id: totalArray, channel_id: [channelId, process.env.DEFAULT_CHANNEL] },
       };
 
-      let userCountry = userObject?.country;
+      const userCountry = userObject?.country;
       createTicketData = { ...createTicketData, ...{ country: userCountry } };
 
       if (this.validateJson(createTicketData?.attach_files)) {
@@ -674,11 +674,11 @@ export class TicketHelper {
         };
       }
 
-      let dataCreate: any = await this.ticketService.create(createTicketData);
-      let dataReturn = await this.ticketService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.ticketService.create(createTicketData);
+      const dataReturn = await this.ticketService.findById(dataCreate?._id?.toString());
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_ticket: dataCreate?._id?.toString(),
       };
@@ -732,15 +732,15 @@ export class TicketHelper {
       if (notificationTitle && notificationTitle.length >= 70) {
         notificationTitle = notificationTitle.substring(0, 68) + "...";
       }
-      let userIdArray = [];
-      let channelId = dataTicket?.channel_id?.toString();
-      let emailArray = [];
+      const userIdArray = [];
+      const channelId = dataTicket?.channel_id?.toString();
+      const emailArray = [];
       for (let itemPage: number = 1; itemPage <= 10; itemPage++) {
-        let allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
-        for (let itemUser of allUser) {
+        const allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
+        for (const itemUser of allUser) {
           if (itemUser?.user_id?._id) {
             userIdArray.push(itemUser?.user_id?._id?.toString());
-            let userEmail = itemUser?.user_id?.user_email;
+            const userEmail = itemUser?.user_id?.user_email;
             if (userEmail) {
               emailArray.push(userEmail);
             }
@@ -752,11 +752,11 @@ export class TicketHelper {
       }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           post_name: dataTicket.post_title,
@@ -783,13 +783,13 @@ export class TicketHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           ticket_id: dataTicket?._id?.toString(),
           path: "/v/post/",
           data_id: dataTicket?.post_slug?.toString(),
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -844,8 +844,8 @@ export class TicketHelper {
         notificationTitle = notificationTitle + '"';
       }
 
-      let userIdArray = [];
-      let emailArray = [];
+      const userIdArray = [];
+      const emailArray = [];
 
       // let dataUser = await this.userService.filter({ notification_ticket: dataTicket?._id?.toString() }, {}, 1, 1000);
       // for (let userItem of dataUser) {
@@ -856,11 +856,11 @@ export class TicketHelper {
       // }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           content: chatContentRaw,
@@ -888,13 +888,13 @@ export class TicketHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           ticket_id: dataTicket?._id?.toString(),
           path: "/v/post/",
           data_id: dataTicket?.post_slug?.toString(),
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -927,16 +927,16 @@ export class TicketHelper {
    */
   async createNewComment(createTicketData: CreateTicketCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataTicketObject = await this.ticketService.findById(createTicketData?.ticket_id);
+      const dataTicketObject = await this.ticketService.findById(createTicketData?.ticket_id);
       if (!dataTicketObject) {
         throw new ForbiddenException("Ticket not exist!");
       }
-      let dataUserObject = dataTicketObject?.user_id?.map((userObject: any, index: number) => {
+      const dataUserObject = dataTicketObject?.user_id?.map((userObject: any, index: number) => {
         return userObject?._id?.toString();
       });
 
@@ -967,17 +967,17 @@ export class TicketHelper {
 
       dataCreate = { ...dataCreate?.toObject(), ...{ user_id: userObject } };
       if (createTicketData?.parent_id) {
-        let dataUpdate = {
+        const dataUpdate = {
           _id: createTicketData?.parent_id,
           child: dataCreate?._id,
         };
         await this.ticketCommentService.updateArray(dataUpdate, false);
       }
       //Update Count
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         _id: createTicketData?.ticket_id,
       };
-      let dataUpdate = {
+      const dataUpdate = {
         comment_number: 1,
       };
       await this.ticketService.updateCount(dataUpdateCount, dataUpdate);
@@ -985,14 +985,14 @@ export class TicketHelper {
       //Update child
 
       if (createTicketData?.parent_id) {
-        let dataToUpdateArray = {
+        const dataToUpdateArray = {
           child_number: 1,
         };
         await this.ticketCommentService.updateCount({ _id: createTicketData?.parent_id }, dataToUpdateArray);
       }
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_ticket: createTicketData?.ticket_id,
       };
@@ -1035,15 +1035,15 @@ export class TicketHelper {
    */
   async createCategory(createTicketData: CreateTicketCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createTicketData.category_title);
+      const dataSlug = this.toSlug(createTicketData.category_title);
       createTicketData = { ...createTicketData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
 
-      let dataCreate = await this.ticketCategoryService.create(createTicketData);
+      const dataCreate = await this.ticketCategoryService.create(createTicketData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1067,17 +1067,17 @@ export class TicketHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataTicket = await this.ticketService.findOne({ _id: query?.ticket_id });
+      const dataTicket = await this.ticketService.findOne({ _id: query?.ticket_id });
       if (!dataTicket) {
         throw new ForbiddenException("Ticket is invalid");
       }
@@ -1085,57 +1085,57 @@ export class TicketHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturnBefore = await this.ticketCommentService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturn: any = [];
-      for (let itemBefore of dataReturnBefore) {
+      const dataReturnBefore = await this.ticketCommentService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = [];
+      for (const itemBefore of dataReturnBefore) {
         dataReturn.push(itemBefore?.toObject());
       }
-      let dataCount = await this.ticketCommentService.count(dataToFilter);
-      let dataReturnFinal = [];
+      const dataCount = await this.ticketCommentService.count(dataToFilter);
+      const dataReturnFinal = [];
 
       let dataPermissionArrayObject = [];
       if (query?.auth_id && dataTicket?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
 
-        let dataToFilterPermission = {
+        const dataToFilterPermission = {
           user_ids: dataUserIds,
           channel_id: dataTicket?.channel_id?.toString(),
         };
         dataPermissionArrayObject = await this.channelPermissionService.filter(dataToFilterPermission, {}, 1, limit);
       }
 
-      for (let dataItem of dataReturn) {
+      for (const dataItem of dataReturn) {
         let isLike = false;
         let isDislike = false;
-        let dataDisLike = dataItem?.down_vote;
-        let dataLike = dataItem?.up_vote;
+        const dataDisLike = dataItem?.down_vote;
+        const dataLike = dataItem?.up_vote;
 
-        let dataDisLikeArray = [];
-        for (let itemDislike of dataDisLike) {
+        const dataDisLikeArray = [];
+        for (const itemDislike of dataDisLike) {
           dataDisLikeArray.push(itemDislike?.toString());
         }
         if (dataDisLikeArray.indexOf(query?.auth_id) !== -1) {
           isDislike = true;
         }
 
-        let dataLikeArray = [];
-        for (let itemLike of dataLike) {
+        const dataLikeArray = [];
+        for (const itemLike of dataLike) {
           dataLikeArray.push(itemLike?.toString());
         }
         if (dataLikeArray.indexOf(query?.auth_id) !== -1) {
           isLike = true;
         }
-        let dataChild = [];
+        const dataChild = [];
         if (dataItem && dataItem?.child) {
-          for (let dataChildIndex in dataItem?.child) {
+          for (const dataChildIndex in dataItem?.child) {
             let dataItemChild = dataItem?.child[dataChildIndex];
 
             let isUpvoteChild = false;
-            let dataUpvoteChild = dataItemChild?.up_vote;
-            let dataUpvoteChildArray = [];
-            for (let itemDislikeChild of dataUpvoteChild) {
+            const dataUpvoteChild = dataItemChild?.up_vote;
+            const dataUpvoteChildArray = [];
+            for (const itemDislikeChild of dataUpvoteChild) {
               dataUpvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataUpvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -1143,9 +1143,9 @@ export class TicketHelper {
             }
 
             let isDownVoteChild = false;
-            let dataDownVoteChild = dataItemChild?.down_vote;
-            let dataDownvoteChildArray = [];
-            for (let itemDislikeChild of dataDownVoteChild) {
+            const dataDownVoteChild = dataItemChild?.down_vote;
+            const dataDownvoteChildArray = [];
+            for (const itemDislikeChild of dataDownVoteChild) {
               dataDownvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataDownvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -1159,7 +1159,7 @@ export class TicketHelper {
           }
         }
 
-        let dataUserObject = dataPermissionArrayObject?.map((value) => {
+        const dataUserObject = dataPermissionArrayObject?.map((value) => {
           if (value?.user_id?._id?.toString() == dataItem?.user_id?._id?.toString()) {
             return value;
           }
@@ -1167,7 +1167,7 @@ export class TicketHelper {
 
         let dataToPush = { ...dataItem, ...{ is_like: isLike, is_dislike: isDislike, child: dataChild } };
 
-        let dataToMerge = dataPermissionArrayObject?.reduce(function (filtered, value) {
+        const dataToMerge = dataPermissionArrayObject?.reduce(function (filtered, value) {
           if (value?.user_id?._id?.toString() == dataToPush?.user_id?._id?.toString()) {
             filtered.push({
               ...value?.user_id?.toObject(),
@@ -1204,7 +1204,7 @@ export class TicketHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -1245,14 +1245,14 @@ export class TicketHelper {
       let dataReturn: any = await this.ticketService.findOne(dataToFilter);
       dataReturn = { ...dataReturn?.toObject() };
 
-      let dataNotification = [];
+      const dataNotification = [];
 
       if (query?.auth_id) {
-        let dataAuth = await this.userService.findById(query?.auth_id, {});
+        const dataAuth = await this.userService.findById(query?.auth_id, {});
         //@ts-ignore
         if (dataAuth && dataAuth?.notification_ticket) {
           //@ts-ignore
-          for (let dataItemNotification of dataAuth?.notification_ticket) {
+          for (const dataItemNotification of dataAuth?.notification_ticket) {
             dataNotification.push(dataItemNotification?.toString());
           }
         }
@@ -1299,7 +1299,7 @@ export class TicketHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
-      let dataReturn = await this.ticketCategoryService.findOne(dataToFilter);
+      const dataReturn = await this.ticketCategoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1333,7 +1333,7 @@ export class TicketHelper {
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
       }
-      let dataReturn = await this.ticketCommentService.findOne(dataToFilter);
+      const dataReturn = await this.ticketCommentService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1352,13 +1352,13 @@ export class TicketHelper {
    */
   async handleUpdateTicketByAdmin(dataUpdate: UpdateTicketDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let ticketObject = await this.ticketService.findById(dataUpdate?._id?.toString());
+      const ticketObject = await this.ticketService.findById(dataUpdate?._id?.toString());
 
-      let dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
+      const dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
         return userObject?._id?.toString();
       });
 
@@ -1374,7 +1374,7 @@ export class TicketHelper {
         dataUpdate = { ...dataUpdate, ...{ attach_files: JSON.parse(dataUpdate.attach_files) } };
       }
 
-      let dataReturn = await this.ticketService.update(dataUpdate);
+      const dataReturn = await this.ticketService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1393,24 +1393,24 @@ export class TicketHelper {
    */
   async handleUpdateTicketComment(dataUpdate: UpdateTicketCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Comment ID
-      let commentObject = await this.ticketCommentService.findById(dataUpdate?._id?.toString());
+      const commentObject = await this.ticketCommentService.findById(dataUpdate?._id?.toString());
 
       //Check User create
       if (commentObject?.user_id?.toString() !== userObject?._id?.toString()) {
-        let dataPermission = await this.userPermissionService.isHavePermission(userId, "ticket/update");
+        const dataPermission = await this.userPermissionService.isHavePermission(userId, "ticket/update");
         if (!dataPermission) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
 
-      let dataReturn = await this.ticketCommentService.update(dataUpdate);
+      const dataReturn = await this.ticketCommentService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1429,11 +1429,11 @@ export class TicketHelper {
    */
   async handleUpdateCategory(dataUpdate: UpdateTicketCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataReturn = await this.ticketCategoryService.update(dataUpdate);
+      const dataReturn = await this.ticketCategoryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1452,16 +1452,16 @@ export class TicketHelper {
    */
   async handleDeleteTicket(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let ticketObject = await this.ticketService.findById(id);
-      let channelId = ticketObject.channel_id;
+      const userId = userObject._id.toString();
+      const ticketObject = await this.ticketService.findById(id);
+      const channelId = ticketObject.channel_id;
 
-      let dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
+      const dataUserObject = ticketObject?.user_id?.map((userObject: any, index: number) => {
         return userObject?._id?.toString();
       });
 
@@ -1471,7 +1471,7 @@ export class TicketHelper {
       }
 
       //Check Permission
-      let dataReturn = await this.ticketService.remove(id);
+      const dataReturn = await this.ticketService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1495,17 +1495,17 @@ export class TicketHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByOBject = {};
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.ticketCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.ticketCategoryService.count(dataToFilter);
+      const dataReturn = await this.ticketCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.ticketCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1524,14 +1524,14 @@ export class TicketHelper {
    */
   async handleDeleteComment(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let getCommentObject = await this.ticketCommentService.findByIdPopulate(id);
-      let channelId = getCommentObject?.ticket_id?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const getCommentObject = await this.ticketCommentService.findByIdPopulate(id);
+      const channelId = getCommentObject?.ticket_id?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1550,10 +1550,10 @@ export class TicketHelper {
       }
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.ticketCommentService.remove(id);
+        const dataReturn = await this.ticketCommentService.remove(id);
 
         if (dataReturn?.parent_id) {
-          let dataUpdateRemove = {
+          const dataUpdateRemove = {
             _id: dataReturn?.parent_id?.toString(),
             child: dataReturn?._id,
           };
@@ -1561,17 +1561,17 @@ export class TicketHelper {
         }
 
         //Update Count
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           _id: getCommentObject?.ticket_id?._id?.toString(),
         };
-        let dataUpdate = {
+        const dataUpdate = {
           comment_number: -1,
         };
         await this.ticketService.updateCount(dataUpdateCount, dataUpdate);
 
         //Update child
         if (getCommentObject?.parent_id) {
-          let dataToUpdateArray = {
+          const dataToUpdateArray = {
             child_number: -1,
           };
           await this.ticketCommentService.updateCount(
@@ -1601,14 +1601,14 @@ export class TicketHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "ticket/delete")) {
         //Check Permission
-        let dataReturn = await this.ticketCategoryService.remove(id);
+        const dataReturn = await this.ticketCategoryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

@@ -30,7 +30,7 @@ export class EventTypeService {
    * @returns
    */
   async getCondition(filter: SearchEventTypeDto) {
-    let condition: any = {};
+    const condition: any = {};
     return condition;
   }
 
@@ -56,12 +56,12 @@ export class EventTypeService {
    * @returns
    */
   async filter(filter: SearchEventTypeDto, sortBy: SortByEventDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.eventTypeModel
+    const dataReturn = await this.eventTypeModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -77,7 +77,7 @@ export class EventTypeService {
    */
   public count = async (filter: SearchEventTypeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.eventTypeModel.estimatedDocumentCount();
       } else {
@@ -114,7 +114,7 @@ export class EventTypeService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -140,7 +140,7 @@ export class EventTypeService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.eventTypeModel.findByIdAndUpdate(
+      const dataReturn = await this.eventTypeModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

@@ -60,7 +60,7 @@ export class EsimService {
    * @returns
    */
   async filter(filter: SearchEsimDto, sortBy: SortByEsimDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     // console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
@@ -73,20 +73,20 @@ export class EsimService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "country",
       populate: {
         path: "avatar",
       },
     };
-    let populateSupportCountries = {
+    const populateSupportCountries = {
       path: "supported_countries",
       populate: {
         path: "avatar",
       },
     };
 
-    let dataReturn = await this.requestModel
+    const dataReturn = await this.requestModel
       .find(condition)
       .populate(
         "user_id",
@@ -112,26 +112,26 @@ export class EsimService {
    * @returns
    */
   async filterAdmin(filter: SearchEsimDto, sortBy: SortByEsimDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let populateObject = {
+    const populateObject = {
       path: "country",
       populate: {
         path: "avatar",
       },
     };
-    let populateSupportCountries = {
+    const populateSupportCountries = {
       path: "supported_countries",
       populate: {
         path: "avatar",
       },
     };
-    let dataReturn = await this.requestModel
+    const dataReturn = await this.requestModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -155,7 +155,7 @@ export class EsimService {
    */
   public count = async (filter: SearchEsimDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.requestModel.estimatedDocumentCount();
       } else {
@@ -173,7 +173,7 @@ export class EsimService {
    */
   async create(createUser: CreateEsimDto) {
     const createdPost = new this.requestModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -183,9 +183,9 @@ export class EsimService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -207,13 +207,13 @@ export class EsimService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<Esim> {
-    let populateObject = {
+    const populateObject = {
       path: "country",
       populate: {
         path: "avatar",
       },
     };
-    let populateSupportCountries = {
+    const populateSupportCountries = {
       path: "supported_countries",
       populate: {
         path: "avatar",
@@ -242,18 +242,18 @@ export class EsimService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "country",
       populate: {
         path: "avatar",
       },
     };
-    let populateSupportCountries = {
+    const populateSupportCountries = {
       path: "supported_countries",
       populate: {
         path: "avatar",
@@ -294,13 +294,13 @@ export class EsimService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let populateObject = {
+        const populateObject = {
           path: "country",
           populate: {
             path: "avatar",
           },
         };
-        let populateSupportCountries = {
+        const populateSupportCountries = {
           path: "supported_countries",
           populate: {
             path: "avatar",

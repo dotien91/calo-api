@@ -43,26 +43,26 @@ export class ReportHelper {
    */
   async createReport(createReportData: CreateReportDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
+      const userId = userObject._id.toString();
+      const partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
       if (!partnerObject) {
         throw new NotFoundException("Partner is not exist!");
       }
       if (createReportData.report_type === "block") {
-        let dataToFilter = {
+        const dataToFilter = {
           user_id: userObject._id.toString(),
           partner_id: createReportData.partner_id,
           report_type: "block",
         };
-        let dataOld = await this.reportService.findOne(dataToFilter);
+        const dataOld = await this.reportService.findOne(dataToFilter);
         if (!dataOld) {
           //Get old Point
-          let dataUserOld = await this.userOptionService.findOne({ user_id: createReportData.partner_id });
-          let circlePoint = Number(dataUserOld.circle_point);
+          const dataUserOld = await this.userOptionService.findOne({ user_id: createReportData.partner_id });
+          const circlePoint = Number(dataUserOld.circle_point);
 
           let pointToUpdate = 4;
           if (circlePoint < 4) {
@@ -77,11 +77,11 @@ export class ReportHelper {
           if (circlePoint >= 21) {
             pointToUpdate = 10;
           }
-          let dataUpdateCount = {
+          const dataUpdateCount = {
             circle_point: pointToUpdate,
             like_point: pointToUpdate,
           };
-          let dataCount = await this.userOptionService.handleUpdateInc(
+          const dataCount = await this.userOptionService.handleUpdateInc(
             { user_id: createReportData.partner_id },
             dataUpdateCount
           );
@@ -89,7 +89,7 @@ export class ReportHelper {
       }
 
       createReportData = { ...createReportData, ...{ user_id: userId } };
-      let dataReturn = await this.reportService.create(createReportData);
+      const dataReturn = await this.reportService.create(createReportData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -109,7 +109,7 @@ export class ReportHelper {
   async createNewReportAnonymous(createReportData: CreateReportDto, res: Response, req: ExpressRequestDto) {
     try {
       createReportData = { ...createReportData };
-      let dataReturn = await this.reportService.create(createReportData);
+      const dataReturn = await this.reportService.create(createReportData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -127,15 +127,15 @@ export class ReportHelper {
    */
   async createContactUs(createReportData: CreateContactUsDto, res: Response, req: ExpressRequestDto) {
     try {
-      let partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
+      const partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
       if (!partnerObject) {
         throw new NotFoundException("Partner is not exist!");
       }
       if (process.env.BRANCH_NAME !== "funy_sound") {
-        let googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
+        const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
         //Check Recaptcha
         const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${createReportData.g_recaptcha_response}`;
-        let dataAxios = await axios
+        const dataAxios = await axios
           .post(url, {})
           .then((response: any) => {
             if (response?.data?.success == true) {
@@ -154,7 +154,7 @@ export class ReportHelper {
 
       delete createReportData.g_recaptcha_response;
       createReportData = { ...createReportData, ...{ user_id: createReportData?.partner_id } };
-      let dataReturn = await this.reportService.create(createReportData);
+      const dataReturn = await this.reportService.create(createReportData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -173,17 +173,17 @@ export class ReportHelper {
    */
   async updateReport(updateReportData: UpdateReportDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let partnerObject = await this.userService.findById(updateReportData?.partner_id.toString(), {});
+      const userId = userObject._id.toString();
+      const partnerObject = await this.userService.findById(updateReportData?.partner_id.toString(), {});
       if (!partnerObject) {
         throw new NotFoundException("Partner is not exist!");
       }
       //Check Permission
-      let reportData = await this.reportService.findOne({ _id: updateReportData._id.toString() });
+      const reportData = await this.reportService.findOne({ _id: updateReportData._id.toString() });
       if (reportData && reportData.user_id.toString()) {
         if (
           reportData.user_id.toString() !== userId &&
@@ -192,7 +192,7 @@ export class ReportHelper {
           throw new BadRequestException("You haven't permission for this Action!");
         }
         // updateReportData = { ...updateReportData, ...{ user_id: userId } };
-        let dataReturn = await this.reportService.update(updateReportData);
+        const dataReturn = await this.reportService.update(updateReportData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -214,7 +214,7 @@ export class ReportHelper {
    */
   async getAllReportByAdmin(query: ListReportDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -222,20 +222,20 @@ export class ReportHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "report/list")) {
         //Check Permission
-        let dataToFilter = query;
+        const dataToFilter = query;
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -258,11 +258,11 @@ export class ReportHelper {
    */
   async getReportByUserId(query: ListReportDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
@@ -276,18 +276,18 @@ export class ReportHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilterBefore = query;
+      const dataToFilterBefore = query;
       delete dataToFilterBefore.page;
       delete dataToFilterBefore.limit;
       delete dataToFilterBefore.order_by;
       dataToFilter = { ...dataToFilterBefore, ...dataToFilter };
-      let dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -306,14 +306,14 @@ export class ReportHelper {
    */
   async removeReport(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "report/delete")) {
         //Check Permission
-        let dataReturn = await this.reportService.remove(id);
+        const dataReturn = await this.reportService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -335,17 +335,17 @@ export class ReportHelper {
    */
   async handleGetDetailReport(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "report/list")) {
-        let dataFilter = {
+        const dataFilter = {
           _id: id,
         };
         //Check Permission
-        let dataReturn = await this.reportService.findOne(dataFilter);
+        const dataReturn = await this.reportService.findOne(dataFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

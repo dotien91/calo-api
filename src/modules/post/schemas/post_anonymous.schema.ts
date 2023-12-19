@@ -32,35 +32,35 @@ export class PostAnonymous {
     default: "",
     nullable: false,
   })
-  question: String;
+  question: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  answer: String;
+  answer: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  history_count: Number;
+  history_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  answer_length: Number;
+  answer_length: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  question_length: Number;
+  question_length: number;
 }
 
 export const PostAnonymousSchema = SchemaFactory.createForClass(PostAnonymous);

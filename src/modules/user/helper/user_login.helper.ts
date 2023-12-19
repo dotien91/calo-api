@@ -73,7 +73,7 @@ export class UserLoginHelper {
     private readonly challengeService: ChallengeService,
     private readonly queueService: QueueService
   ) {
-    let serviceAccount = require(`../../../../${process.env.FIREBASE_CONFIG}`);
+    const serviceAccount = require(`../../../../${process.env.FIREBASE_CONFIG}`);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       // The database URL depends on the location of the database
@@ -85,12 +85,12 @@ export class UserLoginHelper {
   }
 
   async handleUpdateAvatar() {
-    let totalUser = await this.appUserService.filter({}, {}, 1, 10000);
-    for (let totalUserItem of totalUser) {
+    const totalUser = await this.appUserService.filter({}, {}, 1, 10000);
+    for (const totalUserItem of totalUser) {
       // console.log(totalUserItem?.user_avatar, 'totalUserItem?.user_avatar')
       if (!totalUserItem?.user_avatar) {
-        let dataAvatar = await this.handleGetUserAvatarRandom();
-        let dataUPdate = {
+        const dataAvatar = await this.handleGetUserAvatarRandom();
+        const dataUPdate = {
           _id: totalUserItem?._id?.toString(),
           user_avatar: dataAvatar?.toString(),
           user_avatar_thumbnail: dataAvatar?.toString(),
@@ -99,8 +99,8 @@ export class UserLoginHelper {
         await this.appUserService.update(dataUPdate);
       }
       if (totalUserItem?.user_avatar?.indexOf("googleusercontent") != -1) {
-        let dataAvatar = await this.handleGetUserAvatarRandom();
-        let dataUPdate = {
+        const dataAvatar = await this.handleGetUserAvatarRandom();
+        const dataUPdate = {
           _id: totalUserItem?._id?.toString(),
           user_avatar: dataAvatar?.toString(),
           user_avatar_thumbnail: dataAvatar?.toString(),
@@ -115,7 +115,7 @@ export class UserLoginHelper {
 
   async updateEvent() {
     console.log(process.env.FIREBASE_CONFIG, "process.env.FIREBASE_CONFIG");
-    let serviceAccount = require(`../../../../${process.env.FIREBASE_CONFIG}`);
+    const serviceAccount = require(`../../../../${process.env.FIREBASE_CONFIG}`);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       // The database URL depends on the location of the database
@@ -123,7 +123,7 @@ export class UserLoginHelper {
       databaseURL: process.env.FIREBASE_DATABASE_URL,
     });
 
-    let dataFirestore = getFirestore();
+    const dataFirestore = getFirestore();
     // dataFirestore.collection("Users").onSnapshot((querySnapshot) => {
     //   querySnapshot.docChanges().forEach(async (change) => {
     //     console.log(change, "change");
@@ -137,17 +137,17 @@ export class UserLoginHelper {
     //Update for 3 Days
 
     //Plus one day
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     console.log(date);
-    let lastOneDay = date - 24 * 60 * 60 * 1000;
-    let lastTwoDay = date - 48 * 60 * 60 * 1000;
+    const lastOneDay = date - 24 * 60 * 60 * 1000;
+    const lastTwoDay = date - 48 * 60 * 60 * 1000;
 
-    let lastThreeDay = date - 24 * 60 * 60 * 1000;
-    let lastFourDay = date - 48 * 60 * 60 * 1000;
+    const lastThreeDay = date - 24 * 60 * 60 * 1000;
+    const lastFourDay = date - 48 * 60 * 60 * 1000;
 
-    let lastSevenDay = date - 24 * 60 * 60 * 1000;
-    let lastEightDay = date - 48 * 60 * 60 * 1000;
-    let dataFilterArray = [];
+    const lastSevenDay = date - 24 * 60 * 60 * 1000;
+    const lastEightDay = date - 48 * 60 * 60 * 1000;
+    const dataFilterArray = [];
     dataFilterArray.push({
       to: new Date(lastOneDay)?.toISOString(),
       from: new Date(lastTwoDay)?.toISOString(),
@@ -163,16 +163,16 @@ export class UserLoginHelper {
       from: new Date(lastEightDay)?.toISOString(),
       event_name: "7",
     });
-    for (let itemUpdate of dataFilterArray) {
+    for (const itemUpdate of dataFilterArray) {
       //Filter User One Day
-      let dataFilter = {
+      const dataFilter = {
         from: itemUpdate?.from,
         to: itemUpdate?.to,
       };
       console.log(dataFilter, "dataFilter");
-      let dataUserOneDay = await this.appUserService.filter(dataFilter, {}, 1, 10000);
+      const dataUserOneDay = await this.appUserService.filter(dataFilter, {}, 1, 10000);
       if (dataUserOneDay?.length) {
-        for (let dataUser of dataUserOneDay) {
+        for (const dataUser of dataUserOneDay) {
           //Let dataToUpdate
           let dataToUpdate = {
             country: dataUser?.country,
@@ -208,7 +208,7 @@ export class UserLoginHelper {
    */
   async loginWithGoogle(dataLogin: LoginUserDto, res: Response, req: Request) {
     try {
-      let accessToken = dataLogin.user_token;
+      const accessToken = dataLogin.user_token;
       let userData = await axios
         .get(process.env.GOOGLE_ACCESS_TOKEN + "?id_token=" + accessToken)
         .then((response) => {
@@ -232,16 +232,16 @@ export class UserLoginHelper {
           });
       }
       if (userData && userData.data) {
-        let userLogin = userData.data?.email?.replace("@", "_");
-        let dataToSearch = {
+        const userLogin = userData.data?.email?.replace("@", "_");
+        const dataToSearch = {
           user_login: userLogin,
         };
         let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
 
         if (!userObject || (userObject && !userObject._id)) {
-          let dataAvtar = await this.handleGetUserAvatarRandom();
+          const dataAvtar = await this.handleGetUserAvatarRandom();
           //Create New User
-          let dataToCreate = {
+          const dataToCreate = {
             user_login: userLogin,
             user_email: userData.data?.email,
             display_name: userData.data?.name,
@@ -251,7 +251,7 @@ export class UserLoginHelper {
           };
           userObject = await this.appUserService.create(dataToCreate);
           if (userObject) {
-            let dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
+            const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
             await this.handleUpdateGeoIP(req, res, userObject);
@@ -261,23 +261,23 @@ export class UserLoginHelper {
           throw new BadRequestException("Google Token is Invalid!");
         }
         if (userObject && userObject._id) {
-          let dataSession = await this.handleUserSession(req, userObject, dataLogin);
+          const dataSession = await this.handleUserSession(req, userObject, dataLogin);
           let sessionGenerator = "";
           if (dataSession && dataSession._id) {
             sessionGenerator = dataSession._id.toString();
           }
-          let tokenReturn = this.jwtHelper.generateJwt(
+          const tokenReturn = this.jwtHelper.generateJwt(
             userObject?._id.toString(),
             userObject?.user_email.toString(),
             sessionGenerator,
             true
           );
           setTimeout(async () => {
-            let dataReferal = req.headers.referer;
+            const dataReferal = req.headers.referer;
             if (dataReferal) {
               // let data = new URL(dataReferal);
               // let originUrl = data?.origin;
-              let channelDomain = await this.getDomainFromUrl(dataReferal);
+              const channelDomain = await this.getDomainFromUrl(dataReferal);
               await this.handleCountPointForUser(
                 dataLogin.referal_user,
                 channelDomain,
@@ -305,8 +305,8 @@ export class UserLoginHelper {
 
   public sendPhone = async (dataSendPhone: SendPhoneDto, req: ExpressRequestDto, res: Response) => {
     try {
-      let phoneNumber = dataSendPhone?.phone_number || "";
-      let recaptchaToken = dataSendPhone?.captcha;
+      const phoneNumber = dataSendPhone?.phone_number || "";
+      const recaptchaToken = dataSendPhone?.captcha;
 
       const identityToolkit = google.identitytoolkit({
         auth: process.env.GOOGLE_FIREBASE_KEY,
@@ -364,12 +364,12 @@ export class UserLoginHelper {
 
   public validatePhone = async (dataValidate: ValidatePhoneDto, req: ExpressRequestDto, res: Response) => {
     try {
-      let userId = req?.user_id || "";
+      const userId = req?.user_id || "";
       if (!userId) {
         throw new BadRequestException("Tài khoản không tồn tại!");
       }
-      let phoneNumber = dataValidate?.phone_number || "";
-      let verificationCode = dataValidate?.validate_code;
+      const phoneNumber = dataValidate?.phone_number || "";
+      const verificationCode = dataValidate?.validate_code;
 
       const identityToolkit = google.identitytoolkit({
         auth: process.env.GOOGLE_FIREBASE_KEY,
@@ -382,9 +382,9 @@ export class UserLoginHelper {
         if (!userObject) {
           throw new BadRequestException("Số điện thoại này không tồn tại");
         }
-        let sessionId = dataValidate?.session_id || userObject?.phone_session?.toString();
+        const sessionId = dataValidate?.session_id || userObject?.phone_session?.toString();
 
-        let dataReturn = await identityToolkit.relyingparty
+        const dataReturn = await identityToolkit.relyingparty
           .verifyPhoneNumber({
             //@ts-ignore
             code: Number(verificationCode),
@@ -401,7 +401,7 @@ export class UserLoginHelper {
         if (dataReturn) {
           await this.appUserService.update({ _id: userObject?._id?.toString(), is_validate_phone: true });
 
-          let dataReturnObject = await this.appUserService.findOneLogin({ _id: userObject?._id?.toString() });
+          const dataReturnObject = await this.appUserService.findOneLogin({ _id: userObject?._id?.toString() });
           // console.log(dataPhone, "dataPhone");
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization" })
@@ -424,19 +424,19 @@ export class UserLoginHelper {
    */
   async loginWithApple(dataLogin: LoginUserDto, res: Response, req: Request) {
     try {
-      let accessToken = dataLogin.user_token;
-      let userData: any = new JwtService().decode(accessToken);
+      const accessToken = dataLogin.user_token;
+      const userData: any = new JwtService().decode(accessToken);
       if (userData && userData.email) {
-        let userLogin = userData?.sub || userData.email;
-        let dataToSearch = {
+        const userLogin = userData?.sub || userData.email;
+        const dataToSearch = {
           user_login: userLogin,
         };
         let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
 
         if (!userObject || (userObject && !userObject._id)) {
-          let dataUrl = await this.handleGetUserAvatarRandom();
+          const dataUrl = await this.handleGetUserAvatarRandom();
           //Create New User
-          let dataToCreate = {
+          const dataToCreate = {
             user_avatar: dataUrl,
             user_avatar_thumbnail: dataUrl,
             user_login: userLogin,
@@ -446,7 +446,7 @@ export class UserLoginHelper {
           };
           userObject = await this.appUserService.create(dataToCreate);
           if (userObject) {
-            let dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
+            const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
             await this.handleUpdateGeoIP(req, res, userObject);
@@ -456,23 +456,23 @@ export class UserLoginHelper {
           throw new BadRequestException("Apple Token is Invalid!");
         }
         if (userObject && userObject._id) {
-          let dataSession = await this.handleUserSession(req, userObject, dataLogin);
+          const dataSession = await this.handleUserSession(req, userObject, dataLogin);
           let sessionGenerator = "";
           if (dataSession && dataSession._id) {
             sessionGenerator = dataSession._id.toString();
           }
-          let tokenReturn = this.jwtHelper.generateJwt(
+          const tokenReturn = this.jwtHelper.generateJwt(
             userObject?._id.toString(),
             userObject?.user_email.toString(),
             sessionGenerator,
             true
           );
           setTimeout(async () => {
-            let dataReferal = req.headers.referer;
+            const dataReferal = req.headers.referer;
             if (dataReferal) {
               // let data = new URL(dataReferal);
               // let originUrl = data?.origin;
-              let channelDomain = await this.getDomainFromUrl(dataReferal);
+              const channelDomain = await this.getDomainFromUrl(dataReferal);
               await this.handleCountPointForUser(
                 dataLogin.referal_user,
                 channelDomain,
@@ -503,9 +503,9 @@ export class UserLoginHelper {
    */
   async loginWithFacebook(dataLogin: LoginUserDto, res: Response, req: Request) {
     try {
-      let accessToken = dataLogin.user_token;
+      const accessToken = dataLogin.user_token;
 
-      let userData = await axios
+      const userData = await axios
         .get(`${process.env.FACEBOOK_ACCESS_TOKEN}?fields=id,name,email,picture&access_token=${accessToken}`)
         .then((response) => {
           return response;
@@ -514,16 +514,16 @@ export class UserLoginHelper {
           return error;
         });
       if (userData && userData.data && userData?.status === 200) {
-        let userLogin = "u_" + userData.data?.id;
-        let dataToSearch = {
+        const userLogin = "u_" + userData.data?.id;
+        const dataToSearch = {
           user_login: userLogin,
         };
         let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
         if (!userObject || (userObject && !userObject._id)) {
-          let userEmail = userData.data.email || String(userData?.data?.id + "@facebook.com");
-          let userAvatar = `https://graph.facebook.com/${userData?.data?.id}/picture?type=square`;
+          const userEmail = userData.data.email || String(userData?.data?.id + "@facebook.com");
+          const userAvatar = `https://graph.facebook.com/${userData?.data?.id}/picture?type=square`;
           //Create New User
-          let dataToCreate = {
+          const dataToCreate = {
             user_login: userLogin,
             user_email: userEmail,
             display_name: userData.data?.name,
@@ -533,7 +533,7 @@ export class UserLoginHelper {
           };
           userObject = await this.appUserService.create(dataToCreate);
           if (userObject) {
-            let dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
+            const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
             userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
             //Update GEO IP
             await this.handleUpdateGeoIP(req, res, userObject);
@@ -543,23 +543,23 @@ export class UserLoginHelper {
           throw new BadRequestException("Facebook Token is Invalid!");
         }
         if (userObject && userObject._id) {
-          let dataSession = await this.handleUserSession(req, userObject, dataLogin);
+          const dataSession = await this.handleUserSession(req, userObject, dataLogin);
           let sessionGenerator = "";
           if (dataSession && dataSession._id) {
             sessionGenerator = dataSession._id.toString();
           }
-          let tokenReturn = this.jwtHelper.generateJwt(
+          const tokenReturn = this.jwtHelper.generateJwt(
             userObject?._id.toString(),
             userObject?.user_email.toString(),
             sessionGenerator,
             true
           );
           setTimeout(async () => {
-            let dataReferal = req.headers.referer;
+            const dataReferal = req.headers.referer;
             if (dataReferal) {
               // let data = new URL(dataReferal);
               // let originUrl = data?.origin;
-              let channelDomain = await this.getDomainFromUrl(dataReferal);
+              const channelDomain = await this.getDomainFromUrl(dataReferal);
               await this.handleCountPointForUser(
                 dataLogin.referal_user,
                 channelDomain,
@@ -592,38 +592,38 @@ export class UserLoginHelper {
    */
   async loginWithPassword(dataLogin: LoginUserPasswordDto, res: Response, req: Request) {
     try {
-      let userLogin = dataLogin.user_email?.replace("@", "_");
+      const userLogin = dataLogin.user_email?.replace("@", "_");
 
-      let dataToSearch = {
+      const dataToSearch = {
         user_login: userLogin,
       };
-      let userObject = await this.appUserService.findOneLogin(dataToSearch);
+      const userObject = await this.appUserService.findOneLogin(dataToSearch);
       if (!userObject) {
         throw new BadRequestException("E-mail or Password is not correct!");
       }
-      let passwordToCheck = await this.handleProcessPassword(dataLogin?.user_password);
+      const passwordToCheck = await this.handleProcessPassword(dataLogin?.user_password);
       if (passwordToCheck?.toString() !== userObject?.user_password?.toString()) {
         throw new BadRequestException("E-mail or Password is not correct!");
       }
       //Correct
       if (userObject && userObject._id) {
-        let dataSession = await this.handleUserSession(req, userObject, dataLogin);
+        const dataSession = await this.handleUserSession(req, userObject, dataLogin);
         let sessionGenerator = "";
         if (dataSession && dataSession._id) {
           sessionGenerator = dataSession._id.toString();
         }
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           userObject?._id.toString(),
           userObject?.user_email.toString(),
           sessionGenerator,
           true
         );
         setTimeout(async () => {
-          let dataReferal = req.headers.referer;
+          const dataReferal = req.headers.referer;
           if (dataReferal) {
             // let data = new URL(dataReferal);
             // let originUrl = data?.origin;
-            let channelDomain = await this.getDomainFromUrl(dataReferal);
+            const channelDomain = await this.getDomainFromUrl(dataReferal);
             await this.handleCountPointForUser(
               dataLogin.referal_user,
               channelDomain,
@@ -654,8 +654,8 @@ export class UserLoginHelper {
   async register(dataLogin: RegisterUserDto, res: Response, req: Request) {
     try {
       //Process User Email
-      let userLogin = dataLogin.user_email?.replace("@", "_");
-      let dataToSearch = {
+      const userLogin = dataLogin.user_email?.replace("@", "_");
+      const dataToSearch = {
         user_login: userLogin,
       };
       let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
@@ -664,10 +664,10 @@ export class UserLoginHelper {
       }
 
       if (!userObject || (userObject && !userObject._id)) {
-        let dataUrl = await this.handleGetUserAvatarRandom();
+        const dataUrl = await this.handleGetUserAvatarRandom();
 
         //Create New User
-        let dataToCreate = {
+        const dataToCreate = {
           user_login: userLogin,
           user_email: dataLogin.user_email,
           user_avtar: dataUrl,
@@ -679,30 +679,30 @@ export class UserLoginHelper {
         };
         userObject = await this.appUserService.create(dataToCreate);
         if (userObject) {
-          let dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
+          const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
           userObject = { ...dataUserOption.toObject(), ...userObject.toObject() };
           //Update GEO IP
           await this.handleUpdateGeoIP(req, res, userObject);
         }
       }
       if (userObject && userObject._id) {
-        let dataSession = await this.handleUserSession(req, userObject, dataLogin);
+        const dataSession = await this.handleUserSession(req, userObject, dataLogin);
         let sessionGenerator = "";
         if (dataSession && dataSession._id) {
           sessionGenerator = dataSession._id.toString();
         }
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           userObject?._id.toString(),
           userObject?.user_email.toString(),
           sessionGenerator,
           true
         );
         setTimeout(async () => {
-          let dataReferal = req.headers.referer;
+          const dataReferal = req.headers.referer;
           if (dataReferal) {
             // let data = new URL(dataReferal);
             // let originUrl = data?.origin;
-            let channelDomain = await this.getDomainFromUrl(dataReferal);
+            const channelDomain = await this.getDomainFromUrl(dataReferal);
             await this.handleCountPointForUser(
               dataLogin.referal_user,
               channelDomain,
@@ -731,8 +731,8 @@ export class UserLoginHelper {
    * @returns
    */
   async getDomainFromUrl(urlString: string) {
-    let dataUrlObject = url.parse(urlString, true);
-    var query = dataUrlObject?.query;
+    const dataUrlObject = url.parse(urlString, true);
+    const query = dataUrlObject?.query;
     if (query) {
       return query?.base_url?.toString();
     } else {
@@ -743,11 +743,11 @@ export class UserLoginHelper {
   async handleCountPointForUser(fromUserLogin: string, domain: string, dataUser: User, authCode: string) {
     try {
       console.log(domain, "domain");
-      let channelObject = await this.channelService.findOne({ domain: domain });
-      let fromUser = await this.appUserService.findOne({ user_login: fromUserLogin });
+      const channelObject = await this.channelService.findOne({ domain: domain });
+      const fromUser = await this.appUserService.findOne({ user_login: fromUserLogin });
 
       if (channelObject && fromUser) {
-        let dataPermission = await this.channelPermissionService.findOne({
+        const dataPermission = await this.channelPermissionService.findOne({
           user_id: fromUser?._id?.toString(),
           channel_id: channelObject?._id,
         });
@@ -760,11 +760,11 @@ export class UserLoginHelper {
         console.log(dataPermission, "dataPermissionie");
         //Count
         //Update
-        let dataChannelPoint = channelObject?.point_data;
+        const dataChannelPoint = channelObject?.point_data;
         //Check point
         let dataPoint = 5;
         if (dataChannelPoint && dataChannelPoint?.length) {
-          for (let dataChannelPointItem of dataChannelPoint) {
+          for (const dataChannelPointItem of dataChannelPoint) {
             if (dataChannelPointItem?.key == "invite_user") {
               dataPoint = parseInt(dataChannelPointItem?.value);
             }
@@ -773,7 +773,7 @@ export class UserLoginHelper {
 
         //Create new Permisison
         if (!currentPermission) {
-          let levelUser = await this.channelLevelService.findOne({
+          const levelUser = await this.channelLevelService.findOne({
             level_number: 1,
             channel_id: channelObject?._id?.toString(),
           });
@@ -824,7 +824,7 @@ export class UserLoginHelper {
           if (dataPermission?.mentor_role === "mentor") {
             dataUpdate = { ...dataUpdate, ...{ from_mentor: fromUser?._id?.toString() } };
 
-            let dataUpdateCount = {
+            const dataUpdateCount = {
               number_of_user: 1,
             };
             await this.channelPermissionService.updateCount({ _id: dataPermission._id?.toString() }, dataUpdateCount);
@@ -832,7 +832,7 @@ export class UserLoginHelper {
             dataUpdate = { ...dataUpdate, ...{ from_user: fromUser?._id?.toString() } };
           }
 
-          let dataFilterUpdate = {
+          const dataFilterUpdate = {
             user_id: dataUser?._id?.toString(),
             channel_id: channelObject?._id?.toString(),
           };
@@ -854,7 +854,7 @@ export class UserLoginHelper {
             },
             "invite_user"
           );
-          let dataHistory = await this.channelPermissionService.findOneHistory({
+          const dataHistory = await this.channelPermissionService.findOneHistory({
             entientity_id: dataUser?._id,
             entity_type: "invite_user",
           });
@@ -881,12 +881,12 @@ export class UserLoginHelper {
   }
 
   async handleGetUserAvatarRandom() {
-    let iconList =
+    const iconList =
       "alligator, anteater, armadillo, auroch, axolotl, badger, bat, beaver, buffalo, camel, chameleon, cheetah, chipmunk, chinchilla, chupacabra, cormorant, coyote, crow, dingo, dinosaur, dolphin, duck, dragon, elephant, ferret, fox, frog, giraffe, gopher, grizzly, hedgehog, hippo, hyena, jackal, ibex, ifrit, iguana, koala, kraken, lemur, leopard, liger, llama, manatee, mink, monkey, narwhal, nyancat, orangutan, otter, panda, penguin, platypus, python, pumpkin, quagga, rabbit, raccoon, rhino, sheep, shrew, skunk, slowloris, squirrel, turtle, walrus, wolf, wolverine, wombat";
-    let iconListArray = iconList?.split(", ");
-    var item = iconListArray[Math.floor(Math.random() * iconListArray.length)];
+    const iconListArray = iconList?.split(", ");
+    const item = iconListArray[Math.floor(Math.random() * iconListArray.length)];
 
-    let dataColor = [
+    const dataColor = [
       "00ff87,60efff",
       "0061ff,60efff",
       "ff1b6b,45caff",
@@ -907,9 +907,9 @@ export class UserLoginHelper {
       "f492f0,a18dce",
       "f9b16e,f68080",
     ];
-    let colorRandom = dataColor[Math.floor(Math.random() * dataColor.length)];
+    const colorRandom = dataColor[Math.floor(Math.random() * dataColor.length)];
 
-    let dataUrl = process.env.FRONTEND_URL + `/animals/${item}_lg.png?color=${colorRandom}`;
+    const dataUrl = process.env.FRONTEND_URL + `/animals/${item}_lg.png?color=${colorRandom}`;
     return dataUrl;
   }
 
@@ -920,7 +920,7 @@ export class UserLoginHelper {
   async handleProcessPassword(password: string) {
     try {
       password = password + "pxtPAtrn9Q2xADXp";
-      let newPassword = createHash("sha256").update(password).digest("hex");
+      const newPassword = createHash("sha256").update(password).digest("hex");
       return newPassword?.toString();
     } catch (error) {
       this.logger.log("Login with Password Error: " + JSON.stringify(error));
@@ -936,16 +936,16 @@ export class UserLoginHelper {
    * @returns
    */
   async handleUserSession(req: Request, userObject: User, dataLogin: LoginUserDto) {
-    let userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-    let userAgent = req.headers["user-agent"];
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+    const userAgent = req.headers["user-agent"];
 
-    var currentDate = new Date();
-    var year = currentDate.getFullYear();
-    var month = currentDate.getMonth();
-    var day = currentDate.getDate();
-    var expiredAt = new Date(year + 1, month, day);
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const day = currentDate.getDate();
+    const expiredAt = new Date(year + 1, month, day);
 
-    let dataSessionToAdd = {
+    const dataSessionToAdd = {
       user_id: userObject._id,
       user_ip: userIp,
       device_uuid: dataLogin.device_uuid,
@@ -955,7 +955,7 @@ export class UserLoginHelper {
       language: dataLogin?.language,
       expired_at: expiredAt,
     };
-    let dataCreate = await this.userSessionService.create(dataSessionToAdd);
+    const dataCreate = await this.userSessionService.create(dataSessionToAdd);
     return dataCreate;
   }
 
@@ -966,13 +966,13 @@ export class UserLoginHelper {
    */
   async handleLogout(res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let sessionId = req?.session_id;
+      const userObject = req?.user_object;
+      const sessionId = req?.session_id;
       if (!userObject || !sessionId) {
         throw new NotFoundException("User is invalid");
       }
       //Remove Session
-      let dataRemove = await this.userSessionService.remove(sessionId);
+      const dataRemove = await this.userSessionService.remove(sessionId);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -989,12 +989,12 @@ export class UserLoginHelper {
    */
   async handleGetSession(res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let sessionId = req?.session_id;
+      const userObject = req?.user_object;
+      const sessionId = req?.session_id;
       if (!userObject || !sessionId) {
         throw new NotFoundException("User is invalid");
       }
-      let dataSession = await this.userSessionService.findById(sessionId.toString(), {});
+      const dataSession = await this.userSessionService.findById(sessionId.toString(), {});
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1014,26 +1014,26 @@ export class UserLoginHelper {
       if (password !== "pxtPAtrn9Q2xADXp") {
         throw new NotFoundException("Key is invalid");
       }
-      let stringToGenerate = new Date().getTime();
-      let dataPassword = this.generateJwt(stringToGenerate?.toString(), true);
+      const stringToGenerate = new Date().getTime();
+      const dataPassword = this.generateJwt(stringToGenerate?.toString(), true);
 
-      let userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-      let userAgent = req.headers["user-agent"];
+      const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+      const userAgent = req.headers["user-agent"];
 
-      var currentDate = new Date();
-      var year = currentDate.getFullYear();
-      var month = currentDate.getMonth();
-      var day = currentDate.getDate();
-      var expiredAt = new Date(year + 1, month, day);
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const day = currentDate.getDate();
+      const expiredAt = new Date(year + 1, month, day);
 
-      let dataCreate = {
+      const dataCreate = {
         device_id: id,
         password: dataPassword,
         user_ip: userIp,
         user_agent: userAgent,
         expired_at: expiredAt,
       };
-      let dataSession = await this.userAnonymousSessionService.create(dataCreate);
+      const dataSession = await this.userAnonymousSessionService.create(dataCreate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1054,7 +1054,7 @@ export class UserLoginHelper {
    */
   generateJwt(dataId: string, longSession?: boolean) {
     try {
-      let HASH_PASSWORD = process.env.HASH_PASSWORD || "wawawawawawa";
+      const HASH_PASSWORD = process.env.HASH_PASSWORD || "wawawawawawa";
 
       let exp = Math.floor(Date.now() / 1000) + 86400; // 1 day
       if (longSession === true) {
@@ -1087,7 +1087,7 @@ export class UserLoginHelper {
       return (k << d) | (k >>> (32 - d));
     }
     function K(G, k) {
-      var I, d, F, H, x;
+      let I, d, F, H, x;
       F = G & 2147483648;
       H = k & 2147483648;
       I = G & 1073741824;
@@ -1135,14 +1135,14 @@ export class UserLoginHelper {
       return K(L(G, H), F);
     }
     function e(G) {
-      var Z;
-      var F = G.length;
-      var x = F + 8;
-      var k = (x - (x % 64)) / 64;
-      var I = (k + 1) * 16;
-      var aa = Array(I - 1);
-      var d = 0;
-      var H = 0;
+      let Z;
+      const F = G.length;
+      const x = F + 8;
+      const k = (x - (x % 64)) / 64;
+      const I = (k + 1) * 16;
+      const aa = Array(I - 1);
+      let d = 0;
+      let H = 0;
       while (H < F) {
         Z = (H - (H % 4)) / 4;
         d = (H % 4) * 8;
@@ -1157,7 +1157,7 @@ export class UserLoginHelper {
       return aa;
     }
     function B(x) {
-      var k = "",
+      let k = "",
         F = "",
         G,
         d;
@@ -1170,9 +1170,9 @@ export class UserLoginHelper {
     }
     function J(k) {
       k = k.replace(/rn/g, "n");
-      var d = "";
-      for (var F = 0; F < k.length; F++) {
-        var x = k.charCodeAt(F);
+      let d = "";
+      for (let F = 0; F < k.length; F++) {
+        const x = k.charCodeAt(F);
         if (x < 128) {
           d += String.fromCharCode(x);
         } else {
@@ -1188,21 +1188,21 @@ export class UserLoginHelper {
       }
       return d;
     }
-    var C = Array();
-    var P, h, E, v, g, Y, X, W, V;
-    var S = 7,
+    let C = [];
+    let P, h, E, v, g, Y, X, W, V;
+    const S = 7,
       Q = 12,
       N = 17,
       M = 22;
-    var A = 5,
+    const A = 5,
       z = 9,
       y = 14,
       w = 20;
-    var o = 4,
+    const o = 4,
       m = 11,
       l = 16,
       j = 23;
-    var U = 6,
+    const U = 6,
       T = 10,
       R = 15,
       O = 21;
@@ -1286,7 +1286,7 @@ export class UserLoginHelper {
       W = K(W, v);
       V = K(V, g);
     }
-    var i = B(Y) + B(X) + B(W) + B(V);
+    const i = B(Y) + B(X) + B(W) + B(V);
     return i.toLowerCase();
   }
 
@@ -1297,12 +1297,12 @@ export class UserLoginHelper {
    */
   async handleUpdateGeoIP(req: ExpressRequestDto, res: Response, userObject: User) {
     setTimeout(async () => {
-      let userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+      const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
       const ipInfoArray = process.env.IPINFO_TOKEN?.split(",");
       const random = Math.floor(Math.random() * ipInfoArray.length);
       if (userIp && ipInfoArray && ipInfoArray[random]) {
-        let ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
-        let dataIp = await axios
+        const ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
+        const dataIp = await axios
           .get(ipUrl)
           .then((response) => {
             if (response && response.data) {
@@ -1317,11 +1317,11 @@ export class UserLoginHelper {
         if (dataIp) {
           //Update Country && User Option
           //Update New City
-          let dataCitySearch = {
+          const dataCitySearch = {
             search: dataIp.city,
           };
 
-          let getCityObject = await this.cityService.filter(dataCitySearch, {}, 1, 1);
+          const getCityObject = await this.cityService.filter(dataCitySearch, {}, 1, 1);
 
           let dataUpdate = {
             _id: userObject?._id?.toString(),
@@ -1334,8 +1334,8 @@ export class UserLoginHelper {
           if (getCityObject && getCityObject.length) {
             //Update Old City
             await this.cityService.handleUpdateUserInc(getCityObject[0]?._id.toString(), true);
-            let cityName = getCityObject[0]?.city_name?.toString();
-            let countryName = getCityObject[0]?.country?.toString();
+            const cityName = getCityObject[0]?.city_name?.toString();
+            const countryName = getCityObject[0]?.country?.toString();
             this.sendNotificationNew(userObject, req, res, cityName, countryName);
             //Update City Object
             let groupId = "";
@@ -1350,7 +1350,7 @@ export class UserLoginHelper {
                   dataCreateReturn = await this.chatRoomService.findOneRoom({ _id: groupId });
                 } else {
                   //Update Chat Group
-                  let dataCreate = {
+                  const dataCreate = {
                     user_id: process.env.INFO_SESSION,
                     room_type: "group",
                     room_limit_number: 100000,
@@ -1365,7 +1365,7 @@ export class UserLoginHelper {
                   dataCreateReturn = await this.chatRoomService.create(dataCreate);
                   if (dataCreateReturn) {
                     groupId = dataCreateReturn._id.toString();
-                    let dataCityUpdate = {
+                    const dataCityUpdate = {
                       _id: getCityObject[0]?._id?.toString(),
                       chat_group: groupId,
                     };
@@ -1373,7 +1373,7 @@ export class UserLoginHelper {
                   }
                   //Ad User Support in To New City
                   //Process Save User & Advisor To Option
-                  let dataOptionUser = {
+                  const dataOptionUser = {
                     chat_room_id: dataCreateReturn?._id.toString(),
                     user_role: "admin",
                     user_permission: "write",
@@ -1388,7 +1388,7 @@ export class UserLoginHelper {
 
                 if (dataCreateReturn) {
                   //Process Save User & Advisor To Option
-                  let dataOptionUser = {
+                  const dataOptionUser = {
                     chat_room_id: dataCreateReturn?._id.toString(),
                     user_role: "user",
                     user_permission: "write",
@@ -1399,8 +1399,8 @@ export class UserLoginHelper {
                     chat_history_count: 1,
                   };
                   await this.chatRoomUserOptionService.create(dataOptionUser);
-                  let newGroupPartner = [...dataCreateReturn.group_partners, ...[userObject._id.toString()]];
-                  let dataToUpdate = {
+                  const newGroupPartner = [...dataCreateReturn.group_partners, ...[userObject._id.toString()]];
+                  const dataToUpdate = {
                     _id: dataCreateReturn._id.toString(),
                     group_partners: newGroupPartner,
                     partner_count: newGroupPartner.length,
@@ -1416,18 +1416,18 @@ export class UserLoginHelper {
 
           //Update Auto Like for WhiteG && Honee
           if (dataIp.loc) {
-            let dataLoc = dataIp.loc?.split(",");
+            const dataLoc = dataIp.loc?.split(",");
             if (dataLoc[0] && dataLoc[1]) {
-              let dataToFilter = {
+              const dataToFilter = {
                 latitude: parseFloat(dataLoc[0]?.toString()),
                 longitude: parseFloat(dataLoc[1]?.toString()),
                 is_match: "1",
               };
-              let orderByOBject = {};
-              let page = 1;
-              let limit = 10;
+              const orderByOBject = {};
+              const page = 1;
+              const limit = 10;
 
-              let dataToUpdate = {
+              const dataToUpdate = {
                 user_id: userObject?._id?.toString(),
                 loc: {
                   type: "Point",
@@ -1440,9 +1440,9 @@ export class UserLoginHelper {
               await this.userOptionService.update(dataToUpdate);
 
               if (process.env.BRANCH_NAME === "whiteg") {
-                let dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
+                const dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
                 if (dataReturn && dataReturn.length) {
-                  for (let dataUserItem of dataReturn) {
+                  for (const dataUserItem of dataReturn) {
                     //Set like
                     let dataUpdate = {
                       user_id: dataUserItem._id.toString(),
@@ -1454,7 +1454,7 @@ export class UserLoginHelper {
                       dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
                     }
                     dataUpdate = { ...dataUpdate, ...{ follow_users: dataFollowUpdate } };
-                    let dataReturn = await this.userFollowService.update(dataUpdate);
+                    const dataReturn = await this.userFollowService.update(dataUpdate);
                   }
                 }
               }
@@ -1463,31 +1463,31 @@ export class UserLoginHelper {
                 //Send Message Auto for CallU
                 if (process.env.BRANCH_NAME === "live_video") {
                   //Get User Role
-                  let dataUserObject: any = await this.appUserService.findOneLogin({
+                  const dataUserObject: any = await this.appUserService.findOneLogin({
                     _id: userObject?._id?.toString(),
                   });
                   console.log(dataUserObject, "dataUserObject");
                   if ((dataUserObject && dataUserObject.base_role === "man") || !dataUserObject.base_role) {
-                    let dataToFilterCallU = {
+                    const dataToFilterCallU = {
                       //latitude: parseFloat(dataLoc[0]?.toString()),
                       //longitude: parseFloat(dataLoc[1]?.toString()),
                       // is_match: "1",
                       base_role: "women",
                       country: dataUserObject?.country,
                     };
-                    let dataReturn = await this.userOptionService.filterFree(
+                    const dataReturn = await this.userOptionService.filterFree(
                       dataToFilterCallU,
                       orderByOBject,
                       page,
                       limit
                     );
                     if (dataReturn && dataReturn.length) {
-                      for (let dataUserItem of dataReturn) {
+                      for (const dataUserItem of dataReturn) {
                         //Set like
                         //Send Message
-                        let randomSecond = Math.random() * (200 - 20) + 20;
+                        const randomSecond = Math.random() * (200 - 20) + 20;
                         console.log(randomSecond, "randomSecond");
-                        let self = this;
+                        const self = this;
                         setTimeout(() => {
                           //Send Message to User
                           self.sendMessageCallU(dataUserObject, req, res, dataUserItem);
@@ -1520,11 +1520,11 @@ export class UserLoginHelper {
   async handleForgotPassword(dataCreate: CreateForgotPassword, res: Response, req: ExpressRequestDto) {
     try {
       //Send Email
-      let googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
+      const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
       if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
         //Check Recaptcha
         const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
-        let dataAxios = await axios
+        const dataAxios = await axios
           .post(url, {})
           .then((response: any) => {
             if (response?.data?.success == true) {
@@ -1542,25 +1542,25 @@ export class UserLoginHelper {
       }
 
       //Update & Send E-mail
-      let userEmail = {
+      const userEmail = {
         user_email: dataCreate?.user_email,
       };
-      let userObject = await this.appUserService.findOne(userEmail);
+      const userObject = await this.appUserService.findOne(userEmail);
       if (!userObject) {
         throw new NotFoundException("User not exist!");
       }
 
-      let dataToken = await this.makeRandom(80);
+      const dataToken = await this.makeRandom(80);
       //Update
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userObject?._id?.toString(),
         email_token: dataToken,
       };
       await this.appUserService.update(dataUpdate);
-      let dataReferal = req.headers.referer;
+      const dataReferal = req.headers.referer;
       let dataChannel = null;
       if (dataReferal) {
-        let data = new URL(dataReferal);
+        const data = new URL(dataReferal);
         console.log(data?.search);
         // Lấy giá trị tham số "base_url" từ URL
         const baseUrl = data.searchParams.get("base_url");
@@ -1572,10 +1572,10 @@ export class UserLoginHelper {
       } else {
         dataChannel = await this.channelService.findOne({ _id: process.env.DEFAULT_CHANNEL });
       }
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
       if (dataChannel) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: dataChannel?.name,
           country: userObject?.country,
@@ -1599,7 +1599,7 @@ export class UserLoginHelper {
         });
       }
 
-      let dataReturn = {
+      const dataReturn = {
         data_success: "Done!",
       };
 
@@ -1634,24 +1634,24 @@ export class UserLoginHelper {
    */
   async handleChangePassword(dataUpdate: CreateChangePasswordDto, res: Response, req: ExpressRequestDto) {
     //Check from TOKEN
-    let userEmailToken = dataUpdate.email_token?.trim();
+    const userEmailToken = dataUpdate.email_token?.trim();
     if (!userEmailToken || userEmailToken?.length !== 80) {
       throw new NotFoundException("Email token is not valid!");
     }
-    let dataFinder = {
+    const dataFinder = {
       email_token: userEmailToken?.toString(),
     };
-    let dataUser = await this.appUserService.findOne(dataFinder);
+    const dataUser = await this.appUserService.findOne(dataFinder);
     if (!dataUser) {
       throw new NotFoundException("Email token is not valid!");
     }
     //Else is Correct
-    let dataUpdateAfter = {
+    const dataUpdateAfter = {
       _id: dataUser?._id?.toString(),
       user_password: await this.handleProcessPassword(dataUpdate?.user_password),
       email_token: "",
     };
-    let dataReturn = await this.appUserService.update(dataUpdateAfter);
+    const dataReturn = await this.appUserService.update(dataUpdateAfter);
     return res
       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
       .status(HttpStatus.OK)
@@ -1669,12 +1669,12 @@ export class UserLoginHelper {
    */
   async handleUpdateSession(dataUpdate: UpdateSessionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let sessionId = req?.session_id;
+      const userObject = req?.user_object;
+      const sessionId = req?.session_id;
       if (!userObject || !sessionId) {
         throw new NotFoundException("User is invalid");
       }
-      let dataToUpdate = {
+      const dataToUpdate = {
         ...dataUpdate,
         ...{
           _id: sessionId,
@@ -1688,7 +1688,7 @@ export class UserLoginHelper {
         await this.userSessionService.removeByAppleNotification(dataUpdate.apple_notification, sessionId.toString());
       }
       //Remove Session
-      let dataReturn = await this.userSessionService.update(dataToUpdate);
+      const dataReturn = await this.userSessionService.update(dataToUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1699,10 +1699,10 @@ export class UserLoginHelper {
   }
 
   async handleUpdateUserOption(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUserOption = await this.userOptionService.create(dataCreate);
+    const dataUserOption = await this.userOptionService.create(dataCreate);
 
     // let levelUser = await this.channelLevelService.findOne({
     //   level_number: 1,
@@ -1743,7 +1743,7 @@ export class UserLoginHelper {
     // })
 
     if (dataUserOption) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUserOption._id.toString(),
       };
@@ -1771,9 +1771,9 @@ export class UserLoginHelper {
       return true;
     }
     setTimeout(async () => {
-      let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
       //Create new
-      let dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
         supportAccount,
         partnerObject._id.toString(),
         "personal",
@@ -1785,11 +1785,11 @@ export class UserLoginHelper {
         console.log("Not found");
       } else {
         //@ts-ignore
-        let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        let currentTime = new Date().getTime();
+        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+        const currentTime = new Date().getTime();
 
         //console.log(currentTime - updatedAt);
-        let leftTime = currentTime - updatedAt;
+        const leftTime = currentTime - updatedAt;
         //@ts-ignore
         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
           console.log("Not return");
@@ -1797,7 +1797,7 @@ export class UserLoginHelper {
         }
 
         let chatContent = "";
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           process.env.INFO_USER,
           supportAccount?.user_email?.toString(),
           process.env.INFO_SESSION,
@@ -1808,7 +1808,7 @@ export class UserLoginHelper {
           branchName = "Honee";
         }
         if (countryName === "Vietnam") {
-          let localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
+          const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
@@ -1816,7 +1816,7 @@ export class UserLoginHelper {
 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
         } else {
-          let localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
+          const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
@@ -1824,7 +1824,7 @@ export class UserLoginHelper {
 🔔 If you have any problems, contact us directly using the Support feature.
 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
         }
-        let createChatHistoryDto = {
+        const createChatHistoryDto = {
           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
           chat_content: chatContent,
         };
@@ -1834,7 +1834,7 @@ export class UserLoginHelper {
         req.session_id = process.env.INFO_SESSION;
         req.auth_code = tokenReturn.toString();
 
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,
@@ -1855,7 +1855,7 @@ export class UserLoginHelper {
    */
   async sendMessageCallU(partnerObject: User, req: ExpressRequestDto, res: Response, userObject: any) {
     //Create new
-    let dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+    const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
       userObject,
       partnerObject._id.toString(),
       "personal",
@@ -1867,11 +1867,11 @@ export class UserLoginHelper {
       console.log("Not found");
     } else {
       //@ts-ignore
-      let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-      let currentTime = new Date().getTime();
+      const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+      const currentTime = new Date().getTime();
 
       //console.log(currentTime - updatedAt);
-      let leftTime = currentTime - updatedAt;
+      const leftTime = currentTime - updatedAt;
       //@ts-ignore
       if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
         console.log("Not return");
@@ -1887,27 +1887,27 @@ export class UserLoginHelper {
         //Get config Chat Content
         //Get country
         if (partnerObject?.country) {
-          let configData = partnerObject?.country + "_message";
-          let dataFind = {
+          const configData = partnerObject?.country + "_message";
+          const dataFind = {
             type: configData,
           };
-          let dataConfig = await this.configService.findOne(dataFind);
+          const dataConfig = await this.configService.findOne(dataFind);
           if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-            let arrayMessage = dataConfig?.data_filter;
+            const arrayMessage = dataConfig?.data_filter;
             chatContent = _.sample(arrayMessage);
           }
         }
       }
       if (chatContent) {
         //FindOne Session
-        let oneSession = await this.userSessionService.findOne({ user_id: userObject._id?.toString() });
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const oneSession = await this.userSessionService.findOne({ user_id: userObject._id?.toString() });
+        const tokenReturn = this.jwtHelper.generateJwt(
           userObject?._id?.toString(),
           userObject?.user_email?.toString(),
           oneSession?._id?.toString(),
           true
         );
-        let createChatHistoryDto = {
+        const createChatHistoryDto = {
           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
           chat_content: chatContent,
         };
@@ -1917,7 +1917,7 @@ export class UserLoginHelper {
         req.session_id = process.env.INFO_SESSION;
         req.auth_code = tokenReturn.toString();
 
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,

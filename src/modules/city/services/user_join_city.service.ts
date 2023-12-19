@@ -49,7 +49,7 @@ export class UserJoinCityService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userJoinCityModel.findById(id, projection);
+    const dataReturn = await this.userJoinCityModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -80,7 +80,7 @@ export class UserJoinCityService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserJoinCity[]> {
-    let condition = { user_id: userId, city_id: { $in: userPartners } };
+    const condition = { user_id: userId, city_id: { $in: userPartners } };
     return await this.userJoinCityModel.find(condition, {}).exec();
   }
 
@@ -103,7 +103,7 @@ export class UserJoinCityService {
       if (!dataUpdate.user_id && !dataUpdate.city_id) {
         return null;
       }
-      let dataReturn = await this.userJoinCityModel.findOneAndUpdate(
+      const dataReturn = await this.userJoinCityModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, city_id: dataUpdate.city_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -125,7 +125,7 @@ export class UserJoinCityService {
    */
   public count = async (filter: SearchUserJoinCityDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userJoinCityModel.estimatedDocumentCount();
       } else {
@@ -160,12 +160,12 @@ export class UserJoinCityService {
    * @returns
    */
   async filter(filter: SearchUserJoinCityDto, sortBy: any, page: number, limit: number): Promise<UserJoinCity[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userJoinCityModel
+    const dataReturn = await this.userJoinCityModel
       .find(condition)
       .populate({
         path: "city_id",
@@ -187,12 +187,12 @@ export class UserJoinCityService {
    * @returns
    */
   async filterUser(filter: SearchUserJoinCityDto, sortBy: any, page: number, limit: number): Promise<UserJoinCity[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userJoinCityModel
+    const dataReturn = await this.userJoinCityModel
       .find(condition)
       .populate({
         path: "user_id",

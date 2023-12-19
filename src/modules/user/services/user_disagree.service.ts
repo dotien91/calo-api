@@ -49,7 +49,7 @@ export class UserDisagreeService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userDisagreeModel.findById(id, projection);
+    const dataReturn = await this.userDisagreeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -89,7 +89,7 @@ export class UserDisagreeService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserDisagree[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userDisagreeModel.find(condition, {}).exec();
   }
 
@@ -112,7 +112,7 @@ export class UserDisagreeService {
       if (!dataUpdate.user_id && !dataUpdate.partner_id) {
         return null;
       }
-      let dataReturn = await this.userDisagreeModel.findOneAndUpdate(
+      const dataReturn = await this.userDisagreeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, partner_id: dataUpdate.partner_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -134,7 +134,7 @@ export class UserDisagreeService {
    */
   public count = async (filter: FilterFollowDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userDisagreeModel.estimatedDocumentCount();
       } else {
@@ -169,12 +169,12 @@ export class UserDisagreeService {
    * @returns
    */
   async filter(filter: FilterFollowDto, sortBy: any, page: number, limit: number): Promise<UserDisagree[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userDisagreeModel
+    const dataReturn = await this.userDisagreeModel
       .find(condition)
       .populate({
         path: "partner_id",
@@ -199,12 +199,12 @@ export class UserDisagreeService {
    * @returns
    */
   async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userDisagreeModel
+    const dataReturn = await this.userDisagreeModel
       .find(condition)
       .populate({
         path: "user_id",

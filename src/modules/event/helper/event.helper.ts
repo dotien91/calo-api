@@ -48,15 +48,15 @@ export class EventHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
       let dataToFilter = { ...query };
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = "";
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -72,43 +72,43 @@ export class EventHelper {
 
       if (dataToFilter?.date) {
         //Get data Date
-        let dataIndexFilter = {
+        const dataIndexFilter = {
           date: dataToFilter?.date?.toString(),
         };
-        let dataObject = await this.eventIndexService.filter(dataIndexFilter, {}, 1, 10000);
+        const dataObject = await this.eventIndexService.filter(dataIndexFilter, {}, 1, 10000);
 
         if (dataObject && dataObject?.length) {
-          let dataArrayString = dataObject?.map((value) => {
+          const dataArrayString = dataObject?.map((value) => {
             return value?.event_id?.toString();
           });
           dataToFilter = { ...dataToFilter, ...{ event_ids: dataArrayString } };
         }
       }
 
-      let dataReturn = await this.eventService.filter(dataToFilter, orderByOBject, page, limit);
-      let countEvent = await this.eventService.count(dataToFilter);
+      const dataReturn = await this.eventService.filter(dataToFilter, orderByOBject, page, limit);
+      const countEvent = await this.eventService.count(dataToFilter);
 
-      let dataFinalReturn = [];
+      const dataFinalReturn = [];
 
       let dataObjectFollowIds = [];
 
       if (query?.auth_id) {
-        let dataEventIds: string[] = dataReturn?.map((value) => {
+        const dataEventIds: string[] = dataReturn?.map((value) => {
           return value?._id?.toString();
         });
-        let dataFollowFilter = {
+        const dataFollowFilter = {
           user_id: query?.auth_id,
           event_ids: dataEventIds,
         };
-        let dataObjectFollow = await this.userFollowEventService.filter(dataFollowFilter, {}, 1, 1000);
+        const dataObjectFollow = await this.userFollowEventService.filter(dataFollowFilter, {}, 1, 1000);
         dataObjectFollowIds = dataObjectFollow?.map((value) => {
           return value?.event_id?._id?.toString();
         });
       }
       if (dataReturn && dataReturn.length) {
-        for (let dataPrepareItem of dataReturn) {
+        for (const dataPrepareItem of dataReturn) {
           let isFollow = false;
-          let followUserObject = [];
+          const followUserObject = [];
           //Check follow
           if (query?.auth_id) {
             if (dataObjectFollowIds?.indexOf(dataPrepareItem?._id?.toString()) !== -1) {
@@ -119,18 +119,18 @@ export class EventHelper {
           let dataToPush = { ...dataPrepareItem, ...{ is_like: isFollow } };
           if (dataToFilter?.date) {
             //Get Date Object
-            let dataToFindEventTime = {
+            const dataToFindEventTime = {
               event_id: dataPrepareItem?._id?.toString(),
               date: dataToFilter?.date?.toString(),
             };
-            let dataObject = await this.eventIndexService.filter(dataToFindEventTime, {}, 1, 10000);
+            const dataObject = await this.eventIndexService.filter(dataToFindEventTime, {}, 1, 10000);
             dataToPush = { ...dataToPush, ...{ event_time: dataObject } };
           }
           dataFinalReturn.push(dataToPush);
         }
       }
 
-      let dataCourseArray = dataFinalReturn.filter((itemFilter: Event, index: number) => {
+      const dataCourseArray = dataFinalReturn.filter((itemFilter: Event, index: number) => {
         if (itemFilter?.event_course) {
           return true;
         } else {
@@ -139,21 +139,21 @@ export class EventHelper {
       });
 
       if (dataCourseArray?.length) {
-        let dataCourseIds = dataCourseArray.map((itemCourse: Event, index: number) => {
+        const dataCourseIds = dataCourseArray.map((itemCourse: Event, index: number) => {
           return itemCourse?.event_course?._id?.toString();
         });
         //Get Course Join
         if (req?.user_id) {
-          let dataJoinCourse = await this.courseLikeService.filter(
+          const dataJoinCourse = await this.courseLikeService.filter(
             { course_ids: dataCourseIds, user_id: req?.user_id },
             {},
             1,
             1000
           );
-          let dataToCheck = dataJoinCourse?.map((dataCourseJoin: CourseLike, index: number) => {
+          const dataToCheck = dataJoinCourse?.map((dataCourseJoin: CourseLike, index: number) => {
             return dataCourseJoin?.course_id?.toString();
           });
-          for (let itemReturnIndex in dataFinalReturn) {
+          for (const itemReturnIndex in dataFinalReturn) {
             // console.log(dataFinalReturn[itemReturnIndex]?.event_course, 'dataFinalReturn[itemReturnIndex]?.event_course')
             if (!dataFinalReturn[itemReturnIndex]?.event_course) {
               continue;
@@ -199,8 +199,8 @@ export class EventHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -214,8 +214,8 @@ export class EventHelper {
         delete dataToFilter?.auth_id;
       }
 
-      let dataReturn = await this.userFollowEventService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.userFollowEventService.count(dataToFilter);
+      const dataReturn = await this.userFollowEventService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.userFollowEventService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -238,7 +238,7 @@ export class EventHelper {
    */
   async createNewEvent(createEventData: CreateEventDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -246,14 +246,14 @@ export class EventHelper {
 
       newCreateEvent = { ...newCreateEvent, ...{ user_id: userObject?._id } };
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = "";
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -274,8 +274,8 @@ export class EventHelper {
         newCreateEvent = { ...newCreateEvent, ...{ channel_id: channelId } };
       }
 
-      let dataCreate = await this.eventService.create(newCreateEvent);
-      let dataReturn = await this.eventService.findById(dataCreate?._id?.toString());
+      const dataCreate = await this.eventService.create(newCreateEvent);
+      const dataReturn = await this.eventService.findById(dataCreate?._id?.toString());
 
       //If have is_recurring
       if (Number(createEventData?.is_recurring) && createEventData?.repeat_every) {
@@ -283,13 +283,13 @@ export class EventHelper {
           await this.handleProcessRecurring(dataReturn);
         }, 100);
       } else {
-        let dataCreate = {
+        const dataCreate = {
           event_id: dataReturn?._id?.toString(),
           event_date: new Date(dataReturn?.open_date?.toString())?.toISOString(),
         };
         await this.eventIndexService.create(dataCreate);
       }
-      let channel = await this.channelService.findById(channelId);
+      const channel = await this.channelService.findById(channelId);
 
       setTimeout(async () => {
         // if (channel?.user_id?._id.toString() === userObject?._id.toString()) {
@@ -341,10 +341,10 @@ export class EventHelper {
    */
   async handleProcessRecurring(dataEvent: Event) {
     try {
-      let intervalDay = dataEvent.repeat_every;
-      let endDate = dataEvent?.end_date;
+      const intervalDay = dataEvent.repeat_every;
+      const endDate = dataEvent?.end_date;
       let endDateObject: Date = null;
-      let startDate = dataEvent?.open_date;
+      const startDate = dataEvent?.open_date;
       let startDateObject: Date = null;
       if (startDate) {
         startDateObject = new Date(startDate?.toString());
@@ -355,21 +355,21 @@ export class EventHelper {
         endDateObject = new Date(endDate?.toString());
       } else {
         //End Date
-        let currentYear = new Date().getFullYear();
-        let endDateYear = currentYear + 3;
+        const currentYear = new Date().getFullYear();
+        const endDateYear = currentYear + 3;
         endDateObject = new Date(`${endDateYear}-12-31 23:59:59`);
       }
 
-      let difference = endDateObject.getTime() - startDateObject.getTime();
-      let totalDay = Math.ceil(difference / (1000 * 3600 * 24));
+      const difference = endDateObject.getTime() - startDateObject.getTime();
+      const totalDay = Math.ceil(difference / (1000 * 3600 * 24));
 
       if (totalDay < parseInt(dataEvent?.repeat_every?.toString())) {
         return null;
       } else {
-        let newCloneDate = startDateObject;
+        const newCloneDate = startDateObject;
         let dataCount = 0;
         for (
-          var d = new Date(newCloneDate?.toISOString());
+          let d = new Date(newCloneDate?.toISOString());
           d <= endDateObject;
           d.setDate(d.getDate() + parseInt(dataEvent?.repeat_every?.toString()))
         ) {
@@ -381,17 +381,17 @@ export class EventHelper {
           //Update to Data
           if (dataEvent?.repeat_on && dataEvent?.repeat_on?.length) {
             //Get current
-            let dataRepeatArray = await this.handleGetDayNameFormText(dataEvent?.repeat_on);
+            const dataRepeatArray = await this.handleGetDayNameFormText(dataEvent?.repeat_on);
 
-            var curr = new Date(d); // get current date
-            var first = curr.getDate() - curr.getDay();
+            const curr = new Date(d); // get current date
+            const first = curr.getDate() - curr.getDay();
 
             for (let dayName = 0; dayName <= 6; dayName++) {
-              let checkDay = first + dayName;
+              const checkDay = first + dayName;
               if (dataRepeatArray.indexOf(dayName) !== -1) {
-                let dataDateToCheck = new Date(curr.setDate(checkDay));
+                const dataDateToCheck = new Date(curr.setDate(checkDay));
                 if (dataDateToCheck >= startDateObject && dataDateToCheck <= endDateObject) {
-                  let dataCreate = {
+                  const dataCreate = {
                     event_id: dataEvent?._id?.toString(),
                     event_date: dataDateToCheck?.toISOString(),
                   };
@@ -400,8 +400,8 @@ export class EventHelper {
               }
             }
           } else {
-            let dataDateToCreate = new Date(d);
-            let dataCreate = {
+            const dataDateToCreate = new Date(d);
+            const dataCreate = {
               event_id: dataEvent?._id?.toString(),
               event_date: dataDateToCreate?.toISOString(),
             };
@@ -418,10 +418,10 @@ export class EventHelper {
    *
    * @param dataArray
    */
-  async handleGetDayNameFormText(dataArray: String[]) {
+  async handleGetDayNameFormText(dataArray: string[]) {
     try {
-      let dataReturn = [];
-      for (let dataItem of dataArray) {
+      const dataReturn = [];
+      for (const dataItem of dataArray) {
         if (dataItem == "sunday") {
           dataReturn.push(0);
         }
@@ -463,11 +463,11 @@ export class EventHelper {
       let dataReturn: any = await this.eventService.findByIdPopulate(id.toString());
 
       if (req?.user_id) {
-        let dataFollowFilter = {
+        const dataFollowFilter = {
           user_id: req?.user_id,
           event_id: dataReturn?._id?.toString(),
         };
-        let dataObjectFollow = await this.userFollowEventService.findOne(dataFollowFilter);
+        const dataObjectFollow = await this.userFollowEventService.findOne(dataFollowFilter);
 
         if (dataObjectFollow) {
           dataReturn = { ...dataReturn?.toObject(), ...{ is_like: true } };
@@ -498,16 +498,16 @@ export class EventHelper {
    */
   async handleUpdateEventByAdmin(dataUpdate: UpdateEventDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let requestObject = await this.eventService.findById(dataUpdate?._id);
-      let channelId = requestObject.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const requestObject = await this.eventService.findById(dataUpdate?._id);
+      const channelId = requestObject.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -523,16 +523,16 @@ export class EventHelper {
       }
 
       if (havePermission) {
-        let newCreateEvent = await this.processEventData(dataUpdate);
+        const newCreateEvent = await this.processEventData(dataUpdate);
         delete dataUpdate?.latitude;
         delete dataUpdate?.longitude;
-        let dataReturn = await this.eventService.update(newCreateEvent);
+        const dataReturn = await this.eventService.update(newCreateEvent);
 
         //Data
         //If have is_recurring
         if (dataUpdate?.open_date) {
           await this.eventIndexService.removeOne({ event_id: dataReturn?._id?.toString() });
-          let dataCreate = {
+          const dataCreate = {
             event_id: dataReturn?._id?.toString(),
             event_date: new Date(dataReturn?.open_date?.toString())?.toISOString(),
           };
@@ -565,16 +565,16 @@ export class EventHelper {
    */
   async removeEvent(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let requestObject = await this.eventService.findById(id);
-      let channelId = requestObject.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const requestObject = await this.eventService.findById(id);
+      const channelId = requestObject.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -591,7 +591,7 @@ export class EventHelper {
 
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.eventService.remove(id);
+        const dataReturn = await this.eventService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -630,7 +630,7 @@ export class EventHelper {
     }
 
     if (createEventData.type) {
-      let newId = new Types.ObjectId(createEventData.type);
+      const newId = new Types.ObjectId(createEventData.type);
       if (!newId) {
         throw new BadRequestException("Type is Note Object ID");
       }
@@ -638,7 +638,7 @@ export class EventHelper {
     }
 
     if (createEventData.city) {
-      let newId = new Types.ObjectId(createEventData.city);
+      const newId = new Types.ObjectId(createEventData.city);
       if (!newId) {
         throw new BadRequestException("City is Note Object ID");
       }
@@ -671,11 +671,11 @@ export class EventHelper {
    */
   async processFollowUser(dataFollow: CreateUserFollowEventDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         event_id: dataFollow.event_id.toString(),
       };
@@ -683,7 +683,7 @@ export class EventHelper {
       if (userObject?.follow_users) {
         dataFollowUpdate = _.union(userObject?.follow_event, dataFollowUpdate);
       }
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: userObject._id.toString(),
         follow_event: dataFollowUpdate,
       };
@@ -692,7 +692,7 @@ export class EventHelper {
       await this.eventService.handleUpdateInc(dataFollow.event_id.toString(), true);
 
       //Count Like
-      let dataReturn = await this.userFollowEventService.update(dataUpdate);
+      const dataReturn = await this.userFollowEventService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -711,37 +711,37 @@ export class EventHelper {
    */
   async processUnFollowUser(dataFollow: CreateUserFollowEventDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         event_id: dataFollow.event_id.toString(),
       };
-      let dataToCheck = await this.userFollowEventService.findOne(dataFindOne);
+      const dataToCheck = await this.userFollowEventService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        let dataReturn = await this.userFollowEventService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userFollowEventService.remove(dataToCheck._id.toString());
 
         if (userObject?.follow_event) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
-          let dataFollowUpdate = userObject?.follow_users?.filter((value: any, index: number) => {
+          const dataFollowUpdate = userObject?.follow_users?.filter((value: any, index: number) => {
             if (value?.toString() === dataFollow.event_id.toString()) {
               return false;
             } else {
               return true;
             }
           });
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             follow_event: dataFollowUpdate,
           };
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         } else {
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             follow_event: [],
           };

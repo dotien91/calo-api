@@ -67,7 +67,7 @@ export class RequestPollService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.requestPollModel.findById(id, projection);
+    const dataReturn = await this.requestPollModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -104,7 +104,7 @@ export class RequestPollService {
         sortObject = this.getSort(orderBy);
       }
 
-      let dataPopulate = {
+      const dataPopulate = {
         path: "users_choose",
         select:
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
@@ -126,7 +126,7 @@ export class RequestPollService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<RequestPoll[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.requestPollModel.find(condition, {}).exec();
   }
 
@@ -149,7 +149,7 @@ export class RequestPollService {
       if (!dataUpdate.user_id && !dataUpdate.request_id) {
         return null;
       }
-      let dataReturn = await this.requestPollModel.findOneAndUpdate(
+      const dataReturn = await this.requestPollModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, request_id: dataUpdate.request_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -174,7 +174,7 @@ export class RequestPollService {
       if (!dataUpdate.user_id && !dataUpdate.request_id) {
         return null;
       }
-      let dataReturn = await this.requestPollModel.findOneAndUpdate(
+      const dataReturn = await this.requestPollModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, request_id: dataUpdate.request_id },
         { $set: dataUpdate }
       );
@@ -195,7 +195,7 @@ export class RequestPollService {
    */
   public count = async (filter: FilterRequestPollDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.requestPollModel.estimatedDocumentCount();
       } else {
@@ -236,12 +236,12 @@ export class RequestPollService {
     limit: number,
     projection: any = {}
   ): Promise<RequestPoll[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.requestPollModel
+    const dataReturn = await this.requestPollModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -265,12 +265,12 @@ export class RequestPollService {
     limit: number,
     projection: any = {}
   ): Promise<RequestPoll[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "request_id",
       options: { strictPopulate: false },
       populate: [
@@ -282,7 +282,7 @@ export class RequestPollService {
         },
       ],
     };
-    let dataReturn: any = await this.requestPollModel
+    const dataReturn: any = await this.requestPollModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -294,9 +294,9 @@ export class RequestPollService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.request_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.request_id?.toObject() };
         delete dataItemToReturn.request_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -315,9 +315,9 @@ export class RequestPollService {
    * @returns
    */
   async filterWithId(filter: FilterRequestPollDto, page: number, limit: number): Promise<RequestPoll[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.requestPollModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.requestPollModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -335,12 +335,12 @@ export class RequestPollService {
    * @returns
    */
   async filterUser(filter: FilterRequestPollDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.requestPollModel
+    const dataReturn = await this.requestPollModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -368,7 +368,7 @@ export class RequestPollService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.requestPollModel.findOneAndUpdate(

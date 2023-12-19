@@ -42,17 +42,17 @@ export class PlanHelper {
    */
   async createPlan(createPlanData: CreatePlanDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "plan/create")) {
         createPlanData = { ...createPlanData, ...{ user_id: userObject?._id?.toString() } };
-        let dataHandleService = await this.handleServiceService.findById(createPlanData.service_id);
+        const dataHandleService = await this.handleServiceService.findById(createPlanData.service_id);
         if (dataHandleService) {
           createPlanData = { ...createPlanData, ...{ handle: dataHandleService.handle } };
-          let dataReturn = await this.planService.create(createPlanData);
+          const dataReturn = await this.planService.create(createPlanData);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -78,16 +78,16 @@ export class PlanHelper {
    */
   async updatePlan(updatePlanData: UpdatePlanDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "plan/update")) {
-        let dataHandleService = await this.handleServiceService.findById(updatePlanData.service_id);
+        const dataHandleService = await this.handleServiceService.findById(updatePlanData.service_id);
         if (dataHandleService) {
           updatePlanData = { ...updatePlanData, ...{ handle: dataHandleService.handle } };
-          let dataReturn = await this.planService.update(updatePlanData);
+          const dataReturn = await this.planService.update(updatePlanData);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -112,7 +112,7 @@ export class PlanHelper {
    */
   async getListPlan(query: ListPlanDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -120,8 +120,8 @@ export class PlanHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -135,23 +135,23 @@ export class PlanHelper {
       delete query.limit;
       delete query.page;
       delete query.order_by;
-      let dataReturn = await this.planService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.planService.filter(dataToFilter, orderByOBject, page, limit);
 
       if (query?.service_id && userObject?._id) {
-        let channelId = req?.channel_id || "";
-        let subscribe = await this.subscribeService.filter(
+        const channelId = req?.channel_id || "";
+        const subscribe = await this.subscribeService.filter(
           { user_id: userObject?._id?.toString(), service_id: query?.service_id?.toString(), channel_id: channelId },
           { createdAt: "DESC" },
           1,
           1
         );
         if (subscribe && subscribe[0]) {
-          for (let dataReturnIndex in dataReturn) {
+          for (const dataReturnIndex in dataReturn) {
             dataReturn[dataReturnIndex].trial_day = 0;
           }
         }
       }
-      let dataCount = await this.planService.count(dataToFilter);
+      const dataCount = await this.planService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -170,14 +170,14 @@ export class PlanHelper {
    */
   async removePlan(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "plan/delete")) {
         //Check Permission
-        let dataReturn = await this.planService.remove(id);
+        const dataReturn = await this.planService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -199,17 +199,17 @@ export class PlanHelper {
    */
   async handleGetDetailPlan(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "plan/list")) {
-        let dataFilter = {
+        const dataFilter = {
           _id: id,
         };
         //Check Permission
-        let dataReturn = await this.planService.findOne(dataFilter);
+        const dataReturn = await this.planService.findOne(dataFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

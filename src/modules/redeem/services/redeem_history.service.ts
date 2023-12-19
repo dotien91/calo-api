@@ -65,7 +65,7 @@ export class RedeemHistoryService {
    * @returns
    */
   async filter(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -76,7 +76,7 @@ export class RedeemHistoryService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-    let dataReturn = await this.redeemModel
+    const dataReturn = await this.redeemModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -100,13 +100,13 @@ export class RedeemHistoryService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.redeemModel
+    const projection = {};
+    const dataReturn = await this.redeemModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -128,7 +128,7 @@ export class RedeemHistoryService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       let sortObject = {};
       let projection = {};
       if (filter.search) {
@@ -152,7 +152,7 @@ export class RedeemHistoryService {
    */
   async create(createUser: CreateRedeemHistoryDto) {
     const createdPost = new this.redeemModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -162,9 +162,9 @@ export class RedeemHistoryService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -207,7 +207,7 @@ export class RedeemHistoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

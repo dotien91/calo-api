@@ -28,21 +28,21 @@ export class ChannelLevel {
     default: 1,
     nullable: false,
   })
-  level_number: Number;
+  level_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_member: Number;
+  total_member: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  level_point: Number;
+  level_point: number;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: Channel;
@@ -52,7 +52,7 @@ export class ChannelLevel {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
   media_id: ChatMedia;

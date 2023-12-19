@@ -47,7 +47,7 @@ export class ClockHelper {
    */
   async createNewClock(createClockData: CreateClockDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataCreate = await this.clockService.create(createClockData);
+      const dataCreate = await this.clockService.create(createClockData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -62,23 +62,23 @@ export class ClockHelper {
    */
   async handleSendNotificationClock() {
     try {
-      let currentTime = new Date();
-      let timeString = currentTime.getHours() + ":" + currentTime.getMinutes();
-      let from = currentTime.toISOString();
+      const currentTime = new Date();
+      const timeString = currentTime.getHours() + ":" + currentTime.getMinutes();
+      const from = currentTime.toISOString();
       currentTime.setTime(currentTime.getTime() + 1000 * 60);
-      let to = currentTime.toISOString();
+      const to = currentTime.toISOString();
       // console.log(from, " - ", to);
-      let dataFilter = {
+      const dataFilter = {
         from: from?.toString(),
         to: to?.toString(),
         status: "enable",
       };
 
-      let dataClock = await this.clockService.filter(dataFilter, {}, 1, 1000);
+      const dataClock = await this.clockService.filter(dataFilter, {}, 1, 1000);
       // console.log(dataClock, 'dataClock');
       if (dataClock && dataClock?.length) {
-        let deviceSignature = [];
-        for (let itemClock of dataClock) {
+        const deviceSignature = [];
+        for (const itemClock of dataClock) {
           deviceSignature.push(itemClock?.device_id?.device_signature);
         }
         //Send notification
@@ -94,7 +94,7 @@ export class ClockHelper {
       deviceIds = _.uniq(deviceIds);
 
       if (deviceIds && deviceIds.length) {
-        let dataNotification = {
+        const dataNotification = {
           title: "Alarm " + timeString,
           content: "Alarm " + timeString,
           param: JSON.stringify({}),
@@ -135,7 +135,7 @@ export class ClockHelper {
           },
         };
         const urlLogin = "https://fcm.googleapis.com/fcm/send";
-        let dataReturn = await axios
+        const dataReturn = await axios
           .post(urlLogin, JSON.stringify(data), config)
           .then((response) => {
             if (response?.data) {
@@ -171,18 +171,18 @@ export class ClockHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.clockService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.clockService.count(dataToFilter);
+      const dataReturn = await this.clockService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.clockService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -218,7 +218,7 @@ export class ClockHelper {
       } else {
         throw new ForbiddenException("Not found!");
       }
-      let dataReturn = await this.clockService.findOne(dataToFilter);
+      const dataReturn = await this.clockService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -237,7 +237,7 @@ export class ClockHelper {
    */
   async handleUpdateClockByAdmin(dataUpdate: UpdateClockDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.clockService.update(dataUpdate);
+      const dataReturn = await this.clockService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -256,7 +256,7 @@ export class ClockHelper {
    */
   async handleDeleteClock(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.clockService.remove(id);
+      const dataReturn = await this.clockService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -276,11 +276,11 @@ export class ClockHelper {
    */
   async createNewClockHistory(createClockHistoryData: CreateClockHistoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataToAdd: any = createClockHistoryData;
-      let dataCreate: any = await this.clockHistoryService.create(dataToAdd);
+      const dataToAdd: any = createClockHistoryData;
+      const dataCreate: any = await this.clockHistoryService.create(dataToAdd);
 
       if (dataCreate) {
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: createClockHistoryData?.clock_id,
           last_clock_history: dataCreate?._id?.toString(),
         };
@@ -302,7 +302,7 @@ export class ClockHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -327,17 +327,17 @@ export class ClockHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.clockHistoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.clockHistoryService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -357,7 +357,7 @@ export class ClockHelper {
   async handleGetDetailClockHistory(id: string, res: Response, req: ExpressRequestDto) {
     try {
       //Check Permission
-      let dataReturn = await this.clockHistoryService.findById(id.toString());
+      const dataReturn = await this.clockHistoryService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -376,7 +376,7 @@ export class ClockHelper {
    */
   async removeClockHistory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.clockHistoryService.remove(id);
+      const dataReturn = await this.clockHistoryService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -395,9 +395,9 @@ export class ClockHelper {
    */
   async handleUpdateClockHistoryByAdmin(dataUpdate: UpdateClockHistoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataToAdd: any = dataUpdate;
+      const dataToAdd: any = dataUpdate;
 
-      let dataReturn = await this.clockHistoryService.update(dataToAdd);
+      const dataReturn = await this.clockHistoryService.update(dataToAdd);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

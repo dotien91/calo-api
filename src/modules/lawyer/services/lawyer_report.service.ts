@@ -48,7 +48,7 @@ export class LawyerReportService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -74,7 +74,7 @@ export class LawyerReportService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.lawyerReportModel.findByIdAndUpdate(
+      const dataReturn = await this.lawyerReportModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

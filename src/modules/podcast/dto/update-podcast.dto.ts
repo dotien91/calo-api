@@ -7,5 +7,5 @@ export class UpdatePodcastDto extends PartialType(CreatePodcastDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 }

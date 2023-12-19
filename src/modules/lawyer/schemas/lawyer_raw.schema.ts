@@ -22,14 +22,14 @@ export class LawyerRaw {
     default: "",
     index: true,
   })
-  url: String;
+  url: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  data: String;
+  data: string;
 }
 
 export const LawyerRawSchema = SchemaFactory.createForClass(LawyerRaw);

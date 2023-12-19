@@ -67,7 +67,7 @@ export class ChannelLikeService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.channelLikeModel.findById(id, projection);
+    const dataReturn = await this.channelLikeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -98,7 +98,7 @@ export class ChannelLikeService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChannelLike[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.channelLikeModel.find(condition, {}).exec();
   }
 
@@ -121,7 +121,7 @@ export class ChannelLikeService {
       if (!dataUpdate.user_id && !dataUpdate.video_id) {
         return null;
       }
-      let dataReturn = await this.channelLikeModel.findOneAndUpdate(
+      const dataReturn = await this.channelLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, video_id: dataUpdate.video_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -146,7 +146,7 @@ export class ChannelLikeService {
       if (!dataUpdate.user_id && !dataUpdate.video_id) {
         return null;
       }
-      let dataReturn = await this.channelLikeModel.findOneAndUpdate(
+      const dataReturn = await this.channelLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, video_id: dataUpdate.video_id },
         { $set: dataUpdate }
       );
@@ -167,7 +167,7 @@ export class ChannelLikeService {
    */
   public count = async (filter: FilterLikeChannelDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.channelLikeModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class ChannelLikeService {
     limit: number,
     projection: any = {}
   ): Promise<ChannelLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelLikeModel
+    const dataReturn = await this.channelLikeModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class ChannelLikeService {
     limit: number,
     projection: any = {}
   ): Promise<ChannelLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "video_id",
       options: { strictPopulate: false },
       populate: [
@@ -254,7 +254,7 @@ export class ChannelLikeService {
         },
       ],
     };
-    let dataReturn: any = await this.channelLikeModel
+    const dataReturn: any = await this.channelLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -266,9 +266,9 @@ export class ChannelLikeService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
         delete dataItemToReturn.video_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -287,9 +287,9 @@ export class ChannelLikeService {
    * @returns
    */
   async filterWithId(filter: FilterLikeChannelDto, page: number, limit: number): Promise<ChannelLike[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.channelLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.channelLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -307,12 +307,12 @@ export class ChannelLikeService {
    * @returns
    */
   async filterUser(filter: FilterLikeChannelDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelLikeModel
+    const dataReturn = await this.channelLikeModel
       .find(condition)
       .populate({
         path: "user_id",

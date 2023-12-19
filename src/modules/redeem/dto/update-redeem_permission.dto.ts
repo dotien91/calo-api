@@ -7,5 +7,5 @@ export class UpdateRedeemPermissionDto extends PartialType(CreateRedeemPermissio
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 }

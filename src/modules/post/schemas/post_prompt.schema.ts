@@ -28,7 +28,7 @@ export class PostPrompt {
     nullable: false,
     index: true,
   })
-  post_language: String;
+  post_language: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true })
   post_category: PostCategory;
@@ -38,28 +38,28 @@ export class PostPrompt {
     default: "",
     nullable: false,
   })
-  text_to_view: String;
+  text_to_view: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  text_to_ai: String;
+  text_to_ai: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  text_to_image: String;
+  text_to_image: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     nullable: false,
   })
-  placeholder: String[];
+  placeholder: string[];
 
   @Prop({
     type: String,
@@ -67,28 +67,28 @@ export class PostPrompt {
     nullable: false,
     index: true,
   })
-  post_type: String;
+  post_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_parent: String;
+  post_parent: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String;
+  post_status: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  post_view: Number;
+  post_view: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,

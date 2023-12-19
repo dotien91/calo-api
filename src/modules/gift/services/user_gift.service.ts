@@ -59,12 +59,12 @@ export class UserGiftService {
    * @returns
    */
   async filter(filter: SearchUserGiftDto, sortBy: SortByUserGiftDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let populateObject = {
+    const populateObject = {
       path: "gift_id",
       populate: [
         {
@@ -72,7 +72,7 @@ export class UserGiftService {
         },
       ],
     };
-    let dataReturn = await this.userUserGiftModel
+    const dataReturn = await this.userUserGiftModel
       .find(condition)
       .populate(
         "user_id",
@@ -93,7 +93,7 @@ export class UserGiftService {
    */
   public count = async (filter: SearchUserGiftDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userUserGiftModel.estimatedDocumentCount();
       } else {
@@ -128,7 +128,7 @@ export class UserGiftService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<UserGift> {
-    let populateObject = {
+    const populateObject = {
       path: "gift_id",
       populate: [
         {
@@ -158,7 +158,7 @@ export class UserGiftService {
       if (!dataUpdate._id) {
         return null;
       }
-      let populateObject = {
+      const populateObject = {
         path: "gift_id",
         populate: [
           {
@@ -166,7 +166,7 @@ export class UserGiftService {
           },
         ],
       };
-      let dataReturn = await this.userUserGiftModel
+      const dataReturn = await this.userUserGiftModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { upsert: true, new: true, setDefaultsOnInsert: true })
         .populate(populateObject)
         .populate(

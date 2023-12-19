@@ -55,7 +55,7 @@ export class EventService {
 
     if (filter.language) {
       if (this.isJsonString(filter.language)) {
-        let dataFilter = JSON.parse(filter.language);
+        const dataFilter = JSON.parse(filter.language);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { language: { $in: dataFilter } });
         }
@@ -66,7 +66,7 @@ export class EventService {
 
     if (filter.type) {
       if (this.isJsonString(filter.type)) {
-        let dataFilter = JSON.parse(filter.type);
+        const dataFilter = JSON.parse(filter.type);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { type: { $in: dataFilter } });
         }
@@ -77,7 +77,7 @@ export class EventService {
 
     if (filter.category) {
       if (this.isJsonString(filter.category)) {
-        let dataFilter = JSON.parse(filter.category);
+        const dataFilter = JSON.parse(filter.category);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { category: { $in: dataFilter } });
         }
@@ -114,7 +114,7 @@ export class EventService {
 
     if (filter.price) {
       if (filter.price.indexOf(",") !== -1) {
-        let dataObject = filter.price?.split(",");
+        const dataObject = filter.price?.split(",");
         if (dataObject && dataObject[0] && dataObject[1]) {
           condition = Object.assign(condition, {
             $or: [
@@ -177,14 +177,14 @@ export class EventService {
    */
   getDistanceFromLatLonInMeter(lat1: number, lon1: number, lat2: number, lon2: number) {
     try {
-      let R = 6371; // Radius of the earth in km
-      let dLat = this.deg2rad(lat2 - lat1); // deg2rad below
-      let dLon = this.deg2rad(lon2 - lon1);
-      let a =
+      const R = 6371; // Radius of the earth in km
+      const dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+      const dLon = this.deg2rad(lon2 - lon1);
+      const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      let d = R * c * 1000; // Distance in meter
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c * 1000; // Distance in meter
       return d;
     } catch (error) {
       return 0;
@@ -209,7 +209,7 @@ export class EventService {
    * @returns
    */
   async filter(filter: SearchEventDto, sortBy: SortByEventDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     let projection = {};
 
@@ -222,7 +222,7 @@ export class EventService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.eventModel
+    const dataReturn = await this.eventModel
       .find(condition, projection)
       .sort(sortObject)
       .populate("public_album")
@@ -238,11 +238,11 @@ export class EventService {
       .limit(limit)
       .exec();
     if (dataReturn.length > 0) {
-      let dataReturnAfter = [];
-      for (let eventItem of dataReturn) {
+      const dataReturnAfter = [];
+      for (const eventItem of dataReturn) {
         if (eventItem?.toObject()?._id?.toString()) {
-          let dataToProcess = eventItem.toObject();
-          let userLocation = eventItem.toObject()?.loc?.coordinates;
+          const dataToProcess = eventItem.toObject();
+          const userLocation = eventItem.toObject()?.loc?.coordinates;
           let distance = 0;
           if (userLocation && userLocation.length && userLocation[0] && userLocation[0]) {
             if (filter.latitude && filter.longitude) {
@@ -297,7 +297,7 @@ export class EventService {
    */
   public count = async (filter: SearchEventDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.eventModel.estimatedDocumentCount();
       } else {
@@ -317,7 +317,7 @@ export class EventService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -333,7 +333,7 @@ export class EventService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -371,7 +371,7 @@ export class EventService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.eventModel
+      const dataReturn = await this.eventModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { upsert: true, new: true, setDefaultsOnInsert: true })
         .populate("public_album")
         .populate(

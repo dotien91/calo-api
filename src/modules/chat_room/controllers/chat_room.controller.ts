@@ -63,14 +63,14 @@ export class ChatRoomController {
     @Response() res: ExpressResponse,
     @Param("key") dataKey: string
   ) {
-    let hashPassword = new ConfigService().get<string>("HASH_PASSWORD_CHAT");
+    const hashPassword = new ConfigService().get<string>("HASH_PASSWORD_CHAT");
     if (dataKey === hashPassword) {
       try {
-        let userObject = await this.appUserService.findOne({ _id: dataCreateRoom.user_id });
+        const userObject = await this.appUserService.findOne({ _id: dataCreateRoom.user_id });
         if (!userObject) {
           throw new BadRequestException("User create Not exist!");
         }
-        let dataCreateReturn = await this.chatRoomHelper.handleCreateRoom(
+        const dataCreateReturn = await this.chatRoomHelper.handleCreateRoom(
           userObject,
           dataCreateRoom.partner_id,
           dataCreateRoom.chat_type,
@@ -98,7 +98,7 @@ export class ChatRoomController {
     @Response() res: ExpressResponse
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
@@ -106,7 +106,7 @@ export class ChatRoomController {
         throw new BadRequestException("Can't create new Room!");
       }
       if (createChatRoomDto.partner_id) {
-        let dataCreateReturn = await this.chatRoomHelper.handleCreateRoom(
+        const dataCreateReturn = await this.chatRoomHelper.handleCreateRoom(
           userObject,
           createChatRoomDto.partner_id,
           createChatRoomDto.chat_type,
@@ -131,7 +131,7 @@ export class ChatRoomController {
   @Get("/list")
   async findAll(@Req() req: ExpressRequestDto, @Query() query: GetChatRoomListDto, @Res() res: ExpressResponse) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
@@ -145,7 +145,7 @@ export class ChatRoomController {
   @Get("/count-reply")
   async countReply(@Req() req: ExpressRequestDto, @Query() query: GetChatRoomListDto, @Res() res: ExpressResponse) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
@@ -180,7 +180,7 @@ export class ChatRoomController {
       if (!id) {
         throw new BadRequestException("Room ID not exist!");
       }
-      let ids = id.split(",");
+      const ids = id.split(",");
       return this.chatRoomHelper.handleJoinGroup(ids, res, req);
     } catch (error) {
       this.logger.log("View Room Error: " + JSON.stringify(error));
@@ -191,18 +191,18 @@ export class ChatRoomController {
   @Get(":id")
   async findOne(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: ExpressResponse) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      let dataFilter = {
+      const dataFilter = {
         user_id: userObject._id.toString(),
         chat_room_id: id,
       };
       //Check User Permission in Room
       let dataRoomReturn: any = await this.chatRoomUserOptionService.findOne(dataFilter);
       if (!dataRoomReturn) {
-        let dataRoom = await this.chatRoomService.findOneRoom({ _id: id });
+        const dataRoom = await this.chatRoomService.findOneRoom({ _id: id });
         if (Number(dataRoom?.room_private) === 1) {
           throw new BadRequestException("User role have exist in this Room!");
         } else {
@@ -246,36 +246,36 @@ export class ChatRoomController {
   @Get("/member/:id")
   async findMemberByRoom(@Param("id") id: string, @Req() req, @Res() res, @Query() query: GetChatRoomListDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
 
-      let page = query?.page ? query?.page : 1;
+      const page = query?.page ? query?.page : 1;
 
-      let limit = query?.limit || 20;
+      const limit = query?.limit || 20;
       let orderBy = <"ASC" | "DESC">"DESC";
       if (query?.order_by) {
         orderBy = query?.order_by;
       }
-      let dataFilter = {
+      const dataFilter = {
         chat_room_id: id,
       };
-      let dataOrder = {
+      const dataOrder = {
         createdAt: orderBy,
       };
 
       //Check User In Room
-      let dataUserRoomFilter = {
+      const dataUserRoomFilter = {
         chat_room_id: id,
         user_id: userObject._id.toString(),
       };
-      let dataChatUserOption = await this.chatRoomUserOptionService.findOne(dataUserRoomFilter);
+      const dataChatUserOption = await this.chatRoomUserOptionService.findOne(dataUserRoomFilter);
       if (!dataChatUserOption) {
         throw new BadRequestException("You not in Room!");
       }
       //Check User Permission in Room
-      let dataMember = await this.chatRoomUserOptionService.filterMember(dataFilter, dataOrder, page, limit);
+      const dataMember = await this.chatRoomUserOptionService.filterMember(dataFilter, dataOrder, page, limit);
 
       return res.status(HttpStatus.OK).json(dataMember);
     } catch (error) {

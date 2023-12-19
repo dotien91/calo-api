@@ -69,7 +69,7 @@ export class TopicService {
    * @returns
    */
   async filter(filter: SearchTopicDto, sortBy: SortByTopicDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -82,7 +82,7 @@ export class TopicService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.topicModel
+    const dataReturn = await this.topicModel
       .find(condition)
       .populate(
         "user_id",
@@ -105,7 +105,7 @@ export class TopicService {
    */
   public count = async (filter: SearchTopicDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.topicModel.estimatedDocumentCount();
       } else {
@@ -123,7 +123,7 @@ export class TopicService {
    */
   async create(createUser: any) {
     const createdTopic = new this.topicModel(createUser);
-    let dataCreate = await createdTopic.save();
+    const dataCreate = await createdTopic.save();
     return dataCreate;
   }
 
@@ -133,9 +133,9 @@ export class TopicService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -169,7 +169,7 @@ export class TopicService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -204,7 +204,7 @@ export class TopicService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.topicModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.topicModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

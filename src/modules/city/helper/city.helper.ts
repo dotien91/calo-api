@@ -55,13 +55,13 @@ export class CityHelper {
    */
   async createNewCity(createCityData: CreateCityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let newDataCreate = await this.processEventData(createCityData);
-      let dataCreate = await this.cityService.create(newDataCreate);
+      const userId = userObject._id.toString();
+      const newDataCreate = await this.processEventData(createCityData);
+      const dataCreate = await this.cityService.create(newDataCreate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -72,17 +72,17 @@ export class CityHelper {
   }
 
   async processAvatar(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-    let limit = query.limit ? query.limit : 1000;
-    let page = query.page ? query.page : 1;
-    let orderByOBject = {};
+    const limit = query.limit ? query.limit : 1000;
+    const page = query.page ? query.page : 1;
+    const orderByOBject = {};
     //let dataReturn = await this.cityService.filter({ capital: ["admin", "primary"] }, orderByOBject, page, limit);
-    let dataReturn = await this.userOptionService.findAll();
+    const dataReturn = await this.userOptionService.findAll();
     let countUpdate = 0;
-    for (let dataItem of dataReturn) {
+    for (const dataItem of dataReturn) {
       if (dataItem?.loc && dataItem?.loc.coordinates) {
-        let longitude = dataItem?.loc?.coordinates[0];
-        let latitude = dataItem?.loc?.coordinates[1];
-        let dataToUpdate = {
+        const longitude = dataItem?.loc?.coordinates[0];
+        const latitude = dataItem?.loc?.coordinates[1];
+        const dataToUpdate = {
           latitude: latitude,
           longitude: longitude,
           user_id: dataItem?.user_id?.toString(),
@@ -99,22 +99,22 @@ export class CityHelper {
   }
 
   async processCityAvatar(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-    let limit = query.limit ? query.limit : 1;
-    let page = query.page ? query.page : 1;
-    let orderByOBject = {};
-    let dataReturn = await this.cityService.filter(
+    const limit = query.limit ? query.limit : 1;
+    const page = query.page ? query.page : 1;
+    const orderByOBject = {};
+    const dataReturn = await this.cityService.filter(
       { capital: ["admin", "primary"], have_group: 1 },
       orderByOBject,
       page,
       limit
     );
-    for (let dataItem of dataReturn) {
-      let cityImage = dataItem?.city_image;
+    for (const dataItem of dataReturn) {
+      const cityImage = dataItem?.city_image;
 
       if (!cityImage) {
         continue;
       }
-      let dataUpdate = {
+      const dataUpdate = {
         _id: dataItem.chat_group,
         room_image: cityImage,
       };
@@ -128,16 +128,16 @@ export class CityHelper {
   }
 
   async processThumbnail(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-    let limit = query.limit ? query.limit : 1000;
-    let page = query.page ? query.page : 1;
-    let orderByOBject = {};
-    let dataReturn = await this.cityService.filter({ capital: ["admin", "primary"] }, orderByOBject, page, limit);
+    const limit = query.limit ? query.limit : 1000;
+    const page = query.page ? query.page : 1;
+    const orderByOBject = {};
+    const dataReturn = await this.cityService.filter({ capital: ["admin", "primary"] }, orderByOBject, page, limit);
     // let dataReturn = await this.appUserService.findAll();
     let countUpdate = 0;
-    for (let dataItem of dataReturn) {
-      let dataCount = await this.userOptionService.count({ city: dataItem._id.toString() });
+    for (const dataItem of dataReturn) {
+      const dataCount = await this.userOptionService.count({ city: dataItem._id.toString() });
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: dataItem._id.toString(),
         user_number: dataCount,
       };
@@ -152,15 +152,15 @@ export class CityHelper {
   }
 
   async processPeople(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-    let limit = query.limit ? query.limit : 1000;
-    let page = query.page ? query.page : 1;
-    let orderByOBject = {};
+    const limit = query.limit ? query.limit : 1000;
+    const page = query.page ? query.page : 1;
+    const orderByOBject = {};
     //let dataReturn = await this.cityService.filter({ capital: ["admin", "primary"] }, orderByOBject, page, limit);
-    let dataReturn = await this.userOptionService.findAll();
+    const dataReturn = await this.userOptionService.findAll();
     let countUpdate = 0;
-    for (let dataItem of dataReturn) {
+    for (const dataItem of dataReturn) {
       if (dataItem.city) {
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataItem.user_id.toString(),
           city: dataItem.city,
         };
@@ -176,7 +176,7 @@ export class CityHelper {
   }
 
   async processCountry(res: Response, req: ExpressRequestDto) {
-    let topCountry = [
+    const topCountry = [
       {
         iso2: "US",
         name: "United States",
@@ -215,18 +215,18 @@ export class CityHelper {
   }
 
   async processCity(query: CrawlCityDto, res: Response, req: ExpressRequestDto) {
-    let limit = query.limit ? query.limit : 1000;
-    let page = query.page ? query.page : 1;
-    let orderByOBject = {};
+    const limit = query.limit ? query.limit : 1000;
+    const page = query.page ? query.page : 1;
+    const orderByOBject = {};
     //let dataReturn = await this.cityService.filter({ capital: ["admin", "primary"] }, orderByOBject, page, limit);
-    let dataReturn = await this.userOptionService.findAll();
+    const dataReturn = await this.userOptionService.findAll();
     let countUpdate = 0;
-    for (let dataItem of dataReturn) {
+    for (const dataItem of dataReturn) {
       if (dataItem.loc && dataItem.loc?.coordinates) {
-        let cityFind = await this.cityService.filter({ point: dataItem.loc?.coordinates }, {}, 1, 1);
+        const cityFind = await this.cityService.filter({ point: dataItem.loc?.coordinates }, {}, 1, 1);
         if (cityFind && cityFind[0]) {
           //Update user
-          let dataUpdate = {
+          const dataUpdate = {
             user_id: dataItem.user_id,
             city: cityFind[0]._id.toString(),
           };
@@ -306,28 +306,28 @@ export class CityHelper {
    */
   async getCityListByAdmin(query: ListCityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "city/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.cityService.count(dataToFilter);
+        const dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.cityService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -350,18 +350,18 @@ export class CityHelper {
    */
   async getCityListByUser(query: ListCityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -375,15 +375,15 @@ export class CityHelper {
         dataToFilter = { ...dataToFilter, ...{ unset: [userObject?.city?.toString()] } };
       }
 
-      let dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit);
       //let dataCount = await this.cityService.count(dataToFilter);
-      let dataFinalReturn = [];
+      const dataFinalReturn = [];
       if (dataReturn && dataReturn.length) {
-        for (let dataPrepareItem of dataReturn) {
+        for (const dataPrepareItem of dataReturn) {
           let isJoin = false;
-          let joinCityObject = [];
+          const joinCityObject = [];
           if (userObject?.join_cities && userObject?.join_cities?.length) {
-            for (let followItem of userObject?.join_cities) {
+            for (const followItem of userObject?.join_cities) {
               joinCityObject.push(followItem.toString());
             }
           }
@@ -402,7 +402,7 @@ export class CityHelper {
         });
         if (!cityObject) {
           //Find nearby
-          let filterCity = await this.cityService.filter(
+          const filterCity = await this.cityService.filter(
             { is_nearby: "1", latitude: query.latitude, longitude: query.longitude },
             {},
             1,
@@ -414,7 +414,7 @@ export class CityHelper {
         }
 
         if (cityObject) {
-          let oldCity = userObject?.city?.toString();
+          const oldCity = userObject?.city?.toString();
           if (userObject?.city?.toString() !== cityObject?._id?.toString()) {
             //Update New City
             let dataUpdate = {
@@ -458,18 +458,18 @@ export class CityHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit, {
+      const dataReturn = await this.cityService.filter(dataToFilter, orderByOBject, page, limit, {
         city_name: 1,
         city_ascii: 1,
         country: 1,
@@ -495,13 +495,13 @@ export class CityHelper {
    */
   async handleGetDetailCity(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.cityService.findById(id.toString());
+      const dataReturn = await this.cityService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -551,15 +551,15 @@ export class CityHelper {
    */
   async handleUpdateCityByAdmin(dataUpdate: UpdateCityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "city/update")) {
-        let newDataCreate = await this.processEventData(dataUpdate);
-        let dataReturn = await this.cityService.update(newDataCreate);
+        const newDataCreate = await this.processEventData(dataUpdate);
+        const dataReturn = await this.cityService.update(newDataCreate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -581,11 +581,11 @@ export class CityHelper {
    */
   async processJoinUser(dataFollow: CreateUserJoinCityDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         city_id: dataFollow.city_id.toString(),
       };
@@ -606,7 +606,7 @@ export class CityHelper {
       await this.cityService.handleUpdateInc(dataFollow.city_id.toString(), true);
 
       //Count Like
-      let dataReturn = await this.userJoinCityService.update(dataUpdate);
+      const dataReturn = await this.userJoinCityService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -625,23 +625,23 @@ export class CityHelper {
    */
   async processUnJoinUser(dataFollow: CreateUserJoinCityDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         city_id: dataFollow.city_id.toString(),
       };
-      let dataToCheck = await this.userJoinCityService.findOne(dataFindOne);
+      const dataToCheck = await this.userJoinCityService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        let dataReturn = await this.userJoinCityService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userJoinCityService.remove(dataToCheck._id.toString());
 
         if (userObject?.join_cities) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
-          let dataFollowUpdate = userObject?.join_cities?.filter((value: any, index: number) => {
+          const dataFollowUpdate = userObject?.join_cities?.filter((value: any, index: number) => {
             if (value?.toString() === dataFollow.city_id.toString()) {
               return false;
             } else {

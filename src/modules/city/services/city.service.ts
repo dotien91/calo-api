@@ -50,7 +50,7 @@ export class CityService {
     if (filter.capital) {
       condition = Object.assign(condition, { capital: { $in: filter.capital } });
     }
-    let minDistanceForFilter = 0;
+    const minDistanceForFilter = 0;
 
     if (filter.point) {
       condition = Object.assign(condition, {
@@ -78,8 +78,8 @@ export class CityService {
     }
 
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       // console.log(dataRegex);
       // condition = Object.assign(condition, { $text: { $search: dataRegex } });
       condition = Object.assign(condition, { $or: [{ city_name: dataRegex }, { localname: dataRegex }] });
@@ -110,7 +110,7 @@ export class CityService {
    * @returns
    */
   async filter(filter: ListCityDto, sortBy: SortByCityDto, page: number, limit: number, projection: any = {}) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy && !parseFloat(filter?.latitude?.toString()) && !parseFloat(filter?.longitude?.toString())) {
       sortObject = this.getSort(sortBy);
@@ -123,20 +123,20 @@ export class CityService {
       // projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.cityModel
+    const dataReturn = await this.cityModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
       .exec();
-    let dataReturnAfter = [];
+    const dataReturnAfter = [];
     if (dataReturn.length > 0) {
-      for (let userItem of dataReturn) {
+      for (const userItem of dataReturn) {
         if (userItem?.toObject()?._id?.toString()) {
           //@ts-ignore
-          let dataUserId = userItem.toObject().user_id;
-          let dataToProcess = userItem.toObject();
-          let userLocation = userItem.toObject()?.loc?.coordinates;
+          const dataUserId = userItem.toObject().user_id;
+          const dataToProcess = userItem.toObject();
+          const userLocation = userItem.toObject()?.loc?.coordinates;
           let distance = 0;
           if (userLocation && userLocation.length && userLocation[0] && userLocation[0]) {
             if (filter.latitude && filter.longitude) {
@@ -165,7 +165,7 @@ export class CityService {
    */
   public count = async (filter: ListCityDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.cityModel.estimatedDocumentCount();
       } else {
@@ -183,7 +183,7 @@ export class CityService {
    */
   async create(createUser: CreateCityDto) {
     const createdCity = new this.cityModel(createUser);
-    let dataCreate = await createdCity.save();
+    const dataCreate = await createdCity.save();
     return dataCreate;
   }
 
@@ -193,9 +193,9 @@ export class CityService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -217,11 +217,11 @@ export class CityService {
    * @returns
    */
   async findOneWithFilter(dataToSearch: ListCityDto): Promise<City> {
-    let condition = await this.getCondition(dataToSearch);
-    let projection = {};
+    const condition = await this.getCondition(dataToSearch);
+    const projection = {};
     let sortObject = {};
     sortObject = Object.assign(sortObject, { user_number: -1 });
-    let dataReturn = await this.cityModel.findOne(condition, projection).sort(sortObject).exec();
+    const dataReturn = await this.cityModel.findOne(condition, projection).sort(sortObject).exec();
     return dataReturn;
   }
 
@@ -243,7 +243,7 @@ export class CityService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -260,14 +260,14 @@ export class CityService {
   }
 
   getDistanceFromLatLonInMeter(lat1: number, lon1: number, lat2: number, lon2: number) {
-    let R = 6371; // Radius of the earth in km
-    let dLat = this.deg2rad(lat2 - lat1); // deg2rad below
-    let dLon = this.deg2rad(lon2 - lon1);
-    let a =
+    const R = 6371; // Radius of the earth in km
+    const dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    let d = R * c * 1000; // Distance in meter
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c * 1000; // Distance in meter
     return d;
   }
 
@@ -285,7 +285,7 @@ export class CityService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.cityModel.findByIdAndUpdate(
+      const dataReturn = await this.cityModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate, $unset: { wiki_result: 1, raw_search: 1, raw_result: 1 } },
         { new: false, multi: true }

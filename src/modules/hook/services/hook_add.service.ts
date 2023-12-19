@@ -66,8 +66,8 @@ export class EventHookAdderService {
             1,
             1000
           );
-          for (let challenge of challengess) {
-            let currentTime = new Date();
+          for (const challenge of challengess) {
+            const currentTime = new Date();
             if (
               new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime ||
               new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime
@@ -75,7 +75,7 @@ export class EventHookAdderService {
               continue;
             }
             const channel = await this.channelService.findById(data?.channel_id);
-            let foundGameSetting = channel.point_data.find((obj) => obj.key === data?.type_action);
+            const foundGameSetting = channel.point_data.find((obj) => obj.key === data?.type_action);
             if (foundGameSetting) {
               data.point_value = Number(foundGameSetting.value);
             }
@@ -117,8 +117,8 @@ export class EventHookAdderService {
             1,
             1000
           );
-          for (let challenge of challengess) {
-            let currentTime = new Date();
+          for (const challenge of challengess) {
+            const currentTime = new Date();
             if (
               new Date(challenge?.challenge_id?.start_time?.toString()) > currentTime ||
               new Date(challenge?.challenge_id?.end_time?.toString()) < currentTime
@@ -167,14 +167,14 @@ export class EventHookAdderService {
         const oldData = data?.oldData;
 
         const today = new Date();
-        let redeemPermissions = await this.redeemPermissionModel.find({
+        const redeemPermissions = await this.redeemPermissionModel.find({
           user_id: new Types.ObjectId(user_id),
           start_date: today.toLocaleDateString("en-US"),
           "point_data.action_name": typeAction,
           status: "process",
         });
         console.log(redeemPermissions?.length);
-        for (let redeemPermission of redeemPermissions) {
+        for (const redeemPermission of redeemPermissions) {
           // plus point process and check redeemPermission complete
           let checkPermission = true;
           let isSendSocket = false;
@@ -282,7 +282,7 @@ export class EventHookAdderService {
 
                 //send gift for user
                 if (redeemMission?.gift_data?.length > 0) {
-                  for (let gift of redeemMission?.gift_data) {
+                  for (const gift of redeemMission?.gift_data) {
                     if (gift._id) {
                       await this.giftHelper.handleAutoGiveGift({
                         gift_id: gift,
@@ -308,7 +308,7 @@ export class EventHookAdderService {
                   user_id: user_id,
                   redeem_id: redeemPermission.redeem_id,
                 });
-                for (let redeemPermissionByRedeem of listRedeemPermissionByRedeem) {
+                for (const redeemPermissionByRedeem of listRedeemPermissionByRedeem) {
                   if (
                     redeemPermissionByRedeem?._id !== redeemPermission._id &&
                     redeemPermissionByRedeem?.status !== "done"
@@ -320,7 +320,7 @@ export class EventHookAdderService {
                   const redeem = await this.redeemModel.findById(redeemPermission.redeem_id);
                   //check and send gift
                   if (redeem.gift_data && redeem.gift_data.length > 0) {
-                    for (let gift of redeem?.gift_data) {
+                    for (const gift of redeem?.gift_data) {
                       if (gift._id) {
                         await this.giftHelper.handleAutoGiveGift({
                           gift_id: gift,
@@ -367,7 +367,7 @@ export class EventHookAdderService {
     //Send Socket
     const urlLogin = process.env.SOCKET_API;
     if (authCode && dataToSendSocket) {
-      let dataToObject = {
+      const dataToObject = {
         redeem: JSON.stringify(dataToSendSocket),
       };
       const paramsRedeem = new URLSearchParams(dataToObject);
@@ -378,7 +378,7 @@ export class EventHookAdderService {
           "X-Authorization": authCode,
         },
       };
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/update-redeem", paramsRedeem, config)
         .then((response) => {
           if (response?.data) {

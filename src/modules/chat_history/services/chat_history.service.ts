@@ -33,11 +33,11 @@ export class ChatHistoryService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        let objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        let objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
@@ -95,7 +95,7 @@ export class ChatHistoryService {
    * @returns
    */
   async filter(filter: FilterChatHistoryDto, sortBy: SortByChatHistoryDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -108,7 +108,7 @@ export class ChatHistoryService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataRoom = await this.chatHistoryModel
+    const dataRoom = await this.chatHistoryModel
       .find(condition, projection)
       .populate({
         path: "createBy",
@@ -144,7 +144,7 @@ export class ChatHistoryService {
    */
   public count = async (filter: FilterChatHistoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.chatHistoryModel.estimatedDocumentCount();
       } else {

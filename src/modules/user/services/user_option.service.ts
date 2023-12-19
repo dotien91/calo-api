@@ -51,13 +51,13 @@ export class UserOptionService {
    * @returns
    */
   async filter(filter: SearchBaseUserDto, sortBy: SortByUserOptionDto, page: number, limit: number) {
-    let condition = await this.getConditionBase(filter);
+    const condition = await this.getConditionBase(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.userOptionModel
+    const projection = {};
+    const dataReturn = await this.userOptionModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -75,7 +75,7 @@ export class UserOptionService {
     let condition: any = { user_id: { $ne: null }, user_status: 1 };
     if (filter.user_birthday_year) {
       if (filter.user_birthday_year.indexOf("_") !== -1) {
-        let dataObject = filter.user_birthday_year?.split("_");
+        const dataObject = filter.user_birthday_year?.split("_");
         if (dataObject && dataObject[0] && dataObject[1]) {
           condition = Object.assign(condition, { user_birthday_year: { $gt: dataObject[0], $lt: dataObject[1] } });
         }
@@ -85,8 +85,8 @@ export class UserOptionService {
     }
 
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
 
@@ -96,7 +96,7 @@ export class UserOptionService {
 
     if (filter.base_height) {
       if (filter.base_height.indexOf("_") !== -1) {
-        let dataObject = filter.base_height?.split("_");
+        const dataObject = filter.base_height?.split("_");
         if (dataObject && dataObject[0] && dataObject[1]) {
           condition = Object.assign(condition, { base_height: { $gt: dataObject[0], $lt: dataObject[1] } });
         }
@@ -107,7 +107,7 @@ export class UserOptionService {
 
     if (filter.locking_for) {
       if (filter.locking_for.indexOf(",") !== -1) {
-        let dataObject = filter.locking_for?.split(",");
+        const dataObject = filter.locking_for?.split(",");
         if (dataObject?.length) {
           condition = Object.assign(condition, { locking_for: { $in: dataObject } });
         }
@@ -132,7 +132,7 @@ export class UserOptionService {
 
     if (filter.base_weight) {
       if (filter.base_weight.indexOf("_") !== -1) {
-        let dataObject = filter.base_weight?.split("_");
+        const dataObject = filter.base_weight?.split("_");
         if (dataObject && dataObject[0] && dataObject[1]) {
           condition = Object.assign(condition, { base_weight: { $gt: dataObject[0], $lt: dataObject[1] } });
         }
@@ -143,7 +143,7 @@ export class UserOptionService {
     if (filter.base_role) {
       if (process.env.BRANCH_NAME === "whiteg") {
         if (this.isJsonString(filter.base_role)) {
-          let dataFilter = JSON.parse(filter.base_role);
+          const dataFilter = JSON.parse(filter.base_role);
           if (dataFilter && dataFilter.length) {
             condition = Object.assign(condition, { base_role: { $in: this.getBaseRoleLGBT(filter.base_role) } });
           }
@@ -152,7 +152,7 @@ export class UserOptionService {
         }
       } else {
         if (this.isJsonString(filter.base_role)) {
-          let dataFilter = JSON.parse(filter.base_role);
+          const dataFilter = JSON.parse(filter.base_role);
           if (dataFilter && dataFilter.length) {
             //dataFilter.push("");
             condition = Object.assign(condition, { base_role: { $in: dataFilter } });
@@ -186,11 +186,11 @@ export class UserOptionService {
       process.env.BRANCH_NAME !== "ishare"
     ) {
       condition = Object.assign(condition, { is_avatar: 1, circle_point: { $lt: 20 } });
-      let currentTime = new Date().getTime();
-      let lastTime = currentTime - 1000 * 60 * 60 * 24 * 20;
+      const currentTime = new Date().getTime();
+      const lastTime = currentTime - 1000 * 60 * 60 * 24 * 20;
 
       //Total Time in day!
-      let newTime = new Date(lastTime);
+      const newTime = new Date(lastTime);
       condition = Object.assign(condition, { last_active: { $gte: newTime } });
     }
 
@@ -204,7 +204,7 @@ export class UserOptionService {
 
     if (filter.body_type) {
       if (this.isJsonString(filter.body_type)) {
-        let dataFilter = JSON.parse(filter.body_type);
+        const dataFilter = JSON.parse(filter.body_type);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { body_type: { $in: dataFilter } });
         }
@@ -219,7 +219,7 @@ export class UserOptionService {
 
     if (filter.language) {
       if (this.isJsonString(filter.language)) {
-        let dataFilter = JSON.parse(filter.language);
+        const dataFilter = JSON.parse(filter.language);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { language: { $in: dataFilter } });
         }
@@ -230,7 +230,7 @@ export class UserOptionService {
 
     if (filter.relationship_status) {
       if (this.isJsonString(filter.relationship_status)) {
-        let dataFilter = JSON.parse(filter.relationship_status);
+        const dataFilter = JSON.parse(filter.relationship_status);
         if (dataFilter && dataFilter.length) {
           condition = Object.assign(condition, { relationship_status: { $in: dataFilter } });
         }
@@ -240,9 +240,9 @@ export class UserOptionService {
     }
 
     if (filter.online_time) {
-      let currentTime = Math.floor(Date.now() / 1);
-      let timeToCompare = currentTime - filter.online_time * 60 * 1000;
-      let dateToCompare = new Date(timeToCompare);
+      const currentTime = Math.floor(Date.now() / 1);
+      const timeToCompare = currentTime - filter.online_time * 60 * 1000;
+      const dateToCompare = new Date(timeToCompare);
       condition = Object.assign(condition, { last_active: { $gt: dateToCompare } });
     }
 
@@ -312,10 +312,10 @@ export class UserOptionService {
         radius = Number(filter.distance);
       }
 
-      let maxLatitude = parseFloat(filter?.latitude?.toString()) + oneKilometer * radius;
-      let minLatitude = parseFloat(filter?.latitude?.toString()) - oneKilometer * radius;
-      let maxLongitude = parseFloat(filter?.longitude?.toString()) + oneKilometer * radius;
-      let minLongitude = parseFloat(filter?.longitude?.toString()) - oneKilometer * radius;
+      const maxLatitude = parseFloat(filter?.latitude?.toString()) + oneKilometer * radius;
+      const minLatitude = parseFloat(filter?.latitude?.toString()) - oneKilometer * radius;
+      const maxLongitude = parseFloat(filter?.longitude?.toString()) + oneKilometer * radius;
+      const minLongitude = parseFloat(filter?.longitude?.toString()) - oneKilometer * radius;
       condition = Object.assign(condition, { latitude: { $gte: minLatitude, $lte: maxLatitude } });
       condition = Object.assign(condition, { longitude: { $gte: minLongitude, $lte: maxLongitude } });
 
@@ -345,7 +345,7 @@ export class UserOptionService {
       parseFloat(filter?.latitude?.toString()) != -1 &&
       parseFloat(filter?.longitude?.toString()) != -1
     ) {
-      let minDistance = 10000;
+      const minDistance = 10000;
       if (maxDistance < 10000) {
         maxDistance = 11000;
       }
@@ -392,10 +392,10 @@ export class UserOptionService {
     try {
       let dataReturn = [];
       if (this.isJsonString(baseRole)) {
-        let dataFilter = JSON.parse(baseRole);
+        const dataFilter = JSON.parse(baseRole);
         if (dataFilter && dataFilter.length) {
-          for (let dataFilterItem of dataFilter) {
-            let dataArray = this.getBaseRoleItemLGBT(dataFilterItem);
+          for (const dataFilterItem of dataFilter) {
+            const dataArray = this.getBaseRoleItemLGBT(dataFilterItem);
             dataReturn = _.union(dataReturn, dataArray);
           }
         }
@@ -412,7 +412,7 @@ export class UserOptionService {
    * @returns
    */
   getBaseRoleItemLGBT(baseRole: string) {
-    let dataReturn = ["top", "bottom", "vers_top", "versatile", "ves_bottom", ""];
+    const dataReturn = ["top", "bottom", "vers_top", "versatile", "ves_bottom", ""];
 
     return dataReturn.filter((value: string, index: number) => {
       if (baseRole === "top") {
@@ -440,7 +440,7 @@ export class UserOptionService {
    */
   public count = async (filter: SearchBaseUserDto) => {
     try {
-      let condition = await this.getConditionBase(filter);
+      const condition = await this.getConditionBase(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userOptionModel.estimatedDocumentCount();
       } else {
@@ -476,7 +476,7 @@ export class UserOptionService {
     if (process.env.BRANCH_NAME === "live_video" && Number(limit) === 1) {
       filter = { ...filter, ...{ is_match: "1" } };
     }
-    let condition = await this.getConditionBase({ ...filter, ...{ page: page } });
+    const condition = await this.getConditionBase({ ...filter, ...{ page: page } });
 
     let sortObject: any = {};
     if (
@@ -502,33 +502,33 @@ export class UserOptionService {
       sortObject = Object.assign(sortObject, { last_active: -1 });
     }
 
-    let projection = { _id: false, __v: false };
+    const projection = { _id: false, __v: false };
 
-    let populateObject = {
+    const populateObject = {
       path: "user_id",
       options: { strictPopulate: false },
       select:
         "user_login display_name user_version user_role user_status user_avatar user_avatar_thumbnail last_active user_active bio description public_sound notification_status message_stranger",
     };
-    let populateAlbum = {
+    const populateAlbum = {
       path: "public_album",
       options: { strictPopulate: false },
       select: "media_url _id media_type media_thumbnail media_square media_mime_type media_meta",
     };
 
-    let populatePrivateAlbum = {
+    const populatePrivateAlbum = {
       path: "private_album",
       options: { strictPopulate: false },
       select: "media_url _id media_type media_thumbnail media_square media_mime_type media_meta",
     };
 
     if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
+      const countData = await this.count(filter);
       page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
     }
-    let skip = limit * (page - 1);
-    let currentTime = new Date().getTime();
-    let dataReturn = await this.userOptionModel
+    const skip = limit * (page - 1);
+    const currentTime = new Date().getTime();
+    const dataReturn = await this.userOptionModel
       .find(condition, projection)
       .populate(populateObject)
       .populate(populateAlbum)
@@ -539,18 +539,18 @@ export class UserOptionService {
       .exec();
 
     if (dataReturn?.length > 0) {
-      let dataReturnAfter = [];
+      const dataReturnAfter = [];
       let newLatitude = filter.latitude;
       let newLongitude = filter.longitude;
       if (Number(filter?.is_map) == 1) {
         newLatitude = filter.latitude_original;
         newLongitude = filter.longitude_original;
       }
-      for (let userItem of dataReturn) {
+      for (const userItem of dataReturn) {
         if (userItem?.toObject()?.user_id?.toString()) {
-          let dataUserId = userItem?.toObject().user_id;
-          let dataToProcess = userItem?.toObject();
-          let userLocation = userItem?.toObject()?.loc?.coordinates;
+          const dataUserId = userItem?.toObject().user_id;
+          const dataToProcess = userItem?.toObject();
+          const userLocation = userItem?.toObject()?.loc?.coordinates;
           let distance = 0;
           if (userLocation && userLocation.length && userLocation[0] && userLocation[0]) {
             if (
@@ -568,7 +568,7 @@ export class UserOptionService {
           dataReturnAfter.push({ ...dataToProcess, ...dataUserId, ...{ distance: distance } });
         }
       }
-      let secondTime = new Date().getTime() - currentTime;
+      const secondTime = new Date().getTime() - currentTime;
       return dataReturnAfter;
     } else {
       return [];
@@ -584,11 +584,11 @@ export class UserOptionService {
    * @returns
    */
   async filterForCron(filter: SearchBaseUserDto, page: number, limit: number) {
-    let condition = await this.getConditionBase({ ...filter, ...{ page: page } });
-    let sortObject: any = {};
-    let projection = { _id: false, __v: false };
+    const condition = await this.getConditionBase({ ...filter, ...{ page: page } });
+    const sortObject: any = {};
+    const projection = { _id: false, __v: false };
 
-    let populateObject = {
+    const populateObject = {
       path: "user_id",
       options: { strictPopulate: false },
       select:
@@ -596,12 +596,12 @@ export class UserOptionService {
     };
 
     if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
+      const countData = await this.count(filter);
       page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
     }
-    let skip = limit * (page - 1);
+    const skip = limit * (page - 1);
 
-    let dataReturn = await this.userOptionModel
+    const dataReturn = await this.userOptionModel
       .find(condition, projection)
       .populate(populateObject)
       .sort(sortObject)
@@ -610,11 +610,11 @@ export class UserOptionService {
       .exec();
 
     if (dataReturn?.length > 0) {
-      let dataReturnAfter = [];
-      for (let userItem of dataReturn) {
+      const dataReturnAfter = [];
+      for (const userItem of dataReturn) {
         if (userItem?.toObject()?.user_id?.toString()) {
-          let dataUserId = userItem?.toObject().user_id;
-          let dataToProcess = userItem?.toObject();
+          const dataUserId = userItem?.toObject().user_id;
+          const dataToProcess = userItem?.toObject();
           delete dataToProcess.user_id;
           //delete dataToProcess.loc;
           dataReturnAfter.push({ ...dataToProcess, ...dataUserId });
@@ -635,14 +635,14 @@ export class UserOptionService {
    * @returns
    */
   async filterAdmin(filter: SearchAdminFilterDto, sortBy: SortByUserOptionDto, page: number, limit: number) {
-    let condition = await this.getConditionBase(filter);
+    const condition = await this.getConditionBase(filter);
     let sortObject: any = {};
     if (sortBy && !filter.longitude && !filter.latitude) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataReturn = await this.userOptionModel
+    const dataReturn = await this.userOptionModel
       .find(condition, projection)
       .populate("user_id")
       .sort(sortObject)
@@ -663,8 +663,8 @@ export class UserOptionService {
         return null;
       }
       if (dataUpdate?.loc && dataUpdate?.loc?.coordinates) {
-        let longitude = dataUpdate?.loc?.coordinates[0];
-        let latitude = dataUpdate?.loc?.coordinates[1];
+        const longitude = dataUpdate?.loc?.coordinates[0];
+        const latitude = dataUpdate?.loc?.coordinates[1];
         if (longitude) {
           dataUpdate = { ...dataUpdate, ...{ longitude: longitude } };
         }
@@ -673,7 +673,7 @@ export class UserOptionService {
         }
       }
 
-      let dataReturn = await this.userOptionModel.findOneAndUpdate(
+      const dataReturn = await this.userOptionModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id },
         { $set: dataUpdate },
         { new: true }
@@ -689,14 +689,14 @@ export class UserOptionService {
   }
 
   getDistanceFromLatLonInMeter(lat1: number, lon1: number, lat2: number, lon2: number) {
-    let R = 6371; // Radius of the earth in km
-    let dLat = this.deg2rad(lat2 - lat1); // deg2rad below
-    let dLon = this.deg2rad(lon2 - lon1);
-    let a =
+    const R = 6371; // Radius of the earth in km
+    const dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    let d = R * c * 1000; // Distance in meter
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c * 1000; // Distance in meter
     return d;
   }
 
@@ -714,21 +714,21 @@ export class UserOptionService {
       return null;
     }
     projection = { ...projection, ...{ __v: false } };
-    let populateObject = {
+    const populateObject = {
       path: "user_id",
       options: { strictPopulate: false },
       select:
         "user_login user_phone display_name user_version user_role user_status user_avatar user_avatar_thumbnail last_active user_active bio description follow_users public_sound notification_status message_stranger user_cover is_validate_phone notification_chat notification_user notification_course notification_community",
     };
-    let dataReturn = await this.userOptionModel
+    const dataReturn = await this.userOptionModel
       .findOne({ user_id: id }, projection)
       .populate(populateObject)
       .populate("public_album")
       .populate("private_album")
       .exec();
     if (dataReturn) {
-      let dataReturnObject = dataReturn.toObject();
-      let userMainObject = dataReturnObject.user_id;
+      const dataReturnObject = dataReturn.toObject();
+      const userMainObject = dataReturnObject.user_id;
       //@ts-ignore
       delete dataReturnObject.user_option_id;
       return { ...dataReturnObject, ...userMainObject, ...{ _id: userMainObject._id.toString() } };
@@ -747,7 +747,7 @@ export class UserOptionService {
       return null;
     }
     projection = { ...projection, ...{ __v: false } };
-    let dataReturn = await this.userOptionModel
+    const dataReturn = await this.userOptionModel
       .findOne({ user_id: id }, projection)
       .populate("public_album")
       .populate("user_interest")
@@ -767,10 +767,10 @@ export class UserOptionService {
       return null;
     }
     try {
-      let resultUpdate = await this.userOptionModel.findOneAndUpdate(dataFilter, { $inc: dataUpdate }, { new: true });
+      const resultUpdate = await this.userOptionModel.findOneAndUpdate(dataFilter, { $inc: dataUpdate }, { new: true });
       if (Number(resultUpdate?.circle_point) > 0 && Number(resultUpdate?.circle_point) % 5 === 0) {
-        let numberSort = Number(resultUpdate?.circle_point) / 5;
-        let dataUpdateNew = {
+        const numberSort = Number(resultUpdate?.circle_point) / 5;
+        const dataUpdateNew = {
           number_sort: numberSort,
         };
         await this.userOptionModel.findOneAndUpdate(dataFilter, { $inc: dataUpdateNew }, { new: true });

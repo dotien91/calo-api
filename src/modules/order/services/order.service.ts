@@ -86,8 +86,8 @@ export class OrderService {
       condition = Object.assign(condition, { status: filter.status });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
     return condition;
@@ -115,12 +115,12 @@ export class OrderService {
    * @returns
    */
   async filter(filter: SearchOrderDto, sortBy: SortByOrderDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.orderModel
+    const dataReturn = await this.orderModel
       .find(condition)
       .populate(
         "user_id",
@@ -144,15 +144,15 @@ export class OrderService {
    * @returns
    */
   async filterAdmin(filter: SearchAdminFilterDto, sortBy: SortByOrderDto, page: number, limit: number) {
-    let condition = await this.getConditionAdmin(filter);
+    const condition = await this.getConditionAdmin(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     if (filter.user_birthday_year_from && filter.user_birthday_year_to) {
-      let dataPopulate = {
+      const dataPopulate = {
         path: "user_id",
         options: { strictPopulate: false },
         select:
@@ -168,7 +168,7 @@ export class OrderService {
         },
       };
 
-      let dataReturn = await this.orderModel
+      const dataReturn = await this.orderModel
         .find(condition, projection)
         .populate(dataPopulate)
         .populate("plan_id")
@@ -180,14 +180,14 @@ export class OrderService {
         .then((orders) => orders.filter((order) => order.user_id.user_option_id != null));
       return dataReturn;
     } else {
-      let dataPopulate = {
+      const dataPopulate = {
         path: "user_id",
         options: { strictPopulate: false },
         select:
           "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
         populate: { path: "user_option_id" },
       };
-      let dataReturn = await this.orderModel
+      const dataReturn = await this.orderModel
         .find(condition, projection)
         .populate(dataPopulate)
         .populate("plan_id")
@@ -207,7 +207,7 @@ export class OrderService {
    */
   public countAdmin = async (filter: SearchAdminFilterDto) => {
     try {
-      let condition = await this.getConditionAdmin(filter);
+      const condition = await this.getConditionAdmin(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.orderModel.estimatedDocumentCount();
       } else {
@@ -225,7 +225,7 @@ export class OrderService {
    */
   public count = async (filter: SearchOrderDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.orderModel.estimatedDocumentCount();
       } else {
@@ -243,7 +243,7 @@ export class OrderService {
    */
   async create(createUser: CreateOrderDto) {
     const createdOrder = new this.orderModel(createUser);
-    let dataCreate = await createdOrder.save();
+    const dataCreate = await createdOrder.save();
     return dataCreate;
   }
 
@@ -254,7 +254,7 @@ export class OrderService {
    */
   async createVnpayLog(createUser: any) {
     const createdOrder = new this.vnpayModel(createUser);
-    let dataCreate = await createdOrder.save();
+    const dataCreate = await createdOrder.save();
     return dataCreate;
   }
 
@@ -264,9 +264,9 @@ export class OrderService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -300,12 +300,12 @@ export class OrderService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "service_id",
       populate: [
         {
@@ -345,7 +345,7 @@ export class OrderService {
    */
   async update(dataUpdate: UpdateOrderDto) {
     try {
-      let populateObject = {
+      const populateObject = {
         path: "service_id",
         populate: [
           {
@@ -362,7 +362,7 @@ export class OrderService {
       if (dataUpdate?.status === "success") {
         dataUpdate = { ...dataUpdate, ...{ billing_on: new Date() } };
       }
-      let dataReturn = await this.orderModel
+      const dataReturn = await this.orderModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",

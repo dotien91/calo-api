@@ -52,14 +52,14 @@ export class AnswerService {
    * @returns
    */
   async filter(filter: SearchAnswerDto, sortBy: SortByAnswerDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataReturn = await this.orderModel
+    const dataReturn = await this.orderModel
       .find(condition)
       .populate(
         "user_id",
@@ -81,13 +81,13 @@ export class AnswerService {
    * @returns
    */
   async filterAdmin(filter: SearchAnswerDto, sortBy: SortByAnswerDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.orderModel
+    const projection = {};
+    const dataReturn = await this.orderModel
       .find(condition, projection)
       .populate("user_id")
       .sort(sortObject)
@@ -104,7 +104,7 @@ export class AnswerService {
    */
   public count = async (filter: SearchAnswerDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.orderModel.estimatedDocumentCount();
       } else {
@@ -122,7 +122,7 @@ export class AnswerService {
    */
   async create(createUser: CreateAnswerDto) {
     const createdAnswer = new this.orderModel(createUser);
-    let dataCreate = await createdAnswer.save();
+    const dataCreate = await createdAnswer.save();
     return dataCreate;
   }
 
@@ -132,9 +132,9 @@ export class AnswerService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -184,7 +184,7 @@ export class AnswerService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -216,7 +216,7 @@ export class AnswerService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.orderModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.orderModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

@@ -40,14 +40,14 @@ export class Question {
     type: String,
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     nullable: false,
     index: true,
   })
-  question_language: String;
+  question_language: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -73,7 +73,7 @@ export class Question {
     type: String,
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -87,14 +87,14 @@ export class Question {
     default: "",
     index: true,
   })
-  status: String;
+  status: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  question_key: String;
+  question_key: string;
 
   @Prop({
     type: [OptionQuestionSchema],

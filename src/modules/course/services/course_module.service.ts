@@ -76,7 +76,7 @@ export class CourseModuleService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseLikeModel
+    const dataReturn = await this.courseLikeModel
       .findById(id, projection)
       .populate(
         "user_id",
@@ -96,7 +96,7 @@ export class CourseModuleService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseLikeModel
+    const dataReturn = await this.courseLikeModel
       .findById(id, projection)
       .populate("course_id")
       .populate(
@@ -147,7 +147,7 @@ export class CourseModuleService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CourseModule[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.courseLikeModel.find(condition, {}).exec();
   }
 
@@ -170,7 +170,7 @@ export class CourseModuleService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel
+      const dataReturn = await this.courseLikeModel
         .findOneAndUpdate(
           { _id: dataUpdate._id },
           { $set: dataUpdate },
@@ -201,7 +201,7 @@ export class CourseModuleService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
+      const dataReturn = await this.courseLikeModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
@@ -219,7 +219,7 @@ export class CourseModuleService {
    */
   public count = async (filter: FilterModuleCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseLikeModel.estimatedDocumentCount();
       } else {
@@ -260,12 +260,12 @@ export class CourseModuleService {
     limit: number,
     projection: any = {}
   ): Promise<CourseModule[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    const dataReturn = await this.courseLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -294,12 +294,12 @@ export class CourseModuleService {
     limit: number,
     projection: any = {}
   ): Promise<CourseModule[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "course_id",
       options: { strictPopulate: false },
       populate: [
@@ -311,7 +311,7 @@ export class CourseModuleService {
         },
       ],
     };
-    let dataReturn: any = await this.courseLikeModel
+    const dataReturn: any = await this.courseLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -323,9 +323,9 @@ export class CourseModuleService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.course_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.course_id?.toObject() };
         delete dataItemToReturn.course_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -344,9 +344,9 @@ export class CourseModuleService {
    * @returns
    */
   async filterWithId(filter: FilterModuleCourseDto, page: number, limit: number): Promise<CourseModule[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.courseLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.courseLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -364,12 +364,12 @@ export class CourseModuleService {
    * @returns
    */
   async filterUser(filter: FilterModuleCourseDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    const dataReturn = await this.courseLikeModel
       .find(condition)
       .populate({
         path: "user_id",

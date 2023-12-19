@@ -4,21 +4,21 @@ import { IsString, IsOptional, IsIn } from "class-validator";
 export class UpdateOrderDto {
   @IsString()
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   @IsIn(["google_payment", "apple_payment", "transfer", "stripe", "vn_pay", "paypal"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  payment_method?: String;
+  payment_method?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_note?: String;
+  order_note?: string;
 
   @IsIn(["pending", "processing", "fraud", "success", "close", "draft", "trial", "error", "trial_false", "done"])
   @ApiProperty()
-  status?: String;
+  status?: string;
 
   @IsString()
   @IsOptional(null)

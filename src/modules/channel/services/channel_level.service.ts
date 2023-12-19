@@ -73,7 +73,7 @@ export class ChannelLevelService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.channelLevelModel.findById(id, projection);
+    const dataReturn = await this.channelLevelModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -104,7 +104,7 @@ export class ChannelLevelService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChannelLevel[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.channelLevelModel.find(condition, {}).exec();
   }
 
@@ -127,7 +127,7 @@ export class ChannelLevelService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelLevelModel.findOneAndUpdate(
+      const dataReturn = await this.channelLevelModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -152,7 +152,7 @@ export class ChannelLevelService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelLevelModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
+      const dataReturn = await this.channelLevelModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
@@ -170,7 +170,7 @@ export class ChannelLevelService {
    */
   public count = async (filter: FilterModuleChannelDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.channelLevelModel.estimatedDocumentCount();
       } else {
@@ -211,12 +211,12 @@ export class ChannelLevelService {
     limit: number,
     projection: any = {}
   ): Promise<ChannelLevel[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelLevelModel
+    const dataReturn = await this.channelLevelModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -240,12 +240,12 @@ export class ChannelLevelService {
     limit: number,
     projection: any = {}
   ): Promise<ChannelLevel[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "channel_id",
       options: { strictPopulate: false },
       populate: [
@@ -257,7 +257,7 @@ export class ChannelLevelService {
         },
       ],
     };
-    let dataReturn: any = await this.channelLevelModel
+    const dataReturn: any = await this.channelLevelModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -269,9 +269,9 @@ export class ChannelLevelService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.channel_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.channel_id?.toObject() };
         delete dataItemToReturn.channel_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -290,9 +290,9 @@ export class ChannelLevelService {
    * @returns
    */
   async filterWithId(filter: FilterModuleChannelDto, page: number, limit: number): Promise<ChannelLevel[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.channelLevelModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.channelLevelModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -310,12 +310,12 @@ export class ChannelLevelService {
    * @returns
    */
   async filterUser(filter: FilterModuleChannelDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelLevelModel
+    const dataReturn = await this.channelLevelModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -338,7 +338,7 @@ export class ChannelLevelService {
    */
   async updateCount(dataFilter: any, dataUpdate: any) {
     try {
-      let dataReturn: any = this.channelLevelModel.findByIdAndUpdate(
+      const dataReturn: any = this.channelLevelModel.findByIdAndUpdate(
         dataFilter._id,
         { $inc: dataUpdate },
         { new: true }

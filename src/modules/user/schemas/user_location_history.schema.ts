@@ -26,35 +26,35 @@ export class UserLocationHistory {
     default: 0,
     nullable: true,
   })
-  speed: Number;
+  speed: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  battery: String;
+  battery: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  low_power_mode: String;
+  low_power_mode: string;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  longitude: Number;
+  longitude: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  latitude: Number;
+  latitude: number;
 }
 
 export const UserLocationHistorySchema = SchemaFactory.createForClass(UserLocationHistory);

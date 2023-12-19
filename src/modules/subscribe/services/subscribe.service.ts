@@ -19,12 +19,12 @@ export class SubscribeService {
   async getCondition(filter: SearchSubscribeDto) {
     let condition: any = {};
     if (!filter.is_admin && !filter.is_expired) {
-      let dateToCompare = new Date();
+      const dateToCompare = new Date();
       condition = Object.assign(condition, { end_at: { $gte: dateToCompare } });
     }
 
     if (filter.is_expired) {
-      let dateToCompare = new Date();
+      const dateToCompare = new Date();
       condition = Object.assign(condition, { end_at: { $lt: dateToCompare } });
     }
 
@@ -69,13 +69,13 @@ export class SubscribeService {
    * @returns
    */
   async filter(filter: SearchSubscribeDto, sortBy: SortBySubscribeDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "plan_id",
       options: { strictPopulate: false },
       populate: {
@@ -86,11 +86,11 @@ export class SubscribeService {
         },
       },
     };
-    let populateObjectService = {
+    const populateObjectService = {
       path: "service_id",
       select: "title _id",
     };
-    let dataReturn = await this.appSubscribeModel
+    const dataReturn = await this.appSubscribeModel
       .find(condition)
       .populate(
         "user_id",
@@ -112,7 +112,7 @@ export class SubscribeService {
    */
   public count = async (filter: SearchSubscribeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.appSubscribeModel.estimatedDocumentCount();
       } else {
@@ -159,11 +159,11 @@ export class SubscribeService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
-    let populateObject = {
+    const populateObject = {
       path: "plan_id",
       populate: {
         path: "ref_id",
@@ -201,7 +201,7 @@ export class SubscribeService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.appSubscribeModel.findByIdAndUpdate(
+      const dataReturn = await this.appSubscribeModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

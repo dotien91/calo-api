@@ -48,7 +48,7 @@ export class EventReportService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -74,7 +74,7 @@ export class EventReportService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.eventReportModel.findByIdAndUpdate(
+      const dataReturn = await this.eventReportModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

@@ -41,29 +41,29 @@ export class ChatHistoryHelper {
     isReturnRes: boolean,
     isSendNotification: boolean
   ) {
-    let currentTime = new Date();
-    let userObject = req?.user_object;
+    const currentTime = new Date();
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new BadRequestException("User is not invalid");
     }
-    let authCode = req?.auth_code;
+    const authCode = req?.auth_code;
 
-    let isPayment = 0;
+    const isPayment = 0;
 
     //Validate Chat
     if (createChatHistoryDto.chat_room_id && (createChatHistoryDto.chat_content || createChatHistoryDto.media_data)) {
-      let dataPermissionFilter = {
+      const dataPermissionFilter = {
         chat_room_id: createChatHistoryDto.chat_room_id,
         user_id: userObject._id.toString(),
       };
-      let dataFilterUserOption = {
+      const dataFilterUserOption = {
         chat_room_id: createChatHistoryDto.chat_room_id,
       };
-      let dataUserOption = await this.chatRoomUserOptionService.filterWithoutPage(dataFilterUserOption, {});
+      const dataUserOption = await this.chatRoomUserOptionService.filterWithoutPage(dataFilterUserOption, {});
       let dataRoomUserOption = null;
       let dataRoomPartnerOption = null;
       if (dataUserOption && dataUserOption.length) {
-        for (let itemUserOption of dataUserOption) {
+        for (const itemUserOption of dataUserOption) {
           if (itemUserOption.user_id.toString() === userObject._id.toString()) {
             dataRoomUserOption = itemUserOption;
           } else {
@@ -103,7 +103,7 @@ export class ChatHistoryHelper {
       let dataHistoryFirst = null;
       if (!dataRoomUserOption.chat_room_id?.is_count) {
         //Check Send Message
-        let dataHistoryFilter = {
+        const dataHistoryFilter = {
           createBy: userObject._id.toString(),
           chat_room_id: dataRoomUserOption.chat_room_id._id.toString(),
         };
@@ -120,7 +120,7 @@ export class ChatHistoryHelper {
 
       if (createChatHistoryDto.media_data) {
         try {
-          let dataMediaArray = JSON.parse(createChatHistoryDto.media_data);
+          const dataMediaArray = JSON.parse(createChatHistoryDto.media_data);
           dataMediaResult = await this.handleMediaData(dataMediaArray, createChatHistoryDto.chat_room_id);
         } catch (error) {
           if (isReturnRes) {
@@ -131,8 +131,8 @@ export class ChatHistoryHelper {
           }
         }
       }
-      let chatContent = createChatHistoryDto.chat_content ? createChatHistoryDto.chat_content : "";
-      let dataCreate = {
+      const chatContent = createChatHistoryDto.chat_content ? createChatHistoryDto.chat_content : "";
+      const dataCreate = {
         user_type: "customer",
         parent_id: createChatHistoryDto.parent_id ? createChatHistoryDto.parent_id : null,
         chat_room_id: createChatHistoryDto.chat_room_id,
@@ -147,7 +147,7 @@ export class ChatHistoryHelper {
         topic_post_id: createChatHistoryDto?.topic_post_id,
       };
 
-      let dataChat = await this.chatHistoryService.create(dataCreate);
+      const dataChat = await this.chatHistoryService.create(dataCreate);
 
       let dataReturn = {
         ...dataChat.toObject(),
@@ -228,23 +228,23 @@ export class ChatHistoryHelper {
 
       if (isCount && dataUserOption[0]?.ref_user) {
         //Update Reply status
-        let userToUpdate = dataUserOption[0].ref_user;
-        let findRef = {
+        const userToUpdate = dataUserOption[0].ref_user;
+        const findRef = {
           user_id: dataUserOption[0].ref_user,
           ref_user: dataUserOption[0].ref_user,
           chat_room_id: createChatHistoryDto.chat_room_id,
         };
-        let dataToUpdateRef = {
+        const dataToUpdateRef = {
           is_reply: 1,
         };
         await this.chatRoomUserOptionService.findOneAndUpdate(findRef, dataToUpdateRef);
         //Check Room in Day
-        let currentDay = new Date().getTime();
+        const currentDay = new Date().getTime();
         //@ts-ignore
-        let createAt = new Date(dataUserOption[0]?.createdAt).getTime();
-        let timeToCheck = (currentDay - createAt) / (1000 * 60 * 60);
+        const createAt = new Date(dataUserOption[0]?.createdAt).getTime();
+        const timeToCheck = (currentDay - createAt) / (1000 * 60 * 60);
         if (timeToCheck <= 24) {
-          let dataUpdate = {
+          const dataUpdate = {
             _id: dataUserOption[0].ref_user,
           };
           await this.handleSendReply(dataUpdate, authCode);
@@ -252,24 +252,24 @@ export class ChatHistoryHelper {
       }
 
       //Update Room
-      let dataRoomUpdate = await this.chatRoomService.update(dataToUpdateRoom, true);
+      const dataRoomUpdate = await this.chatRoomService.update(dataToUpdateRoom, true);
 
       //Update Chat Room User Option Count
-      let dataUpdateOption = {
+      const dataUpdateOption = {
         chat_room_id: createChatHistoryDto.chat_room_id,
       };
       await this.chatRoomUserOptionService.updateCount(dataUpdateOption);
 
-      let userPartnerArray = [];
-      let userPartnerArrayNotification = [];
-      for (let itemUserOption of dataUserOption) {
+      const userPartnerArray = [];
+      const userPartnerArrayNotification = [];
+      for (const itemUserOption of dataUserOption) {
         if (itemUserOption?.user_id?._id.toString() !== userObject._id.toString()) {
           if (!itemUserOption.mute_status) {
             userPartnerArrayNotification.push(itemUserOption.user_id);
           }
           userPartnerArray.push(itemUserOption.user_id);
           //Update Count Chat Room
-          let dataFilter = {
+          const dataFilter = {
             chat_room_id: createChatHistoryDto.chat_room_id,
             user_id: itemUserOption.user_id.toString(),
           };
@@ -310,7 +310,7 @@ export class ChatHistoryHelper {
         },
       };
 
-      let dataReturnForPartner = {
+      const dataReturnForPartner = {
         ...dataReturn,
         ...{
           chat_room_data: { ...dataOptionPartner, ...{ last_updated: new Date() } },
@@ -347,7 +347,7 @@ export class ChatHistoryHelper {
   }
 
   async handleSendMessage(message: any, messageForPartner: any, partnerArray: User[], userId: string, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
       messageForPartner: JSON.stringify(messageForPartner),
       partnerArray: JSON.stringify(partnerArray),
@@ -361,7 +361,7 @@ export class ChatHistoryHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/send-message", params, config)
       .then((response) => {
         if (response?.data) {
@@ -379,7 +379,7 @@ export class ChatHistoryHelper {
   }
 
   async handleSendReply(message: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -391,7 +391,7 @@ export class ChatHistoryHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/reply-room", params, config)
       .then((response) => {
         if (response?.data) {
@@ -418,18 +418,18 @@ export class ChatHistoryHelper {
    */
   async getRoomDetail(req: ExpressRequestDto, res: Response, query: ListChatHistoryDto, id: string) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
-      let dataToFind = {
+      const dataToFind = {
         user_id: userObject._id.toString(),
         chat_room_id: id,
       };
 
-      let dataUserOptionObject = await this.chatRoomUserOptionService.findOne(dataToFind);
+      const dataUserOptionObject = await this.chatRoomUserOptionService.findOne(dataToFind);
       if (!dataUserOptionObject) {
-        let dataChatRoom = await this.chatRoomService.findOneRoom({ _id: id });
+        const dataChatRoom = await this.chatRoomService.findOneRoom({ _id: id });
         if (Number(dataChatRoom?.room_private) === 1) {
           throw new BadRequestException("User role not exist in this Room!");
         }
@@ -442,7 +442,7 @@ export class ChatHistoryHelper {
         search: query?.search,
         topic_post_id: query?.topic_post_id,
       };
-      let dataOrder = {
+      const dataOrder = {
         createdAt: query.order_by,
       };
       if (dataUserOptionObject?.query_from) {
@@ -454,11 +454,11 @@ export class ChatHistoryHelper {
         };
       }
 
-      let dataChat = await this.chatHistoryService.filter(dataFilter, dataOrder, query.page, query.limit);
+      const dataChat = await this.chatHistoryService.filter(dataFilter, dataOrder, query.page, query.limit);
       if (dataChat && dataChat.length) {
         //@ts-ignore
         //let dataCount = Number(dataUserOptionObject.chat_room_id?.chat_history_count);
-        let dataCount = 0;
+        const dataCount = 0;
         return res
           .set({
             "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
@@ -490,7 +490,7 @@ export class ChatHistoryHelper {
    */
   async createMedia(res: Response, req: ExpressRequestDto, createChatHistoryDto: any, files: any) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
@@ -512,9 +512,9 @@ export class ChatHistoryHelper {
         fileArray = await this.processFile("documents", files.documents);
       }
 
-      let currentTime = new Date();
+      const currentTime = new Date();
       //---Pending---Check Room User
-      let dataCreate = {
+      const dataCreate = {
         user_type: "customer",
         parent_id: null,
         chat_room_id: createChatHistoryDto.chat_room_id,
@@ -531,7 +531,7 @@ export class ChatHistoryHelper {
         send_at: currentTime.toUTCString(),
         read_at: null,
       };
-      let dataChat = await this.chatHistoryService.create(dataCreate);
+      const dataChat = await this.chatHistoryService.create(dataCreate);
       return res.status(HttpStatus.OK).json(dataChat);
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -545,20 +545,20 @@ export class ChatHistoryHelper {
    * @returns
    */
   async handleMediaData(dataMediaArray: any[], roomId: string) {
-    let dataIds = [];
-    for (let mediaItem of dataMediaArray) {
-      let mediaId = mediaItem.id;
+    const dataIds = [];
+    for (const mediaItem of dataMediaArray) {
+      const mediaId = mediaItem.id;
       dataIds.push(Number(mediaId));
     }
-    let dataFilter = {
+    const dataFilter = {
       ids: dataMediaArray,
       is_history: true,
     };
     let isCall: boolean = false;
     let isGift: boolean = false;
 
-    let dataSortBy = {};
-    let projection = {
+    const dataSortBy = {};
+    const projection = {
       media_url_presign: false,
       chat_history_id: false,
       chat_room_id: false,
@@ -566,10 +566,10 @@ export class ChatHistoryHelper {
       createdAt: false,
       updatedAt: false,
     };
-    let mediaObjectArray = await this.chatMediaService.filter(dataFilter, dataSortBy, 100, 0, projection);
-    let mediaArray = [];
+    const mediaObjectArray = await this.chatMediaService.filter(dataFilter, dataSortBy, 100, 0, projection);
+    const mediaArray = [];
     if (mediaObjectArray) {
-      for (let mediaItem of mediaObjectArray) {
+      for (const mediaItem of mediaObjectArray) {
         if (mediaItem?.media_type?.indexOf("call") !== -1) {
           isCall = true;
         }
@@ -595,21 +595,21 @@ export class ChatHistoryHelper {
    * @returns
    */
   async processMediaAfter(mediaObject: any, chatId: string, chatRoomId: string) {
-    let mediaReturn = [];
+    const mediaReturn = [];
     if (mediaObject && mediaObject.length) {
-      for (let mediaItem of mediaObject) {
+      for (const mediaItem of mediaObject) {
         let statusUpdate = 0;
         if (Number(mediaItem.status) === 1) {
           statusUpdate = 1;
         }
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: mediaItem?._id?.toString(),
           media_status: statusUpdate,
           chat_history_id: chatId,
           chat_room_id: chatRoomId,
         };
         await this.chatMediaService.update(dataToUpdate);
-        let dataToAdd = { ...mediaItem.toObject(), ...dataToUpdate };
+        const dataToAdd = { ...mediaItem.toObject(), ...dataToUpdate };
         delete dataToAdd.chat_history_id;
         delete dataToAdd.chat_room_id;
         mediaReturn.push(dataToAdd);
@@ -626,20 +626,20 @@ export class ChatHistoryHelper {
    * @returns
    */
   async processFile(fileType: string, fileArray: any[]) {
-    let dataReturn = [];
-    for (let fileObject of fileArray) {
-      let fileExtensions = fileObject.originalname.slice(((fileObject.originalname.lastIndexOf(".") - 1) >>> 0) + 2);
+    const dataReturn = [];
+    for (const fileObject of fileArray) {
+      const fileExtensions = fileObject.originalname.slice(((fileObject.originalname.lastIndexOf(".") - 1) >>> 0) + 2);
       //let fileName = new Date().getTime() + '.' + fileExtensions;
-      let fileName = fileObject.originalname;
-      let fileType = fileObject.mimetype;
-      let dataUrl = `?file_name=chat-tarot/${fileName}&file_type=${fileType}`;
+      const fileName = fileObject.originalname;
+      const fileType = fileObject.mimetype;
+      const dataUrl = `?file_name=chat-tarot/${fileName}&file_type=${fileType}`;
       const config = {
         headers: {
           "X-Authorization": "",
         },
       };
 
-      let dataPresign = await axios
+      const dataPresign = await axios
         .get(process.env.TAROT_MAIN_API + "/media/presign" + dataUrl, config)
         .then((response) => {
           if (response?.data) {
@@ -654,10 +654,10 @@ export class ChatHistoryHelper {
         });
 
       if (dataPresign?.url) {
-        let urlPut = dataPresign.url;
-        let typeToPut = dataPresign.filetype;
+        const urlPut = dataPresign.url;
+        const typeToPut = dataPresign.filetype;
 
-        let dataS3 = await axios({
+        const dataS3 = await axios({
           method: "put",
           url: urlPut,
           data: fileObject.buffer,
@@ -675,7 +675,7 @@ export class ChatHistoryHelper {
             return null;
           });
         let urlOriginal = "";
-        let dataArrayUrl = urlPut.split("?");
+        const dataArrayUrl = urlPut.split("?");
         if (dataArrayUrl[0]) {
           urlOriginal = dataArrayUrl[0];
           dataReturn.push(urlOriginal);
@@ -702,16 +702,16 @@ export class ChatHistoryHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       let chatContentToSend = "Tin nhắn: " + lastMessage;
       if (lastMessage && lastMessage.length >= 255) {
         chatContentToSend = lastMessage.substring(0, 250) + "...";
       }
 
       let userIdSend = "";
-      let userIdArray = [];
+      const userIdArray = [];
       let language = "en";
-      for (let userItem of toUser) {
+      for (const userItem of toUser) {
         if (userItem?.country === "VN") {
           language = "vi";
         }
@@ -726,13 +726,13 @@ export class ChatHistoryHelper {
         chatContentToSend = notificationTitle + " " + textSendFile;
       }
       userIdSend = userIdArray.join(",");
-      let dataToSendNotification = {
+      const dataToSendNotification = {
         chat_room_id: dataChat?.chat_room_id,
         path: "/chat/detail/",
         data_id: dataChat?.chat_room_id,
       };
-      let notificationContent = chatContentToSend;
-      let dataNotification = {
+      const notificationContent = chatContentToSend;
+      const dataNotification = {
         createdBy: fromUser._id.toString(),
         user_id: userIdSend,
         channel_id: req?.channel_id,

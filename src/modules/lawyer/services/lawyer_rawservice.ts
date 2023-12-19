@@ -50,7 +50,7 @@ export class LawyerRawService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -73,7 +73,7 @@ export class LawyerRawService {
    */
   async update(dataUpdate: UpdateLawyerRawDto) {
     try {
-      let dataReturn = await this.lawyerRawModel.findOneAndUpdate(
+      const dataReturn = await this.lawyerRawModel.findOneAndUpdate(
         {
           _id: dataUpdate?._id,
         },
@@ -125,12 +125,12 @@ export class LawyerRawService {
    * @returns
    */
   async filter(filter: SearchLawyerDto, sortBy: SortByLawyerDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.lawyerRawModel
+    const dataReturn = await this.lawyerRawModel
       .find(condition)
       // .sort(sortObject)
       .skip(limit * (page - 1))
@@ -146,7 +146,7 @@ export class LawyerRawService {
    */
   public count = async (filter: SearchLawyerDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.lawyerRawModel.estimatedDocumentCount();
       } else {

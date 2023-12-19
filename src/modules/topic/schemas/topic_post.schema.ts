@@ -28,21 +28,21 @@ export class TopicPost {
     nullable: false,
     index: true,
   })
-  post_language: String;
+  post_language: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_content: String;
+  post_content: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_excerpt: String;
+  post_excerpt: string;
 
   @Prop({
     type: String,
@@ -50,21 +50,21 @@ export class TopicPost {
     nullable: false,
     index: true,
   })
-  post_slug: String;
+  post_slug: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_parent: String;
+  post_parent: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String;
+  post_status: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -92,7 +92,7 @@ export class TopicPost {
     default: "",
     nullable: false,
   })
-  post_title: String;
+  post_title: string;
 
   @Prop({
     type: String,
@@ -100,7 +100,7 @@ export class TopicPost {
     nullable: false,
     index: true,
   })
-  post_type: String;
+  post_type: string;
 
   @Prop({
     type: Number,
@@ -108,28 +108,28 @@ export class TopicPost {
     nullable: false,
     index: true,
   })
-  post_view: Number;
+  post_view: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_title: String;
+  seo_title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_description: String;
+  seo_description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_keyword: String;
+  seo_keyword: string;
 }
 
 export const TopicPostSchema = SchemaFactory.createForClass(TopicPost).index({

@@ -36,7 +36,7 @@ export class MapTokenService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<MapToken> {
-    let currentTime = new Date();
+    const currentTime = new Date();
     dataToSearch = {
       ...dataToSearch,
       ...{ expired_at: { $lt: currentTime } },
@@ -53,7 +53,7 @@ export class MapTokenService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -79,7 +79,7 @@ export class MapTokenService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.mapTokenModel.findByIdAndUpdate(
+      const dataReturn = await this.mapTokenModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

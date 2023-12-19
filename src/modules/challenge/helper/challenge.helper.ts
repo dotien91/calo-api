@@ -84,14 +84,14 @@ export class ChallengeHelper {
   }
 
   async handleProcessModuleCount() {
-    let dataChallenge = await this.challengeService.filter({}, {}, 1, 1000);
-    for (let dataaChallengeItem of dataChallenge) {
-      let countChild = await this.challengeGameService.count({
+    const dataChallenge = await this.challengeService.filter({}, {}, 1, 1000);
+    for (const dataaChallengeItem of dataChallenge) {
+      const countChild = await this.challengeGameService.count({
         challenge_id: dataaChallengeItem?._id?.toString(),
         is_child: "1",
       });
-      let count = await this.challengeGameService.count({ challenge_id: dataaChallengeItem?._id?.toString() });
-      let dataUpdate = {
+      const count = await this.challengeGameService.count({ challenge_id: dataaChallengeItem?._id?.toString() });
+      const dataUpdate = {
         _id: dataaChallengeItem?._id?.toString(),
         module_child_count: countChild,
         module_count: count,
@@ -110,20 +110,20 @@ export class ChallengeHelper {
    */
   async createNewChallenge(createChallengeData: CreateChallengeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = createChallengeData?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -141,11 +141,11 @@ export class ChallengeHelper {
       }
 
       if (createChallengeData?.gift_data) {
-        let dataGiftId = [];
-        let giftObject = JSON.parse(createChallengeData?.gift_data);
-        for (let itemGift of giftObject) {
+        const dataGiftId = [];
+        const giftObject = JSON.parse(createChallengeData?.gift_data);
+        for (const itemGift of giftObject) {
           try {
-            let objectId = new Types.ObjectId(itemGift);
+            const objectId = new Types.ObjectId(itemGift);
             if (!objectId) {
               throw new NotFoundException("Partner is invalid (Not is an ObjectID)");
             } else {
@@ -181,8 +181,8 @@ export class ChallengeHelper {
       if (channelId) {
         createChallengeData = { ...createChallengeData, ...{ channel_id: channelId } };
       }
-      let dataCreate: any = await this.challengeService.create(createChallengeData);
-      let dataReturn = await this.challengeService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.challengeService.create(createChallengeData);
+      const dataReturn = await this.challengeService.findById(dataCreate?._id?.toString());
       //Send to All User
       setTimeout(async () => {
         await this.handleSendNotificationToAll(userObject, dataReturn, authCode, userPermission?.channel_id, req);
@@ -225,10 +225,10 @@ export class ChallengeHelper {
         // year = new Date(dataReturn.start_time?.toString()).getFullYear();
         // cron.schedule(`0 ${minute} ${hour} ${day} ${month} * ${year}`, async () => {
         //     //Update dataPost
-        let dataTitle = "Thử thách " + dataReturn?.title + " đang diễn ra!";
-        let dataSlug = this.toSlug(dataTitle);
+        const dataTitle = "Thử thách " + dataReturn?.title + " đang diễn ra!";
+        const dataSlug = this.toSlug(dataTitle);
 
-        let dataCreatePost = {
+        const dataCreatePost = {
           post_language: "vi",
           post_content: "",
           post_slug: dataSlug,
@@ -296,19 +296,19 @@ export class ChallengeHelper {
    */
   async createNewChallengeGame(createChallengeData: CreateChallengeGameDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = createChallengeData?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -354,7 +354,7 @@ export class ChallengeHelper {
         },
       };
 
-      let dataReturn = await this.challengeGameService.findOne({ _id: dataCreate?._id?.toString() });
+      const dataReturn = await this.challengeGameService.findOne({ _id: dataCreate?._id?.toString() });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -378,14 +378,14 @@ export class ChallengeHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Check Permission Challenge
-      let dataChallenge = await this.challengePermissionService.findOneWithPopulate({
+      const dataChallenge = await this.challengePermissionService.findOneWithPopulate({
         user_id: userId,
         challenge_id: createChallengeData.challenge_id,
       });
@@ -394,7 +394,7 @@ export class ChallengeHelper {
         throw new ForbiddenException("You not have permission for this activity!");
       }
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = dataChallenge?.challenge_id?.channel_id?.toString();
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -436,7 +436,7 @@ export class ChallengeHelper {
         title: `ĐIỂM DANH THỬ THÁCH ${challenge.title.toString().toLocaleUpperCase}`,
       });
 
-      let dataReturn = await this.challengeActivityService.findOne({ _id: dataCreate?._id?.toString() });
+      const dataReturn = await this.challengeActivityService.findOne({ _id: dataCreate?._id?.toString() });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -460,19 +460,19 @@ export class ChallengeHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = createChallengeData?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -509,7 +509,7 @@ export class ChallengeHelper {
         },
       };
 
-      let dataReturn = await this.challengeNotificationService.findOne({ _id: dataCreate?._id?.toString() });
+      const dataReturn = await this.challengeNotificationService.findOne({ _id: dataCreate?._id?.toString() });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -529,17 +529,17 @@ export class ChallengeHelper {
    */
   async updateChallenge(dataUpdate: UpdateChallengeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject?._id?.toString();
+      const userId = userObject?._id?.toString();
 
-      let dataChallengeUpdate = await this.challengeService.findById(dataUpdate?._id);
-      let channelId: string = dataChallengeUpdate?.channel_id?.toString();
+      const dataChallengeUpdate = await this.challengeService.findById(dataUpdate?._id);
+      const channelId: string = dataChallengeUpdate?.channel_id?.toString();
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -571,7 +571,7 @@ export class ChallengeHelper {
       }
 
       //Get Media Data
-      let dataCreate: any = await this.challengeService.update(dataUpdate);
+      const dataCreate: any = await this.challengeService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -590,17 +590,17 @@ export class ChallengeHelper {
    */
   async updateChallengeGame(dataUpdate: UpdateChallengeGameDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject?._id?.toString();
+      const userId = userObject?._id?.toString();
 
-      let dataChallengeGame = await this.challengeGameService.findById(dataUpdate?._id, {});
-      let channelId: string = dataChallengeGame?.channel_id?.toString();
+      const dataChallengeGame = await this.challengeGameService.findById(dataUpdate?._id, {});
+      const channelId: string = dataChallengeGame?.channel_id?.toString();
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -625,7 +625,7 @@ export class ChallengeHelper {
         dataUpdate = { ...dataUpdate, ...{ custom_field: JSON.parse(dataUpdate?.custom_field) } };
       }
       //Get Media Data
-      let dataCreate: any = await this.challengeGameService.update(dataUpdate);
+      const dataCreate: any = await this.challengeGameService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -645,19 +645,19 @@ export class ChallengeHelper {
    */
   async updateChallengeActivity(dataUpdate: UpdateChallengeActivityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject?._id?.toString();
+      const userId = userObject?._id?.toString();
 
-      let dataActivity = await this.challengeActivityService.findById(dataUpdate?._id, {});
+      const dataActivity = await this.challengeActivityService.findById(dataUpdate?._id, {});
 
       // let dataChallengeGame = await this.challengeService.findById(dataUpdate?.challenge_id);
-      let channelId: string = dataActivity?.channel_id?.toString();
+      const channelId: string = dataActivity?.channel_id?.toString();
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -679,9 +679,9 @@ export class ChallengeHelper {
       }
 
       if (Number(dataUpdate?.official_status) == 1) {
-        let dataPoint = dataUpdate?.point_value;
+        const dataPoint = dataUpdate?.point_value;
         //Update Challenge Permission
-        let dataUpdateTotalPoint = {
+        const dataUpdateTotalPoint = {
           total_point: dataPoint,
         };
 
@@ -695,7 +695,7 @@ export class ChallengeHelper {
       }
 
       //Get Media Data
-      let dataCreate: any = await this.challengeActivityService.update(dataUpdate);
+      const dataCreate: any = await this.challengeActivityService.update(dataUpdate);
 
       const challenge = await this.challengeService.findById(dataActivity?.challenge_id?._id?.toString());
       this.eventHookNotificationService.sendNotiApplyActivityChallenge({
@@ -731,28 +731,28 @@ export class ChallengeHelper {
    */
   async getChallengeListByAdmin(query: ListChallengeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "challenge/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.challengeService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.challengeService.count(dataToFilter);
+        const dataReturn = await this.challengeService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.challengeService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -778,8 +778,8 @@ export class ChallengeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -790,15 +790,15 @@ export class ChallengeHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let channelId = req?.channel_id || query?.channel_id;
+      const channelId = req?.channel_id || query?.channel_id;
       if (query?.search && channelId) {
         //Search User First
-        let dataSearch = {
+        const dataSearch = {
           search: query?.search,
           channel_permission: req?.channel_id,
         };
-        let dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
-        let ids = dataUserArray.map((itemValue, index) => {
+        const dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
+        const ids = dataUserArray.map((itemValue, index) => {
           return itemValue?._id?.toString();
         });
         if (ids && ids.length) {
@@ -811,7 +811,7 @@ export class ChallengeHelper {
         }
       }
 
-      let dataReturn: any = await this.challengePermissionService.filterChallenge(
+      const dataReturn: any = await this.challengePermissionService.filterChallenge(
         dataToFilter,
         orderByOBject,
         page,
@@ -823,11 +823,11 @@ export class ChallengeHelper {
 
       //Get Data level
       if (channelId) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: channelId,
           user_ids: dataUserIds,
         };
@@ -838,9 +838,9 @@ export class ChallengeHelper {
           limit
         );
       }
-      for (let dataReturnItem in dataReturn) {
+      for (const dataReturnItem in dataReturn) {
         //Check user
-        let dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
+        const dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
           if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
             filtered.push({
               ...value?.user_id?.toObject(),
@@ -861,7 +861,7 @@ export class ChallengeHelper {
         }
       }
 
-      let dataCount = await this.challengePermissionService.count(dataToFilter);
+      const dataCount = await this.challengePermissionService.count(dataToFilter);
       //Check User Level
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
@@ -885,8 +885,8 @@ export class ChallengeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -894,16 +894,16 @@ export class ChallengeHelper {
         orderByOBject = { ...orderByOBject, ...{ total_point: "DESC" } };
       }
 
-      let myChallengePermission = await this.challengePermissionService.findOne({
+      const myChallengePermission = await this.challengePermissionService.findOne({
         user_id: req?.user_id,
         challenge_id: query?.challenge_id,
       });
-      let dataToFilter = { ...query, ...{ max_point: myChallengePermission?.total_point?.toString() } };
+      const dataToFilter = { ...query, ...{ max_point: myChallengePermission?.total_point?.toString() } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataCount = await this.challengePermissionService.count(dataToFilter);
+      const dataCount = await this.challengePermissionService.count(dataToFilter);
       //Check User Level
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
@@ -923,7 +923,7 @@ export class ChallengeHelper {
    */
   async handleGetListView(query: ListChallengeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -933,30 +933,30 @@ export class ChallengeHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.challengeViewService.filterChallenge(dataToFilter, {}, 1, query.limit, {
+      const dataReturn: any = await this.challengeViewService.filterChallenge(dataToFilter, {}, 1, query.limit, {
         video_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let challengeItem of dataReturn) {
+        for (const challengeItem of dataReturn) {
           dataReturnFinal.push({ ...challengeItem, ...{ is_like: true, is_view: false } });
         }
       }
@@ -988,8 +988,8 @@ export class ChallengeHelper {
         query = { ...query, ...{ channel_id: req?.channel_id } };
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -997,36 +997,36 @@ export class ChallengeHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: "DESC" } };
       }
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.challengeService.filter(dataToFilter, orderByOBject, page, limit);
-      for (let dataChallengeIndex in dataReturn) {
+      const dataReturn: any = await this.challengeService.filter(dataToFilter, orderByOBject, page, limit);
+      for (const dataChallengeIndex in dataReturn) {
         dataReturn[dataChallengeIndex] = dataReturn[dataChallengeIndex]?.toObject();
       }
-      let userId = req?.user_id || query?.auth_id;
+      const userId = req?.user_id || query?.auth_id;
       //List in
       if (userId) {
-        let dataChallengeIds = dataReturn?.map((value: Challenge) => {
+        const dataChallengeIds = dataReturn?.map((value: Challenge) => {
           return value?._id?.toString();
         });
         //Process total View
-        let dataFilterPermission = {
+        const dataFilterPermission = {
           challenge_ids: dataChallengeIds,
           user_id: userId,
         };
-        let dataJoinPermisson: ChallengePermission[] = await this.challengePermissionService.filter(
+        const dataJoinPermisson: ChallengePermission[] = await this.challengePermissionService.filter(
           dataFilterPermission,
           {},
           1,
           1000
         );
 
-        for (let dataIndexChallenge in dataReturn) {
-          let dataObjectJoinCourse = dataJoinPermisson?.filter((value) => {
+        for (const dataIndexChallenge in dataReturn) {
+          const dataObjectJoinCourse = dataJoinPermisson?.filter((value) => {
             if (value?.challenge_id?.toString() == dataReturn[dataIndexChallenge]?._id?.toString()) {
               return value?.challenge_id?.toString();
             }
@@ -1046,7 +1046,7 @@ export class ChallengeHelper {
         }
       }
 
-      let countChallenge = await this.challengeService.count(dataToFilter);
+      const countChallenge = await this.challengeService.count(dataToFilter);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countChallenge })
@@ -1071,8 +1071,8 @@ export class ChallengeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       let queryObject = {};
       if (query.game_type && query.game_type === "system") {
@@ -1082,13 +1082,13 @@ export class ChallengeHelper {
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...queryObject, ...query };
+      const dataToFilter = { ...queryObject, ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.challengeGameService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.challengeGameService.filter(dataToFilter, orderByOBject, page, limit);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1113,23 +1113,23 @@ export class ChallengeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       } else {
         orderByOBject = { ...orderByOBject, ...{ createdAt: "DESC" } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.challengeActivityService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.challengeActivityService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.challengeActivityService.count(dataToFilter);
+      const dataCount = await this.challengeActivityService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1153,21 +1153,21 @@ export class ChallengeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.challengeNotificationService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.challengeNotificationService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.challengeNotificationService.count(dataToFilter);
+      const dataCount = await this.challengeNotificationService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1205,14 +1205,14 @@ export class ChallengeHelper {
 
         if (query?.auth_id) {
           //Process total View
-          let dataFilterView = {
+          const dataFilterView = {
             challenge_id: dataReturn?._id?.toString(),
             user_id: query?.auth_id,
           };
-          let dataView: ChallengeView[] = await this.challengeViewService.filter(dataFilterView, {}, 1, 1000);
+          const dataView: ChallengeView[] = await this.challengeViewService.filter(dataFilterView, {}, 1, 1000);
 
           if (dataView && dataView[0]) {
-            let dataObjectByChallenge = dataView?.map((value) => {
+            const dataObjectByChallenge = dataView?.map((value) => {
               return value?.challenge_id?.toString();
             });
             dataReturn = {
@@ -1224,7 +1224,7 @@ export class ChallengeHelper {
         dataReturn = { ...dataReturn, ...{ is_join: false } };
         if (req?.user_id) {
           //Let dataFilter
-          let dataFilterPermission: any = await this.challengePermissionService.findOne({
+          const dataFilterPermission: any = await this.challengePermissionService.findOne({
             user_id: req?.user_id,
             challenge_id: id,
           });
@@ -1259,7 +1259,7 @@ export class ChallengeHelper {
    */
   async handleGetDetailChallengeGame(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1278,7 +1278,7 @@ export class ChallengeHelper {
       let dataToFilter = {};
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-        let dataReturn = await this.challengeGameService.findOne(dataToFilter);
+        const dataReturn = await this.challengeGameService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1301,12 +1301,12 @@ export class ChallengeHelper {
    */
   async handleUpdateChallengeByAdmin(dataUpdate: UpdateChallengeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -1326,12 +1326,12 @@ export class ChallengeHelper {
         throw new ForbiddenException("You not have permission for this action!");
       }
 
-      let dataChallenge = await this.challengeService.findById(dataUpdate._id.toString());
+      const dataChallenge = await this.challengeService.findById(dataUpdate._id.toString());
       if (
         dataChallenge?.user_id?._id.toString() === userObject._id.toString() ||
         (await this.userPermissionService.isHavePermission(userId, "challenge/update"))
       ) {
-        let dataReturn = await this.challengeService.update(dataUpdate);
+        const dataReturn = await this.challengeService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1353,17 +1353,17 @@ export class ChallengeHelper {
    */
   async handleDeleteChallenge(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let challengeObject = await this.challengeService.findById(id);
+      const challengeObject = await this.challengeService.findById(id);
 
-      let channelId = challengeObject?.channel_id?._id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const channelId = challengeObject?.channel_id?._id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1379,7 +1379,7 @@ export class ChallengeHelper {
         havePermission = true;
       }
       if (havePermission) {
-        let dataReturn = await this.challengeService.remove(id);
+        const dataReturn = await this.challengeService.remove(id);
         setTimeout(async () => {
           await this.requestService.removeOne({ ref_id: id });
         });
@@ -1404,15 +1404,15 @@ export class ChallengeHelper {
    */
   async handleDeleteChallengeGame(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let requestObject = await this.challengeGameService.findByIdPopulate(id, {});
-      let channelId = requestObject?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const requestObject = await this.challengeGameService.findByIdPopulate(id, {});
+      const channelId = requestObject?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1429,7 +1429,7 @@ export class ChallengeHelper {
       }
 
       if (havePermission) {
-        let dataReturn = await this.challengeGameService.remove(id);
+        const dataReturn = await this.challengeGameService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1442,15 +1442,15 @@ export class ChallengeHelper {
 
   async updateChallengePermission(dataUpdate: UpdateChallengePermissionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let requestObject = await this.challengeService.findById(dataUpdate?.challenge_id);
-      let channelId = requestObject?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const requestObject = await this.challengeService.findById(dataUpdate?.challenge_id);
+      const channelId = requestObject?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       if (userPermission?.official_status === 0 && dataUpdate.official_status === 1) {
         //send noti to hook "noti.challenge.required-join-challenge"
         this.eventHookNotificationService.sendNotiApllyJoinChallenge({
@@ -1485,7 +1485,7 @@ export class ChallengeHelper {
       }
 
       if (havePermission) {
-        let dataReturn = await this.challengePermissionService.update(dataUpdate);
+        const dataReturn = await this.challengePermissionService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1526,21 +1526,21 @@ export class ChallengeHelper {
    */
   async processCreatePermission(dataFollow: CreateChallengePermissionDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
+      const challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
 
       if (!challengeObject) {
         throw new NotFoundException("Challenge not found");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let channelId = challengeObject?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const channelId = challengeObject?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1556,9 +1556,9 @@ export class ChallengeHelper {
         havePermission = true;
       }
       if (havePermission) {
-        let arrayReturn = [];
-        let dataUserArray = dataFollow?.user_id?.split(",");
-        for (let dataUserId of dataUserArray) {
+        const arrayReturn = [];
+        const dataUserArray = dataFollow?.user_id?.split(",");
+        for (const dataUserId of dataUserArray) {
           let dataToCreateNew = { ...dataFollow, ...{ user_id: dataUserId } };
           dataToCreateNew = {
             ...dataToCreateNew,
@@ -1569,15 +1569,15 @@ export class ChallengeHelper {
             },
           };
           //Check permission
-          let dataReturn = await this.challengePermissionService.update(dataToCreateNew);
+          const dataReturn = await this.challengePermissionService.update(dataToCreateNew);
           arrayReturn.push(dataReturn);
           //Update count Video
-          let dataUpdateFilter = {
+          const dataUpdateFilter = {
             _id: channelId,
           };
           await this.challengeService.updateCount(dataUpdateFilter, { join_number: 1 });
           setTimeout(async () => {
-            let toUserObject = await this.userService.findOne({ _id: dataUserId });
+            const toUserObject = await this.userService.findOne({ _id: dataUserId });
             await this.handleSendNotification(
               userObject,
               toUserObject,
@@ -1615,13 +1615,13 @@ export class ChallengeHelper {
     res: Response
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
+      const challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
       if (req?.channel_id.toString() === challengeObject?.channel_id?._id.toString()) {
-        let userChannelPermission = await this.channelPermissionService.findOne({
+        const userChannelPermission = await this.channelPermissionService.findOne({
           user_id: userObject?._id.toString(),
           channel_id: req?.channel_id.toString(),
         });
@@ -1635,7 +1635,7 @@ export class ChallengeHelper {
         throw new NotFoundException("Challenge not found");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       dataFollow = { ...dataFollow, ...{ official_status: 1, user_id: userObject?._id?.toString() } };
       //Check permission
       //Check Challenge
@@ -1650,10 +1650,10 @@ export class ChallengeHelper {
           channel_id: challengeObject?.channel_id?._id,
         },
       };
-      let dataReturn = await this.challengePermissionService.update(dataFollow);
+      const dataReturn = await this.challengePermissionService.update(dataFollow);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: new Types.ObjectId(challengeObject?._id?.toString()),
       };
       await this.challengeService.updateCount(dataUpdateFilter, { join_number: 1 });
@@ -1692,19 +1692,19 @@ export class ChallengeHelper {
    */
   async processViewChallenge(dataFollow: CreateChallengeViewDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
-      let moduleObject = await this.challengeGameService.findById(dataFollow.module_id, {});
+      const moduleObject = await this.challengeGameService.findById(dataFollow.module_id, {});
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: moduleObject?.channel_id?.toString(),
         user_id: userObject?._id?.toString(),
       };
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this activity!");
       }
@@ -1713,20 +1713,20 @@ export class ChallengeHelper {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         challenge_id: moduleObject?._id?.toString(),
         module_id: dataFollow?.module_id?.toString(),
       };
 
-      let dataReturn = await this.challengeViewService.update(dataUpdate);
+      const dataReturn = await this.challengeViewService.update(dataUpdate);
 
       //Update
-      let dataChannelPoint = dataPermission?.channel_id?.point_data;
+      const dataChannelPoint = dataPermission?.channel_id?.point_data;
       //Check point
       let dataPoint = 1;
       if (dataChannelPoint && dataChannelPoint?.length) {
-        for (let dataChannelPointItem of dataChannelPoint) {
+        for (const dataChannelPointItem of dataChannelPoint) {
           if (dataChannelPointItem?.key == "like_post") {
             dataPoint = parseInt(dataChannelPointItem?.value);
           }
@@ -1770,12 +1770,12 @@ export class ChallengeHelper {
     res: Response
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
+      const challengeObject = await this.challengeService.findById(dataFollow.challenge_id);
 
       if (!challengeObject) {
         throw new NotFoundException("Challenge not found");
@@ -1786,8 +1786,8 @@ export class ChallengeHelper {
         userId = dataFollow?.user_id;
       }
 
-      let channelId = challengeObject?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const channelId = challengeObject?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: channelId,
       });
@@ -1808,15 +1808,15 @@ export class ChallengeHelper {
       }
 
       if (havePermission) {
-        let dataUpdate = {
+        const dataUpdate = {
           user_id: userId,
           challenge_id: dataFollow.challenge_id.toString(),
         };
 
-        let dataReturn = await this.challengePermissionService.removeOne(dataUpdate);
+        const dataReturn = await this.challengePermissionService.removeOne(dataUpdate);
 
         //Update count Video
-        let dataUpdateFilter = {
+        const dataUpdateFilter = {
           _id: new Types.ObjectId(challengeObject._id.toString()),
         };
         await this.challengeService.updateCount(dataUpdateFilter, { join_number: -1 });
@@ -1846,24 +1846,24 @@ export class ChallengeHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       //Title
-      let titleNotification = "CHINH PHỤC THỬ THÁCH MỚI";
+      const titleNotification = "CHINH PHỤC THỬ THÁCH MỚI";
       let descriptionNotification = `Xin chào! Bạn đã sẵn sàng với ${dataChallenge.title} chưa? `;
       if (descriptionNotification && descriptionNotification.length >= 255) {
         descriptionNotification = descriptionNotification.substring(0, 250) + "...";
       }
 
-      let userIdArray = [];
-      let channelId = dataChallenge?.channel_id?.toString();
-      let emailArray = [];
+      const userIdArray = [];
+      const channelId = dataChallenge?.channel_id?.toString();
+      const emailArray = [];
       if (channelId) {
         for (let itemPage: number = 1; itemPage <= 10; itemPage++) {
-          let allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
-          for (let itemUser of allUser) {
+          const allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
+          for (const itemUser of allUser) {
             if (itemUser?.user_id?._id) {
               userIdArray.push(itemUser?.user_id?._id?.toString());
-              let userEmail = itemUser?.user_id?.user_email;
+              const userEmail = itemUser?.user_id?.user_email;
               if (userEmail) {
                 emailArray.push(itemUser?.user_id);
               }
@@ -1876,11 +1876,11 @@ export class ChallengeHelper {
       }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           post_name: dataChallenge.title,
@@ -1907,12 +1907,12 @@ export class ChallengeHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataChallenge?._id?.toString(),
           path: "/r/challenge/detail/",
           data_id: dataChallenge?._id?.toString(),
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -1952,21 +1952,21 @@ export class ChallengeHelper {
   ) {
     try {
       //Title
-      let titleNotification = "LÀM 1 BƯỚC TRÚNG NHIỀU QUÀ";
+      const titleNotification = "LÀM 1 BƯỚC TRÚNG NHIỀU QUÀ";
       let descriptionNotification = `${fromUser?.display_name} vừa thêm bạn vào ${dataChallenge?.title}`;
       if (descriptionNotification && descriptionNotification.length >= 255) {
         descriptionNotification = descriptionNotification.substring(0, 250) + "...";
       }
 
-      let userIdArray = [toUser?._id?.toString()];
-      let emailArray = [toUser];
+      const userIdArray = [toUser?._id?.toString()];
+      const emailArray = [toUser];
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           post_name: dataChallenge.title,
@@ -1993,12 +1993,12 @@ export class ChallengeHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataChallenge?._id?.toString(),
           path: "/r/challenge/detail/",
           data_id: dataChallenge?._id?.toString(),
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,

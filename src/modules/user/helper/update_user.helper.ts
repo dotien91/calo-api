@@ -95,12 +95,12 @@ export class UpdateUserHelper {
    */
   async processUserUpdate(updateData: UpdateUserDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       if (updateData._id.toString() !== userObject._id.toString()) {
-        let userPermissionObject = await this.userPermissionService.isHavePermission(
+        const userPermissionObject = await this.userPermissionService.isHavePermission(
           userObject._id.toString(),
           "user/update"
         );
@@ -117,17 +117,17 @@ export class UpdateUserHelper {
         throw new NotFoundException("Empty update Data!");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         ...{ _id: updateData._id },
         ...updateData,
       };
       if (updateData?.travel_city) {
-        let dataCity = await this.cityService.findById(updateData?.travel_city);
+        const dataCity = await this.cityService.findById(updateData?.travel_city);
         if (!dataCity) {
           throw new BadRequestException("City not found!");
         }
         if (dataCity.loc && dataCity?.loc?.coordinates) {
-          let dataToUpdate = {
+          const dataToUpdate = {
             user_id: updateData._id,
             travel_city: updateData?.travel_city,
             loc: {
@@ -141,8 +141,8 @@ export class UpdateUserHelper {
       //Check Password
       if (dataUpdate?.old_password && dataUpdate?.user_password) {
         //Check Old Password
-        let dataToUpdatePassword = await this.appUserService.findById(dataUpdate?._id?.toString(), {});
-        let passwordToCheck = await this.handleProcessPassword(dataUpdate?.old_password);
+        const dataToUpdatePassword = await this.appUserService.findById(dataUpdate?._id?.toString(), {});
+        const passwordToCheck = await this.handleProcessPassword(dataUpdate?.old_password);
         if (passwordToCheck?.toString() !== dataToUpdatePassword?.user_password?.toString()) {
           throw new BadRequestException("E-mail or Password is not correct!");
         }
@@ -157,12 +157,12 @@ export class UpdateUserHelper {
         isUpdateAvatar = true;
       }
 
-      let dataReturn = await this.appUserService.update(dataUpdate);
+      const dataReturn = await this.appUserService.update(dataUpdate);
       if (
         updateData.user_avatar_thumbnail &&
         updateData.user_avatar_thumbnail.indexOf("lgbtapp.s3.ap-southeast-1.amazonaws.com") !== -1
       ) {
-        let dataUpdateOption = {
+        const dataUpdateOption = {
           user_id: updateData._id,
           is_avatar: 1,
         };
@@ -171,7 +171,7 @@ export class UpdateUserHelper {
 
       if (updateData?.user_role) {
         //Check Admin && Permission
-        let userPermissionObject = await this.userPermissionService.isHavePermission(
+        const userPermissionObject = await this.userPermissionService.isHavePermission(
           userObject._id.toString(),
           "user/update"
         );
@@ -184,8 +184,8 @@ export class UpdateUserHelper {
         //Check Data
         //Update
         //Validate
-        let avatarUrl = dataUpdate?.user_avatar;
-        let image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
+        const avatarUrl = dataUpdate?.user_avatar;
+        const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
 
         let genderPoint = 0;
         if (image1Object && image1Object?.gender) {
@@ -202,17 +202,17 @@ export class UpdateUserHelper {
           genderPoint = 10;
         }
 
-        let userOptionData = await this.userOptionService.findOne({ user_id: updateData._id?.toString() });
-        let oldPoint = userOptionData?.avatar_point;
+        const userOptionData = await this.userOptionService.findOne({ user_id: updateData._id?.toString() });
+        const oldPoint = userOptionData?.avatar_point;
 
         //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-        let pointToPlus =
+        const pointToPlus =
           parseFloat(userOptionData?.circle_point?.toString()) -
           parseFloat(oldPoint?.toString()) +
           parseFloat(genderPoint?.toString());
 
         //Update Gender Point
-        let dataUpdateAfter = {
+        const dataUpdateAfter = {
           user_id: updateData._id?.toString(),
           avatar_point: genderPoint,
           avatar_gender: image1Object?.gender,
@@ -221,17 +221,17 @@ export class UpdateUserHelper {
 
         await this.userOptionService.update(dataUpdateAfter);
 
-        let dataValidate = await this.faceDetectionService.findOne({
+        const dataValidate = await this.faceDetectionService.findOne({
           user_id: userObject._id.toString(),
           validate_status: 1,
         });
 
         if (dataValidate) {
-          let image2Object = await this.chatMediaService.findById(dataValidate.id_compare?.toString());
+          const image2Object = await this.chatMediaService.findById(dataValidate.id_compare?.toString());
           if (image1Object && image2Object) {
-            let dataIds = [];
+            const dataIds = [];
             if (dataValidate.media_ids) {
-              for (let mediaItem of dataValidate.media_ids) {
+              for (const mediaItem of dataValidate.media_ids) {
                 dataIds.push(mediaItem.toString());
               }
             }
@@ -273,7 +273,7 @@ export class UpdateUserHelper {
   async handleProcessPassword(password: string) {
     try {
       password = password + "pxtPAtrn9Q2xADXp";
-      let newPassword = createHash("sha256").update(password).digest("hex");
+      const newPassword = createHash("sha256").update(password).digest("hex");
       return newPassword?.toString();
     } catch (error) {
       this.logger.log("Login with Password Error: " + JSON.stringify(error));
@@ -287,21 +287,21 @@ export class UpdateUserHelper {
    */
   async updateTravelCity(req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataToUpdate = {
+      const userId = userObject._id.toString();
+      const dataToUpdate = {
         user_id: userId,
         travel_city: null,
       };
       await this.userOptionService.update(dataToUpdate);
-      let dataUpdateMain = {
+      const dataUpdateMain = {
         _id: userId,
         travel_city: null,
       };
-      let dataReturn = await this.appUserService.update(dataUpdateMain);
+      const dataReturn = await this.appUserService.update(dataUpdateMain);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -317,20 +317,20 @@ export class UpdateUserHelper {
   async processUserCron() {
     try {
       if (process.env.BRANCH_NAME === "live_video" || process.env.BRANCH_NAME === "chat_gpt") {
-        let dataCountries = TimeZone.getAllCountries();
+        const dataCountries = TimeZone.getAllCountries();
 
-        let countriesMorning = [];
-        let countriesNoon = [];
-        let countriesAfternoon = [];
-        let countriesEvening = [];
+        const countriesMorning = [];
+        const countriesNoon = [];
+        const countriesAfternoon = [];
+        const countriesEvening = [];
 
         const date = new Date();
-        let utcHour = date.getUTCHours();
+        const utcHour = date.getUTCHours();
 
         for (const key of Object.keys(dataCountries)) {
           const val = dataCountries[key];
-          let dataTimeZone = TimeZone.getTimezone(val.timezones[0]);
-          let dataHour = dataTimeZone?.utcOffset / 60;
+          const dataTimeZone = TimeZone.getTimezone(val.timezones[0]);
+          const dataHour = dataTimeZone?.utcOffset / 60;
 
           if (utcHour + dataHour === 7) {
             countriesMorning.push(key);
@@ -346,19 +346,19 @@ export class UpdateUserHelper {
           }
           // use val
         }
-        let authCode =
+        const authCode =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjY2NDcxMjAsImRhdGEiOnsiX2lkIjoiNjRkODc2M2Y1NjUxMTAxOWJlZTEyM2U4Iiwia2V5IjoiNWNjN2YzZmQ1ODVkNzBmZmI3YmYxZTRmMGI1ZDE5OTAiLCJzaWduYXR1cmUiOiJlOTk2OTkyYzU3N2YyZjQwOWQyMGEwZDYyYTBhZGRlZiIsInNlc3Npb24iOiI2NTA5NTdkMGJhNzU4M2FkODIyNzJjMzcifSwiaWF0IjoxNjk1MTExMTIwfQ.mxk4ZiIi8yXo5ul6RCYCuyngimMy6syUQUHGwHNtQfg";
 
-        for (let countryItem of countriesMorning) {
+        for (const countryItem of countriesMorning) {
           this.handleSendMessageForTime(countryItem, countryItem + "_morning", authCode);
         }
-        for (let countryItem of countriesAfternoon) {
+        for (const countryItem of countriesAfternoon) {
           this.handleSendMessageForTime(countryItem, countryItem + "_afternoon", authCode);
         }
-        for (let countryItem of countriesNoon) {
+        for (const countryItem of countriesNoon) {
           this.handleSendMessageForTime(countryItem, countryItem + "_noon", authCode);
         }
-        for (let countryItem of countriesEvening) {
+        for (const countryItem of countriesEvening) {
           this.handleSendMessageForTime(countryItem, countryItem + "_evening", authCode);
         }
       }
@@ -374,11 +374,11 @@ export class UpdateUserHelper {
    * @returns
    */
   async handleSendMessageForTime(countryItem: string, configName: string, authCode: string) {
-    let configData = configName;
-    let dataFind = {
+    const configData = configName;
+    const dataFind = {
       type: configData,
     };
-    let dataConfig = await this.configService.findOne(dataFind);
+    const dataConfig = await this.configService.findOne(dataFind);
     if (!dataConfig) {
       return null;
     }
@@ -391,17 +391,17 @@ export class UpdateUserHelper {
 
     let anonymousArray = null;
     if (process.env.BRANCH_NAME !== "live_video") {
-      let dataContent = dataConfig?.data_content;
+      const dataContent = dataConfig?.data_content;
       if (dataContent) {
         anonymousArray = await this.userAnonymousService.filter({ user_type: dataContent?.toString() }, {}, 1, 10000);
       }
     }
 
     if (anonymousArray && anonymousArray?.length) {
-      for (let userArrayItem of anonymousArray) {
+      for (const userArrayItem of anonymousArray) {
         if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-          let arrayMessage = dataConfig?.data_filter;
-          let notificationTitle = "Hey " + userArrayItem?.display_name + "!";
+          const arrayMessage = dataConfig?.data_filter;
+          const notificationTitle = "Hey " + userArrayItem?.display_name + "!";
           let notificationDescription = _.sample(arrayMessage);
           notificationDescription = notificationDescription.replace("{{display_name}}", userArrayItem?.display_name);
           await this.sendNotificationToUser(
@@ -416,10 +416,10 @@ export class UpdateUserHelper {
       }
     }
     if (userArray && userArray.length) {
-      for (let userArrayItem of userArray) {
+      for (const userArrayItem of userArray) {
         if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-          let arrayMessage = dataConfig?.data_filter;
-          let notificationTitle = "Hey " + userArrayItem?.display_name + "!";
+          const arrayMessage = dataConfig?.data_filter;
+          const notificationTitle = "Hey " + userArrayItem?.display_name + "!";
           let notificationDescription = _.sample(arrayMessage);
           notificationDescription = notificationDescription.replace("{{display_name}}", userArrayItem?.display_name);
           await this.sendNotificationToUser(
@@ -442,12 +442,12 @@ export class UpdateUserHelper {
    */
   async processUpdateUserActive(updateData: UpdateUserActiveDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let currentTime = new Date();
+      const authCode = req?.auth_code;
+      const currentTime = new Date();
 
       let dataToUpdate = {
         _id: userObject._id.toString(),
@@ -466,11 +466,11 @@ export class UpdateUserHelper {
           },
         };
         //Check country && core
-        let dataKey = userObject.country + "_message";
-        let dataFindConfig = {
+        const dataKey = userObject.country + "_message";
+        const dataFindConfig = {
           type: dataKey,
         };
-        let dataReturnConfig: any = await this.configService.findOne(dataFindConfig);
+        const dataReturnConfig: any = await this.configService.findOne(dataFindConfig);
         // let isMatch = true;
         // if (dataReturnConfig) {
         //   if (dataReturnConfig.data_filter) {
@@ -482,7 +482,7 @@ export class UpdateUserHelper {
         //   }
         // }
         if (dataReturnConfig) {
-          let dataMessage = dataReturnConfig.data_content;
+          const dataMessage = dataReturnConfig.data_content;
           //Send Message
           this.sendMessage(userObject, req, res, dataMessage);
         }
@@ -490,25 +490,25 @@ export class UpdateUserHelper {
 
       //Send message to CallU user
       if (process.env.BRANCH_NAME === "live_video") {
-        let userObjectDetail: any = await this.appUserService.findOneLogin({ _id: userObject?._id?.toString() });
+        const userObjectDetail: any = await this.appUserService.findOneLogin({ _id: userObject?._id?.toString() });
         if (userObjectDetail?.base_role === "women") {
           //Get user
-          let dataLoc = userObjectDetail?.loc?.coordinates;
-          let dataToFilterCallU = {
+          const dataLoc = userObjectDetail?.loc?.coordinates;
+          const dataToFilterCallU = {
             latitude: parseFloat(dataLoc[1]?.toString()),
             longitude: parseFloat(dataLoc[0]?.toString()),
             distance: 1000,
             is_match: "1",
             base_role: "man",
           };
-          let orderByOBject = {};
-          let page = 1;
-          let limit = 20;
+          const orderByOBject = {};
+          const page = 1;
+          const limit = 20;
           console.log(dataToFilterCallU, "dataToFilterCallU");
-          let dataReturn = await this.userOptionService.filterFree(dataToFilterCallU, orderByOBject, page, limit);
-          for (let userItem of dataReturn) {
-            let notificationTitle = userObjectDetail?.display_name;
-            let notificationDescription = userObjectDetail?.display_name + " online now! Let send message to her!";
+          const dataReturn = await this.userOptionService.filterFree(dataToFilterCallU, orderByOBject, page, limit);
+          for (const userItem of dataReturn) {
+            const notificationTitle = userObjectDetail?.display_name;
+            const notificationDescription = userObjectDetail?.display_name + " online now! Let send message to her!";
             await this.sendNotificationToUser(
               userItem?._id?.toString(),
               userObjectDetail,
@@ -520,16 +520,16 @@ export class UpdateUserHelper {
           }
         }
       }
-      let dataBaseUser = await this.appUserService.update(dataToUpdate);
+      const dataBaseUser = await this.appUserService.update(dataToUpdate);
       dataToUpdate = { ...dataToUpdate, ...{ user_id: userObject._id.toString() } };
       delete dataToUpdate._id;
 
       //Update time_point, circle_point
-      let userOptionData = await this.userOptionService.findOne({ user_id: dataToUpdate._id?.toString() });
-      let oldPoint = userOptionData?.time_point ? userOptionData?.time_point : 0;
+      const userOptionData = await this.userOptionService.findOne({ user_id: dataToUpdate._id?.toString() });
+      const oldPoint = userOptionData?.time_point ? userOptionData?.time_point : 0;
 
       //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-      let pointToPlus =
+      const pointToPlus =
         parseFloat(userOptionData?.circle_point ? userOptionData.time_point?.toString() : "0") -
         parseFloat(oldPoint?.toString());
 
@@ -549,7 +549,7 @@ export class UpdateUserHelper {
         };
       }
 
-      let dataReturn = await this.userOptionService.update(dataToUpdate);
+      const dataReturn = await this.userOptionService.update(dataToUpdate);
       //Handle Send Message
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -567,17 +567,17 @@ export class UpdateUserHelper {
    */
   async processUserUpdateMapCount(req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         map_count: 1,
       };
-      let dataFilter = {
+      const dataFilter = {
         _id: userObject._id.toString(),
       };
-      let dataReturn = await this.appUserService.updateCount(dataFilter, dataUpdate);
+      const dataReturn = await this.appUserService.updateCount(dataFilter, dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -595,20 +595,20 @@ export class UpdateUserHelper {
    */
   async handleRequestLocation(dataRequest: RequestDataDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let dataPartner = await this.appUserService.findOneLogin({ _id: dataRequest?.partner_id });
+      const authCode = req?.auth_code;
+      const dataPartner = await this.appUserService.findOneLogin({ _id: dataRequest?.partner_id });
       if (!dataPartner) {
         throw new BadRequestException("Partner not exist!");
       } else {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           data_id: userObject._id.toString(),
           path: "/v/user/",
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: userObject._id.toString(),
           user_id: dataRequest?.partner_id,
           channel_id: req?.channel_id,
@@ -641,13 +641,13 @@ export class UpdateUserHelper {
    */
   async processUpdateUserOption(updateData: UpdateUserOptionDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       let isAdmin = false;
       if (updateData.user_id.toString() !== userObject._id.toString()) {
-        let userPermissionObject = await this.userPermissionService.isHavePermission(
+        const userPermissionObject = await this.userPermissionService.isHavePermission(
           userObject._id.toString(),
           "user/update"
         );
@@ -687,10 +687,10 @@ export class UpdateUserHelper {
       if (updateData.user_mood) {
         userMood = JSON.parse(updateData.user_mood.toString());
         userMood = { ...userMood, ...{ updateAt: new Date() } };
-        let dataUserMood = await this.userMoodService.findOne({ user_id: updateData.user_id.toString() });
+        const dataUserMood = await this.userMoodService.findOne({ user_id: updateData.user_id.toString() });
         if (!dataUserMood || dataUserMood.text.toString() !== userMood?.text) {
           //Create new User Mood
-          let dataCreateUserMood = {
+          const dataCreateUserMood = {
             user_id: updateData.user_id.toString(),
             text: userMood?.text,
             image: userMood?.image,
@@ -711,10 +711,10 @@ export class UpdateUserHelper {
 
       let publicAlbum = [];
       if (updateData.public_album) {
-        let newPublicAlbum = JSON.parse(updateData.public_album);
-        let dataPublicNew = [];
+        const newPublicAlbum = JSON.parse(updateData.public_album);
+        const dataPublicNew = [];
         if (newPublicAlbum && newPublicAlbum?.length) {
-          for (let itemAlbum of newPublicAlbum) {
+          for (const itemAlbum of newPublicAlbum) {
             if (itemAlbum) {
               dataPublicNew.push(itemAlbum);
             }
@@ -763,7 +763,7 @@ export class UpdateUserHelper {
 
       if (updateData.user_birthday) {
         let userBirthdayYear = 0;
-        let birthdayObject = new Date(updateData.user_birthday.toString());
+        const birthdayObject = new Date(updateData.user_birthday.toString());
         if (birthdayObject) {
           userBirthdayYear = birthdayObject.getFullYear();
         }
@@ -1024,7 +1024,7 @@ export class UpdateUserHelper {
         }
       }
 
-      let dataReturn = await this.userOptionService.update(dataUpdate);
+      const dataReturn = await this.userOptionService.update(dataUpdate);
       await this.appUserService.updateCount({ _id: dataUpdate?._id }, { user_version: 1 });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1041,12 +1041,12 @@ export class UpdateUserHelper {
    */
   async processDeleteUser(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       if (id.toString() !== userObject._id.toString()) {
-        let userPermissionObject = await this.userPermissionService.isHavePermission(
+        const userPermissionObject = await this.userPermissionService.isHavePermission(
           userObject._id.toString(),
           "user/delete"
         );
@@ -1056,12 +1056,12 @@ export class UpdateUserHelper {
         }
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         _id: id,
         user_status: "0",
       };
-      let dataReturn = await this.appUserService.update(dataUpdate);
-      let dataOptionUpdate = {
+      const dataReturn = await this.appUserService.update(dataUpdate);
+      const dataOptionUpdate = {
         user_id: id,
         user_status: 0,
       };
@@ -1085,11 +1085,11 @@ export class UpdateUserHelper {
    */
   async processViewUser(dataFollow: CreateUserViewDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
       if (dataFollow.partner_id.toString() === userObject._id.toString()) {
         //Check Admin
         return res
@@ -1097,15 +1097,15 @@ export class UpdateUserHelper {
           .status(HttpStatus.OK)
           .json({});
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         partner_id: dataFollow.partner_id.toString(),
       };
       let dataReturn = await this.userViewService.update(dataUpdate);
 
-      let followUserObject = [];
+      const followUserObject = [];
       if (userObject?.follow_users && userObject?.follow_users?.length) {
-        for (let followItem of userObject?.follow_users) {
+        for (const followItem of userObject?.follow_users) {
           followUserObject.push(followItem.toString());
         }
       }
@@ -1116,9 +1116,9 @@ export class UpdateUserHelper {
         dataReturn = { ...dataReturn, ...{ is_follow: false } };
       }
 
-      let blockUserObject = [];
+      const blockUserObject = [];
       if (userObject?.block_users && userObject?.block_users?.length) {
-        for (let blockItem of userObject?.block_users) {
+        for (const blockItem of userObject?.block_users) {
           blockUserObject.push(blockItem.toString());
         }
       }
@@ -1132,11 +1132,11 @@ export class UpdateUserHelper {
       //Send Notification if Brand is CallU
       if (process.env.BRANCH_NAME === "live_video") {
         //let userObjectDetail: any = await this.appUserService.findOneLogin({ _id: dataFollow.partner_id.toString() });
-        let partnerObjectDetail: any = await this.appUserService.findOneLogin({ _id: userObject._id.toString() });
+        const partnerObjectDetail: any = await this.appUserService.findOneLogin({ _id: userObject._id.toString() });
         if (partnerObjectDetail?.base_role === "women") {
           //Get user
-          let notificationTitle = partnerObjectDetail?.display_name;
-          let notificationDescription = partnerObjectDetail?.display_name + " visits you, text her now!";
+          const notificationTitle = partnerObjectDetail?.display_name;
+          const notificationDescription = partnerObjectDetail?.display_name + " visits you, text her now!";
           await this.sendNotificationToUser(
             dataFollow.partner_id.toString(),
             partnerObjectDetail,
@@ -1166,12 +1166,12 @@ export class UpdateUserHelper {
    */
   async processFollowUser(dataFollow: CreateUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let userSession = req?.session_id;
+      const authCode = req?.auth_code;
+      const userSession = req?.session_id;
       if (dataFollow.partner_id.toString() === userObject._id.toString()) {
         //Check Admin
         throw new BadRequestException("You haven't permission for this Action!");
@@ -1185,14 +1185,14 @@ export class UpdateUserHelper {
         dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
       }
       //Update for Partner
-      let dataPartnerUpdate = {
+      const dataPartnerUpdate = {
         user_id: dataFollow.partner_id.toString(),
         partner_id: userObject._id.toString(),
         match_status: 1,
       };
 
       //Query 01
-      let followPartnerObject = await this.userFollowService.updateWithoutCreate(dataPartnerUpdate);
+      const followPartnerObject = await this.userFollowService.updateWithoutCreate(dataPartnerUpdate);
 
       let isSendNotification = false;
       if (followPartnerObject && followPartnerObject._id) {
@@ -1205,14 +1205,14 @@ export class UpdateUserHelper {
       let dataDisagreeToCompare = [];
 
       if (userObject?.disagree_users) {
-        for (let disagreeItem of userObject?.disagree_users) {
+        for (const disagreeItem of userObject?.disagree_users) {
           dataDisagreeToCompare.push(disagreeItem.toString());
         }
       }
       dataDisagreeToCompare = dataDisagreeToCompare.filter((value, index) => {
         return value !== dataFollow.partner_id.toString();
       });
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: userObject._id.toString(),
         follow_users: dataFollowUpdate,
         disagree_users: dataDisagreeToCompare,
@@ -1220,7 +1220,7 @@ export class UpdateUserHelper {
       //Update Follow User
       //Query 02
       await this.appUserService.update(dataToUpdate);
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         circle_point: -2,
         like_point: -2,
       };
@@ -1230,7 +1230,11 @@ export class UpdateUserHelper {
       let dataReturn = await this.userFollowService.update(dataUpdate);
       if (dataReturn.match_status) {
         //Query 04
-        let chatRoomObject = await this.chatRoomHelper.handleCreateRoom(userObject, dataFollow.partner_id, "personal");
+        const chatRoomObject = await this.chatRoomHelper.handleCreateRoom(
+          userObject,
+          dataFollow.partner_id,
+          "personal"
+        );
         //Create Room
         dataReturn = { ...dataReturn, ...{ create_room: chatRoomObject } };
       } else {
@@ -1241,16 +1245,16 @@ export class UpdateUserHelper {
         await this.sendNotificationToPartner(dataFollow.partner_id.toString(), userObject, authCode, req);
       } else {
         //Check Last Notification
-        let currentTime = new Date().getTime();
-        let lastHour = currentTime - 60 * 60 * 1000;
-        let afterTime = new Date(lastHour);
+        const currentTime = new Date().getTime();
+        const lastHour = currentTime - 60 * 60 * 1000;
+        const afterTime = new Date(lastHour);
 
-        let dataFilterNotification = {
+        const dataFilterNotification = {
           from_time: afterTime.toString(),
           notification_type: "like",
           user_id: dataFollow.partner_id.toString(),
         };
-        let dataNotification = await this.notificationService.filter(dataFilterNotification, {}, 1, 1);
+        const dataNotification = await this.notificationService.filter(dataFilterNotification, {}, 1, 1);
         if (!dataNotification || dataNotification.length == 0) {
           await this.sendNotificationToLike(dataFollow.partner_id.toString(), userObject, authCode, req);
         }
@@ -1274,7 +1278,7 @@ export class UpdateUserHelper {
    */
   async processUnFollowUser(dataFollow: CreateUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1282,23 +1286,23 @@ export class UpdateUserHelper {
         //Check User
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         partner_id: dataFollow.partner_id.toString(),
       };
-      let dataToCheck = await this.userFollowService.findOne(dataFindOne);
+      const dataToCheck = await this.userFollowService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        let dataReturn = await this.userFollowService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userFollowService.remove(dataToCheck._id.toString());
         //Remove in Partner
-        let dataPartnerUpdate = {
+        const dataPartnerUpdate = {
           partner_id: userObject._id.toString(),
           user_id: dataFollow.partner_id.toString(),
           match_status: 0,
         };
         await this.userFollowService.update(dataPartnerUpdate);
 
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           circle_point: 1,
           like_point: 1,
         };
@@ -1306,21 +1310,21 @@ export class UpdateUserHelper {
 
         if (userObject?.follow_users) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
-          let dataFollowUpdate = userObject?.follow_users?.filter((value: any, index: number) => {
+          const dataFollowUpdate = userObject?.follow_users?.filter((value: any, index: number) => {
             if (value?.toString() === dataFollow.partner_id.toString()) {
               return false;
             } else {
               return true;
             }
           });
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             follow_users: dataFollowUpdate,
           };
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         } else {
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             follow_users: [],
           };
@@ -1349,7 +1353,7 @@ export class UpdateUserHelper {
    */
   async processDisagreeUser(dataFollow: CreateUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1357,7 +1361,7 @@ export class UpdateUserHelper {
         //Check Admin
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         partner_id: dataFollow.partner_id.toString(),
       };
@@ -1368,7 +1372,7 @@ export class UpdateUserHelper {
 
       let dataFollowToCompare = [];
       if (userObject?.follow_users) {
-        for (let followItem of userObject?.follow_users) {
+        for (const followItem of userObject?.follow_users) {
           dataFollowToCompare.push(followItem.toString());
         }
       }
@@ -1376,28 +1380,28 @@ export class UpdateUserHelper {
         return value !== dataFollow.partner_id.toString();
       });
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: userObject._id.toString(),
         disagree_users: dataFollowUpdate,
         follow_users: dataFollowToCompare,
       };
       //Update Follow User
       await this.appUserService.update(dataToUpdate);
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         circle_point: 1,
         like_point: 1,
       };
       await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
       await this.userFollowService.removeOne(dataUpdate);
       //Update partner Data
-      let updatePartner = {
+      const updatePartner = {
         user_id: dataFollow.partner_id.toString(),
         partner_id: userObject._id.toString(),
         match_status: 0,
       };
       await this.userFollowService.updateWithoutCreate(updatePartner);
 
-      let dataReturn = await this.userDisagreeService.update(dataUpdate);
+      const dataReturn = await this.userDisagreeService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1416,7 +1420,7 @@ export class UpdateUserHelper {
    */
   async processUnDisagreeUser(dataFollow: CreateUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1424,37 +1428,37 @@ export class UpdateUserHelper {
         //Check User
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         partner_id: dataFollow.partner_id.toString(),
       };
-      let dataToCheck = await this.userDisagreeService.findOne(dataFindOne);
+      const dataToCheck = await this.userDisagreeService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           circle_point: -2,
           like_point: -2,
         };
         await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
-        let dataReturn = await this.userDisagreeService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userDisagreeService.remove(dataToCheck._id.toString());
 
         if (userObject?.disagree_users) {
           //dataFollowUpdate = _.union(userObject?.disagree_users, dataFollowUpdate);
-          let dataFollowUpdate = userObject?.disagree_users?.filter((value: any, index: number) => {
+          const dataFollowUpdate = userObject?.disagree_users?.filter((value: any, index: number) => {
             if (value?.toString() === dataFollow.partner_id.toString()) {
               return false;
             } else {
               return true;
             }
           });
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             disagree_users: dataFollowUpdate,
           };
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         } else {
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             disagree_users: [],
           };
@@ -1483,7 +1487,7 @@ export class UpdateUserHelper {
    */
   async processBlockUser(dataBlock: CreateUserBlockDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1491,23 +1495,23 @@ export class UpdateUserHelper {
         //Check Admin
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataToFind = {
+      const dataToFind = {
         partner_id: userObject._id.toString(),
         user_id: dataBlock.partner_id.toString(),
       };
-      let dataBlockToCheck = await this.userBlockService.findOne(dataToFind);
+      const dataBlockToCheck = await this.userBlockService.findOne(dataToFind);
       if (dataBlockToCheck) {
         throw new NotFoundException("Can't block this user!");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         partner_id: dataBlock.partner_id.toString(),
       };
-      let dataReturn = await this.userBlockService.update(dataUpdate);
+      const dataReturn = await this.userBlockService.update(dataUpdate);
 
-      let chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
+      const chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
       if (chatRoomData) {
-        let dataToUpdate = {
+        const dataToUpdate = {
           user_block: userObject._id.toString(),
         };
         await this.chatRoomUserOptionService.updateMany(
@@ -1520,7 +1524,7 @@ export class UpdateUserHelper {
       if (userObject?.block_users) {
         dataBlockUpdate = _.union(userObject?.block_users, dataBlockUpdate);
       }
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: userObject._id.toString(),
         block_users: dataBlockUpdate,
       };
@@ -1537,25 +1541,25 @@ export class UpdateUserHelper {
   }
 
   async handleUpdateFollow(res: Response, req: ExpressRequestDto) {
-    let dataUser = await this.appUserService.filter({}, {}, 1, 10000);
+    const dataUser = await this.appUserService.filter({}, {}, 1, 10000);
     if (dataUser && dataUser.length) {
-      for (let dataItem of dataUser) {
-        let userId = dataItem._id.toString();
-        let followObject = await this.userFollowService.filter({ user_id: userId }, {}, 1, 10000);
-        let dataFollowToUpdate = [];
+      for (const dataItem of dataUser) {
+        const userId = dataItem._id.toString();
+        const followObject = await this.userFollowService.filter({ user_id: userId }, {}, 1, 10000);
+        const dataFollowToUpdate = [];
         if (followObject && followObject.length) {
-          for (let followItem of followObject) {
+          for (const followItem of followObject) {
             dataFollowToUpdate.push(followItem.partner_id._id.toString());
           }
         }
-        let blockObject = await this.userBlockService.filter({ user_id: userId }, {}, 1, 10000);
-        let dataBlockToUpdate = [];
+        const blockObject = await this.userBlockService.filter({ user_id: userId }, {}, 1, 10000);
+        const dataBlockToUpdate = [];
         if (blockObject && blockObject.length) {
-          for (let blockItem of blockObject) {
+          for (const blockItem of blockObject) {
             dataBlockToUpdate.push(blockItem.partner_id._id.toString());
           }
         }
-        let dataUserToUpdate = {
+        const dataUserToUpdate = {
           _id: userId,
           block_users: dataBlockToUpdate,
           follow_users: dataFollowToUpdate,
@@ -1575,9 +1579,9 @@ export class UpdateUserHelper {
    */
   async sendMessage(partnerObject: User, req: ExpressRequestDto, res: Response, dataMessage: string) {
     setTimeout(async () => {
-      let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
       //Create new
-      let dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
         supportAccount,
         partnerObject._id.toString(),
         "personal",
@@ -1598,14 +1602,14 @@ export class UpdateUserHelper {
         //   return null;
         // }
 
-        let chatContent = dataMessage;
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const chatContent = dataMessage;
+        const tokenReturn = this.jwtHelper.generateJwt(
           process.env.INFO_USER,
           supportAccount?.user_email?.toString(),
           process.env.INFO_SESSION,
           true
         );
-        let createChatHistoryDto = {
+        const createChatHistoryDto = {
           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
           chat_content: chatContent,
         };
@@ -1615,7 +1619,7 @@ export class UpdateUserHelper {
         req.session_id = process.env.INFO_SESSION;
         req.auth_code = tokenReturn.toString();
 
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,
@@ -1637,7 +1641,7 @@ export class UpdateUserHelper {
    */
   async processUnBlockUser(dataBlock: CreateUserBlockDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1645,17 +1649,17 @@ export class UpdateUserHelper {
         //Check User
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         partner_id: dataBlock.partner_id.toString(),
       };
-      let dataToCheck = await this.userBlockService.findOne(dataFindOne);
+      const dataToCheck = await this.userBlockService.findOne(dataFindOne);
       if (dataToCheck) {
-        let dataReturn = await this.userBlockService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userBlockService.remove(dataToCheck._id.toString());
 
-        let chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
+        const chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
         if (chatRoomData) {
-          let dataToUpdate = {
+          const dataToUpdate = {
             user_block: "",
           };
           await this.chatRoomUserOptionService.updateMany(
@@ -1666,21 +1670,21 @@ export class UpdateUserHelper {
 
         if (userObject?.block_users) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
-          let dataBlockUpdate = userObject?.block_users?.filter((value: any, index: number) => {
+          const dataBlockUpdate = userObject?.block_users?.filter((value: any, index: number) => {
             if (value?.toString() === dataBlock.partner_id.toString()) {
               return false;
             } else {
               return true;
             }
           });
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             block_users: dataBlockUpdate,
           };
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         } else {
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id.toString(),
             block_users: [],
           };
@@ -1706,14 +1710,14 @@ export class UpdateUserHelper {
    */
   async sendNotificationToPartner(partnerId: string, fromUser: any, authCode, req: ExpressRequestDto) {
     try {
-      let userDisplay = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
-      let notificationTitle = userDisplay + " đã trở thành bạn bè của bạn!";
-      let contentNotification = "Xem ngay hồ sơ của " + userDisplay + "! Họ đã trở thành bạn bè của bạn!";
+      const userDisplay = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const notificationTitle = userDisplay + " đã trở thành bạn bè của bạn!";
+      const contentNotification = "Xem ngay hồ sơ của " + userDisplay + "! Họ đã trở thành bạn bè của bạn!";
       // if (fromUser?.country == "VN") {
       //   notificationTitle = "Ai đó đã tương hợp với bạn!";
       //   contentNotification = "Anh ấy có phải là định mệnh của bạn hay không? Anh ấy là ai?";
       // }
-      let dataNotification = {
+      const dataNotification = {
         createdBy: fromUser._id.toString(),
         user_id: partnerId,
         title: notificationTitle,
@@ -1747,7 +1751,7 @@ export class UpdateUserHelper {
     authCode: string
   ) {
     try {
-      let dataNotification = {
+      const dataNotification = {
         createdBy: fromUser._id.toString(),
         user_id: partnerId,
         title: title,
@@ -1762,14 +1766,14 @@ export class UpdateUserHelper {
       };
       // console.log(dataNotification, "dataNotification");
       //Check last Notification
-      let dataNotificationObject: any = await this.notificationHelper.getNotification({
+      const dataNotificationObject: any = await this.notificationHelper.getNotification({
         user_id: partnerId.toString(),
       });
       if (dataNotificationObject) {
-        let updatedAt = new Date(dataNotificationObject.createdAt).getTime();
-        let currentTime = new Date().getTime();
+        const updatedAt = new Date(dataNotificationObject.createdAt).getTime();
+        const currentTime = new Date().getTime();
         //console.log(currentTime - updatedAt);
-        let leftTime = currentTime - updatedAt;
+        const leftTime = currentTime - updatedAt;
         if (leftTime < 3600000) {
           console.log("Not return");
           return null;
@@ -1789,12 +1793,12 @@ export class UpdateUserHelper {
    */
   async sendNotificationToLike(partnerId: string, fromUser: User, authCode: string, req: ExpressRequestDto) {
     try {
-      let userDisplay = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const userDisplay = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
 
-      let notificationTitle = userDisplay + " đã theo dõi bạn!";
-      var contentNotification = userDisplay + " đã theo dõi bạn, hãy xem hồ sơ và tạo vòng kết nối với họ!";
+      const notificationTitle = userDisplay + " đã theo dõi bạn!";
+      const contentNotification = userDisplay + " đã theo dõi bạn, hãy xem hồ sơ và tạo vòng kết nối với họ!";
 
-      let dataNotification = {
+      const dataNotification = {
         createdBy: fromUser._id.toString(),
         user_id: partnerId,
         title: notificationTitle,
@@ -1825,11 +1829,11 @@ export class UpdateUserHelper {
    */
   async createUserInterest(createUserInterest: CreateUserInterestDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
         if (createUserInterest?.name_object) {
           createUserInterest = {
@@ -1837,7 +1841,7 @@ export class UpdateUserHelper {
             ...{ name_object: JSON.parse(createUserInterest?.name_object) },
           };
         }
-        let dataCreate = await this.userInterestService.create(createUserInterest);
+        const dataCreate = await this.userInterestService.create(createUserInterest);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1859,14 +1863,14 @@ export class UpdateUserHelper {
    */
   async handleGetUserInterestByUserId(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new NotFoundException("User is invalid");
       }
-      let dataFilter = {
+      const dataFilter = {
         _id: id.toString(),
       };
-      let dataUser = await this.userInterestService.findOne(dataFilter, true);
+      const dataUser = await this.userInterestService.findOne(dataFilter, true);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1886,11 +1890,11 @@ export class UpdateUserHelper {
    */
   async processUpdateUserQuestion(dataUpdate: UpdateUserQuestionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
         if (dataUpdate?.question) {
           dataUpdate = {
@@ -1898,7 +1902,7 @@ export class UpdateUserHelper {
             ...{ question: JSON.parse(dataUpdate?.question) },
           };
         }
-        let dataCreate = await this.userQuestionService.update(dataUpdate);
+        const dataCreate = await this.userQuestionService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1921,11 +1925,11 @@ export class UpdateUserHelper {
    */
   async processCreateUserQuestion(dataUpdate: CreateUserQuestionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
         if (dataUpdate?.question) {
           dataUpdate = {
@@ -1933,7 +1937,7 @@ export class UpdateUserHelper {
             ...{ question: JSON.parse(dataUpdate?.question), user_id: userId },
           };
         }
-        let dataCreate = await this.userQuestionService.create(dataUpdate);
+        const dataCreate = await this.userQuestionService.create(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1956,24 +1960,24 @@ export class UpdateUserHelper {
    */
   async processCreateUserLocation(dataUpdate: CreateUserLocationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let userId = userObject._id.toString();
+      const authCode = req?.auth_code;
+      const userId = userObject._id.toString();
       dataUpdate = {
         ...dataUpdate,
         ...{ user_id: userId },
       };
 
-      let dataCreate = await this.userLocationService.create(dataUpdate);
+      const dataCreate = await this.userLocationService.create(dataUpdate);
       //Update user option
-      let dataUpdateUserOption = {
+      const dataUpdateUserOption = {
         user_id: userId,
         last_user_location: dataCreate?._id?.toString(),
       };
-      let dataUpdateUser = {
+      const dataUpdateUser = {
         _id: userId,
         last_user_location: dataCreate?._id?.toString(),
       };
@@ -1991,25 +1995,25 @@ export class UpdateUserHelper {
 
   async handleUpdateSocket(locationObject: UserLocationHistory, userObject: User, auth: string) {
     try {
-      let userIds = [];
+      const userIds = [];
       //Check
-      let dataToFilter = {
+      const dataToFilter = {
         partner_id: userObject?._id?.toString(),
         match_status: 1,
       };
-      let orderByOBject = {};
-      let page = 1;
-      let limit = 100;
-      let dataReturn = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
+      const orderByOBject = {};
+      const page = 1;
+      const limit = 100;
+      const dataReturn = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
       if (dataReturn && dataReturn?.length) {
-        for (let matchItem of dataReturn) {
-          let userString = matchItem?.user_id?._id?.toString();
+        for (const matchItem of dataReturn) {
+          const userString = matchItem?.user_id?._id?.toString();
           userIds.push(userString);
         }
       }
 
       if (userIds && userIds?.length) {
-        let dataToUpdate = {
+        const dataToUpdate = {
           location: JSON.stringify(locationObject),
           user_ids: JSON.stringify(userIds),
         };
@@ -2021,7 +2025,7 @@ export class UpdateUserHelper {
           },
         };
         const urlLogin = process.env.SOCKET_API;
-        let dataNotification = await axios
+        const dataNotification = await axios
           .post(urlLogin + "/change-location", params, config)
           .then((response) => {
             if (response?.data) {
@@ -2058,7 +2062,7 @@ export class UpdateUserHelper {
         dataFilter = { ...dataFilter, ...{ user_type: dataUpdate?.user_type } };
       }
       let dataCreate: any;
-      let dataReturn = await this.userAnonymousService.findOne(dataFilter);
+      const dataReturn = await this.userAnonymousService.findOne(dataFilter);
       if (dataReturn) {
         dataUpdate = { ...dataUpdate, ...{ _id: dataReturn?._id?.toString() } };
         dataCreate = await this.userAnonymousService.update(dataUpdate);
@@ -2067,14 +2071,14 @@ export class UpdateUserHelper {
         dataCreate = dataCreate?.toObject();
       }
 
-      let dataFind = {
+      const dataFind = {
         type: "limit_ab",
       };
-      let dataConfig = await this.configService.findOne(dataFind);
+      const dataConfig = await this.configService.findOne(dataFind);
 
       if (dataConfig && !dataCreate?.is_ab_testing) {
-        let dataLimit = dataConfig?.data_content;
-        let dataUsed = dataConfig?.count_ab;
+        const dataLimit = dataConfig?.data_content;
+        const dataUsed = dataConfig?.count_ab;
         let isAb = false;
         if (Number(dataUsed) < Number(dataLimit)) {
           isAb = true;
@@ -2102,26 +2106,26 @@ export class UpdateUserHelper {
    */
   async getListUserInterestByAdmin(query: SearchUserInterestDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.userInterestService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.userInterestService.count(dataToFilter);
+      const dataReturn = await this.userInterestService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.userInterestService.count(dataToFilter);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
@@ -2141,11 +2145,11 @@ export class UpdateUserHelper {
    */
   async updateUserInterestByAdmin(dataUpdate: UpdateUserInterestDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "user/update")) {
         if (dataUpdate?.name_object) {
@@ -2161,7 +2165,7 @@ export class UpdateUserHelper {
             ...{ description_object: JSON.parse(dataUpdate?.description_object) },
           };
         }
-        let dataReturn = await this.userInterestService.update(dataUpdate);
+        const dataReturn = await this.userInterestService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2183,14 +2187,14 @@ export class UpdateUserHelper {
    */
   async removeUserInterest(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "plan/delete")) {
         //Check Permission
-        let dataReturn = await this.userInterestService.remove(id);
+        const dataReturn = await this.userInterestService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2212,14 +2216,14 @@ export class UpdateUserHelper {
    */
   async removeUserQuestion(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "user/delete")) {
         //Check Permission
-        let dataReturn = await this.userQuestionService.remove(id);
+        const dataReturn = await this.userQuestionService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

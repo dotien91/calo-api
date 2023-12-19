@@ -45,21 +45,21 @@ export class Transaction {
     nullable: true,
     default: "",
   })
-  ref_type: String;
+  ref_type: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  ref_name: String;
+  ref_name: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  ref_url: String;
+  ref_url: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -72,104 +72,104 @@ export class Transaction {
     type: Number,
     default: 0,
   })
-  last_coin: Number;
+  last_coin: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  current_coin: Number;
+  current_coin: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  last_token: Number;
+  last_token: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  current_token: Number;
+  current_token: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  transaction_value: Number;
+  transaction_value: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  commission_value: Number;
+  commission_value: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  income_value: Number;
+  income_value: number;
 
   @Prop({
     type: String,
     nullable: true,
     default: "plus",
   })
-  method: String;
+  method: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "system",
   })
-  type_system: String;
+  type_system: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "output",
   })
-  transaction_type: String;
+  transaction_type: string;
 
   @Prop({
     type: String,
     nullable: true,
   })
-  note: String;
+  note: string;
 
   @Prop({
     type: String,
     nullable: true,
   })
-  admin_note: String;
+  admin_note: string;
 
   @Prop({
     type: String,
     default: "done",
     index: true,
   })
-  status: String;
+  status: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  trans_id: String;
+  trans_id: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  error_message: String;
+  error_message: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  data_payment: String;
+  data_payment: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   billing_on: MongooseSchema.Types.Date;

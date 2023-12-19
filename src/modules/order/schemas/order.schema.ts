@@ -32,7 +32,7 @@ export class Order {
     type: String,
     nullable: false,
   })
-  service_name: String;
+  service_name: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -59,74 +59,74 @@ export class Order {
     type: String,
     index: true,
   })
-  client_secret: String;
+  client_secret: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "recurring",
   })
-  plan_type: String;
+  plan_type: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  coupon_code: String;
+  coupon_code: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  order_note: String;
+  order_note: string;
 
   @Prop({
     type: Number,
     default: 1,
   })
-  amount_of_package: Number;
+  amount_of_package: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  coupon_price: Number;
+  coupon_price: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  deep_link: String;
+  deep_link: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  product_url: String;
+  product_url: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  payment_method: String;
+  payment_method: string;
 
   @Prop({
     type: String,
@@ -146,7 +146,7 @@ export class Order {
       "free",
     ],
   })
-  status: String;
+  status: string;
 
   @Prop({
     type: String,
@@ -154,42 +154,42 @@ export class Order {
     nullable: true,
     index: true,
   })
-  trans_id: String;
+  trans_id: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  error_message: String;
+  error_message: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  data_payment: String;
+  data_payment: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  redirect_url: String;
+  redirect_url: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: true,
   })
-  trial_days: Number;
+  trial_days: number;
 
   @Prop({
     type: Number,
     default: 0,
     auto: true,
   })
-  short_id: Number;
+  short_id: number;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   vnpay_on: MongooseSchema.Types.Date;

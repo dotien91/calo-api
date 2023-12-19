@@ -7,7 +7,7 @@ export class UpdateRedeemDto extends PartialType(CreateRedeemDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)

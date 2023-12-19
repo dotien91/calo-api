@@ -17,7 +17,7 @@ export class NotificationController {
    * @author Tony Vu
    */
   async handleProcessCron() {
-    let cronJob = schedule(CronExpression.EVERY_2_HOURS, async () => {
+    const cronJob = schedule(CronExpression.EVERY_2_HOURS, async () => {
       try {
         // await this.bar();
         console.log("Start Cron Job Every 2 Hour");

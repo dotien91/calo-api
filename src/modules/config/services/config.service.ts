@@ -30,8 +30,8 @@ export class ConfigService {
     }
 
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       condition = Object.assign(condition, { $or: [{ package_name: dataRegex }, { type: dataRegex }] });
     }
     return condition;
@@ -59,20 +59,20 @@ export class ConfigService {
    * @returns
    */
   async filter(filter: SearchConfigDto, sortBy: SortByConfigDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let projection = {};
+    const projection = {};
 
     // if (filter.search) {
     //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
     //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
     // }
 
-    let dataReturn = await this.configModel
+    const dataReturn = await this.configModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -88,7 +88,7 @@ export class ConfigService {
    */
   public count = async (filter: SearchConfigDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.configModel.estimatedDocumentCount();
       } else {
@@ -106,7 +106,7 @@ export class ConfigService {
    */
   async create(createUser: CreateConfigDto) {
     const createdConfig = new this.configModel(createUser);
-    let dataCreate = await createdConfig.save();
+    const dataCreate = await createdConfig.save();
     return dataCreate;
   }
 
@@ -116,9 +116,9 @@ export class ConfigService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -152,7 +152,7 @@ export class ConfigService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -191,7 +191,7 @@ export class ConfigService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.configModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.configModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

@@ -54,7 +54,7 @@ export class ChannelService {
     // }
 
     if (filter.ids) {
-      let dataIds = filter.ids.split(",");
+      const dataIds = filter.ids.split(",");
       condition = Object.assign(condition, { _id: { $in: dataIds } });
     }
 
@@ -89,7 +89,7 @@ export class ChannelService {
    * @returns
    */
   async filter(filter: SearchChannelDto, sortBy: SortByChannelDto, page: number, limit: number): Promise<Channel[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -97,7 +97,7 @@ export class ChannelService {
     let projection = {};
 
     if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
+      const countData = await this.count(filter);
       page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
     }
 
@@ -106,7 +106,7 @@ export class ChannelService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.channelModel
+    const dataReturn = await this.channelModel
       .find(condition)
       .populate(
         "user_id",
@@ -137,13 +137,13 @@ export class ChannelService {
     page: number,
     limit: number
   ): Promise<Channel[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.channelModel
+    const projection = {};
+    const dataReturn = await this.channelModel
       .find(condition, projection)
       .populate("user_id")
       .sort(sortObject)
@@ -160,7 +160,7 @@ export class ChannelService {
    */
   public count = async (filter: SearchChannelDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.channelModel.estimatedDocumentCount();
       } else {
@@ -178,7 +178,7 @@ export class ChannelService {
    */
   async create(createUser: CreateChannelDto) {
     const createdChannel = new this.channelModel(createUser);
-    let dataCreate = await createdChannel.save();
+    const dataCreate = await createdChannel.save();
     return dataCreate;
   }
 
@@ -188,9 +188,9 @@ export class ChannelService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -238,7 +238,7 @@ export class ChannelService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.channelModel.findOneAndUpdate(
@@ -281,7 +281,7 @@ export class ChannelService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -327,7 +327,7 @@ export class ChannelService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelModel
+      const dataReturn = await this.channelModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",

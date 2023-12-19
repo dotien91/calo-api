@@ -28,17 +28,17 @@ export class FaceDetectionHelper {
    */
   async getTotalToday(res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new NotFoundException("User is invalid");
       }
-      let dataFilter = {
+      const dataFilter = {
         is_today: "1",
         user_id: userObject?._id?.toString(),
       };
 
-      let dataCount = await this.faceDetectionService.count(dataFilter);
-      let dataReturn = {
+      const dataCount = await this.faceDetectionService.count(dataFilter);
+      const dataReturn = {
         count: Number(dataCount),
         total: Number(process.env.TOTAL_FACE_DETECT),
       };
@@ -57,37 +57,37 @@ export class FaceDetectionHelper {
    */
   async handleValidateAvatar(query: CreateFaceDetectionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new NotFoundException("User is invalid");
       }
 
-      let avatarUrl = userObject?.user_avatar;
-      let image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
+      const avatarUrl = userObject?.user_avatar;
+      const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
       if (!image1Object) {
         throw new NotFoundException("Media not Image");
       }
-      let imageCompare = userObject?.user_avatar_thumbnail;
+      const imageCompare = userObject?.user_avatar_thumbnail;
 
-      let image2Object = await this.chatMediaService.findById(query.id_compare?.toString());
+      const image2Object = await this.chatMediaService.findById(query.id_compare?.toString());
       if (image2Object?.media_type !== "image") {
         throw new NotFoundException("Media not Image");
       }
 
-      let dataFilter = {
+      const dataFilter = {
         is_today: "1",
         user_id: userObject?._id?.toString(),
       };
 
-      let dataCount = await this.faceDetectionService.count(dataFilter);
+      const dataCount = await this.faceDetectionService.count(dataFilter);
 
       if (Number(dataCount) >= Number(process.env.TOTAL_FACE_DETECT)) {
         throw new NotFoundException("Limit process, only " + process.env.TOTAL_FACE_DETECT + " per 24 hours!");
       }
 
-      let mediaObject: string[] = JSON.parse(query.media_ids.toString());
+      const mediaObject: string[] = JSON.parse(query.media_ids.toString());
 
-      let dataReturn = await this.handleDetectFromServer(image1Object, image2Object, userObject, mediaObject);
+      const dataReturn = await this.handleDetectFromServer(image1Object, image2Object, userObject, mediaObject);
       res.json(dataReturn);
     } catch (error) {
       console.log(error);
@@ -113,13 +113,13 @@ export class FaceDetectionHelper {
     let base64SingleFace1: any = "";
     let base64SingleFace2: any = "";
     if (image1Object) {
-      let base64SingleFaceObject = await axios.get(image1Object.media_thumbnail.toString(), {
+      const base64SingleFaceObject = await axios.get(image1Object.media_thumbnail.toString(), {
         responseType: "arraybuffer",
       });
       base64SingleFace1 = Buffer.from(base64SingleFaceObject.data).toString("base64");
     }
     if (image2Object) {
-      let base64SingleFaceObject = await axios.get(image2Object.media_thumbnail.toString(), {
+      const base64SingleFaceObject = await axios.get(image2Object.media_thumbnail.toString(), {
         responseType: "arraybuffer",
       });
       base64SingleFace2 = Buffer.from(base64SingleFaceObject.data).toString("base64");
@@ -135,14 +135,14 @@ export class FaceDetectionHelper {
     if (process.env.FACE_COMPARE != "whiteg") {
       const apiUrl = process.env.API_URL_DETECT;
       const subscriptionKey = process.env.SUBSCRIBE_KEY_DETECT; //change subscription key
-      var optionsFaceCompare = {
+      const optionsFaceCompare = {
         headers: {
           subscriptionkey: subscriptionKey,
           "Content-Type": "application/json",
         },
         rejectUnauthorized: false,
       };
-      let dataAxios = {
+      const dataAxios = {
         encoded_image1: base64SingleFace1,
         encoded_image2: base64SingleFace2,
         compareAllFaces: true,
@@ -159,7 +159,7 @@ export class FaceDetectionHelper {
 
       if (dataResponse && dataResponse?.matchedFaces) {
         if (dataResponse?.matchedFaces?.length) {
-          for (let dataValidate of dataResponse?.matchedFaces) {
+          for (const dataValidate of dataResponse?.matchedFaces) {
             if (Number(dataValidate?.confidence) > point) {
               point = parseFloat(dataValidate?.confidence);
             }
@@ -172,14 +172,14 @@ export class FaceDetectionHelper {
       const apiUrl = process.env.FACE_COMPARE_URL;
       const subscriptionKey = process.env.FACE_COMPARE_KEY; //change subscription key
 
-      var FormData = require("form-data");
-      var data = new FormData();
+      const FormData = require("form-data");
+      const data = new FormData();
       data.append("secret_compare", subscriptionKey);
       data.append("key_compare", "ABC");
       data.append("image_before", base64SingleFace1);
       data.append("image_compare", base64SingleFace2);
 
-      var config = {
+      const config = {
         method: "post",
         url: apiUrl,
         headers: {
@@ -209,7 +209,7 @@ export class FaceDetectionHelper {
       statusValidate = 1;
     }
 
-    let dataToCreate = {
+    const dataToCreate = {
       id_avatar: image1Object._id.toString(),
       id_compare: image2Object._id.toString(),
       media_ids: mediaObject,
@@ -218,16 +218,16 @@ export class FaceDetectionHelper {
       validate_status: statusValidate,
       response: JSON.stringify(dataResponse),
     };
-    let dataReturn = await this.faceDetectionService.create(dataToCreate);
+    const dataReturn = await this.faceDetectionService.create(dataToCreate);
     //Update User Option
     if (statusValidate) {
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id?.toString(),
         validate_status: statusValidate,
       };
       await this.userOptionService.update(dataUpdate);
     } else {
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id?.toString(),
         validate_status: 0,
       };

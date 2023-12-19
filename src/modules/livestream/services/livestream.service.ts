@@ -81,7 +81,7 @@ export class LivestreamService {
     page: number,
     limit: number
   ): Promise<Livestream[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -93,7 +93,7 @@ export class LivestreamService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.livestreamModel
+    const dataReturn = await this.livestreamModel
       .find(condition)
       .populate(
         "user_id",
@@ -123,13 +123,13 @@ export class LivestreamService {
     page: number,
     limit: number
   ): Promise<Livestream[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.livestreamModel
+    const projection = {};
+    const dataReturn = await this.livestreamModel
       .find(condition, projection)
       .populate("user_id")
       .populate("media_id")
@@ -149,7 +149,7 @@ export class LivestreamService {
    */
   public count = async (filter: SearchLivestreamDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.livestreamModel.estimatedDocumentCount();
       } else {
@@ -167,7 +167,7 @@ export class LivestreamService {
    */
   async create(createUser: CreateLivestreamDto) {
     const createdLivestream = new this.livestreamModel(createUser);
-    let dataCreate = await createdLivestream.save();
+    const dataCreate = await createdLivestream.save();
     return dataCreate;
   }
 
@@ -177,9 +177,9 @@ export class LivestreamService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -223,7 +223,7 @@ export class LivestreamService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -267,7 +267,7 @@ export class LivestreamService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.livestreamModel
+      const dataReturn = await this.livestreamModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",

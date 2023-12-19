@@ -68,7 +68,7 @@ export class TopicPostService {
    * @returns
    */
   async filter(filter: SearchTopicPostDto, sortBy: SortByTopicPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -80,7 +80,7 @@ export class TopicPostService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.orderModel
+    const dataReturn = await this.orderModel
       .find(condition)
       .populate(
         "user_id",
@@ -104,13 +104,13 @@ export class TopicPostService {
    * @returns
    */
   async filterAdmin(filter: SearchTopicPostDto, sortBy: SortByTopicPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.orderModel
+    const projection = {};
+    const dataReturn = await this.orderModel
       .find(condition, projection)
       .populate("user_id")
       .populate("plan_id")
@@ -128,7 +128,7 @@ export class TopicPostService {
    */
   public count = async (filter: SearchTopicPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.orderModel.estimatedDocumentCount();
       } else {
@@ -146,7 +146,7 @@ export class TopicPostService {
    */
   async create(createUser: CreateTopicPostDto) {
     const createdTopicPost = new this.orderModel(createUser);
-    let dataCreate = await createdTopicPost.save();
+    const dataCreate = await createdTopicPost.save();
     return dataCreate;
   }
 
@@ -156,9 +156,9 @@ export class TopicPostService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -201,7 +201,7 @@ export class TopicPostService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -235,7 +235,7 @@ export class TopicPostService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.orderModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.orderModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

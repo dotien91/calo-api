@@ -79,7 +79,7 @@ export class ChallengeNotificationService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengeLikeModel
+    const dataReturn = await this.challengeLikeModel
       .findById(id, projection)
       .populate(
         "user_id",
@@ -99,7 +99,7 @@ export class ChallengeNotificationService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengeLikeModel
+    const dataReturn = await this.challengeLikeModel
       .findById(id, projection)
       .populate("challenge_id")
       .populate(
@@ -150,7 +150,7 @@ export class ChallengeNotificationService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChallengeNotification[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.challengeLikeModel.find(condition, {}).exec();
   }
 
@@ -173,7 +173,7 @@ export class ChallengeNotificationService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.challengeLikeModel
+      const dataReturn = await this.challengeLikeModel
         .findOneAndUpdate(
           { _id: dataUpdate._id },
           { $set: dataUpdate },
@@ -204,7 +204,7 @@ export class ChallengeNotificationService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.challengeLikeModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
+      const dataReturn = await this.challengeLikeModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
@@ -222,7 +222,7 @@ export class ChallengeNotificationService {
    */
   public count = async (filter: FilterModuleChallengeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.challengeLikeModel.estimatedDocumentCount();
       } else {
@@ -263,12 +263,12 @@ export class ChallengeNotificationService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengeNotification[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeLikeModel
+    const dataReturn = await this.challengeLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -297,12 +297,12 @@ export class ChallengeNotificationService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengeNotification[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "challenge_id",
       options: { strictPopulate: false },
       populate: [
@@ -314,7 +314,7 @@ export class ChallengeNotificationService {
         },
       ],
     };
-    let dataReturn: any = await this.challengeLikeModel
+    const dataReturn: any = await this.challengeLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -326,9 +326,9 @@ export class ChallengeNotificationService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.challenge_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.challenge_id?.toObject() };
         delete dataItemToReturn.challenge_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -347,9 +347,9 @@ export class ChallengeNotificationService {
    * @returns
    */
   async filterWithId(filter: FilterModuleChallengeDto, page: number, limit: number): Promise<ChallengeNotification[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.challengeLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.challengeLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -367,12 +367,12 @@ export class ChallengeNotificationService {
    * @returns
    */
   async filterUser(filter: FilterModuleChallengeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeLikeModel
+    const dataReturn = await this.challengeLikeModel
       .find(condition)
       .populate({
         path: "user_id",

@@ -67,7 +67,7 @@ export class UserController {
     // this.userLoginHelper.updateEvent();
     if (process.env.BRANCH_NAME === "chat_gpt") {
       // this.userFilterHelper.handleCronJob();
-      let cronJob = schedule(CronExpression.EVERY_DAY_AT_3PM, async () => {
+      const cronJob = schedule(CronExpression.EVERY_DAY_AT_3PM, async () => {
         try {
           // await this.bar();
           console.log("Start Cron Job Every Day at 1am");
@@ -87,7 +87,7 @@ export class UserController {
    * @author Tony Vu
    */
   async handleProcessCron() {
-    let cronJobOneHour = schedule(CronExpression.EVERY_HOUR, async () => {
+    const cronJobOneHour = schedule(CronExpression.EVERY_HOUR, async () => {
       try {
         // await this.bar();
         console.log("Start Cron Job Every Hour");
@@ -104,7 +104,7 @@ export class UserController {
 
     // this.userFilterHelper.handleCronJob();
 
-    let cronJob = schedule(CronExpression.EVERY_DAY_AT_1AM, async () => {
+    const cronJob = schedule(CronExpression.EVERY_DAY_AT_1AM, async () => {
       try {
         // await this.bar();
         console.log("Start Cron Job Every Day at 1am");

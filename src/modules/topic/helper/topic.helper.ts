@@ -48,11 +48,11 @@ export class TopicHelper {
    */
   async createNewTopic(createTopicData: CreateTopicDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       let dataToAdd: any = createTopicData;
       if (this.validateJson(createTopicData?.public_album)) {
         dataToAdd = {
@@ -80,7 +80,7 @@ export class TopicHelper {
       //Create Chat Room
 
       //Update Chat Group
-      let dataCreateRoom = {
+      const dataCreateRoom = {
         user_id: process.env.INFO_SESSION,
         room_type: "group",
         room_limit_number: 100000,
@@ -94,14 +94,14 @@ export class TopicHelper {
         room_image: createTopicData.image?.trim(),
       };
       console.log(dataCreateRoom);
-      let dataCreateReturnRoom = await this.chatRoomService.create(dataCreateRoom);
+      const dataCreateReturnRoom = await this.chatRoomService.create(dataCreateRoom);
 
       let groupId = null;
       if (dataCreateReturnRoom) {
         groupId = dataCreateReturnRoom._id.toString();
         //Ad User Support in To New City
         //Process Save User & Advisor To Option
-        let dataOptionUser = {
+        const dataOptionUser = {
           chat_room_id: dataCreateReturnRoom?._id.toString(),
           user_role: "admin",
           user_permission: "write",
@@ -123,7 +123,7 @@ export class TopicHelper {
       let dataCreate: any = await this.topicService.create(dataToAdd);
 
       //Update Room Ref
-      let dataUpdate = {
+      const dataUpdate = {
         _id: dataCreateReturnRoom._id.toString(),
         topic_id: dataCreate._id.toString(),
       };
@@ -159,7 +159,7 @@ export class TopicHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -180,28 +180,28 @@ export class TopicHelper {
    */
   async getTopicListByUser(query: ListTopicDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.topicService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.topicService.count(dataToFilter);
+      const dataReturn = await this.topicService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.topicService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -221,28 +221,28 @@ export class TopicHelper {
    */
   async getJoinList(query: ListTopicJoinDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.topicJoinService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.topicJoinService.count(dataToFilter);
+      const dataReturn = await this.topicJoinService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.topicJoinService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -261,13 +261,13 @@ export class TopicHelper {
    */
   async handleGetDetailTopic(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.topicService.findById(id.toString());
+      const dataReturn = await this.topicService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -286,14 +286,14 @@ export class TopicHelper {
    */
   async handleDeleteTopic(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "topic/delete")) {
         //Check Permission
-        let dataReturn = await this.topicService.remove(id);
+        const dataReturn = await this.topicService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -315,11 +315,11 @@ export class TopicHelper {
    */
   async handleUpdateTopicByAdmin(dataUpdate: UpdateTopicDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "topic/update")) {
         let dataToAdd: any = dataUpdate;
@@ -332,7 +332,7 @@ export class TopicHelper {
           };
         }
 
-        let dataReturn = await this.topicService.update(dataToAdd);
+        const dataReturn = await this.topicService.update(dataToAdd);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

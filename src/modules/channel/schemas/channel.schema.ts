@@ -51,63 +51,63 @@ export class Channel {
     default: "",
     nullable: false,
   })
-  public_status: String;
+  public_status: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  sub_domain: String;
+  sub_domain: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  ios_link: String;
+  ios_link: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  android_link: String;
+  android_link: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  domain: String;
+  domain: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  short_description: String;
+  short_description: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  official_status: Number;
+  official_status: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -135,7 +135,7 @@ export class Channel {
     default: 0,
     nullable: false,
   })
-  member_number: Number;
+  member_number: number;
 
   @Prop({
     type: [ChannelPointDataSchema],
@@ -148,7 +148,7 @@ export class Channel {
     default: 0,
     nullable: false,
   })
-  admin_number: Number;
+  admin_number: number;
 
   @Prop({
     type: Number,
@@ -163,7 +163,7 @@ export class Channel {
     default: "",
     nullable: false,
   })
-  note: String;
+  note: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -177,111 +177,111 @@ export class Channel {
     default: "",
     nullable: false,
   })
-  mentor_name: String;
+  mentor_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  mentor_phone: String;
+  mentor_phone: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  mentor_address: String;
+  mentor_address: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  mentor_income: String;
+  mentor_income: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  redirect_url: String;
+  redirect_url: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  mentor_number_member: Number;
+  mentor_number_member: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  user_commission: Number;
+  user_commission: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  mentor_commission: Number;
+  mentor_commission: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  mentor_category: String;
+  mentor_category: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  mentor_target: String;
+  mentor_target: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_name: String;
+  bank_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_brand_name: String;
+  bank_brand_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_account_name: String;
+  bank_account_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  data_config: String;
+  data_config: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_account_number: String;
+  bank_account_number: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  payment_method: String[];
+  payment_method: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,

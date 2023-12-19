@@ -26,7 +26,7 @@ import { RedeemPermissionService } from "../services/redeem_permission.service";
 import { ListRedeemPermissionDto } from "../dto/list-redeem_permission.dto";
 import { RedeemPermission } from "../schemas/redeem_permission.schema";
 const { getFirestore } = require("firebase-admin/firestore");
-let dataCrawl = `Other`;
+const dataCrawl = `Other`;
 import * as _ from "lodash";
 import * as moment from "moment-timezone";
 
@@ -50,12 +50,12 @@ export class RedeemHelper {
 
   async handleUpdateCount() {
     try {
-      let dataRedeem = await this.redeemService.filter({}, {}, 1, 1000);
-      for (let dataItem of dataRedeem) {
+      const dataRedeem = await this.redeemService.filter({}, {}, 1, 1000);
+      for (const dataItem of dataRedeem) {
         console.log(dataItem?.user_id?.user_avatar);
         if (!dataItem?.user_id?.user_avatar) {
           console.log("NOT HAVE");
-          let dataUpdate = {
+          const dataUpdate = {
             _id: dataItem?._id,
             vote_number: 0,
             trending_number: 0,
@@ -74,7 +74,7 @@ export class RedeemHelper {
    */
   async handleCreateUser(dataAuthor: string) {
     try {
-      let author = dataAuthor;
+      const author = dataAuthor;
       let email = "";
       if (author) {
         email = this.toSlug(author) + "@gmail.com";
@@ -85,7 +85,7 @@ export class RedeemHelper {
 
       if (email) {
         //Create new User
-        let dataCreateUser = {
+        const dataCreateUser = {
           user_email: email,
           user_login: email,
           display_name: author,
@@ -106,12 +106,12 @@ export class RedeemHelper {
   }
 
   async handleUpdateUserOption(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUserOption = await this.userOptionService.create(dataCreate);
+    const dataUserOption = await this.userOptionService.create(dataCreate);
     if (dataUserOption) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUserOption._id.toString(),
       };
@@ -124,12 +124,12 @@ export class RedeemHelper {
 
   async updateRedeem() {
     try {
-      let dataRedeem = await this.redeemService.filter({}, {}, 1, 1000);
-      for (let dataRedeemItem of dataRedeem) {
+      const dataRedeem = await this.redeemService.filter({}, {}, 1, 1000);
+      for (const dataRedeemItem of dataRedeem) {
         // console.log(dataRedeemItem);
-        let userObject = await this.userService.findById(dataRedeemItem?.user_id?._id?.toString(), {});
+        const userObject = await this.userService.findById(dataRedeemItem?.user_id?._id?.toString(), {});
         console.log(userObject?.country, "country");
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataRedeemItem?._id?.toString(),
           country: userObject?.country,
         };
@@ -153,8 +153,8 @@ export class RedeemHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
 
@@ -170,7 +170,7 @@ export class RedeemHelper {
 
       //Check for Mentor
       //
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: req?.user_id,
         channel_id: req?.channel_id,
       });
@@ -178,22 +178,22 @@ export class RedeemHelper {
       if (dataPermission?.channel_role !== "mentor") {
         dataToFilter = { ...dataToFilter, ...{ to_level: dataPermission?.level_number } };
       }
-      let dataReturn = await this.redeemService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.redeemService.filter(dataToFilter, orderByOBject, page, limit);
 
       if (dataReturn) {
-        let dataIds = [];
-        for (let itemReturn of dataReturn) {
+        const dataIds = [];
+        for (const itemReturn of dataReturn) {
           dataIds.push(itemReturn?._id);
         }
 
         let dataChannelPermission = [];
         //Get Data level
         if (query?.channel_id) {
-          let dataUserIds = dataReturn?.map((value) => {
+          const dataUserIds = dataReturn?.map((value) => {
             return value?.user_id?._id?.toString();
           });
           //get permission
-          let dataFilterMember = {
+          const dataFilterMember = {
             channel_id: query?.channel_id,
             user_ids: dataUserIds,
           };
@@ -204,9 +204,9 @@ export class RedeemHelper {
             limit
           );
         }
-        for (let dataReturnItem in dataReturn) {
+        for (const dataReturnItem in dataReturn) {
           //Check user
-          let dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
+          const dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
             if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
               filtered.push({
                 ...value?.user_id?.toObject(),
@@ -228,7 +228,7 @@ export class RedeemHelper {
         }
       }
 
-      let dataCount = await this.redeemService.count(dataToFilter);
+      const dataCount = await this.redeemService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -254,8 +254,8 @@ export class RedeemHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
 
@@ -263,12 +263,12 @@ export class RedeemHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.redeemPermissionService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.redeemPermissionService.filter(dataToFilter, orderByOBject, page, limit);
 
       // Add point into Data
       // if (dataReturn) {
@@ -319,7 +319,7 @@ export class RedeemHelper {
       //   }
       // }
 
-      let dataCount = await this.redeemService.count(dataToFilter);
+      const dataCount = await this.redeemService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -336,7 +336,7 @@ export class RedeemHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -346,7 +346,7 @@ export class RedeemHelper {
       }
 
       try {
-        let hashPassword = process.env.HASH_PASSWORD;
+        const hashPassword = process.env.HASH_PASSWORD;
         const { data, exp } = (await new JwtService().decode(authCodeString)) as DecodeUserToken;
         if (!data || !exp) {
           return null;
@@ -356,8 +356,8 @@ export class RedeemHelper {
           //Data User session
           dataSession = await this.userService.findById(data?._id?.toString(), {});
         } else {
-          let dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
-          let deviceId = dataAnonymousSession?.device_id;
+          const dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
+          const deviceId = dataAnonymousSession?.device_id;
           dataSession = await this.userAnonymousService.findOne({ device_id: deviceId });
         }
         return dataSession;
@@ -378,13 +378,13 @@ export class RedeemHelper {
    */
   async createNewRedeem(createRedeemData: CreateRedeemDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -404,7 +404,7 @@ export class RedeemHelper {
         throw new ForbiddenException("You not have permission for this action!");
       }
 
-      let channelId = req?.channel_id || null;
+      const channelId = req?.channel_id || null;
       createRedeemData = {
         ...createRedeemData,
         ...{ user_id: userObject._id.toString(), channel_id: channelId },
@@ -444,13 +444,13 @@ export class RedeemHelper {
       }
       let dataMissionId = [];
       if (this.validateJson(createRedeemData?.mission_data?.toString())) {
-        let dataMission = JSON.parse(createRedeemData?.mission_data?.toString());
+        const dataMission = JSON.parse(createRedeemData?.mission_data?.toString());
         //Process Data
 
-        for (let dataIndex in dataMission) {
-          let dataMissionAction = dataMission[dataIndex]?.mission_action;
+        for (const dataIndex in dataMission) {
+          const dataMissionAction = dataMission[dataIndex]?.mission_action;
           if (dataMissionAction) {
-            let dataFilter = dataMissionAction?.filter((item: any, index: any) => {
+            const dataFilter = dataMissionAction?.filter((item: any, index: any) => {
               if (item?.action_name) {
                 return true;
               } else {
@@ -458,7 +458,7 @@ export class RedeemHelper {
               }
             });
 
-            let dataText = dataFilter?.map((item: any, index: any) => {
+            const dataText = dataFilter?.map((item: any, index: any) => {
               if (item?.action_name) {
                 return item?.action_name;
               }
@@ -467,7 +467,7 @@ export class RedeemHelper {
           }
         }
 
-        let dataMissionObjectArray: any[] = await this.redeemService.createMisionData(dataMission);
+        const dataMissionObjectArray: any[] = await this.redeemService.createMisionData(dataMission);
 
         dataMissionId = dataMissionObjectArray?.map((item: RedeemMission, index: number) => {
           return item?._id;
@@ -488,13 +488,13 @@ export class RedeemHelper {
         };
       }
 
-      let dataCreate: any = await this.redeemService.create(createRedeemData);
-      let dataReturn = await this.redeemService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.redeemService.create(createRedeemData);
+      const dataReturn = await this.redeemService.findById(dataCreate?._id?.toString());
 
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         ids: dataMissionId,
       };
-      let dataUpdateMission = {
+      const dataUpdateMission = {
         user_id: userObject?._id?.toString(),
         channel_id: channelId,
         redeem_id: dataReturn?._id?.toString(),
@@ -514,36 +514,36 @@ export class RedeemHelper {
   async createNewRedeemPermission(dataCreate: CreateRedeemPermissionDto, req: ExpressRequestDto, res: Response) {
     try {
       //Check User Id
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataRedeemArray = _.uniq(dataCreate?.redeem_id?.split(","));
+      const dataRedeemArray = _.uniq(dataCreate?.redeem_id?.split(","));
 
-      let dataRedeemArrayCheckDuplicate = dataRedeemArray.filter(
+      const dataRedeemArrayCheckDuplicate = dataRedeemArray.filter(
         (item, index) => dataRedeemArray.indexOf(item) === index
       );
       //Check Redeem
 
-      let dataToFilter = {
+      const dataToFilter = {
         redeem_ids: dataRedeemArrayCheckDuplicate,
         user_id: req?.user_id,
         channel_id: req?.channel_id,
       };
-      let dataCreateRedeemMission = await this.redeemPermissionService.filter(dataToFilter, {}, 1, 100);
+      const dataCreateRedeemMission = await this.redeemPermissionService.filter(dataToFilter, {}, 1, 100);
       //check data
-      let dataRedeemIds = dataCreateRedeemMission.map((itemReturn: RedeemPermission, index: number) => {
+      const dataRedeemIds = dataCreateRedeemMission.map((itemReturn: RedeemPermission, index: number) => {
         return itemReturn?.redeem_id?._id?.toString();
       });
 
-      for (let redeemItem of dataRedeemArrayCheckDuplicate) {
+      for (const redeemItem of dataRedeemArrayCheckDuplicate) {
         if (dataRedeemIds?.indexOf(redeemItem) === -1) {
           //Check Redeem ID
-          let redeemObject = await this.redeemService.findOne({ _id: redeemItem });
+          const redeemObject = await this.redeemService.findOne({ _id: redeemItem });
           if (!redeemObject) {
             throw new ForbiddenException("Redeem is invalid");
           }
-          let userPermission = await this.channelPermissionService.findOne({
+          const userPermission = await this.channelPermissionService.findOne({
             user_id: userObject?._id.toString(),
             channel_id: req?.channel_id.toString(),
           });
@@ -553,32 +553,37 @@ export class RedeemHelper {
           }
 
           //Get Redeem Mission
-          let dataRedeemMission = await this.redeemService.filterRedeemMission({ redeem_id: redeemItem }, {}, 1, 1000);
+          const dataRedeemMission = await this.redeemService.filterRedeemMission(
+            { redeem_id: redeemItem },
+            {},
+            1,
+            1000
+          );
 
           //Get all Redeem Data
           //Check if have Data Redeem Mission
           if (dataRedeemMission?.length) {
-            for (let dataRedeemItem of dataRedeemMission) {
+            for (const dataRedeemItem of dataRedeemMission) {
               //Create permision
-              let point_data = dataRedeemItem?.mission_action.map((x) => {
+              const point_data = dataRedeemItem?.mission_action.map((x) => {
                 return Object.assign({ point_number: 0, status: "process" }, x);
               });
 
               const nowUTC7 = moment().tz("Asia/Ho_Chi_Minh");
               const startOfDay = nowUTC7.clone().startOf("day").toDate();
 
-              let start_time = nowUTC7
+              const start_time = nowUTC7
                 .clone()
                 .startOf("day")
                 .add(Number(dataRedeemItem?.number_of_day) - 1, "days")
                 .toDate();
-              let end_time = nowUTC7
+              const end_time = nowUTC7
                 .clone()
                 .endOf("day")
                 .add(Number(dataRedeemItem?.number_of_day) - 1, "days")
                 .toDate();
 
-              let dataInsert = {
+              const dataInsert = {
                 user_id: req?.user_id,
                 redeem_id: redeemItem,
                 channel_id: redeemObject?.channel_id?.toString(),
@@ -589,7 +594,7 @@ export class RedeemHelper {
                 status: "process",
               };
               console.log(dataInsert, "dataInsert");
-              let dataReturnInsert = await this.redeemPermissionService.upsert(dataInsert);
+              const dataReturnInsert = await this.redeemPermissionService.upsert(dataInsert);
               if (dataReturnInsert) {
                 dataCreateRedeemMission.push(dataReturnInsert);
               }
@@ -630,15 +635,15 @@ export class RedeemHelper {
       if (notificationTitle && notificationTitle.length >= 70) {
         notificationTitle = notificationTitle.substring(0, 68) + "...";
       }
-      let userIdArray = [];
-      let channelId = dataRedeem?.channel_id?.toString();
-      let emailArray = [];
+      const userIdArray = [];
+      const channelId = dataRedeem?.channel_id?.toString();
+      const emailArray = [];
       for (let itemPage: number = 1; itemPage <= 10; itemPage++) {
-        let allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
-        for (let itemUser of allUser) {
+        const allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
+        for (const itemUser of allUser) {
           if (itemUser?.user_id?._id) {
             userIdArray.push(itemUser?.user_id?._id?.toString());
-            let userEmail = itemUser?.user_id?.user_email;
+            const userEmail = itemUser?.user_id?.user_email;
             if (userEmail) {
               emailArray.push(userEmail);
             }
@@ -650,11 +655,11 @@ export class RedeemHelper {
       }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           post_name: "",
@@ -681,13 +686,13 @@ export class RedeemHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           redeem_id: dataRedeem?._id?.toString(),
           path: "/v/post/",
           data_id: "",
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -742,8 +747,8 @@ export class RedeemHelper {
         notificationTitle = notificationTitle + '"';
       }
 
-      let userIdArray = [];
-      let emailArray = [];
+      const userIdArray = [];
+      const emailArray = [];
 
       // let dataUser = await this.userService.filter({ notification_redeem: dataRedeem?._id?.toString() }, {}, 1, 1000);
       // for (let userItem of dataUser) {
@@ -754,11 +759,11 @@ export class RedeemHelper {
       // }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           content: chatContentRaw,
@@ -786,13 +791,13 @@ export class RedeemHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           redeem_id: dataRedeem?._id?.toString(),
           path: "/v/post/",
           data_id: "",
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           title: notificationTitle?.toString(),
@@ -821,7 +826,7 @@ export class RedeemHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -862,14 +867,14 @@ export class RedeemHelper {
       let dataReturn: any = await this.redeemService.findOne(dataToFilter);
       dataReturn = { ...dataReturn?.toObject() };
 
-      let dataNotification = [];
+      const dataNotification = [];
 
       if (req?.user_id) {
-        let dataAuth = await this.userService.findById(req?.user_id, {});
+        const dataAuth = await this.userService.findById(req?.user_id, {});
         //@ts-ignore
         if (dataAuth && dataAuth?.notification_redeem) {
           //@ts-ignore
-          for (let dataItemNotification of dataAuth?.notification_redeem) {
+          for (const dataItemNotification of dataAuth?.notification_redeem) {
             dataNotification.push(dataItemNotification?.toString());
           }
         }
@@ -899,15 +904,15 @@ export class RedeemHelper {
    */
   async handleUpdateRedeemByAdmin(dataUpdate: UpdateRedeemDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject?._id?.toString();
-      let channelId = req?.channel_id || null;
-      let redeemObject = await this.redeemService.findById(dataUpdate?._id?.toString());
+      const userId = userObject?._id?.toString();
+      const channelId = req?.channel_id || null;
+      const redeemObject = await this.redeemService.findById(dataUpdate?._id?.toString());
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -936,8 +941,8 @@ export class RedeemHelper {
         //Remove All history data
         await this.redeemPermissionService.removeMany({ redeem_id: dataUpdate?._id?.toString() });
         await this.redeemService.removeMisionMany({ redeem_id: dataUpdate?._id?.toString() });
-        let dataMission = JSON.parse(dataUpdate?.mission_data?.toString());
-        let dataMissionObjectArray: any[] = await this.redeemService.createMisionData(dataMission);
+        const dataMission = JSON.parse(dataUpdate?.mission_data?.toString());
+        const dataMissionObjectArray: any[] = await this.redeemService.createMisionData(dataMission);
 
         dataMissionId = dataMissionObjectArray?.map((item: RedeemMission, index: number) => {
           return item?._id;
@@ -958,12 +963,12 @@ export class RedeemHelper {
         dataUpdate = { ...dataUpdate, ...{ gift_data: JSON.parse(dataUpdate.gift_data?.toString()) } };
       }
 
-      let dataReturn = await this.redeemService.update(dataUpdate);
+      const dataReturn = await this.redeemService.update(dataUpdate);
 
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         ids: dataMissionId,
       };
-      let dataUpdateMission = {
+      const dataUpdateMission = {
         user_id: userObject?._id?.toString(),
         channel_id: channelId,
         redeem_id: dataReturn?._id?.toString(),
@@ -988,15 +993,15 @@ export class RedeemHelper {
    */
   async handleDeleteRedeem(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let redeemObject = await this.redeemService.findById(id);
-      let channelId = redeemObject.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const redeemObject = await this.redeemService.findById(id);
+      const channelId = redeemObject.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1014,7 +1019,7 @@ export class RedeemHelper {
 
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.redeemService.remove(id);
+        const dataReturn = await this.redeemService.remove(id);
         //Remove all Mission Data
         //Remove All Permission Data
         await this.redeemPermissionService.removeMany({ redeem_id: id });

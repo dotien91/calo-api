@@ -47,14 +47,14 @@ export class EsimCountry {
     default: "",
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  country_code: String;
+  country_code: string;
 
   @Prop({
     type: [CountryLanguageSchema],

@@ -39,11 +39,11 @@ export class HandleServiceHelper {
    */
   async createHandleService(createHandleServiceData: CreateHandleServiceDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "handle_service/create")) {
         if (createHandleServiceData.public_album) {
           createHandleServiceData = {
@@ -70,7 +70,7 @@ export class HandleServiceHelper {
         }
 
         createHandleServiceData = { ...createHandleServiceData, ...{ user_id: userObject._id.toString() } };
-        let dataToCreate = await this.handleServiceService.create(createHandleServiceData);
+        const dataToCreate = await this.handleServiceService.create(createHandleServiceData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -93,11 +93,11 @@ export class HandleServiceHelper {
    */
   async updateHandleService(updateData: UpdateHandleServiceDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "handle_service/update")) {
         if (updateData.public_album) {
           updateData = {
@@ -112,7 +112,7 @@ export class HandleServiceHelper {
             ...{ sub_menu: JSON.parse(updateData.sub_menu) },
           };
         }
-        let dataReturn = await this.handleServiceService.update(updateData);
+        const dataReturn = await this.handleServiceService.update(updateData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -134,7 +134,7 @@ export class HandleServiceHelper {
    */
   async getListHandle(query: ListHandleServiceDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -142,15 +142,15 @@ export class HandleServiceHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = query;
-      let dataReturn = await this.handleServiceService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.handleServiceService.count(dataToFilter);
+      const dataToFilter = query;
+      const dataReturn = await this.handleServiceService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.handleServiceService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -169,14 +169,14 @@ export class HandleServiceHelper {
    */
   async removeHandle(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "handle_service/delete")) {
         //Check Permission
-        let dataReturn = await this.handleServiceService.remove(id);
+        const dataReturn = await this.handleServiceService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -198,11 +198,11 @@ export class HandleServiceHelper {
    */
   async handleGetDetailService(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataReturn = await this.handleServiceService.findById(id);
+      const dataReturn = await this.handleServiceService.findById(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

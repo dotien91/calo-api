@@ -54,7 +54,7 @@ export class UserFollowEventService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userFollowModel.findById(id, projection);
+    const dataReturn = await this.userFollowModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -85,7 +85,7 @@ export class UserFollowEventService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowEvent[]> {
-    let condition = { user_id: userId, event_id: { $in: userPartners } };
+    const condition = { user_id: userId, event_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -108,7 +108,7 @@ export class UserFollowEventService {
       if (!dataUpdate.user_id && !dataUpdate.event_id) {
         return null;
       }
-      let dataReturn = await this.userFollowModel.findOneAndUpdate(
+      const dataReturn = await this.userFollowModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, event_id: dataUpdate.event_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -130,7 +130,7 @@ export class UserFollowEventService {
    */
   public count = async (filter: FilterFollowEventDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userFollowModel.estimatedDocumentCount();
       } else {
@@ -165,12 +165,12 @@ export class UserFollowEventService {
    * @returns
    */
   async filter(filter: FilterFollowEventDto, sortBy: any, page: number, limit: number): Promise<UserFollowEvent[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate({
         path: "event_id",
@@ -201,12 +201,12 @@ export class UserFollowEventService {
    * @returns
    */
   async filterUser(filter: FilterFollowEventDto, sortBy: any, page: number, limit: number): Promise<UserFollowEvent[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate({
         path: "user_id",

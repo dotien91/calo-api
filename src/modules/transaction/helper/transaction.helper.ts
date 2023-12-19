@@ -76,8 +76,8 @@ export class TransactionHelper {
    */
   async createNewTransaction(createTransactionData: CreateTransactionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -89,21 +89,21 @@ export class TransactionHelper {
         throw new BadRequestException("Error while Transaction!");
       }
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       if (headerObject && headerObject["x-channel"]) {
-        let channelId = headerObject["x-channel"]?.toString();
+        const channelId = headerObject["x-channel"]?.toString();
         createTransactionData = { ...createTransactionData, ...{ channel_id: channelId } };
       }
 
       //Only Admin Create Transaction
       //Check Admin
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "transaction/create")) {
         //Check Transaction
-        let dataFilter = {
+        const dataFilter = {
           user_id: createTransactionData.user_id,
         };
-        let newDataTransaction = await this.transactionService.findOne(dataFilter);
+        const newDataTransaction = await this.transactionService.findOne(dataFilter);
         let lastCoin = 0;
         let lastToken = 0;
         if (newDataTransaction) {
@@ -133,12 +133,12 @@ export class TransactionHelper {
           },
         };
 
-        let userToUpdate = await this.userOptionService.findById(createTransactionData.user_id, {});
+        const userToUpdate = await this.userOptionService.findById(createTransactionData.user_id, {});
 
         //@ts-ignore
         await this.handleProcessUpdateCoin(userToUpdate, currentCoin, lastToken, authCode);
 
-        let dataCreate = await this.transactionService.create(createTransactionData);
+        const dataCreate = await this.transactionService.create(createTransactionData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -161,18 +161,18 @@ export class TransactionHelper {
    */
   async updateTransactionBank(createTransactionData: UpdateTransactionBankDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //Check Permission
-      let transactionBankObject = await this.transactionBankService.findById(createTransactionData?._id?.toString());
+      const transactionBankObject = await this.transactionBankService.findById(createTransactionData?._id?.toString());
 
       if (transactionBankObject?.user_id?._id?.toString() !== userObject?._id?.toString()) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataCreate = await this.transactionBankService.update(createTransactionData);
+      const dataCreate = await this.transactionBankService.update(createTransactionData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -191,17 +191,17 @@ export class TransactionHelper {
    */
   async handleDeleteTransactionBank(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
       //Check Permission
-      let transactionBankObject = await this.transactionBankService.findById(id);
+      const transactionBankObject = await this.transactionBankService.findById(id);
 
       if (transactionBankObject?.user_id?._id?.toString() !== userObject?._id?.toString()) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataReturn = await this.transactionBankService.remove(id);
+      const dataReturn = await this.transactionBankService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -225,12 +225,12 @@ export class TransactionHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId = createTransactionData?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -239,7 +239,7 @@ export class TransactionHelper {
         createTransactionData = { ...createTransactionData, ...{ channel_id: channelId } };
       }
       createTransactionData = { ...createTransactionData, ...{ user_id: userObject?._id?.toString() } };
-      let dataCreate = await this.transactionBankService.create(createTransactionData);
+      const dataCreate = await this.transactionBankService.create(createTransactionData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -259,13 +259,13 @@ export class TransactionHelper {
    */
   async createWithdrawal(createTransactionData: CreateWithdrawalDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let channelId = req?.channel_id || createTransactionData?.channel_id || "";
+      const channelId = req?.channel_id || createTransactionData?.channel_id || "";
       if (
         Number(createTransactionData.transaction_value) <= 0 ||
         Number(createTransactionData.transaction_value) > 1000000000
@@ -288,10 +288,10 @@ export class TransactionHelper {
 
       //if (await this.userPermissionService.isHavePermission(userId, "transaction/create")) {
       //Check Transaction
-      let dataFilter = {
+      const dataFilter = {
         user_id: userId,
       };
-      let newDataTransaction = await this.transactionService.findOne(dataFilter);
+      const newDataTransaction = await this.transactionService.findOne(dataFilter);
       console.log(newDataTransaction, "newDataTransaction");
       let lastCoin = 0;
       let lastToken = 0;
@@ -309,7 +309,7 @@ export class TransactionHelper {
       let currentToken = 0;
       currentToken = lastToken - Number(createTransactionData.transaction_value);
 
-      let newDataCreate = {
+      const newDataCreate = {
         ...createTransactionData,
         ...{
           user_id: userId,
@@ -344,7 +344,7 @@ export class TransactionHelper {
         title: `${userObject?.display_name.toLocaleUpperCase()} RÚT TIỀN`,
       });
 
-      let dataCreate = await this.transactionService.create(newDataCreate);
+      const dataCreate = await this.transactionService.create(newDataCreate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -366,19 +366,19 @@ export class TransactionHelper {
    */
   async getUserIncome(query: ListUserIncomeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = query?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: channelId,
       });
@@ -407,21 +407,21 @@ export class TransactionHelper {
       if (query?.time_zone) {
         timeZone = query?.time_zone;
       }
-      var currentTime = moment();
+      const currentTime = moment();
       currentTime.tz(timeZone).format("YYYY-MM-DD");
-      let currentDate = momentBase(new Date(currentTime?.toString())).format("YYYY-MM-DD");
-      let todayIOS = moment(currentDate).tz(timeZone);
+      const currentDate = momentBase(new Date(currentTime?.toString())).format("YYYY-MM-DD");
+      const todayIOS = moment(currentDate).tz(timeZone);
 
-      let yesterDay = new Date(currentDate);
+      const yesterDay = new Date(currentDate);
       yesterDay.setDate(yesterDay.getDate() - 1);
 
-      let sevenDay = new Date(currentDate);
+      const sevenDay = new Date(currentDate);
       sevenDay.setDate(sevenDay.getDate() - 7);
 
-      let firstDayOfWeek = todayIOS.clone().startOf("week").add(1, "day");
-      let firstDayOfMonth = todayIOS.clone().startOf("month");
+      const firstDayOfWeek = todayIOS.clone().startOf("week").add(1, "day");
+      const firstDayOfMonth = todayIOS.clone().startOf("month");
 
-      let firstDayOfLastMonth = todayIOS.clone().subtract(1, "month").startOf("month");
+      const firstDayOfLastMonth = todayIOS.clone().subtract(1, "month").startOf("month");
 
       let filterToday = {
         from: todayIOS?.toString(),
@@ -429,43 +429,43 @@ export class TransactionHelper {
       };
       filterToday = { ...filterToday, ...query };
 
-      let todayCount = await this.transactionService.getUserIncome(filterToday, {}, 1, 1);
+      const todayCount = await this.transactionService.getUserIncome(filterToday, {}, 1, 1);
 
       let filterYesterday = {
         from: yesterDay?.toString(),
         to: todayIOS?.toString(),
       };
       filterYesterday = { ...filterYesterday, ...query };
-      let yesterdayCount = await this.transactionService.getUserIncome(filterYesterday, {}, 1, 1);
+      const yesterdayCount = await this.transactionService.getUserIncome(filterYesterday, {}, 1, 1);
 
       let filterCurrentWeek = {
         from: firstDayOfWeek?.toString(),
         to: new Date().toISOString(),
       };
       filterCurrentWeek = { ...filterCurrentWeek, ...query };
-      let currentWeekCount = await this.transactionService.getUserIncome(filterCurrentWeek, {}, 1, 1);
+      const currentWeekCount = await this.transactionService.getUserIncome(filterCurrentWeek, {}, 1, 1);
 
       let filterCurrentMonth = {
         from: firstDayOfMonth?.toString(),
         to: new Date().toISOString(),
       };
       filterCurrentMonth = { ...filterCurrentMonth, ...query };
-      let currentMonthCount = await this.transactionService.getUserIncome(filterCurrentMonth, {}, 1, 1);
+      const currentMonthCount = await this.transactionService.getUserIncome(filterCurrentMonth, {}, 1, 1);
 
       let filterLastMonth = {
         from: firstDayOfLastMonth?.toString(),
         to: firstDayOfMonth?.toString(),
       };
       filterLastMonth = { ...filterLastMonth, ...query };
-      let lastMonthCount = await this.transactionService.getUserIncome(filterLastMonth, {}, 1, 1);
-      let dataReturn = {
+      const lastMonthCount = await this.transactionService.getUserIncome(filterLastMonth, {}, 1, 1);
+      const dataReturn = {
         today: todayCount[0] || { sum: 0 },
         yesterday: yesterdayCount[0] || { sum: 0 },
         current_week: currentWeekCount[0] || { sum: 0 },
         current_month: currentMonthCount[0] || { sum: 0 },
         last_month: lastMonthCount[0] || { sum: 0 },
       };
-      let dataCount = 0;
+      const dataCount = 0;
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -484,19 +484,19 @@ export class TransactionHelper {
    */
   async getTransactionListByAdmin(query: ListTransactionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = query?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -517,8 +517,8 @@ export class TransactionHelper {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -531,8 +531,8 @@ export class TransactionHelper {
         if (channelId) {
           dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
         }
-        let dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.transactionService.count(dataToFilter);
+        const dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.transactionService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -555,18 +555,18 @@ export class TransactionHelper {
    */
   async getListTransactionBank(query: ListTransactionBankDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -576,7 +576,7 @@ export class TransactionHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = query?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -585,8 +585,8 @@ export class TransactionHelper {
         dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
       }
 
-      let dataReturn = await this.transactionBankService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.transactionBankService.count(dataToFilter);
+      const dataReturn = await this.transactionBankService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.transactionBankService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -605,18 +605,18 @@ export class TransactionHelper {
    */
   async getTransactionListByUser(query: ListTransactionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -626,7 +626,7 @@ export class TransactionHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = query?.channel_id;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -638,12 +638,12 @@ export class TransactionHelper {
       dataToFilter = { ...dataToFilter, ...{ transaction_type: "output" } };
       if (query?.search) {
         //Search User First
-        let dataSearch = {
+        const dataSearch = {
           search: query?.search,
           channel_permission: channelId,
         };
-        let dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
-        let ids = dataUserArray.map((itemValue, index) => {
+        const dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
+        const ids = dataUserArray.map((itemValue, index) => {
           return itemValue?._id?.toString();
         });
         if (ids && ids.length) {
@@ -656,8 +656,8 @@ export class TransactionHelper {
         }
       }
 
-      let dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.transactionService.count(dataToFilter);
+      const dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.transactionService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -676,13 +676,13 @@ export class TransactionHelper {
    */
   async handleGetDetailTransaction(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.transactionService.findById(id.toString());
+      const dataReturn = await this.transactionService.findById(id.toString());
       if (
         (await this.userPermissionService.isHavePermission(userId, "transaction/list")) ||
         dataReturn.user_id.toString() === userId
@@ -708,14 +708,14 @@ export class TransactionHelper {
    */
   async handleUpdateTransactionByAdmin(dataUpdate: UpdateTransactionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       // if (await this.userPermissionService.isHavePermission(userId, "order/update")) {
-      let dataReturn = await this.transactionService.update(dataUpdate);
+      const dataReturn = await this.transactionService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -738,16 +738,16 @@ export class TransactionHelper {
    */
   async handleUpdateTransactionAfter(orderData: Order, userObject: User, purchase: Purchase, auth: string) {
     try {
-      let dataFilter = {
+      const dataFilter = {
         ref_id: orderData,
         ref_type: "order",
       };
-      let dataTransaction = await this.transactionService.findOne(dataFilter);
+      const dataTransaction = await this.transactionService.findOne(dataFilter);
       if (!dataTransaction) {
-        let dataFilterLastCoin = {
+        const dataFilterLastCoin = {
           user_id: userObject._id.toString(),
         };
-        let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+        const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
         let lastCoin = 0;
         let currentToken = 0;
         if (dataTransactionLastCoinObject) {
@@ -755,13 +755,13 @@ export class TransactionHelper {
           currentToken = Number(dataTransactionLastCoinObject.current_token);
         }
 
-        let dataValue = Number(orderData.plan_id.amount_of_coin);
+        const dataValue = Number(orderData.plan_id.amount_of_coin);
 
-        let newCoin = lastCoin + dataValue;
-        let noteTransaction = `Top-up ${dataValue} coin from Order ID: #${orderData._id.toString()} at: ${new Date().toISOString()}. Created by User: #${userObject._id.toString()}.`;
+        const newCoin = lastCoin + dataValue;
+        const noteTransaction = `Top-up ${dataValue} coin from Order ID: #${orderData._id.toString()} at: ${new Date().toISOString()}. Created by User: #${userObject._id.toString()}.`;
 
         //Create New Transaction
-        let dataCreate = {
+        const dataCreate = {
           ref_id: orderData._id.toString(),
           ref_type: "order",
           method: "plus",
@@ -780,7 +780,7 @@ export class TransactionHelper {
         };
 
         await this.handleProcessUpdateCoin(userObject, newCoin, currentToken, auth);
-        let dataToReturn = await this.transactionService.create(dataCreate);
+        const dataToReturn = await this.transactionService.create(dataCreate);
         return dataToReturn;
       } else {
         return null;
@@ -810,10 +810,10 @@ export class TransactionHelper {
     auth: string
   ) {
     try {
-      let dataFilterLastCoin = {
+      const dataFilterLastCoin = {
         user_id: userObject._id.toString(),
       };
-      let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       let lastCoin = 0;
       let lastToken = 0;
       if (dataTransactionLastCoinObject) {
@@ -842,7 +842,7 @@ export class TransactionHelper {
       }
 
       //Create New Transaction
-      let dataCreate = {
+      const dataCreate = {
         ref_id: callObject._id.toString(),
         ref_type: "callkit",
         method: method,
@@ -861,7 +861,7 @@ export class TransactionHelper {
       };
 
       await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      let dataToReturn = await this.transactionService.create(dataCreate);
+      const dataToReturn = await this.transactionService.create(dataCreate);
     } catch (error) {
       console.log(error);
     }
@@ -884,11 +884,11 @@ export class TransactionHelper {
     auth: string
   ) {
     try {
-      let dataFilterLastCoin = {
+      const dataFilterLastCoin = {
         user_id: userObject._id.toString(),
       };
       console.log(userObject, "userObject");
-      let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       console.log(dataTransactionLastCoinObject, "dataTransactionLastCoinObject");
       let lastCoin = 0;
       let lastToken = 0;
@@ -914,7 +914,7 @@ export class TransactionHelper {
       }
 
       //Create New Transaction
-      let dataCreate = {
+      const dataCreate = {
         ref_id: roomObject._id.toString(),
         ref_type: "chat_room",
         method: method,
@@ -936,7 +936,7 @@ export class TransactionHelper {
       console.log(dataCreate, "dataCreate");
 
       await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      let dataToReturn = await this.transactionService.create(dataCreate);
+      const dataToReturn = await this.transactionService.create(dataCreate);
     } catch (error) {
       console.log(error);
     }
@@ -959,11 +959,11 @@ export class TransactionHelper {
     auth: string
   ) {
     try {
-      let dataFilterLastCoin = {
+      const dataFilterLastCoin = {
         user_id: userObject._id.toString(),
       };
       console.log(userObject, "userObject");
-      let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       console.log(dataTransactionLastCoinObject, "dataTransactionLastCoinObject");
       let lastCoin = 0;
       let lastToken = 0;
@@ -989,7 +989,7 @@ export class TransactionHelper {
       }
 
       //Create New Transaction
-      let dataCreate = {
+      const dataCreate = {
         ref_id: giftObject._id.toString(),
         ref_type: "gift",
         method: method,
@@ -1011,7 +1011,7 @@ export class TransactionHelper {
       console.log(dataCreate, "dataCreate");
 
       await this.handleProcessUpdateCoin(userObject, newCoin, newToken, auth);
-      let dataToReturn = await this.transactionService.create(dataCreate);
+      const dataToReturn = await this.transactionService.create(dataCreate);
     } catch (error) {
       console.log(error);
     }
@@ -1025,14 +1025,14 @@ export class TransactionHelper {
    * @param authCode
    * @returns
    */
-  async handleProcessUpdateCoin(userObject: User, coinNumber: Number, tokenNumber: Number, authCode: string) {
+  async handleProcessUpdateCoin(userObject: User, coinNumber: number, tokenNumber: number, authCode: string) {
     try {
-      let dataToUpdate: any = {
+      const dataToUpdate: any = {
         user_id: userObject._id?.toString(),
         current_coin: coinNumber,
         current_token: tokenNumber,
       };
-      let dataUpdateUser = await this.userOptionService.update(dataToUpdate);
+      const dataUpdateUser = await this.userOptionService.update(dataToUpdate);
       // let dataToSend = {
       //   data_update: JSON.stringify(dataToUpdate),
       // };
@@ -1045,7 +1045,7 @@ export class TransactionHelper {
       };
       const urlLogin = process.env.SOCKET_API;
 
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/update-coin", params, config)
         .then((response) => {
           if (response?.data) {

@@ -27,7 +27,7 @@ export class GiftService {
    * @returns
    */
   async checkGiftUserDelivered(req: CheckGiftPointLevelDto) {
-    let condition: any = {
+    const condition: any = {
       channel_id: req.channel_id,
       gift_type: "gift",
       $and: [
@@ -49,7 +49,7 @@ export class GiftService {
         { $or: [{ "gift_conditions.birth": 0 }, { "gift_conditions.birth": { $exists: false } }] },
       ],
     };
-    let dataReturn = await this.giftModel.find(condition).exec();
+    const dataReturn = await this.giftModel.find(condition).exec();
     return dataReturn;
   }
 
@@ -103,7 +103,7 @@ export class GiftService {
     }
 
     if (filter.date_time) {
-      let dataDate = new Date(filter.date_time);
+      const dataDate = new Date(filter.date_time);
       condition = Object.assign(condition, {
         "gift_conditions.start_time": { $lte: dataDate },
         "gift_conditions.end_time": { $gte: dataDate },
@@ -152,7 +152,7 @@ export class GiftService {
    * @returns
    */
   async filter(filter: SearchGiftDto, sortBy: SortByGiftDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -163,7 +163,7 @@ export class GiftService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.giftModel
+    const dataReturn = await this.giftModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -185,7 +185,7 @@ export class GiftService {
    */
   public count = async (filter: SearchGiftDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.giftModel.estimatedDocumentCount();
       } else {
@@ -250,7 +250,7 @@ export class GiftService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.giftModel
+      const dataReturn = await this.giftModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { upsert: true, new: true, setDefaultsOnInsert: true })
         .populate(
           "user_id",

@@ -34,7 +34,7 @@ export class LawyerHelper {
     private chatMediaService: ChatMediaService,
     private cityService: CityService
   ) {
-    let self = this;
+    const self = this;
     setTimeout(() => {
       for (let dataPage = 1; dataPage < 10; dataPage++) {
         // self.handleProcessData(dataPage, 200);
@@ -49,13 +49,13 @@ export class LawyerHelper {
 
   async handleProcessLawyer(page) {
     try {
-      let dataLawyer = await this.lawyerService.filter({}, {}, page, 200);
-      for (let dataItem of dataLawyer) {
+      const dataLawyer = await this.lawyerService.filter({}, {}, page, 200);
+      for (const dataItem of dataLawyer) {
         // console.log(dataItem?.contact, 'dataItem');
         // console.log(dataItem?.avatar)
-        let officeNumber = dataItem?.contact[0]?.office_number;
-        let website = dataItem?.contact[0]?.website;
-        let description = dataItem?.about;
+        const officeNumber = dataItem?.contact[0]?.office_number;
+        const website = dataItem?.contact[0]?.website;
+        const description = dataItem?.about;
         // console.log(dataItem)
         let pointLawyer = 0;
         if (officeNumber) {
@@ -73,11 +73,11 @@ export class LawyerHelper {
           pointLawyer++;
         }
         // console.log(pointLawyer, 'pointLawyer++')
-        let dataUpdate = {
+        const dataUpdate = {
           points: pointLawyer,
           _id: dataItem?._id?.toString(),
         };
-        let dataReturn = await this.lawyerService.update(dataUpdate);
+        const dataReturn = await this.lawyerService.update(dataUpdate);
       }
     } catch (error) {
       console.log(error);
@@ -85,28 +85,28 @@ export class LawyerHelper {
   }
 
   async handleProcessCategory() {
-    let data = this.handleGetHtml();
-    let self = this;
-    let $ = cheerio.load(data);
-    let dataCategory = [];
-    let dataBigCategory = $(".v-content-wrapper").each(function () {
-      let parentCategory = $(this).find("h4 a").text();
-      let dataSlug = self.toSlug(parentCategory);
+    const data = this.handleGetHtml();
+    const self = this;
+    const $ = cheerio.load(data);
+    const dataCategory = [];
+    const dataBigCategory = $(".v-content-wrapper").each(function () {
+      const parentCategory = $(this).find("h4 a").text();
+      const dataSlug = self.toSlug(parentCategory);
 
       if (parentCategory) {
-        let dataChildItem = [];
+        const dataChildItem = [];
 
-        let dataChild = $(this)
+        const dataChild = $(this)
           .find(".link-list li a")
           .each(function () {
-            let childCategory = $(this).text();
+            const childCategory = $(this).text();
             dataChildItem.push({
               slug: self.toSlug(childCategory),
               name: childCategory,
             });
           });
 
-        let dataToAdd = {
+        const dataToAdd = {
           parent: {
             slug: dataSlug,
             name: parentCategory,
@@ -118,10 +118,10 @@ export class LawyerHelper {
     });
 
     console.log(JSON.stringify(dataCategory), "dataCategory");
-    for (let dataItem of dataCategory) {
-      let dataParent = await this.lawyerCategoryService.create(dataItem.parent);
-      for (let childItem of dataItem.child) {
-        let dataToAdd = { ...childItem, ...{ parent_id: dataParent?._id?.toString() } };
+    for (const dataItem of dataCategory) {
+      const dataParent = await this.lawyerCategoryService.create(dataItem.parent);
+      for (const childItem of dataItem.child) {
+        const dataToAdd = { ...childItem, ...{ parent_id: dataParent?._id?.toString() } };
         await this.lawyerCategoryService.create(dataToAdd);
       }
     }
@@ -139,9 +139,9 @@ export class LawyerHelper {
 
   async handleProcessLatLon(page, limit) {
     try {
-      let dataUpdate = await this.lawyerService.filter({}, {}, page, limit);
+      const dataUpdate = await this.lawyerService.filter({}, {}, page, limit);
 
-      for (let dataItem of dataUpdate) {
+      for (const dataItem of dataUpdate) {
         if (!dataItem?.loc) {
           console.log(dataItem?.name);
         }
@@ -173,22 +173,22 @@ export class LawyerHelper {
 
   async handleProcessData(page, limit) {
     try {
-      let dataRaw = await this.lawyerRawService.filter({}, {}, page, limit);
-      for (let itemRaw of dataRaw) {
-        let urlLawRaw = itemRaw.url;
-        let lawObject = await this.lawyerService.findOne({ ref_url: urlLawRaw });
+      const dataRaw = await this.lawyerRawService.filter({}, {}, page, limit);
+      for (const itemRaw of dataRaw) {
+        const urlLawRaw = itemRaw.url;
+        const lawObject = await this.lawyerService.findOne({ ref_url: urlLawRaw });
         if (lawObject) {
           continue;
         }
         console.log(itemRaw.url);
-        let $ = cheerio.load(itemRaw.data?.toString());
+        const $ = cheerio.load(itemRaw.data?.toString());
         // console.log($.html());
-        let lawyerPosition = $(".profile-header .lawyer-position p").text();
-        let lawyerName = $(".profile-header .lawyer-name span").text();
-        let aboutBio = $("#bioExpandCollapse").text();
-        let profileMap = $("#profile-map").attr("data-map");
+        const lawyerPosition = $(".profile-header .lawyer-position p").text();
+        const lawyerName = $(".profile-header .lawyer-name span").text();
+        const aboutBio = $("#bioExpandCollapse").text();
+        const profileMap = $("#profile-map").attr("data-map");
 
-        let dataSubTitle = $(".lawyer-info.profile-card .alias-info.small").text();
+        const dataSubTitle = $(".lawyer-info.profile-card .alias-info.small").text();
 
         try {
           var dataLatLon = [];
@@ -199,46 +199,46 @@ export class LawyerHelper {
           console.log(JSON.parse(profileMap));
         } catch (error) {}
 
-        let dataContact = [];
+        const dataContact = [];
 
         let trackingContainerDetail = "";
 
-        let dataContactObject = $(".gtm-tracking-container.contact-items.overridable-lawyer-phone .contact-item").each(
-          function () {
-            let dataToAddContact = {};
-            let trackingContainerHeader = $(this).find(".contact-item-header").text();
+        const dataContactObject = $(
+          ".gtm-tracking-container.contact-items.overridable-lawyer-phone .contact-item"
+        ).each(function () {
+          let dataToAddContact = {};
+          const trackingContainerHeader = $(this).find(".contact-item-header").text();
 
-            dataToAddContact = { ...dataToAddContact, ...{ name: trackingContainerHeader.trim() } };
-            trackingContainerDetail = $(this).find(".contact-address").text();
+          dataToAddContact = { ...dataToAddContact, ...{ name: trackingContainerHeader.trim() } };
+          trackingContainerDetail = $(this).find(".contact-address").text();
 
-            dataToAddContact = { ...dataToAddContact, ...{ address: trackingContainerDetail.trim() } };
+          dataToAddContact = { ...dataToAddContact, ...{ address: trackingContainerDetail.trim() } };
 
-            let trackingContainerPhoneOffice = $(this).find(".overridable-lawyer-phone-copy").text();
+          const trackingContainerPhoneOffice = $(this).find(".overridable-lawyer-phone-copy").text();
 
-            let trackingContainerPhoneFax = $(this)
-              .find("[data-pp=phone_call_initiated]")
-              .each(function () {
-                let dataItem = $(this).text();
+          const trackingContainerPhoneFax = $(this)
+            .find("[data-pp=phone_call_initiated]")
+            .each(function () {
+              const dataItem = $(this).text();
 
-                console.log(dataItem, "dataItem");
-                if (dataItem.indexOf("Office") !== -1) {
-                  console.log(dataItem, "Office");
-                  dataToAddContact = {
-                    ...dataToAddContact,
-                    ...{ office_number: dataItem.trim()?.replace(" Office", "") },
-                  };
-                }
-                if (dataItem.indexOf("Fax") !== -1) {
-                  console.log(dataItem, "Fax");
-                  dataToAddContact = { ...dataToAddContact, ...{ fax_number: dataItem.trim()?.replace(" Fax", "") } };
-                }
-              });
-            let trackingWebsite = $(".contact-website.ga-click-website").text();
-            let website = trackingWebsite.trim() ? "https://" + trackingWebsite.trim() : "";
-            dataToAddContact = { ...dataToAddContact, ...{ website: website } };
-            dataContact.push(dataToAddContact);
-          }
-        );
+              console.log(dataItem, "dataItem");
+              if (dataItem.indexOf("Office") !== -1) {
+                console.log(dataItem, "Office");
+                dataToAddContact = {
+                  ...dataToAddContact,
+                  ...{ office_number: dataItem.trim()?.replace(" Office", "") },
+                };
+              }
+              if (dataItem.indexOf("Fax") !== -1) {
+                console.log(dataItem, "Fax");
+                dataToAddContact = { ...dataToAddContact, ...{ fax_number: dataItem.trim()?.replace(" Fax", "") } };
+              }
+            });
+          const trackingWebsite = $(".contact-website.ga-click-website").text();
+          const website = trackingWebsite.trim() ? "https://" + trackingWebsite.trim() : "";
+          dataToAddContact = { ...dataToAddContact, ...{ website: website } };
+          dataContact.push(dataToAddContact);
+        });
 
         var workExperience = [];
         var education = [];
@@ -248,9 +248,9 @@ export class LawyerHelper {
         var honors = [];
         var legalCase = [];
         var languageSpoken = [];
-        let resumeSection = $(".resume-section").each(function () {
+        const resumeSection = $(".resume-section").each(function () {
           // console.log($(this).find("h2").html());
-          let dataTitle = $(this).find("h2").html();
+          const dataTitle = $(this).find("h2").html();
           // console.log($(this).html(), 'data');
           switch (dataTitle) {
             case "Work Experience":
@@ -259,10 +259,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -284,10 +284,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -309,10 +309,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -335,7 +335,7 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).text();
+                  const resumeSectionTitle = $(this).text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   languageSpoken.push(dataToAdd);
                 });
@@ -345,10 +345,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -370,10 +370,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -397,10 +397,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -422,10 +422,10 @@ export class LawyerHelper {
                 .find(".unstyled-list")
                 .each(function () {
                   let dataToAdd = {};
-                  let resumeSectionTitle = $(this).find(".resume-section-title").text();
+                  const resumeSectionTitle = $(this).find(".resume-section-title").text();
                   dataToAdd = { ...dataToAdd, ...{ title: resumeSectionTitle.trim() } };
                   let countText = 0;
-                  let resumeSectionDescription = $(this)
+                  const resumeSectionDescription = $(this)
                     .find("li")
                     .each(function () {
                       if (countText > 0) {
@@ -445,25 +445,25 @@ export class LawyerHelper {
           }
         });
 
-        let licenseCard = $(".license-card");
+        const licenseCard = $(".license-card");
         let licenseYear = 3000;
 
-        let licenseTitle = licenseCard.find(".section main-title").text();
+        const licenseTitle = licenseCard.find(".section main-title").text();
         // console.log(licenseTitle);
         // console.log(trackingWebsite);
-        let profilePayload = $("#profile-payload").attr("data-payload");
+        const profilePayload = $("#profile-payload").attr("data-payload");
         // console.log(profilePayload);
 
-        let dataLicenses = [];
-        let licensesSection = $(".licenses-section .license-card").each(function () {
-          let title = $(this).find(".main-title").text();
+        const dataLicenses = [];
+        const licensesSection = $(".licenses-section .license-card").each(function () {
+          const title = $(this).find(".main-title").text();
           let dataPush = {
             licensed_year: title?.replace("\n", "")?.trim(),
           };
 
           // console.log(title);
           let countContent = 0;
-          let contentLicenses = $(this)
+          const contentLicenses = $(this)
             .find(".content span")
             .each(function () {
               if (countContent == 0) {
@@ -477,15 +477,15 @@ export class LawyerHelper {
           // console.log(contentLicenses);
 
           let countSection = 0;
-          let sectionArray = $(this)
+          const sectionArray = $(this)
             .find(".section")
             .each(function () {
               if (countSection > 0 && countSection < 3) {
                 // console.log($(this).text());
-                let dataTextSpan = $(this).text();
+                const dataTextSpan = $(this).text();
                 if (dataTextSpan.indexOf("State") !== -1) {
                   let countSpan = 0;
-                  let dataSpan = $(this)
+                  const dataSpan = $(this)
                     .find("span")
                     .each(function () {
                       if (countSpan == 1) {
@@ -497,13 +497,13 @@ export class LawyerHelper {
 
                 if (dataTextSpan.indexOf("Acquired") !== -1) {
                   let countSpan = 0;
-                  let dataSpan = $(this)
+                  const dataSpan = $(this)
                     .find("span")
                     .each(function () {
                       if (countSpan == 1) {
                         dataPush = { ...dataPush, ...{ acquired: $(this).text()?.replace("\n", "")?.trim() } };
 
-                        let yearNumber = parseInt($(this).text()?.replace("\n", "")?.trim());
+                        const yearNumber = parseInt($(this).text()?.replace("\n", "")?.trim());
                         if (yearNumber < licenseYear && yearNumber > 0) {
                           licenseYear = yearNumber;
                         }
@@ -519,45 +519,45 @@ export class LawyerHelper {
           dataLicenses.push(dataPush);
         });
 
-        let avatar = $("#stickyNavHeader img").attr("src");
+        const avatar = $("#stickyNavHeader img").attr("src");
 
-        let dataAvatar = await this.createMedia(avatar, "image");
+        const dataAvatar = await this.createMedia(avatar, "image");
 
-        let self = this;
-        let dataArray = [];
-        let publicAlbum = [];
-        let dataImageCrawl = $("#photos-and-videos .media-thumbnail").each(function async() {
-          let dataImage = $(this).attr("src");
+        const self = this;
+        const dataArray = [];
+        const publicAlbum = [];
+        const dataImageCrawl = $("#photos-and-videos .media-thumbnail").each(function async() {
+          const dataImage = $(this).attr("src");
           dataArray.push(dataImage);
         });
-        for (let itemArray of dataArray) {
-          let dataImageObject = await self.createMedia(itemArray, "image");
+        for (const itemArray of dataArray) {
+          const dataImageObject = await self.createMedia(itemArray, "image");
           publicAlbum.push(dataImageObject?._id?.toString());
         }
-        let extraInfo = $(".extra-info .header-free-consultation").text().trim();
-        let extraVirtual = $(".extra-info .header-virtual-consultation").text().trim();
+        const extraInfo = $(".extra-info .header-free-consultation").text().trim();
+        const extraVirtual = $(".extra-info .header-virtual-consultation").text().trim();
         console.log(avatar);
-        let url = encodeURI(avatar);
+        const url = encodeURI(avatar);
 
-        let reviewNumber = $(".text-muted.reviews-link").text().trim();
+        const reviewNumber = $(".text-muted.reviews-link").text().trim();
         console.log(parseInt(reviewNumber), "reviewNumber");
-        let reviewValue = $(".rating-value").text();
+        const reviewValue = $(".rating-value").text();
 
         console.log(parseFloat(reviewValue), "parseFloat(reviewValue)");
         console.log(lawyerPosition, "lawyerPosition");
 
-        let paymentMethod = $(".profile-card .payment-methods span").text();
+        const paymentMethod = $(".profile-card .payment-methods span").text();
         let paymentMethodArray = [];
-        let dataPaymentMethodArray = [];
+        const dataPaymentMethodArray = [];
         if (paymentMethod) {
           paymentMethodArray = paymentMethod.split(",");
-          for (let dataPayment of paymentMethodArray) {
+          for (const dataPayment of paymentMethodArray) {
             dataPaymentMethodArray.push(dataPayment.trim());
           }
         }
         let costData = {};
-        let dataCost = $(".profile-card .unstyled-list li").each(function () {
-          let dataText = $(this).text();
+        const dataCost = $(".profile-card .unstyled-list li").each(function () {
+          const dataText = $(this).text();
           if (dataText?.indexOf("Free Consultation") !== -1) {
             costData = { ...costData, ...{ free_consultation: $(this).find(".price-label").text().trim() } };
           }
@@ -572,34 +572,34 @@ export class LawyerHelper {
           }
         });
 
-        let awardArrayImage = [];
-        let award = $(".badges-container .profile-badge").each(function () {
-          let dataDescription = $(this).attr("data-description");
+        const awardArrayImage = [];
+        const award = $(".badges-container .profile-badge").each(function () {
+          const dataDescription = $(this).attr("data-description");
           if (dataDescription?.indexOf("The Avvo") === -1) {
-            let imageAward = $(this).attr("data-img");
+            const imageAward = $(this).attr("data-img");
             awardArrayImage.push(imageAward);
           }
         });
-        let dataIdAward = [];
-        for (let dataImageAward of awardArrayImage) {
-          let dataObject = await this.createMedia(dataImageAward, "image");
+        const dataIdAward = [];
+        for (const dataImageAward of awardArrayImage) {
+          const dataObject = await this.createMedia(dataImageAward, "image");
           dataIdAward.push(dataObject?._id?.toString());
         }
 
-        let dataCategory = [];
+        const dataCategory = [];
 
-        let categoryObject = $(".chart-legend-list.unstyled-list li").each(function () {
+        const categoryObject = $(".chart-legend-list.unstyled-list li").each(function () {
           let textCategory = $(this).find("a").text().replace("... Read more", "");
 
-          let categoryDetail = $(this).find("em").text();
-          let categoryPercent = $(this).find(".chart-legend-percent").text();
+          const categoryDetail = $(this).find("em").text();
+          const categoryPercent = $(this).find(".chart-legend-percent").text();
 
           textCategory = textCategory.replace(categoryPercent, "").replace(/(\n)/g, "");
 
-          let categoryYear = $(this).find("p").text();
-          let categoryYearInt = parseInt(categoryYear) ? parseInt(categoryYear) : 0;
-          let categoryPercentInt = parseInt(categoryPercent) ? parseInt(categoryPercent) : 0;
-          let dataAddCategory = {
+          const categoryYear = $(this).find("p").text();
+          const categoryYearInt = parseInt(categoryYear) ? parseInt(categoryYear) : 0;
+          const categoryPercentInt = parseInt(categoryPercent) ? parseInt(categoryPercent) : 0;
+          const dataAddCategory = {
             slug: self.toSlug(textCategory),
             name: textCategory,
             detail: categoryDetail,
@@ -610,10 +610,10 @@ export class LawyerHelper {
           dataCategory.push(dataAddCategory);
         });
 
-        let dataCategoryArray = [];
-        let categoryDataNewArray = [];
-        for (let itemCategory of dataCategory) {
-          let idCategoryObject = await this.lawyerCategoryService.findOne({ slug: itemCategory.slug });
+        const dataCategoryArray = [];
+        const categoryDataNewArray = [];
+        for (const itemCategory of dataCategory) {
+          const idCategoryObject = await this.lawyerCategoryService.findOne({ slug: itemCategory.slug });
           let dataToAddCategory = itemCategory;
           if (idCategoryObject) {
             dataToAddCategory = { ...dataToAddCategory, ...{ ref_id: idCategoryObject?._id?.toString() } };
@@ -622,22 +622,22 @@ export class LawyerHelper {
 
           categoryDataNewArray.push(dataToAddCategory);
         }
-        let subAbout = $(".about-tagline span").text().trim();
+        const subAbout = $(".about-tagline span").text().trim();
 
-        let dataCity = $(".widget-location.icon-map-marker-before-orange").text();
+        const dataCity = $(".widget-location.icon-map-marker-before-orange").text();
         let state = "";
         let cityId = null;
         let city = "";
         if (dataCity) {
-          let dataChildCity = dataCity?.split(",");
+          const dataChildCity = dataCity?.split(",");
           city = dataChildCity[0];
           state = dataChildCity[1].trim();
-          let dataCityObject = await this.cityService.findOne({ city_name: city.trim() });
+          const dataCityObject = await this.cityService.findOne({ city_name: city.trim() });
           if (dataCityObject) {
             cityId = dataCityObject?._id;
           }
         }
-        let dataCreate: any = {
+        const dataCreate: any = {
           review_number: parseInt(reviewNumber) ? parseInt(reviewNumber) : 0,
           review_value: parseFloat(reviewValue) ? parseFloat(reviewValue) : 0,
           name: lawyerName,
@@ -692,28 +692,28 @@ export class LawyerHelper {
 
   async handleProcessStar(page, limit) {
     try {
-      let dataUpdate = await this.lawyerService.filter({}, {}, page, limit);
-      for (let dataItem of dataUpdate) {
-        let dataRaw = {
+      const dataUpdate = await this.lawyerService.filter({}, {}, page, limit);
+      for (const dataItem of dataUpdate) {
+        const dataRaw = {
           url: dataItem.ref_url,
         };
         console.log(dataItem.ref_url, "dataRawHtml");
-        let dataRawHtml = await this.lawyerRawService.findOne(dataRaw);
+        const dataRawHtml = await this.lawyerRawService.findOne(dataRaw);
         // console.log(dataRawHtml.data, 'eieieieieieie');
-        let $ = cheerio.load(dataRawHtml.data?.toString());
+        const $ = cheerio.load(dataRawHtml.data?.toString());
 
-        let totalRating = Number(dataItem.review_number);
+        const totalRating = Number(dataItem.review_number);
         console.log(totalRating, "totalRating");
         let countNumber = 5;
-        let dataToUpdate = [];
-        let dataObject = $(".review-overall-ratings .histogram-rating-percent").each(function () {
+        const dataToUpdate = [];
+        const dataObject = $(".review-overall-ratings .histogram-rating-percent").each(function () {
           // let dataStar = $(this).find(".histogram-rating-percent");
           console.log($(this).text(), "$(this).text()");
-          let dataText = parseInt($(this).text());
+          const dataText = parseInt($(this).text());
           console.log(dataText, "dataText");
-          let percentText = dataText / 100;
-          let dataNumber = Math.round(totalRating * percentText);
-          let dataToAdd = {
+          const percentText = dataText / 100;
+          const dataNumber = Math.round(totalRating * percentText);
+          const dataToAdd = {
             star_number: countNumber,
             star_value: dataNumber,
           };
@@ -722,7 +722,7 @@ export class LawyerHelper {
         });
         console.log(dataToUpdate);
 
-        let dataToUpdateLaw = {
+        const dataToUpdateLaw = {
           _id: dataItem?._id?.toString(),
           data_star: dataToUpdate,
         };
@@ -751,7 +751,7 @@ export class LawyerHelper {
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
     str = str.replace(/-+$/g, "");
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     return str;
   }
 
@@ -761,7 +761,7 @@ export class LawyerHelper {
    * @returns
    */
   async createMedia(url: string, type) {
-    let dataMedia = {
+    const dataMedia = {
       media_url: url,
       media_url_presign: "",
       media_type: type,
@@ -777,7 +777,7 @@ export class LawyerHelper {
       media_meta: [],
       createBy: "642a49eb18acaeada350130e",
     };
-    let dataAvatar = await this.chatMediaService.create(dataMedia);
+    const dataAvatar = await this.chatMediaService.create(dataMedia);
     return dataAvatar;
   }
   /**
@@ -790,11 +790,11 @@ export class LawyerHelper {
    */
   async createNewLawyer(createLawyerData: CreateLawyerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/list")) {
         if (this.validateJson(createLawyerData?.address)) {
           createLawyerData = {
@@ -981,7 +981,7 @@ export class LawyerHelper {
           };
         }
 
-        let dataCreate = await this.lawyerService.create(createLawyerData);
+        const dataCreate = await this.lawyerService.create(createLawyerData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1008,18 +1008,18 @@ export class LawyerHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.lawyerService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.lawyerService.count(dataToFilter);
+      const dataReturn = await this.lawyerService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.lawyerService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1042,20 +1042,20 @@ export class LawyerHelper {
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
-      let dataUser = await this.handleSession(req);
+      const dataUser = await this.handleSession(req);
       // console.log(dataUser, "dataUser");
 
       if (dataUser?.data_country) {
-        let dataCountry = JSON.parse(dataUser?.data_country);
-        let dataLatLong = dataCountry?.loc?.split(",");
-        let lat = parseFloat(dataLatLong[0]);
-        let lon = parseFloat(dataLatLong[1]);
+        const dataCountry = JSON.parse(dataUser?.data_country);
+        const dataLatLong = dataCountry?.loc?.split(",");
+        const lat = parseFloat(dataLatLong[0]);
+        const lon = parseFloat(dataLatLong[1]);
         console.log(dataCountry);
         query = { ...query, ...{ latitude: lat, longitude: lon } };
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
 
       if (query.order_by && (query.order_type == "most_reviewed" || !query?.order_by)) {
@@ -1078,11 +1078,11 @@ export class LawyerHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: "ASC" } };
       }
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let projection = {
+      const projection = {
         avatar: 1,
         name: 1,
         about: 1,
@@ -1097,7 +1097,7 @@ export class LawyerHelper {
         ref_url: 1,
         points: 1,
       };
-      let dataReturn = await this.lawyerService.filter(dataToFilter, orderByOBject, page, limit, projection);
+      const dataReturn = await this.lawyerService.filter(dataToFilter, orderByOBject, page, limit, projection);
       // let dataCount = await this.lawyerService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1114,7 +1114,7 @@ export class LawyerHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -1124,12 +1124,12 @@ export class LawyerHelper {
       }
 
       try {
-        let config = {
+        const config = {
           headers: {
             "X-Authorization": authCodeString,
           },
         };
-        let dataUser = await axios
+        const dataUser = await axios
           .post(process.env.LAW_URL + "/user/anonymous/get-data", {}, config)
           .then((response) => {
             return response.data;
@@ -1156,7 +1156,7 @@ export class LawyerHelper {
   async handleGetDetailLawyer(id: string, res: Response, req: ExpressRequestDto) {
     try {
       //Check Permission
-      let dataReturn = await this.lawyerService.findById(id.toString());
+      const dataReturn = await this.lawyerService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1173,7 +1173,7 @@ export class LawyerHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -1193,27 +1193,27 @@ export class LawyerHelper {
    */
   async createLawyerRaw(dataCreate: CreateLawyerRawDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/update")) {
         //Check Data
-        let dataFinder = {
+        const dataFinder = {
           url: dataCreate?.url,
         };
-        let objectFind = await this.lawyerRawService.findOne(dataFinder);
+        const objectFind = await this.lawyerRawService.findOne(dataFinder);
         if (objectFind) {
-          let dataUpdate = { ...dataCreate, ...{ _id: objectFind?._id?.toString() } };
-          let dataReturn = await this.lawyerRawService.update(dataUpdate);
+          const dataUpdate = { ...dataCreate, ...{ _id: objectFind?._id?.toString() } };
+          const dataReturn = await this.lawyerRawService.update(dataUpdate);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
             .json(dataReturn);
         } else {
-          let dataReturn = await this.lawyerRawService.create(dataCreate);
+          const dataReturn = await this.lawyerRawService.create(dataCreate);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -1236,11 +1236,11 @@ export class LawyerHelper {
    */
   async handleUpdateLawyerByAdmin(dataUpdate: UpdateLawyerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/update")) {
         if (this.validateJson(dataUpdate?.address)) {
@@ -1351,7 +1351,7 @@ export class LawyerHelper {
           };
         }
 
-        let dataReturn = await this.lawyerService.update(dataUpdate);
+        const dataReturn = await this.lawyerService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1373,17 +1373,17 @@ export class LawyerHelper {
    */
   async processFollowUser(dataFollow: CreateUserFollowLawyerDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         lawyer_id: dataFollow.lawyer_id.toString(),
       };
       await this.lawyerService.handleUpdateInc(dataFollow.lawyer_id.toString(), true);
       //Count Like
-      let dataReturn = await this.userFollowLawyerService.update(dataUpdate);
+      const dataReturn = await this.userFollowLawyerService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1402,19 +1402,19 @@ export class LawyerHelper {
    */
   async processUnFollowUser(dataFollow: CreateUserFollowLawyerDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataFindOne = {
+      const dataFindOne = {
         user_id: userObject._id.toString(),
         lawyer_id: dataFollow.lawyer_id.toString(),
       };
-      let dataToCheck = await this.userFollowLawyerService.findOne(dataFindOne);
+      const dataToCheck = await this.userFollowLawyerService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        let dataReturn = await this.userFollowLawyerService.remove(dataToCheck._id.toString());
+        const dataReturn = await this.userFollowLawyerService.remove(dataToCheck._id.toString());
         await this.lawyerService.handleUpdateInc(dataFollow.lawyer_id.toString(), false);
 
         return res

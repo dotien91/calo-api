@@ -12,24 +12,24 @@ export class RedeemPointData extends Document {
   @Prop({
     type: String,
   })
-  action_name: String;
+  action_name: string;
 
   @Prop({
     type: String,
     default: 0,
   })
-  point_number: String;
+  point_number: string;
 
   @Prop({
     type: String,
     default: "process",
   })
-  status: String;
+  status: string;
 
   @Prop({
     type: String,
   })
-  action_point: String;
+  action_point: string;
 }
 export const RedeemPointDataSchema = SchemaFactory.createForClass(RedeemPointData);
 
@@ -69,7 +69,7 @@ export class RedeemPermission {
     type: String,
     default: "process",
   })
-  status: String;
+  status: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null, index: true })
   start_time: MongooseSchema.Types.Date;

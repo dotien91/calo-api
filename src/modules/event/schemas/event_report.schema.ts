@@ -21,14 +21,14 @@ export class EventReport {
     nullable: false,
     default: "",
   })
-  report_key: String;
+  report_key: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  report_value: String;
+  report_value: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Event" })
   event_id: MongooseSchema.Types.ObjectId;

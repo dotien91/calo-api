@@ -23,7 +23,7 @@ export class PermissionGuard implements CanActivate {
     ]);
 
     const request = context.switchToHttp().getRequest();
-    let userObject: User = request.user_object;
+    const userObject: User = request.user_object;
 
     if (!userObject) throw new UnauthorizedException("Require Token!");
     try {
@@ -51,7 +51,7 @@ export class PermissionGuard implements CanActivate {
   }
 }
 
-export function Permission(...permissions: String[]) {
+export function Permission(...permissions: string[]) {
   return applyDecorators(SetMetadata("permissions", permissions), UseGuards(PermissionGuard));
 }
 

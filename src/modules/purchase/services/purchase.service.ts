@@ -17,7 +17,7 @@ export class PurchaseService {
    * @returns
    */
   async getCondition(filter: any) {
-    let condition: any = {};
+    const condition: any = {};
     return condition;
   }
 
@@ -43,12 +43,12 @@ export class PurchaseService {
    * @returns
    */
   async filter(filter: any, sortBy: SortByPurchaseDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.purchaseModel
+    const dataReturn = await this.purchaseModel
       .find(condition)
       .populate(
         "user_id",
@@ -69,7 +69,7 @@ export class PurchaseService {
    */
   public count = async (filter: any) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.purchaseModel.estimatedDocumentCount();
       } else {
@@ -87,7 +87,7 @@ export class PurchaseService {
    */
   async create(createUser: any) {
     const createdOrder = new this.purchaseModel(createUser);
-    let dataCreate = await createdOrder.save();
+    const dataCreate = await createdOrder.save();
     return dataCreate;
   }
 
@@ -97,9 +97,9 @@ export class PurchaseService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -140,7 +140,7 @@ export class PurchaseService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -173,7 +173,11 @@ export class PurchaseService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.purchaseModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.purchaseModel.findByIdAndUpdate(
+        dataUpdate._id,
+        { $set: dataUpdate },
+        { new: false }
+      );
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

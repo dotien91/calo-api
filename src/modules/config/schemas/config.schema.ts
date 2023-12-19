@@ -48,87 +48,87 @@ export class Config {
     default: "",
     index: true,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  package_name: String;
+  package_name: string;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  count_ab: Number;
+  count_ab: number;
 
   @Prop({
     type: [String],
     default: [],
   })
-  data_filter: String[];
+  data_filter: string[];
 
   @Prop({
     type: String,
     default: "",
   })
-  data_content: String;
+  data_content: string;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  near_by_free: Number;
+  near_by_free: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  chat_free: Number;
+  chat_free: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  call_free: Number;
+  call_free: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  call_pro: Number;
+  call_pro: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  follow_free: Number;
+  follow_free: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  view_today_free: Number;
+  view_today_free: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  filter_free: String[];
+  filter_free: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  filter_pro: String[];
+  filter_pro: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  filter_premium: String[];
+  filter_premium: string[];
 
   @Prop({
     type: [OptionContentSchema],

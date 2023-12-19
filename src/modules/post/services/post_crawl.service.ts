@@ -49,14 +49,14 @@ export class PostCrawlService {
    * @returns
    */
   async filter(filter: any, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.postCrawlModel
+    const projection = {};
+    const dataReturn = await this.postCrawlModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -74,13 +74,13 @@ export class PostCrawlService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.postCrawlModel
+    const projection = {};
+    const dataReturn = await this.postCrawlModel
       .find(condition, projection)
       .populate("user_id")
       .populate("post_category")
@@ -98,7 +98,7 @@ export class PostCrawlService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.postCrawlModel.estimatedDocumentCount();
       } else {
@@ -116,7 +116,7 @@ export class PostCrawlService {
    */
   async create(createUser: CreatePostCrawlDto) {
     const createdPost = new this.postCrawlModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -126,9 +126,9 @@ export class PostCrawlService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -162,7 +162,7 @@ export class PostCrawlService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -195,7 +195,7 @@ export class PostCrawlService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.postCrawlModel.findByIdAndUpdate(
+      const dataReturn = await this.postCrawlModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

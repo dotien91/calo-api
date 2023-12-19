@@ -37,9 +37,9 @@ export class UserViewService {
       condition = Object.assign(condition, { partner_id: filter.partner_id });
     }
     if (filter.updatedAt) {
-      let currentTime = Math.floor(Date.now() / 1);
-      let timeToCompare = currentTime - 24 * 60 * 60 * 1000;
-      let dateToCompare = new Date(timeToCompare);
+      const currentTime = Math.floor(Date.now() / 1);
+      const timeToCompare = currentTime - 24 * 60 * 60 * 1000;
+      const dateToCompare = new Date(timeToCompare);
       condition = Object.assign(condition, { updatedAt: { $gt: dateToCompare } });
     }
 
@@ -56,7 +56,7 @@ export class UserViewService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userViewModel.findById(id, projection);
+    const dataReturn = await this.userViewModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -87,7 +87,7 @@ export class UserViewService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserView[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userViewModel.find(condition, {}).exec();
   }
 
@@ -110,7 +110,7 @@ export class UserViewService {
       if (!dataUpdate.user_id && !dataUpdate.partner_id) {
         return null;
       }
-      let dataReturn = await this.userViewModel.findOneAndUpdate(
+      const dataReturn = await this.userViewModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, partner_id: dataUpdate.partner_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -132,7 +132,7 @@ export class UserViewService {
    */
   public count = async (filter: FilterViewDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userViewModel.estimatedDocumentCount();
       } else {
@@ -167,12 +167,12 @@ export class UserViewService {
    * @returns
    */
   async filter(filter: FilterViewDto, sortBy: any, page: number, limit: number): Promise<UserView[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userViewModel
+    const dataReturn = await this.userViewModel
       .find(condition)
       .populate({
         path: "user_id",

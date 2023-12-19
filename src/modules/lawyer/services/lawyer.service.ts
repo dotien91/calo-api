@@ -43,7 +43,7 @@ export class LawyerService {
 
     if (filter.license_year) {
       if (filter.license_year.indexOf("-") !== -1) {
-        let dataObject = filter.license_year?.split("-");
+        const dataObject = filter.license_year?.split("-");
         if (dataObject && dataObject[0] && dataObject[1]) {
           condition = Object.assign(condition, {
             license_year: { $gt: Number(dataObject[0]), $lt: Number(dataObject[1]) },
@@ -56,23 +56,23 @@ export class LawyerService {
 
     if (filter.categories) {
       if (filter.categories.indexOf(",") !== -1) {
-        let dataObject = filter.categories?.split(",");
-        let dataToFilterArray = [];
+        const dataObject = filter.categories?.split(",");
+        const dataToFilterArray = [];
         if (dataObject && dataObject?.length) {
-          for (let itemArray of dataObject) {
+          for (const itemArray of dataObject) {
             dataToFilterArray.push(new Types.ObjectId(itemArray));
           }
           condition = Object.assign(condition, { categories: { $in: dataToFilterArray } });
         }
       } else {
-        let categoriesId = new Types.ObjectId(filter.categories);
+        const categoriesId = new Types.ObjectId(filter.categories);
         condition = Object.assign(condition, { categories: categoriesId });
       }
     }
 
     if (filter.language_spoken) {
       if (filter.language_spoken.indexOf(",") !== -1) {
-        let dataObject = filter.language_spoken?.split(",");
+        const dataObject = filter.language_spoken?.split(",");
         if (dataObject && dataObject?.length) {
           condition = Object.assign(condition, { "language_spoken.title": { $in: dataObject } });
         }
@@ -132,8 +132,8 @@ export class LawyerService {
       parseFloat(filter?.latitude?.toString()) != -1 &&
       parseFloat(filter?.longitude?.toString()) != -1
     ) {
-      let minDistance = 0;
-      let maxDistance = 5000000;
+      const minDistance = 0;
+      const maxDistance = 5000000;
       condition = Object.assign(condition, {
         loc: {
           $near: {
@@ -181,8 +181,8 @@ export class LawyerService {
       condition = Object.assign(condition, { status: filter.status });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
     return condition;
@@ -222,7 +222,7 @@ export class LawyerService {
    * @returns
    */
   async filter(filter: SearchLawyerDto, sortBy: SortByLawyerDto, page: number, limit: number, projection: any = {}) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -236,7 +236,7 @@ export class LawyerService {
 
     console.log(sortObject, "sortObject");
 
-    let dataReturn = await this.lawyerModel
+    const dataReturn = await this.lawyerModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -259,7 +259,7 @@ export class LawyerService {
    */
   public count = async (filter: SearchLawyerDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.lawyerModel.estimatedDocumentCount();
       } else {
@@ -277,7 +277,7 @@ export class LawyerService {
    */
   async create(createUser: CreateLawyerDto) {
     const createdLawyer = new this.lawyerModel(createUser);
-    let dataCreate = await createdLawyer.save();
+    const dataCreate = await createdLawyer.save();
     return dataCreate;
   }
 
@@ -287,9 +287,9 @@ export class LawyerService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -323,7 +323,7 @@ export class LawyerService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -358,7 +358,7 @@ export class LawyerService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.lawyerModel.findByIdAndUpdate(
+      const dataReturn = await this.lawyerModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate, $unset: unsetData },
         { new: false }

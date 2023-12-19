@@ -31,7 +31,7 @@ export class ShortView {
     nullable: false,
     index: true,
   })
-  total_time: Number;
+  total_time: number;
 }
 
 export const ShortViewSchema = SchemaFactory.createForClass(ShortView);

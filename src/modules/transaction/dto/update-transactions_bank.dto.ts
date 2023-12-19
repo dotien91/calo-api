@@ -5,7 +5,7 @@ import { CreateTransactionBankDto } from "./create-transaction_bank.dto";
 export class UpdateTransactionBankDto extends CreateTransactionBankDto {
   @IsString()
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)

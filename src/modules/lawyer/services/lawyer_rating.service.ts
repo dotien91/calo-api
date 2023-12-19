@@ -50,7 +50,7 @@ export class LawyerRatingService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -76,7 +76,7 @@ export class LawyerRatingService {
       if (!dataUpdate.lawyer_id || !dataUpdate.createBy) {
         return null;
       }
-      let dataReturn = await this.lawyerRatingModel.findOneAndUpdate(
+      const dataReturn = await this.lawyerRatingModel.findOneAndUpdate(
         {
           lawyer_id: dataUpdate.lawyer_id,
           createBy: dataUpdate.createBy,
@@ -132,12 +132,12 @@ export class LawyerRatingService {
    * @returns
    */
   async filter(filter: SearchMyLawyerRatingDto, sortBy: SortByMyLawyerRatingDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.lawyerRatingModel
+    const dataReturn = await this.lawyerRatingModel
       .find(condition)
       .populate("rating_media")
       .sort(sortObject)
@@ -154,7 +154,7 @@ export class LawyerRatingService {
    */
   public count = async (filter: SearchMyLawyerRatingDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.lawyerRatingModel.estimatedDocumentCount();
       } else {

@@ -32,7 +32,7 @@ export class Subscribe {
     nullable: false,
     index: true,
   })
-  service_name: String;
+  service_name: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -54,28 +54,28 @@ export class Subscribe {
     nullable: true,
     default: "",
   })
-  coupon_code: String;
+  coupon_code: string;
 
   @Prop({
     type: Boolean,
     nullable: true,
     default: true,
   })
-  is_auto_renew: Boolean;
+  is_auto_renew: boolean;
 
   @Prop({
     type: Boolean,
     nullable: true,
     default: false,
   })
-  is_trial: Boolean;
+  is_trial: boolean;
 
   @Prop({
     type: String,
     nullable: true,
     default: "active",
   })
-  status: String;
+  status: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   start_at: MongooseSchema.Types.Date;
@@ -91,49 +91,49 @@ export class Subscribe {
     nullable: true,
     default: "",
   })
-  manual1: String;
+  manual1: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  manual2: String;
+  manual2: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  phone: String;
+  phone: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  serial: String;
+  serial: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  expiryDate: String;
+  expiryDate: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  qrCodeString: String;
+  qrCodeString: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  dataClient: String;
+  dataClient: string;
 }
 
 export const SubscribeSchema = SchemaFactory.createForClass(Subscribe);

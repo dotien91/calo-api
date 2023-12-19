@@ -29,70 +29,70 @@ export class LawyerRating {
     nullable: false,
     default: "",
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  created_by: String;
+  created_by: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  response: String;
+  response: string;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_value: Number;
+  number_value: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_accuracy: Number;
+  number_accuracy: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_communication: Number;
+  number_communication: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_location: Number;
+  number_location: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_check_in: Number;
+  number_check_in: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  number_for_value: Number;
+  number_for_value: number;
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now })
   created_time: MongooseSchema.Types.Date;

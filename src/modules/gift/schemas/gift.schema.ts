@@ -8,37 +8,37 @@ export class GiftConditions extends Document {
   @Prop({
     type: Number,
   })
-  point: Number;
+  point: number;
 
   @Prop({
     type: Number,
   })
-  level: Number;
+  level: number;
 
   @Prop({
     type: Number,
   })
-  like: Number;
+  like: number;
 
   @Prop({
     type: Number,
   })
-  comment: Number;
+  comment: number;
 
   @Prop({
     type: Number,
   })
-  course: Number;
+  course: number;
 
   @Prop({
     type: Number,
   })
-  birth: Number;
+  birth: number;
 
   @Prop({
     type: Number,
   })
-  coin: Number;
+  coin: number;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   start_time: MongooseSchema.Types.Date;
@@ -74,13 +74,13 @@ export class Gift {
     default: "gift",
     nullable: false,
   })
-  gift_type: String;
+  gift_type: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -100,37 +100,37 @@ export class Gift {
     type: String,
     default: "",
   })
-  gift_digital_url: String;
+  gift_digital_url: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Number,
     default: 10000000,
   })
-  stock_qty: Number;
+  stock_qty: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  priority: Number;
+  priority: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: GiftConditionsSchema,

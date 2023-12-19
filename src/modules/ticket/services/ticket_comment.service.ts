@@ -41,11 +41,11 @@ export class TicketCommentService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        let objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        let objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
@@ -80,7 +80,7 @@ export class TicketCommentService {
    * @returns
    */
   async filter(filter: SearchTicketCommentDto, sortBy: SortByTicketCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -92,15 +92,15 @@ export class TicketCommentService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let limitChild = filter.limit_child ? filter.limit_child : 1000;
-    let pageChild = filter.page_child ? filter.page_child : 1;
+    const limitChild = filter.limit_child ? filter.limit_child : 1000;
+    const pageChild = filter.page_child ? filter.page_child : 1;
     let orderByOBjectChild = { _id: 1 };
 
     if (filter.order_by_child) {
       orderByOBjectChild = { ...orderByOBjectChild, ...{ _id: filter.order_by_child === "DESC" ? -1 : 1 } };
     }
 
-    let dataPopulateChild = {
+    const dataPopulateChild = {
       path: "child",
       options: {
         limit: limitChild,
@@ -113,7 +113,7 @@ export class TicketCommentService {
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
       },
     };
-    let dataReturn = await this.ticketModel
+    const dataReturn = await this.ticketModel
       .find(condition)
       .populate(
         "user_id",
@@ -137,14 +137,14 @@ export class TicketCommentService {
    * @returns
    */
   async filterAdmin(filter: SearchTicketCommentDto, sortBy: SortByTicketCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataPopulateChild = {
+    const dataPopulateChild = {
       path: "child",
       options: {
         limit: limit,
@@ -157,7 +157,7 @@ export class TicketCommentService {
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
       },
     };
-    let dataReturn = await this.ticketModel
+    const dataReturn = await this.ticketModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -179,7 +179,7 @@ export class TicketCommentService {
    */
   public count = async (filter: SearchTicketCategoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.ticketModel.estimatedDocumentCount();
       } else {
@@ -197,7 +197,7 @@ export class TicketCommentService {
    */
   async create(createUser: CreateTicketCommentDto) {
     const createdPost = new this.ticketModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -207,9 +207,9 @@ export class TicketCommentService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -251,7 +251,7 @@ export class TicketCommentService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -274,7 +274,7 @@ export class TicketCommentService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -334,7 +334,7 @@ export class TicketCommentService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.ticketModel.findOneAndUpdate(

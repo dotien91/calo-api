@@ -5,7 +5,7 @@ export class CreateContactUsDto {
   report_type: string;
 
   @IsString()
-  partner_id: String;
+  partner_id: string;
 
   @IsString()
   @IsOptional(null)

@@ -61,13 +61,13 @@ export class ContactFormService {
    * @returns
    */
   async filter(filter: SearchContactFormDto, sortBy: SortByContactFormDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "entity_id",
       populate: [
         {
@@ -76,7 +76,7 @@ export class ContactFormService {
       ],
     };
 
-    let dataReturn = await this.contactFormModel
+    const dataReturn = await this.contactFormModel
       .find(condition)
       .populate(
         "user_id",
@@ -101,7 +101,7 @@ export class ContactFormService {
    */
   public count = async (filter: SearchContactFormDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.contactFormModel.estimatedDocumentCount();
       } else {
@@ -136,7 +136,7 @@ export class ContactFormService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<ContactForm> {
-    let populateObject = {
+    const populateObject = {
       path: "user_id",
       select:
         "bio user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
@@ -175,7 +175,7 @@ export class ContactFormService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.contactFormModel.findByIdAndUpdate(
+      const dataReturn = await this.contactFormModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

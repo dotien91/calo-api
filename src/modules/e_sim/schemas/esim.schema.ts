@@ -28,14 +28,14 @@ export class Esim {
     default: "",
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  color: String;
+  color: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -49,7 +49,7 @@ export class Esim {
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: Number,
@@ -57,7 +57,7 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  data_number: Number;
+  data_number: number;
 
   @Prop({
     type: Number,
@@ -65,7 +65,7 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  validity_number: Number;
+  validity_number: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -88,21 +88,21 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  network: String[];
+  network: string[];
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  plan_type: String;
+  plan_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  activation_policy: String;
+  activation_policy: string;
 
   @Prop({
     type: String,
@@ -116,7 +116,7 @@ export class Esim {
     default: "",
     nullable: false,
   })
-  top_up_option: String;
+  top_up_option: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -139,7 +139,7 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: Number,
@@ -147,7 +147,7 @@ export class Esim {
     nullable: false,
     index: true,
   })
-  buy_number: Number;
+  buy_number: number;
 }
 
 export const EsimSchema = SchemaFactory.createForClass(Esim).index({

@@ -81,7 +81,7 @@ export class ChallengePermissionService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengePermissionModel.findById(id, projection);
+    const dataReturn = await this.challengePermissionModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -126,7 +126,7 @@ export class ChallengePermissionService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChallengePermission[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.challengePermissionModel.find(condition, {}).exec();
   }
 
@@ -149,7 +149,7 @@ export class ChallengePermissionService {
       if (!dataUpdate.user_id && !dataUpdate.challenge_id) {
         return null;
       }
-      let dataReturn = await this.challengePermissionModel
+      const dataReturn = await this.challengePermissionModel
         .findOneAndUpdate(
           { user_id: dataUpdate.user_id, challenge_id: dataUpdate.challenge_id },
           { $set: dataUpdate },
@@ -175,7 +175,7 @@ export class ChallengePermissionService {
       if (!dataUpdate.user_id && !dataUpdate.challenge_id) {
         return null;
       }
-      let dataReturn = await this.challengePermissionModel.findOneAndUpdate(
+      const dataReturn = await this.challengePermissionModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, challenge_id: dataUpdate.challenge_id },
         { $set: dataUpdate }
       );
@@ -196,7 +196,7 @@ export class ChallengePermissionService {
    */
   public count = async (filter: FilterPermissionChallengeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.challengePermissionModel.estimatedDocumentCount();
       } else {
@@ -240,12 +240,12 @@ export class ChallengePermissionService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengePermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengePermissionModel
+    const dataReturn = await this.challengePermissionModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -269,12 +269,12 @@ export class ChallengePermissionService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengePermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengePermissionModel
+    const dataReturn = await this.challengePermissionModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -299,12 +299,12 @@ export class ChallengePermissionService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengePermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "challenge_id",
       options: { strictPopulate: false },
       populate: [
@@ -331,7 +331,7 @@ export class ChallengePermissionService {
         },
       ],
     };
-    let dataReturn: any = await this.challengePermissionModel
+    const dataReturn: any = await this.challengePermissionModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -343,9 +343,9 @@ export class ChallengePermissionService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
         delete dataItemToReturn.video_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -368,9 +368,9 @@ export class ChallengePermissionService {
     page: number,
     limit: number
   ): Promise<ChallengePermission[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.challengePermissionModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.challengePermissionModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -388,12 +388,12 @@ export class ChallengePermissionService {
    * @returns
    */
   async filterUser(filter: FilterPermissionChallengeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengePermissionModel
+    const dataReturn = await this.challengePermissionModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -416,7 +416,7 @@ export class ChallengePermissionService {
    */
   async updateCount(dataFilter: any, dataUpdate: any) {
     try {
-      let dataReturn: any = this.challengePermissionModel.findOneAndUpdate(
+      const dataReturn: any = this.challengePermissionModel.findOneAndUpdate(
         dataFilter,
         { $inc: dataUpdate },
         { new: true }

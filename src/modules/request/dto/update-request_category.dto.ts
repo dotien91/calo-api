@@ -7,7 +7,7 @@ export class UpdateRequestCategoryDto extends PartialType(CreateRequestCategoryD
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 
   @IsNumberString()
   @IsOptional(null)

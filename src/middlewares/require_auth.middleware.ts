@@ -8,7 +8,7 @@ import { NextFunction, Response } from "express";
 @Injectable()
 export class RequireAuthMiddleware implements NestMiddleware {
   async use(req: any, res: Response, next: NextFunction) {
-    let userObject = req?.user_object;
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new UnauthorizedException("Require Token!");
     } else {

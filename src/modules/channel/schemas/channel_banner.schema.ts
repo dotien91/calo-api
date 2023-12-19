@@ -41,7 +41,7 @@ export class ChannelBanner {
     default: "",
     nullable: false,
   })
-  banner_url: String;
+  banner_url: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -57,7 +57,7 @@ export class ChannelBanner {
     nullable: false,
     index: true,
   })
-  banner_type: String;
+  banner_type: string;
 }
 
 export const ChannelBannerSchema = SchemaFactory.createForClass(ChannelBanner);

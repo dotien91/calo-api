@@ -30,11 +30,11 @@ export class QuestionHelper {
    */
   async createNewQuestion(createQuestionData: CreateQuestionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       let dataToAdd: any = createQuestionData;
       if (this.validateJson(createQuestionData?.public_album)) {
         dataToAdd = {
@@ -100,7 +100,7 @@ export class QuestionHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -121,37 +121,37 @@ export class QuestionHelper {
    */
   async getQuestionListByUser(query: ListQuestionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.questionService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.questionService.filter(dataToFilter, orderByOBject, page, limit);
       // let dataCount = await this.questionService.count(dataToFilter);
-      let dataToAdd = [];
+      const dataToAdd = [];
       if (dataReturn) {
-        for (let dataItem of dataReturn) {
-          let dataFilter = {
+        for (const dataItem of dataReturn) {
+          const dataFilter = {
             question_id: dataItem._id,
             user_id: userId,
           };
-          let answerObject = await this.answerService.findOneWithOutPopulate(dataFilter);
-          let dataItemAdd = {
+          const answerObject = await this.answerService.findOneWithOutPopulate(dataFilter);
+          const dataItemAdd = {
             ...dataItem?.toObject(),
             ...{
               answer: answerObject,
@@ -178,13 +178,13 @@ export class QuestionHelper {
    */
   async handleGetDetailQuestion(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.questionService.findById(id.toString());
+      const dataReturn = await this.questionService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -203,14 +203,14 @@ export class QuestionHelper {
    */
   async removeQuestion(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "question/delete")) {
         //Check Permission
-        let dataReturn = await this.questionService.remove(id);
+        const dataReturn = await this.questionService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -232,11 +232,11 @@ export class QuestionHelper {
    */
   async handleUpdateQuestionByAdmin(dataUpdate: UpdateQuestionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "question/update")) {
         let dataToAdd: any = dataUpdate;
@@ -265,7 +265,7 @@ export class QuestionHelper {
           };
         }
 
-        let dataReturn = await this.questionService.update(dataToAdd);
+        const dataReturn = await this.questionService.update(dataToAdd);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

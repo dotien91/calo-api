@@ -6,7 +6,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   @IsString()
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @ApiPropertyOptional()

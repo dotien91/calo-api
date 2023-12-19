@@ -30,7 +30,7 @@ function MD5(s: any): string {
     return (k << d) | (k >>> (32 - d));
   }
   function K(G, k) {
-    var I, d, F, H, x;
+    let I, d, F, H, x;
     F = G & 2147483648;
     H = k & 2147483648;
     I = G & 1073741824;
@@ -78,14 +78,14 @@ function MD5(s: any): string {
     return K(L(G, H), F);
   }
   function e(G) {
-    var Z;
-    var F = G.length;
-    var x = F + 8;
-    var k = (x - (x % 64)) / 64;
-    var I = (k + 1) * 16;
-    var aa = Array(I - 1);
-    var d = 0;
-    var H = 0;
+    let Z;
+    const F = G.length;
+    const x = F + 8;
+    const k = (x - (x % 64)) / 64;
+    const I = (k + 1) * 16;
+    const aa = Array(I - 1);
+    let d = 0;
+    let H = 0;
     while (H < F) {
       Z = (H - (H % 4)) / 4;
       d = (H % 4) * 8;
@@ -100,7 +100,7 @@ function MD5(s: any): string {
     return aa;
   }
   function B(x) {
-    var k = "",
+    let k = "",
       F = "",
       G,
       d;
@@ -113,9 +113,9 @@ function MD5(s: any): string {
   }
   function J(k) {
     k = k.replace(/rn/g, "n");
-    var d = "";
-    for (var F = 0; F < k.length; F++) {
-      var x = k.charCodeAt(F);
+    let d = "";
+    for (let F = 0; F < k.length; F++) {
+      const x = k.charCodeAt(F);
       if (x < 128) {
         d += String.fromCharCode(x);
       } else {
@@ -131,21 +131,21 @@ function MD5(s: any): string {
     }
     return d;
   }
-  var C = Array();
-  var P, h, E, v, g, Y, X, W, V;
-  var S = 7,
+  let C = [];
+  let P, h, E, v, g, Y, X, W, V;
+  const S = 7,
     Q = 12,
     N = 17,
     M = 22;
-  var A = 5,
+  const A = 5,
     z = 9,
     y = 14,
     w = 20;
-  var o = 4,
+  const o = 4,
     m = 11,
     l = 16,
     j = 23;
-  var U = 6,
+  const U = 6,
     T = 10,
     R = 15,
     O = 21;
@@ -229,7 +229,7 @@ function MD5(s: any): string {
     W = K(W, v);
     V = K(V, g);
   }
-  var i = B(Y) + B(X) + B(W) + B(V);
+  const i = B(Y) + B(X) + B(W) + B(V);
   return i.toLowerCase();
 }
 
@@ -240,12 +240,12 @@ function isDevsite(): boolean {
   return process.env.NODE_ENV !== "production";
 }
 
-let Reset = "\x1b[0m";
-let Bright = "\x1b[1m";
-let FgGreen = "\x1b[32m";
-let BgGreen = "\x1b[42m";
-let BgBlue = "\x1b[44m";
-let BgMagenta = "\x1b[45m";
+const Reset = "\x1b[0m";
+const Bright = "\x1b[1m";
+const FgGreen = "\x1b[32m";
+const BgGreen = "\x1b[42m";
+const BgBlue = "\x1b[44m";
+const BgMagenta = "\x1b[45m";
 
 /**
  * Hooks object
@@ -290,7 +290,7 @@ class HookExpress {
       throw new Error("callback in add_action must be a function.");
     }
 
-    let _callbackHash: string = MD5("add_action" + callback.toString() + tag);
+    const _callbackHash: string = MD5("add_action" + callback.toString() + tag);
     if (this.callbackHash.indexOf(_callbackHash) > -1) {
       console.log(
         Bright + BgMagenta + " May be add_action runing wrong: callback function exist in this hook: %s " + Reset,
@@ -326,7 +326,7 @@ class HookExpress {
       throw new Error("callback in add_action must be a function.");
     }
 
-    let _callbackHash: string = MD5("add_filter" + callback.toString() + tag);
+    const _callbackHash: string = MD5("add_filter" + callback.toString() + tag);
     if (this.callbackHash.indexOf(_callbackHash) > -1) {
       console.log(
         Bright + BgBlue + " May be add_filter runing wrong: callback function exist in this hook: %s " + Reset,
@@ -356,7 +356,7 @@ class HookExpress {
   remove_action(tag: string, callback: any) {
     tag = this.verify_tag(tag);
     this.Hooks.actions[tag] = this.Hooks.actions[tag] || [];
-    var self = this;
+    const self = this;
     this.Hooks.actions[tag].forEach(function (filter: any, i: any) {
       if (filter.callback === callback) {
         self.Hooks.actions[tag].splice(i, 1);
@@ -376,7 +376,7 @@ class HookExpress {
   remove_filter(tag: string, callback: any) {
     tag = this.verify_tag(tag);
     this.Hooks.filters[tag] = this.Hooks.filters[tag] || [];
-    var self = this;
+    const self = this;
     this.Hooks.filters[tag].forEach(function (filter: any, i: any) {
       if (filter.callback === callback) {
         self.Hooks.filters[tag].splice(i, 1);
@@ -394,7 +394,7 @@ class HookExpress {
   do_action(tag: string, ...args: any) {
     tag = this.verify_tag(tag);
 
-    var actions: any[] = [];
+    const actions: any[] = [];
 
     if (isDevsite()) {
       console.info(`> DO ACTION: ${tag}`);
@@ -436,7 +436,7 @@ class HookExpress {
       console.info(`> APPLY FILTER: ${tag}`);
     }
 
-    var filters: any[] = [];
+    const filters: any[] = [];
 
     if (typeof this.Hooks.filters[tag] !== "undefined" && this.Hooks.filters[tag].length > 0) {
       this.Hooks.filters[tag].forEach(function (hook: any) {

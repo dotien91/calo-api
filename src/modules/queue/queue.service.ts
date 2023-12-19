@@ -46,12 +46,15 @@ export class QueueService {
   async addGiftToQueueForAccount(data: CheckGiftPointLevelDto) {
     try {
       console.log(JSON.stringify(data));
-      let giftsDerlivered = await this.giftService.checkGiftUserDelivered(data);
-      for (let gift of giftsDerlivered) {
+      const giftsDerlivered = await this.giftService.checkGiftUserDelivered(data);
+      for (const gift of giftsDerlivered) {
         console.log(JSON.stringify(gift));
-        let dataUserGift = await this.userGiftService.findOne({ gift_id: gift?._id.toString(), user_id: data.user_id });
+        const dataUserGift = await this.userGiftService.findOne({
+          gift_id: gift?._id.toString(),
+          user_id: data.user_id,
+        });
         if (!dataUserGift) {
-          let createGiveGiftDto: NotiGiveGiftDto = {
+          const createGiveGiftDto: NotiGiveGiftDto = {
             quantity: gift.stock_qty.valueOf(),
             gift_id: gift,
             partner_id: data.user_id,

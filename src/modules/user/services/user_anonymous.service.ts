@@ -33,7 +33,7 @@ export class UserAnonymousService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userAnonymousModel.findById(id, projection);
+    const dataReturn = await this.userAnonymousModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -70,7 +70,7 @@ export class UserAnonymousService {
     }
     if (filter?.user_id) {
       if (filter.user_id.indexOf(",") !== -1) {
-        let dataUserArray = filter.user_id.split(",");
+        const dataUserArray = filter.user_id.split(",");
         condition = Object.assign(condition, { _id: { $in: dataUserArray } });
       } else {
         condition = Object.assign(condition, { _id: filter.user_id });
@@ -93,7 +93,7 @@ export class UserAnonymousService {
    * @returns
    */
   getSort(sortBy: SortByUserAnonymousDto) {
-    let sort = { priority: -1 };
+    const sort = { priority: -1 };
     return sort;
   }
 
@@ -111,12 +111,12 @@ export class UserAnonymousService {
     page: number,
     limit: number
   ): Promise<UserAnonymous[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userAnonymousModel
+    const dataReturn = await this.userAnonymousModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))

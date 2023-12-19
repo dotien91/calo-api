@@ -40,16 +40,16 @@ export class TopicPostHelper {
    */
   async createNewPost(createPostData: CreateTopicPostDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-      let topicId = await this.topicService.findById(createPostData.topic_id);
+      const topicId = await this.topicService.findById(createPostData.topic_id);
       if (topicId) {
-        let dataSlug = this.toSlug(createPostData.post_title);
+        const dataSlug = this.toSlug(createPostData.post_title);
         createPostData = {
           ...createPostData,
           ...{
@@ -59,7 +59,7 @@ export class TopicPostHelper {
           },
         };
 
-        let dataCreate = await this.topicPostService.create(createPostData);
+        const dataCreate = await this.topicPostService.create(createPostData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -85,19 +85,19 @@ export class TopicPostHelper {
    */
   async getPostListByAdmin(query: ListTopicPostDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -105,25 +105,25 @@ export class TopicPostHelper {
       let dataToFilter = { ...query };
 
       if (query?.is_homepage) {
-        let dataTopic = userObject?.join_topics;
+        const dataTopic = userObject?.join_topics;
         if (dataTopic && dataTopic?.length) {
           dataToFilter = { ...dataToFilter, ...{ topic_ids: dataTopic } };
         }
       }
 
       if (query.topic_id) {
-        let topicObject = await this.topicService.findOne({ _id: query.topic_id });
+        const topicObject = await this.topicService.findOne({ _id: query.topic_id });
         if (!topicObject) {
           throw new NotFoundException("Not find Topic ID");
         }
         if (!topicObject?.parent_id) {
           //Get all Child Topic
-          let dataFilter = {
+          const dataFilter = {
             parent_id: query.topic_id,
           };
-          let childTopicArray = await this.topicService.filter(dataFilter, {}, 1, 10000);
-          let topicIds = [];
-          for (let topicItem of childTopicArray) {
+          const childTopicArray = await this.topicService.filter(dataFilter, {}, 1, 10000);
+          const topicIds = [];
+          for (const topicItem of childTopicArray) {
             topicIds.push(topicItem?._id?.toString());
           }
           dataToFilter = { ...dataToFilter, ...{ topic_ids: topicIds } };
@@ -133,8 +133,8 @@ export class TopicPostHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.topicPostService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.topicPostService.count(dataToFilter);
+      const dataReturn = await this.topicPostService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.topicPostService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -154,28 +154,28 @@ export class TopicPostHelper {
    */
   async getPostListByUser(query: ListTopicPostDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.topicPostService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.topicPostService.count(dataToFilter);
+      const dataReturn = await this.topicPostService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.topicPostService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -211,7 +211,7 @@ export class TopicPostHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ post_slug: id.toString() } };
       }
-      let dataReturn = await this.topicPostService.findOne(dataToFilter);
+      const dataReturn = await this.topicPostService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -230,20 +230,20 @@ export class TopicPostHelper {
    */
   async handleUpdatePostByAdmin(dataUpdate: UpdateTopicPostDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       if (dataUpdate.post_slug) {
-        let dataToFind = await this.topicPostService.findOne({ post_slug: dataUpdate.post_slug });
+        const dataToFind = await this.topicPostService.findOne({ post_slug: dataUpdate.post_slug });
         if (dataToFind && dataToFind._id.toString() !== dataUpdate._id.toString()) {
           throw new ForbiddenException("Slug is exist!");
         }
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "post/update")) {
-        let dataReturn = await this.topicPostService.update(dataUpdate);
+        const dataReturn = await this.topicPostService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -265,14 +265,14 @@ export class TopicPostHelper {
    */
   async handleDeletePost(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "post/delete")) {
         //Check Permission
-        let dataReturn = await this.topicPostService.remove(id);
+        const dataReturn = await this.topicPostService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -303,7 +303,7 @@ export class TopicPostHelper {
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
     str = str.replace(/-+$/g, "");
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     return str + "-" + date;
   }
 }

@@ -7,5 +7,5 @@ export class UpdateRedeemHistoryDto extends PartialType(CreateRedeemHistoryDto) 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 }

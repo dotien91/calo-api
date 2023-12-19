@@ -34,7 +34,7 @@ export class TicketComment {
     default: "",
     nullable: false,
   })
-  content: String;
+  content: string;
 
   @Prop({
     type: String,
@@ -42,7 +42,7 @@ export class TicketComment {
     nullable: false,
     index: true,
   })
-  ref_id: String;
+  ref_id: string;
 
   @Prop({
     type: String,
@@ -50,7 +50,7 @@ export class TicketComment {
     nullable: false,
     index: true,
   })
-  ref_parent_id: String;
+  ref_parent_id: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "TicketComment", default: null, index: true })
   parent_id: TicketComment;
@@ -67,7 +67,7 @@ export class TicketComment {
     default: 0,
     nullable: false,
   })
-  child_number: Number;
+  child_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -88,7 +88,7 @@ export class TicketComment {
     default: 0,
     nullable: false,
   })
-  vote_number: Number;
+  vote_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,

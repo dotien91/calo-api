@@ -19,57 +19,49 @@ export class UserAnonymousSession {
   _id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: String, required: true, index: true })
-  device_id: String;
+  device_id: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  password: String;
+  password: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_ip: String;
+  user_ip: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_uuid: String;
+  device_uuid: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_type: String;
+  device_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_signature: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: true,
-    index: true,
-  })
-  apple_signature: String;
+  device_signature: string;
 
   @Prop({
     type: String,
@@ -77,21 +69,29 @@ export class UserAnonymousSession {
     nullable: true,
     index: true,
   })
-  apple_notification: String;
+  apple_signature: string;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: true,
+    index: true,
+  })
+  apple_notification: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_agent: String;
+  user_agent: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  browser_object: String;
+  browser_object: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now })
   expired_at: MongooseSchema.Types.Date;

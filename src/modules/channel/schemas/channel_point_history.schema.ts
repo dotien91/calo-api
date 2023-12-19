@@ -34,21 +34,21 @@ export class ChannelPointHistory {
     nullable: false,
     index: true,
   })
-  entity_type: String;
+  entity_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  content: String;
+  content: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  point_number: Number;
+  point_number: number;
 }
 
 export const ChannelPointHistorySchema = SchemaFactory.createForClass(ChannelPointHistory);

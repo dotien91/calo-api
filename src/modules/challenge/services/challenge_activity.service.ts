@@ -19,7 +19,7 @@ export class ChallengeActivityService {
    * @returns
    */
   async create(createUser: CreateChallengeActivityDto) {
-    let dataReturn = await this.challengeActivityModel.create(createUser);
+    const dataReturn = await this.challengeActivityModel.create(createUser);
     return dataReturn;
   }
 
@@ -82,7 +82,7 @@ export class ChallengeActivityService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengeActivityModel
+    const dataReturn = await this.challengeActivityModel
       .findById(id, projection)
       .populate(
         "user_id",
@@ -102,7 +102,7 @@ export class ChallengeActivityService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengeActivityModel
+    const dataReturn = await this.challengeActivityModel
       .findById(id, projection)
       .populate("challenge_id")
       .populate(
@@ -153,7 +153,7 @@ export class ChallengeActivityService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChallengeActivity[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.challengeActivityModel.find(condition, {}).exec();
   }
 
@@ -176,7 +176,7 @@ export class ChallengeActivityService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.challengeActivityModel
+      const dataReturn = await this.challengeActivityModel
         .findOneAndUpdate(
           { _id: dataUpdate._id },
           { $set: dataUpdate },
@@ -207,7 +207,7 @@ export class ChallengeActivityService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.challengeActivityModel.findOneAndUpdate(
+      const dataReturn = await this.challengeActivityModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate }
       );
@@ -228,7 +228,7 @@ export class ChallengeActivityService {
    */
   public count = async (filter: FilterModuleChallengeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.challengeActivityModel.estimatedDocumentCount();
       } else {
@@ -269,12 +269,12 @@ export class ChallengeActivityService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengeActivity[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeActivityModel
+    const dataReturn = await this.challengeActivityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -303,12 +303,12 @@ export class ChallengeActivityService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengeActivity[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "challenge_id",
       options: { strictPopulate: false },
       populate: [
@@ -320,7 +320,7 @@ export class ChallengeActivityService {
         },
       ],
     };
-    let dataReturn: any = await this.challengeActivityModel
+    const dataReturn: any = await this.challengeActivityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -332,9 +332,9 @@ export class ChallengeActivityService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.challenge_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.challenge_id?.toObject() };
         delete dataItemToReturn.challenge_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -353,9 +353,9 @@ export class ChallengeActivityService {
    * @returns
    */
   async filterWithId(filter: FilterModuleChallengeDto, page: number, limit: number): Promise<ChallengeActivity[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.challengeActivityModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.challengeActivityModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -373,12 +373,12 @@ export class ChallengeActivityService {
    * @returns
    */
   async filterUser(filter: FilterModuleChallengeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeActivityModel
+    const dataReturn = await this.challengeActivityModel
       .find(condition)
       .populate({
         path: "user_id",

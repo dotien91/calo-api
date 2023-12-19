@@ -61,12 +61,12 @@ export class TransactionBankService {
    * @returns
    */
   async filter(filter: SearchTransactionBankDto, sortBy: SortByTransactionBankDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.transactionBankModel
+    const dataReturn = await this.transactionBankModel
       .find(condition)
       .populate(
         "user_id",
@@ -88,22 +88,22 @@ export class TransactionBankService {
    * @returns
    */
   async filterAdmin(filter: SearchAdminFilterDto, sortBy: SortByTransactionBankDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     if (filter.user_birthday_year_from && filter.user_birthday_year_to) {
-      let dataPopulate = {
+      const dataPopulate = {
         path: "user_id",
         options: { strictPopulate: false },
         select:
           "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
       };
 
-      let dataReturn = await this.transactionBankModel
+      const dataReturn = await this.transactionBankModel
         .find(condition, projection)
         .populate(dataPopulate)
         .sort(sortObject)
@@ -113,7 +113,7 @@ export class TransactionBankService {
         .then((orders) => orders.filter((order) => order.user_id.user_option_id != null));
       return dataReturn;
     } else {
-      let dataReturn = await this.transactionBankModel
+      const dataReturn = await this.transactionBankModel
         .find(condition, projection)
         .populate(
           "user_id",
@@ -134,7 +134,7 @@ export class TransactionBankService {
    */
   public countAdmin = async (filter: SearchAdminFilterDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.transactionBankModel.estimatedDocumentCount();
       } else {
@@ -152,7 +152,7 @@ export class TransactionBankService {
    */
   public count = async (filter: SearchTransactionBankDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.transactionBankModel.estimatedDocumentCount();
       } else {
@@ -170,7 +170,7 @@ export class TransactionBankService {
    */
   async create(createUser: CreateTransactionBankDto) {
     const createdTransactionBank = new this.transactionBankModel(createUser);
-    let dataCreate = await createdTransactionBank.save();
+    const dataCreate = await createdTransactionBank.save();
     return dataCreate;
   }
 
@@ -180,9 +180,9 @@ export class TransactionBankService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -216,7 +216,7 @@ export class TransactionBankService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -248,7 +248,7 @@ export class TransactionBankService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.transactionBankModel.findByIdAndUpdate(
+      const dataReturn = await this.transactionBankModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

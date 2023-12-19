@@ -41,7 +41,7 @@ export class SubscribeHelper {
    */
   async getAllSubscribeAdmin(query: ListSubscribeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -49,19 +49,19 @@ export class SubscribeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "subscribe/list")) {
-        let channelId = req?.channel_id || "";
+        const channelId = req?.channel_id || "";
         //Check Permission
-        let dataToFilter = { ...query, ...{ is_admin: 1, channel_id: channelId } };
-        let dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataToFilter = { ...query, ...{ is_admin: 1, channel_id: channelId } };
+        const dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -83,18 +83,18 @@ export class SubscribeHelper {
    */
   async createSubscribe(dataCreateSubscribe: CreateSubscribeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "subscribe/create")) {
         // dataCreateSubscribe = { ...dataCreateSubscribe, ...{ user_id: userObject._id.toString() } };
-        let planObject = await this.planService.findById(dataCreateSubscribe.plan_id);
+        const planObject = await this.planService.findById(dataCreateSubscribe.plan_id);
         if (!planObject) {
           throw new NotFoundException("Plan is not found!");
         }
-        let userObject = await this.appUserService.findOne({ _id: dataCreateSubscribe.user_id });
+        const userObject = await this.appUserService.findOne({ _id: dataCreateSubscribe.user_id });
         if (!userObject) {
           throw new NotFoundException("User is not found!");
         }
@@ -105,7 +105,7 @@ export class SubscribeHelper {
             service_name: planObject.handle.toString(),
           },
         };
-        let dataToCreate = await this.appSubscribeService.create(dataCreateSubscribe);
+        const dataToCreate = await this.appSubscribeService.create(dataCreateSubscribe);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -127,13 +127,13 @@ export class SubscribeHelper {
    */
   async updateSubscribe(updateData: UpdateSubscribeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "subscribe/update")) {
-        let dataReturn = await this.appSubscribeService.update(updateData);
+        const dataReturn = await this.appSubscribeService.update(updateData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -155,12 +155,12 @@ export class SubscribeHelper {
    */
   async updateSubscribeUser(updateData: UserUpdateSubscribeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let subscribeObject = await this.appSubscribeService.findById(updateData?._id?.toString());
+      const userId = userObject._id.toString();
+      const subscribeObject = await this.appSubscribeService.findById(updateData?._id?.toString());
       if (!subscribeObject) {
         throw new ForbiddenException("Subscription not found!");
       }
@@ -168,7 +168,7 @@ export class SubscribeHelper {
         throw new ForbiddenException("You not have permission for this action!");
       }
       //
-      let dataReturn = await this.appSubscribeService.update(updateData);
+      const dataReturn = await this.appSubscribeService.update(updateData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -188,19 +188,19 @@ export class SubscribeHelper {
    */
   async getSubscribes(query: ListSubscribeDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
-      let channelId = req?.channel_id || "";
+      const channelId = req?.channel_id || "";
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         ...{ user_id: id, channel_id: channelId },
         ...query,
       };
@@ -208,14 +208,14 @@ export class SubscribeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.appSubscribeService.count(dataToFilter);
+      const dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.appSubscribeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -235,19 +235,19 @@ export class SubscribeHelper {
    */
   async getExpiredSubscribes(query: ListSubscribeDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
-      let channelId = req?.channel_id || "";
+      const channelId = req?.channel_id || "";
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: id,
         is_expired: 1,
         channel_id: channelId,
@@ -256,14 +256,14 @@ export class SubscribeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.appSubscribeService.count(dataToFilter);
+      const dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.appSubscribeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -282,14 +282,14 @@ export class SubscribeHelper {
    */
   async handleGetDetailSubscribe(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "subscribe/list")) {
         //Check Permission
-        let dataReturn = await this.appSubscribeService.findById(id.toString());
+        const dataReturn = await this.appSubscribeService.findById(id.toString());
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

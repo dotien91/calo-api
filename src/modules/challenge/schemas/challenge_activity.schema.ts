@@ -59,21 +59,21 @@ export class ChallengeActivity {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  admin_note: String;
+  admin_note: string;
 
   @Prop({ type: MongooseSchema.Types.Array, ref: "ChatMedia", index: true })
   public_album: ChatMedia[];
@@ -86,14 +86,14 @@ export class ChallengeActivity {
     default: 0,
     nullable: false,
   })
-  point_value: Number;
+  point_value: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  official_status: Number;
+  official_status: number;
 
   @Prop({
     type: [ChallengeActivityMetaSchema],

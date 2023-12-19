@@ -7,7 +7,7 @@ export class UpdateTicketDto extends PartialType(CreateTicketDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)

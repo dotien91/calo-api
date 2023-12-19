@@ -29,7 +29,7 @@ export class UserFollow {
     default: 0,
     nullable: true,
   })
-  match_status: Number;
+  match_status: number;
 }
 
 export const UserFollowSchema = SchemaFactory.createForClass(UserFollow);

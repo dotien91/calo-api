@@ -67,7 +67,7 @@ export class RequestLikeService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.requestLikeModel.findById(id, projection);
+    const dataReturn = await this.requestLikeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -98,7 +98,7 @@ export class RequestLikeService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<RequestLike[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.requestLikeModel.find(condition, {}).exec();
   }
 
@@ -121,7 +121,7 @@ export class RequestLikeService {
       if (!dataUpdate.user_id && !dataUpdate.request_id) {
         return null;
       }
-      let dataReturn = await this.requestLikeModel.findOneAndUpdate(
+      const dataReturn = await this.requestLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, request_id: dataUpdate.request_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -146,7 +146,7 @@ export class RequestLikeService {
       if (!dataUpdate.user_id && !dataUpdate.request_id) {
         return null;
       }
-      let dataReturn = await this.requestLikeModel.findOneAndUpdate(
+      const dataReturn = await this.requestLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, request_id: dataUpdate.request_id },
         { $set: dataUpdate }
       );
@@ -167,7 +167,7 @@ export class RequestLikeService {
    */
   public count = async (filter: FilterRequestLikeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.requestLikeModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class RequestLikeService {
     limit: number,
     projection: any = {}
   ): Promise<RequestLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.requestLikeModel
+    const dataReturn = await this.requestLikeModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class RequestLikeService {
     limit: number,
     projection: any = {}
   ): Promise<RequestLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.requestLikeModel
+    const dataReturn = await this.requestLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -270,12 +270,12 @@ export class RequestLikeService {
     limit: number,
     projection: any = {}
   ): Promise<RequestLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "request_id",
       options: { strictPopulate: false },
       populate: [
@@ -287,7 +287,7 @@ export class RequestLikeService {
         },
       ],
     };
-    let dataReturn: any = await this.requestLikeModel
+    const dataReturn: any = await this.requestLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -299,9 +299,9 @@ export class RequestLikeService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.request_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.request_id?.toObject() };
         delete dataItemToReturn.request_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -320,9 +320,9 @@ export class RequestLikeService {
    * @returns
    */
   async filterWithId(filter: FilterRequestLikeDto, page: number, limit: number): Promise<RequestLike[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.requestLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.requestLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -340,12 +340,12 @@ export class RequestLikeService {
    * @returns
    */
   async filterUser(filter: FilterRequestLikeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.requestLikeModel
+    const dataReturn = await this.requestLikeModel
       .find(condition)
       .populate({
         path: "user_id",

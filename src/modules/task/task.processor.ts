@@ -76,9 +76,9 @@ export class ChallengeConsumer {
   async handleAddUserIntoChallenge(job: Job) {
     try {
       this.logger.log("worker redis challenge-add-user-job in push noti queue");
-      let listChallengePermission: any = [];
+      const listChallengePermission: any = [];
       if (job?.data?.list_user_id && job?.data?.list_user_id.length > 0) {
-        for (let x of job?.data?.list_user_id) {
+        for (const x of job?.data?.list_user_id) {
           if (x && job?.data?.challenge_id && job?.data?.channel_id) {
             listChallengePermission.push({
               user_id: x,
@@ -110,9 +110,9 @@ export class ChallengeConsumer {
     this.logger.log("worker redis user-join-challenge-job in push noti queue");
 
     if (job?.data?.list_challenge_id && job?.data?.list_challenge_id.length > 0) {
-      let listChallengePermission = [];
-      let listChallengeActivities = [];
-      for (let x of job?.data?.list_challenge_id) {
+      const listChallengePermission = [];
+      const listChallengeActivities = [];
+      for (const x of job?.data?.list_challenge_id) {
         if (job?.data?.user_id && x?.challenge_id && job?.data?.channel_id) {
           await this.challengeService.updateCount(
             {
@@ -122,7 +122,7 @@ export class ChallengeConsumer {
               join_number: 1,
             }
           );
-          let dataToPush = {
+          const dataToPush = {
             user_id: job?.data?.user_id,
             challenge_id: x?.challenge_id,
             channel_id: job?.data?.channel_id,
@@ -130,7 +130,7 @@ export class ChallengeConsumer {
             game_type: x?.game_type,
             official_status: job?.data?.official_status,
           };
-          let dataChallengeActivities = {
+          const dataChallengeActivities = {
             title: `${job?.data?.display_name} Tham gia ${x.title}`,
             challenge_id: x?.challenge_id.toString(),
             channel_id: job?.data?.channel_id,

@@ -14,8 +14,8 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly jwtHelper: JwtHelperService) {}
 
   async use(req: any, res: Response, next: NextFunction) {
-    let authObject = await this.jwtHelper.validateAuth(req, true);
-    let channelId = await this.jwtHelper.validateChannel(req);
+    const authObject = await this.jwtHelper.validateAuth(req, true);
+    const channelId = await this.jwtHelper.validateChannel(req);
     req.channel_id = channelId;
     if (authObject.status) {
       req.user_id = authObject?.data?._id;

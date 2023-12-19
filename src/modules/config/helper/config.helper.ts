@@ -54,11 +54,11 @@ export class ConfigHelper {
    */
   async createNewConfig(createConfigData: CreateConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (createConfigData.option_content) {
         createConfigData = { ...createConfigData, ...{ option_content: JSON.parse(createConfigData.option_content) } };
       }
@@ -74,7 +74,7 @@ export class ConfigHelper {
       if (createConfigData.filter_pro) {
         createConfigData = { ...createConfigData, ...{ filter_pro: JSON.parse(createConfigData.filter_pro) } };
       }
-      let dataCreate = await this.configService.create(createConfigData);
+      const dataCreate = await this.configService.create(createConfigData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -94,25 +94,25 @@ export class ConfigHelper {
    */
   async getConfigListByAdmin(query: ListConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
-        let configByOBject = {};
-        let dataToFilter = { ...query };
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
+        const configByOBject = {};
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.configService.filter(dataToFilter, configByOBject, page, limit);
-        let dataCount = await this.configService.count(dataToFilter);
+        const dataReturn = await this.configService.filter(dataToFilter, configByOBject, page, limit);
+        const dataCount = await this.configService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -141,8 +141,8 @@ export class ConfigHelper {
       // }
       // let userId = userObject._id.toString();
 
-      let dataToFilter = { type: type };
-      let dataReturnConfig: any = await this.configService.findOne(dataToFilter);
+      const dataToFilter = { type: type };
+      const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
 
       // //Get Subscribe
       // let dataToFilterSubscribe = {
@@ -152,16 +152,16 @@ export class ConfigHelper {
       // let limit = 1000;
       // let page = 1;
       // let configByOBject = {};
-      let dataAuth = await this.handleSession(req);
+      const dataAuth = await this.handleSession(req);
       let userVersion = 0;
       let channelVersion = 0;
       if (dataAuth && dataAuth?._id) {
-        let dataUser = await this.userService.findById(dataAuth?._id?.toString(), {});
+        const dataUser = await this.userService.findById(dataAuth?._id?.toString(), {});
         userVersion = Number(dataUser?.user_version) || 0;
       }
 
       let channelId = "";
-      let authCodeHeader = req?.headers || "";
+      const authCodeHeader = req?.headers || "";
       if (authCodeHeader && authCodeHeader["x-channel"]) {
         channelId = authCodeHeader["x-channel"]?.toString() || "";
       }
@@ -176,21 +176,21 @@ export class ConfigHelper {
         channelVersion = Number(dataChannel?.channel_version) || 0;
       }
       // let dataReturnSubscribe = await this.subscribeService.filter(dataToFilterSubscribe, configByOBject, page, limit);
-      let dataServices = await this.handleServiceService.filter({}, {}, 1, 100);
-      let dataServiceReturn = [];
+      const dataServices = await this.handleServiceService.filter({}, {}, 1, 100);
+      const dataServiceReturn = [];
       if (dataServices && dataServices.length) {
-        for (let serviceItem of dataServices) {
+        for (const serviceItem of dataServices) {
           if (serviceItem.handle === "pro" && version === "1.0.0") {
             dataServiceReturn.push(serviceItem);
           }
         }
-        for (let serviceItem of dataServices) {
+        for (const serviceItem of dataServices) {
           if (serviceItem.handle === "premium") {
             dataServiceReturn.push(serviceItem);
           }
         }
 
-        for (let serviceItem of dataServices) {
+        for (const serviceItem of dataServices) {
           if (serviceItem.handle === "vip" && version === "1.0.1") {
             dataServiceReturn.push(serviceItem);
           }
@@ -221,12 +221,12 @@ export class ConfigHelper {
       };
 
       if (process.env.BRANCH_NAME === "esim") {
-        let userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+        const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
         const ipInfoArray = process.env.IPINFO_TOKEN?.split(",");
         const random = Math.floor(Math.random() * ipInfoArray.length);
         if (userIp && ipInfoArray && ipInfoArray[random]) {
-          let ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
-          let dataIp = await axios
+          const ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
+          const dataIp = await axios
             .get(ipUrl)
             .then((response) => {
               if (response && response.data) {
@@ -246,10 +246,10 @@ export class ConfigHelper {
 
       //Count
       if (query.hasOwnProperty("is_count_ab")) {
-        let dataFilter = {
+        const dataFilter = {
           type: "limit_ab",
         };
-        let dataCount = {
+        const dataCount = {
           count_ab: 1,
         };
         await this.configService.updateCount(dataFilter, dataCount);
@@ -274,15 +274,15 @@ export class ConfigHelper {
    */
   async getDefaultAvatar(type: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataFilter = {
+      const dataFilter = {
         function_type: type,
       };
-      let dataCount = await this.chatMediaService.count(dataFilter);
-      let max = dataCount;
-      let min = 1;
-      let pageRandom = Math.floor(Math.random() * (max - min + 1)) + min;
-      let dataReturn = "";
-      let dataImage = await this.chatMediaService.filter(dataFilter, {}, pageRandom, 1);
+      const dataCount = await this.chatMediaService.count(dataFilter);
+      const max = dataCount;
+      const min = 1;
+      const pageRandom = Math.floor(Math.random() * (max - min + 1)) + min;
+      const dataReturn = "";
+      const dataImage = await this.chatMediaService.filter(dataFilter, {}, pageRandom, 1);
       if (dataImage && dataImage?.length) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -305,7 +305,7 @@ export class ConfigHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -318,7 +318,7 @@ export class ConfigHelper {
         authCodeString = authCodeHeader["authorization"].replace("Bearer ", "");
       }
 
-      let hashPassword = new ConfigServiceNest().get<string>("HASH_PASSWORD");
+      const hashPassword = new ConfigServiceNest().get<string>("HASH_PASSWORD");
       const { data, exp } = (await new JwtService().verify(authCodeString, {
         secret: hashPassword,
       })) as DecodeUserToken;
@@ -345,15 +345,15 @@ export class ConfigHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let dataToFilter = { type: type, package_name: packageString };
-      let dataReturnConfig: any = await this.configService.findOne(dataToFilter);
+      const dataToFilter = { type: type, package_name: packageString };
+      const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
 
       //If not have
       if (!dataReturnConfig) {
         //Create
-        let dataToCreate = await this.getDefaultValue(type, packageString);
-        let dataReturn = await this.configService.create(dataToCreate);
-        let dataReturnFinal = {
+        const dataToCreate = await this.getDefaultValue(type, packageString);
+        const dataReturn = await this.configService.create(dataToCreate);
+        const dataReturnFinal = {
           config: dataReturn,
         };
 
@@ -362,7 +362,7 @@ export class ConfigHelper {
           .status(HttpStatus.OK)
           .json(dataReturnFinal);
       } else {
-        let dataReturn = {
+        const dataReturn = {
           config: dataReturnConfig,
         };
         return res
@@ -452,21 +452,21 @@ export class ConfigHelper {
       if (password !== "ZwJr3pUjUQ4KeBfc") {
         throw new NotFoundException("Not Working, Password not correct!");
       }
-      let dataToFilter = { type: type };
-      let dataReturnConfig: any = await this.configService.findOne(dataToFilter);
+      const dataToFilter = { type: type };
+      const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
 
       let chatGPTKey = "";
       if (dataReturnConfig && dataReturnConfig?.option_content) {
         //console.log(dataReturnConfig?.option_content, 'dataReturnConfig?.option_content')
         //Check key
-        for (let dataOptionContent of dataReturnConfig?.option_content) {
+        for (const dataOptionContent of dataReturnConfig?.option_content) {
           if (dataOptionContent?.key == "chatgpt_key") {
             chatGPTKey = dataOptionContent?.value;
           }
         }
       }
       if (chatGPTKey) {
-        var data = JSON.stringify({
+        const data = JSON.stringify({
           model: "gpt-3.5-turbo",
           messages: [
             {
@@ -476,7 +476,7 @@ export class ConfigHelper {
           ],
         });
 
-        var config = {
+        const config = {
           method: "post",
           url: "https://api.openai.com/v1/chat/completions",
           headers: {
@@ -486,7 +486,7 @@ export class ConfigHelper {
           data: data,
         };
 
-        let dataReturn = await axios(config)
+        const dataReturn = await axios(config)
           .then(function (response) {
             return response?.data;
           })
@@ -520,13 +520,13 @@ export class ConfigHelper {
    */
   async handleGetDetailConfig(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.configService.findById(id.toString());
+      const dataReturn = await this.configService.findById(id.toString());
       if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -549,17 +549,17 @@ export class ConfigHelper {
    */
   async handleUpdateConfigByAdmin(dataUpdate: UpdateConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "config/update")) {
         if (dataUpdate.option_content) {
-          let dataOptionContent = JSON.parse(dataUpdate.option_content);
-          let dataToUpdateOptionContent: any = [];
-          for (let dataItem of dataOptionContent) {
+          const dataOptionContent = JSON.parse(dataUpdate.option_content);
+          const dataToUpdateOptionContent: any = [];
+          for (const dataItem of dataOptionContent) {
             if (dataItem?.key) {
               dataToUpdateOptionContent.push(dataItem);
             }
@@ -579,7 +579,7 @@ export class ConfigHelper {
         if (dataUpdate.filter_pro) {
           dataUpdate = { ...dataUpdate, ...{ filter_pro: JSON.parse(dataUpdate.filter_pro) } };
         }
-        let dataReturn = await this.configService.update(dataUpdate);
+        const dataReturn = await this.configService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

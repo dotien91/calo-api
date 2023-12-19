@@ -33,13 +33,13 @@ export class UserGift {
     type: Number,
     default: 1,
   })
-  quantity: Number;
+  quantity: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  total_price: Number;
+  total_price: number;
 
   @Prop({
     type: String,
@@ -47,7 +47,7 @@ export class UserGift {
     default: "prepare",
     nullable: false,
   })
-  gift_status: String;
+  gift_status: string;
 }
 
 export const UserGiftSchema = SchemaFactory.createForClass(UserGift);

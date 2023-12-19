@@ -30,28 +30,28 @@ export class TransactionBank {
     nullable: false,
     default: "",
   })
-  payment_method: String;
+  payment_method: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_name: String;
+  bank_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_number: String;
+  bank_number: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  bank_account_name: String;
+  bank_account_name: string;
 }
 
 export const TransactionBankSchema = SchemaFactory.createForClass(TransactionBank);

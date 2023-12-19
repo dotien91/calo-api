@@ -25,14 +25,14 @@ export class MapToken {
     nullable: false,
     default: "",
   })
-  access_token: String;
+  access_token: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  token_type: String;
+  token_type: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   expired_at: MongooseSchema.Types.Date;

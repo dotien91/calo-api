@@ -31,43 +31,43 @@ export class ContactForm {
     type: String,
     nullable: false,
   })
-  full_name: String;
+  full_name: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  address: String;
+  address: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  phone_number: String;
+  phone_number: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  country_phone_number: String;
+  country_phone_number: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  bank_name: String;
+  bank_name: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  bank_number: String;
+  bank_number: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  bank_account_name: String;
+  bank_account_name: string;
 
   @Prop({
     type: String,
@@ -75,7 +75,7 @@ export class ContactForm {
     default: "enroll",
     nullable: false,
   })
-  form_type: String;
+  form_type: string;
 
   @Prop({
     type: String,
@@ -83,31 +83,31 @@ export class ContactForm {
     default: "pending",
     nullable: false,
   })
-  form_status: String;
+  form_status: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  content: String;
+  content: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  image: String;
+  image: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  email: String;
+  email: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  note: String;
+  note: string;
 }
 
 export const ContactFormSchema = SchemaFactory.createForClass(ContactForm);

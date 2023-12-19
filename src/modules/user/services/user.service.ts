@@ -42,7 +42,7 @@ export class UserService {
   }
 
   async findOneLogin(dataToSearch: SearchUserDto): Promise<User> {
-    let populateObject = {
+    const populateObject = {
       path: "user_option_id",
       options: { strictPopulate: false },
       populate: [
@@ -54,10 +54,10 @@ export class UserService {
         },
       ],
     };
-    let dataReturn = await this.appUserModel.findOne(dataToSearch).populate(populateObject).exec();
+    const dataReturn = await this.appUserModel.findOne(dataToSearch).populate(populateObject).exec();
     if (dataReturn) {
-      let dataReturnObject = dataReturn.toObject();
-      let userOptionObject = dataReturnObject.user_option_id;
+      const dataReturnObject = dataReturn.toObject();
+      const userOptionObject = dataReturnObject.user_option_id;
       delete dataReturnObject?.user_option_id;
       delete userOptionObject?.user_id;
       return { ...userOptionObject, ...dataReturnObject };
@@ -76,10 +76,10 @@ export class UserService {
       return null;
     }
     projection = { ...projection, ...{ __v: false } };
-    let dataReturn = await this.appUserModel.findById(id, projection).populate("user_option_id").exec();
+    const dataReturn = await this.appUserModel.findById(id, projection).populate("user_option_id").exec();
     if (dataReturn) {
-      let dataReturnObject = dataReturn.toObject();
-      let userOptionObject = dataReturnObject.user_option_id;
+      const dataReturnObject = dataReturn.toObject();
+      const userOptionObject = dataReturnObject.user_option_id;
       delete dataReturnObject.user_option_id;
       delete userOptionObject.user_id;
       return { ...userOptionObject, ...dataReturnObject };
@@ -132,15 +132,15 @@ export class UserService {
     }
 
     if (filter.user_phone) {
-      let dataPhoneToFilter = filter.user_phone;
-      let dataPhoneArray = parsePhoneNumber(dataPhoneToFilter.trim());
-      let nationalNumber = dataPhoneArray.nationalNumber;
+      const dataPhoneToFilter = filter.user_phone;
+      const dataPhoneArray = parsePhoneNumber(dataPhoneToFilter.trim());
+      const nationalNumber = dataPhoneArray.nationalNumber;
       condition = Object.assign(condition, { user_phone: { $regex: nationalNumber, $options: "i" } });
     }
 
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
     return condition;
@@ -163,7 +163,7 @@ export class UserService {
   }
 
   async filterAdmin(filter: any, sortBy: SortByUserDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -176,7 +176,7 @@ export class UserService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.appUserModel
+    const dataReturn = await this.appUserModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -192,7 +192,7 @@ export class UserService {
    */
   public count = async (filter: any) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.appUserModel.estimatedDocumentCount();
       } else {
@@ -212,7 +212,7 @@ export class UserService {
    * @returns
    */
   async filter(filter: SearchUserDto, sortBy: SortByUserDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -225,7 +225,7 @@ export class UserService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.appUserModel
+    const dataReturn = await this.appUserModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -243,7 +243,7 @@ export class UserService {
    * @returns
    */
   async filterAdminWithSearch(filter: SearchUserDto, sortBy: SortByUserDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -261,7 +261,7 @@ export class UserService {
     };
     if (filter?.locking_for) {
       if (filter?.locking_for?.indexOf(",")) {
-        let dataFilterLockingFor = filter?.locking_for?.split(",");
+        const dataFilterLockingFor = filter?.locking_for?.split(",");
         dataPopulate = { ...dataPopulate, ...{ match: { locking_for: { $in: dataFilterLockingFor } } } };
       } else {
         dataPopulate = { ...dataPopulate, ...{ match: { locking_for: filter?.locking_for } } };
@@ -269,14 +269,14 @@ export class UserService {
     }
     if (filter?.user_interest) {
       if (filter?.user_interest?.indexOf(",")) {
-        let dataUserInterest = filter?.user_interest?.split(",");
+        const dataUserInterest = filter?.user_interest?.split(",");
         dataPopulate = { ...dataPopulate, ...{ match: { user_interest: { $in: dataUserInterest } } } };
       } else {
         dataPopulate = { ...dataPopulate, ...{ match: { user_interest: filter?.user_interest } } };
       }
     }
 
-    let dataReturn = await this.appUserModel
+    const dataReturn = await this.appUserModel
       .find(condition, projection)
       .sort(sortObject)
       .populate(dataPopulate)
@@ -285,11 +285,11 @@ export class UserService {
       .exec()
       .then((orders) => orders.filter((order) => order.user_option_id != null));
 
-    let dataReturnAfter = [];
-    for (let userItem of dataReturn) {
+    const dataReturnAfter = [];
+    for (const userItem of dataReturn) {
       if (userItem?.toObject()?.user_option_id?.toString()) {
-        let dataUserId = userItem?.toObject().user_option_id;
-        let dataToProcess = userItem?.toObject();
+        const dataUserId = userItem?.toObject().user_option_id;
+        const dataToProcess = userItem?.toObject();
         delete dataToProcess.user_option_id;
         //delete dataToProcess.loc;
         dataReturnAfter.push({ ...dataUserId, ...dataToProcess });
@@ -310,7 +310,7 @@ export class UserService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.appUserModel.findOneAndUpdate(
@@ -352,7 +352,11 @@ export class UserService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.appUserModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.appUserModel.findByIdAndUpdate(
+        dataUpdate._id,
+        { $set: dataUpdate },
+        { new: false }
+      );
       if (dataReturn._id) {
         // if (dataUpdate.last_active) {
         //   let dataToUpdate = {

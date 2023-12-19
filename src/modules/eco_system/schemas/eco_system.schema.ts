@@ -42,13 +42,13 @@ export class EcoSystem {
     type: String,
     default: "",
   })
-  color: String;
+  color: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: Object,
@@ -67,26 +67,26 @@ export class EcoSystem {
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  feature: String[];
+  feature: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     index: true,
   })
-  white_list: String[];
+  white_list: string[];
 
   @Prop({
     type: String,
     default: "",
   })
-  logo: String;
+  logo: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  video: String;
+  video: string;
 
   @Prop({
     type: OptionContentSchema,
@@ -98,13 +98,13 @@ export class EcoSystem {
     type: String,
     default: "",
   })
-  deeplink: String;
+  deeplink: string;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  view_count: Number;
+  view_count: number;
 }
 
 export const EcoSystemSchema = SchemaFactory.createForClass(EcoSystem);

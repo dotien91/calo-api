@@ -57,7 +57,7 @@ import { ChallengeService } from "../../../modules/challenge/services/challenge.
 import { QueueService } from "../../../modules/queue/queue.service";
 import { RequestCategoryService } from "../../../modules/request/services/request_category.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 import HookExpress from "../../hook/hook_epress";
 import { CourseLikeService } from "../../../modules/course/services/course_like.service";
 import { CourseLike } from "../../../modules/course/schemas/course_like.schema";
@@ -111,16 +111,16 @@ export class ChannelHelper {
   async processLevelWhenCreateChannel(channelId: any) {
     try {
       //getChannelOfGamifa
-      let levelGamifa: any = await this.channelLevelService.filter(
+      const levelGamifa: any = await this.channelLevelService.filter(
         { channel_id: process.env.DEFAULT_CHANNEL },
         {},
         1,
         1000
       );
-      for (let levelData of levelGamifa) {
+      for (const levelData of levelGamifa) {
         if (Number(levelData?.level_number) > 1) {
           //Process Level
-          let levelToAdd = {
+          const levelToAdd = {
             ...levelData?.toObject(),
             ...{
               channel_id: channelId,
@@ -146,7 +146,7 @@ export class ChannelHelper {
   async checkDNSRecordChannel(createChannelDomainDto: CreateChannelDomainDto) {
     try {
       let result: any;
-      let isDNSRecordExist = await this.channelService.findById(createChannelDomainDto.channel_id);
+      const isDNSRecordExist = await this.channelService.findById(createChannelDomainDto.channel_id);
       if (
         !isDNSRecordExist?.domain ||
         !isDNSRecordExist?.domain.endsWith("gamifa.vn") ||
@@ -156,7 +156,7 @@ export class ChannelHelper {
         const idZoneCloudflare = process.env.CLOUDFLARE_ZONE_ID;
         const ip = process.env.CLOUDFLARE_ZONE_IP;
         const token = process.env.CLOUDFLARE_CREATE_DNS_RECORD_TOKEN;
-        let dataToCreateDNSRecord = {
+        const dataToCreateDNSRecord = {
           content: ip,
           name: new URL(createChannelDomainDto.domain).hostname.split(".")[0],
           type: "A",
@@ -190,7 +190,7 @@ export class ChannelHelper {
         const idZoneCloudflare = process.env.CLOUDFLARE_ZONE_ID;
         const ip = process.env.CLOUDFLARE_ZONE_IP;
         const token = process.env.CLOUDFLARE_CREATE_DNS_RECORD_TOKEN;
-        let dataToCreateDNSRecord = {
+        const dataToCreateDNSRecord = {
           content: ip,
           name: new URL(createChannelDomainDto.domain).hostname.split(".")[0],
           type: "A",
@@ -239,7 +239,7 @@ export class ChannelHelper {
    */
   async createDomainChannel(createChannelDomainDto: CreateChannelDomainDto): Promise<any> {
     try {
-      let isChannelExist = await this.channelService.findById(createChannelDomainDto.channel_id);
+      const isChannelExist = await this.channelService.findById(createChannelDomainDto.channel_id);
       if (!isChannelExist) {
         throw new ForbiddenException("Cannot Found Channel!");
       }
@@ -251,7 +251,7 @@ export class ChannelHelper {
         const urlCloudflare = process.env.CLOUDFLARE_API;
         const idAccountCloudflare = process.env.CLOUDFLARE_ACOUNT_ID;
         const token = process.env.CLOUDFLARE_CREATE_ZONE;
-        let dataToCreateDomain = {
+        const dataToCreateDomain = {
           account: {
             id: idAccountCloudflare,
           },
@@ -271,13 +271,13 @@ export class ChannelHelper {
           .then(async (response) => {
             if (response?.data) {
               this.logger.log("Send Call Api Create Domain Successfully" + JSON.stringify(response.data));
-              let channelUpdate = {
+              const channelUpdate = {
                 _id: isChannelExist?._id.toString(),
                 domain_id: response?.data?.result?.id.toString().split("//")[1],
                 name_servers: response?.data?.result?.name_servers,
                 domain: response?.data?.result?.name.toString(),
               };
-              let dataCreate: any = await this.channelService.update(channelUpdate);
+              const dataCreate: any = await this.channelService.update(channelUpdate);
               return dataCreate;
             } else {
               return false;
@@ -308,18 +308,18 @@ export class ChannelHelper {
       // if(!userObject){
       //   throw new ForbiddenException("User is invalid");
       // }
-      let checkDomain = new URL(createChannelDomainDto.domain);
+      const checkDomain = new URL(createChannelDomainDto.domain);
       if (checkDomain?.protocol !== "https:" || checkDomain?.password !== "" || checkDomain?.username !== "") {
         if (String(checkDomain.hostname).split(".").length < 2) throw new BadRequestException("hostname_invalid");
         throw new BadRequestException("domain_invalid");
       }
       createChannelDomainDto.domain = checkDomain?.hostname.toString();
-      let channelPermission = await this.channelPermissionService.findOne({
+      const channelPermission = await this.channelPermissionService.findOne({
         user_id: req?.user_object?._id,
         channel_id: createChannelDomainDto.channel_id,
       });
       if (channelPermission?.channel_role === "mentor") {
-        let typeService = await this.subscribeService.findOne({
+        const typeService = await this.subscribeService.findOne({
           channel_id: createChannelDomainDto.channel_id,
           service_name: "domain",
         });
@@ -368,7 +368,7 @@ export class ChannelHelper {
   ): Promise<any> {
     try {
       let result: any;
-      let isChannelExist = await this.channelService.findById(checkCreateDomainDto.channel_id);
+      const isChannelExist = await this.channelService.findById(checkCreateDomainDto.channel_id);
       if (isChannelExist) {
         if (isChannelExist.domain_id && isChannelExist.domain === checkCreateDomainDto.domain) {
           const urlCloudflare = process.env.CLOUDFLARE_API;
@@ -421,11 +421,11 @@ export class ChannelHelper {
    */
   async createNewChannel(createChannelData: CreateChannelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       createChannelData = { ...createChannelData, ...{ user_id: userId } };
 
       if (createChannelData?.attach_files) {
@@ -463,19 +463,19 @@ export class ChannelHelper {
       };
 
       //Update for channel
-      let dataUpdateChannel = {
+      const dataUpdateChannel = {
         _id: dataCreate?._id?.toString(),
         admin_user: userObject?._id?.toString(),
       };
       await this.channelService.updateArray(dataUpdateChannel);
 
-      let dataLevelOneData = {
+      const dataLevelOneData = {
         channel_id: dataCreate?._id?.toString(),
         title: "Khởi động",
         level_number: "1",
         total_member: "1",
       };
-      let dataLevelOne = await this.channelLevelService.create(dataLevelOneData);
+      const dataLevelOne = await this.channelLevelService.create(dataLevelOneData);
 
       let dataCreatePermission = {
         user_id: userObject?._id?.toString(),
@@ -510,10 +510,10 @@ export class ChannelHelper {
         dataCreatePermission = { ...dataCreatePermission, ...{ channel_level: dataLevelOne?._id?.toString() } };
         //Update For channel
       }
-      let dataChannelPermission = await this.channelPermissionService.create(dataCreatePermission);
+      const dataChannelPermission = await this.channelPermissionService.create(dataCreatePermission);
       //Update permission
       //For User
-      let dataUpdateUser = {
+      const dataUpdateUser = {
         _id: userObject?._id?.toString(),
         channel_permission: dataChannelPermission?._id?.toString(),
       };
@@ -544,17 +544,17 @@ export class ChannelHelper {
    */
   async createNewChannelBanner(createChannelData: CreateChannelBannerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       createChannelData = { ...createChannelData, ...{ user_id: userId } };
-      let channelId = req?.channel_id || createChannelData?.channel_id;
+      const channelId = req?.channel_id || createChannelData?.channel_id;
       if (channelId) {
         createChannelData = { ...createChannelData, ...{ channel_id: channelId } };
       }
-      let dataCreate: any = await this.channelBannerService.create(createChannelData);
+      const dataCreate: any = await this.channelBannerService.create(createChannelData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -574,13 +574,13 @@ export class ChannelHelper {
    */
   async createNewChannelLevel(createChannelData: CreateChannelLevelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //Check Permission
 
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: createChannelData?.channel_id,
       });
@@ -593,9 +593,9 @@ export class ChannelHelper {
       ) {
         throw new ForbiddenException("You not have permission for this action!");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       createChannelData = { ...createChannelData, ...{ user_id: userId, official_status: 1 } };
-      let dataCreate: any = await this.channelLevelService.create(createChannelData);
+      const dataCreate: any = await this.channelLevelService.create(createChannelData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -615,27 +615,27 @@ export class ChannelHelper {
    */
   async createJoinPermission(createChannelData: CreateChannelLevelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
       //Check permission
-      let exsitUserFilter = {
+      const exsitUserFilter = {
         user_id: userObject?._id.toString(),
         channel_id: createChannelData?.channel_id,
       };
 
       if (createChannelData?.channel_id) {
         let isNotificationJoin = false;
-        let channelObject = await this.channelService.findById(createChannelData?.channel_id);
-        let dataExsitUser = await this.channelPermissionService.findOne(exsitUserFilter);
+        const channelObject = await this.channelService.findById(createChannelData?.channel_id);
+        const dataExsitUser = await this.channelPermissionService.findOne(exsitUserFilter);
         if (!dataExsitUser) {
           //Check Permission
-          let userId = userObject._id.toString();
+          const userId = userObject._id.toString();
           //Check Channel ID
-          let levelOne = await this.channelLevelService.findOne({
+          const levelOne = await this.channelLevelService.findOne({
             level_number: 1,
             channel_id: createChannelData?.channel_id,
           });
@@ -664,13 +664,13 @@ export class ChannelHelper {
             });
           }
 
-          let dataCreate: any = await this.channelPermissionService.create(createChannelData);
+          const dataCreate: any = await this.channelPermissionService.create(createChannelData);
           if (isNotificationJoin) {
             //Send Noitfication
             this.handleSendNotification(userObject, channelObject?.user_id, dataCreate, channelObject, authCode, req);
           }
 
-          let dataUpdateUser = {
+          const dataUpdateUser = {
             _id: userObject?._id?.toString(),
             channel_permission: createChannelData?.channel_id?.toString(),
           };
@@ -750,15 +750,15 @@ export class ChannelHelper {
         notificationTitle = notificationTitle;
       }
 
-      let userIdArray = [toUser?._id?.toString()];
+      const userIdArray = [toUser?._id?.toString()];
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataPermission?._id?.toString(),
           path: "/v/member/waiting",
           data_id: "",
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -796,21 +796,21 @@ export class ChannelHelper {
   ) {
     try {
       //Title
-      let titleNotification = "Bạn vừa được thêm làm Mentor";
+      const titleNotification = "Bạn vừa được thêm làm Mentor";
       let descriptionNotification = `${fromUser?.display_name} vừa thêm bạn làm Mentor kênh ${channelObject?.title}`;
       if (descriptionNotification && descriptionNotification.length >= 255) {
         descriptionNotification = descriptionNotification.substring(0, 250) + "...";
       }
 
-      let userIdArray = [toUser?._id?.toString()];
-      let emailArray = [toUser];
+      const userIdArray = [toUser?._id?.toString()];
+      const emailArray = [toUser];
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           post_name: channelObject?.title,
@@ -837,12 +837,12 @@ export class ChannelHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: toUser?._id?.toString(),
           path: "/r/setting-mentor/detail/",
           data_id: toUser?._id?.toString(),
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -874,12 +874,12 @@ export class ChannelHelper {
    */
   async inviteViaEmail(inviteViaEmail: CreateInviteEmail, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //Check Permission
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         channel_id: inviteViaEmail?.channel_id,
         user_id: userObject?._id?.toString(),
       });
@@ -889,14 +889,14 @@ export class ChannelHelper {
       if (dataPermission?.channel_role !== "mentor" && dataPermission?.permission?.indexOf("user/update") == -1) {
         throw new ForbiddenException("You not have permission for this action!");
       }
-      let channelObject = await this.channelService.findById(inviteViaEmail?.channel_id);
+      const channelObject = await this.channelService.findById(inviteViaEmail?.channel_id);
       //Check User by Email
       let userObjectCheck = await this.userService.findOne({ user_email: inviteViaEmail.email });
       let passwordRandom = "";
       if (!userObjectCheck) {
         passwordRandom = await this.makeRandomPassword(6);
         //Create new Account
-        let dataLogin = {
+        const dataLogin = {
           user_email: inviteViaEmail?.email,
           full_name: inviteViaEmail?.email,
           user_password: passwordRandom?.toString(),
@@ -904,7 +904,7 @@ export class ChannelHelper {
         userObjectCheck = await this.createUserByEmail(req, dataLogin);
       }
 
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
       //Let dataToUpdate
       let dataToUpdate = {
@@ -927,13 +927,13 @@ export class ChannelHelper {
 
       //Add User To New Channel
 
-      let levelUser = await this.channelLevelService.findOne({
+      const levelUser = await this.channelLevelService.findOne({
         level_number: 1,
         channel_id: channelObject?._id?.toString(),
       });
 
       //Check permission
-      let exsitUserFilter = {
+      const exsitUserFilter = {
         user_id: userObjectCheck?._id?.toString(),
         channel_id: channelObject?._id?.toString(),
       };
@@ -949,10 +949,10 @@ export class ChannelHelper {
           console.log(error);
         });
 
-      let dataExsitUser = await this.channelPermissionService.findOne(exsitUserFilter);
+      const dataExsitUser = await this.channelPermissionService.findOne(exsitUserFilter);
       if (!dataExsitUser) {
         //Create Channel Permission
-        let dataToCreateChannel = {
+        const dataToCreateChannel = {
           user_id: userObjectCheck?._id?.toString(),
           channel_id: channelObject?._id?.toString(),
           official_status: 1,
@@ -987,9 +987,9 @@ export class ChannelHelper {
 
   async createUserByEmail(req: ExpressRequestDto, dataLogin: RegisterUserDto) {
     //Process User Email
-    let userLogin = dataLogin.user_email?.replace("@", "_");
+    const userLogin = dataLogin.user_email?.replace("@", "_");
     //Create New User
-    let dataToCreate = {
+    const dataToCreate = {
       user_login: userLogin,
       user_email: dataLogin.user_email,
       user_password: await this.handleProcessPassword(dataLogin.user_password),
@@ -998,7 +998,7 @@ export class ChannelHelper {
     };
     let userObject = await this.userService.create(dataToCreate);
     if (userObject) {
-      let dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
+      const dataUserOption: any = await this.handleUpdateUserOption(userObject._id.toString());
       //@ts-ignore
       userObject = { ...dataUserOption.toObject(), ...userObject?.toObject() };
     }
@@ -1010,17 +1010,17 @@ export class ChannelHelper {
   }
 
   async handleUpdateUserOption(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUserOption = await this.userOptionService.create(dataCreate);
-    let levelUser = await this.channelLevelService.findOne({
+    const dataUserOption = await this.userOptionService.create(dataCreate);
+    const levelUser = await this.channelLevelService.findOne({
       level_number: 1,
       channel_id: process.env.DEFAULT_CHANNEL,
     });
 
     //Create Channel Permission
-    let dataToCreateChannel = {
+    const dataToCreateChannel = {
       user_id: userId,
       channel_id: process.env.DEFAULT_CHANNEL,
       official_status: 1,
@@ -1033,7 +1033,7 @@ export class ChannelHelper {
     //Update count user
 
     if (dataUserOption) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUserOption._id.toString(),
       };
@@ -1052,16 +1052,16 @@ export class ChannelHelper {
    * @returns
    */
   async handleUserSession(req: Request, userObject: User, dataLogin: LoginUserDto) {
-    let userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-    let userAgent = req.headers["user-agent"];
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+    const userAgent = req.headers["user-agent"];
 
-    var currentDate = new Date();
-    var year = currentDate.getFullYear();
-    var month = currentDate.getMonth();
-    var day = currentDate.getDate();
-    var expiredAt = new Date(year + 1, month, day);
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const day = currentDate.getDate();
+    const expiredAt = new Date(year + 1, month, day);
 
-    let dataSessionToAdd = {
+    const dataSessionToAdd = {
       user_id: userObject._id,
       user_ip: userIp,
       device_uuid: dataLogin.device_uuid,
@@ -1071,7 +1071,7 @@ export class ChannelHelper {
       language: dataLogin?.language,
       expired_at: expiredAt,
     };
-    let dataCreate = await this.userSessionService.create(dataSessionToAdd);
+    const dataCreate = await this.userSessionService.create(dataSessionToAdd);
     return dataCreate;
   }
 
@@ -1082,7 +1082,7 @@ export class ChannelHelper {
   async handleProcessPassword(password: string) {
     try {
       password = password + "pxtPAtrn9Q2xADXp";
-      let newPassword = createHash("sha256").update(password).digest("hex");
+      const newPassword = createHash("sha256").update(password).digest("hex");
       return newPassword?.toString();
     } catch (error) {
       return null;
@@ -1099,13 +1099,13 @@ export class ChannelHelper {
    */
   async updateMentor(dataUpdate: UpdateChannelMentorDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject?._id?.toString();
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = userObject?._id?.toString();
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataUpdate?.channel_id,
       });
@@ -1122,12 +1122,12 @@ export class ChannelHelper {
       }
 
       if (havePermission) {
-        let dataUserUpdateFilter = {
+        const dataUserUpdateFilter = {
           user_id: dataUpdate?.mentor_id,
           channel_id: dataUpdate?.channel_id,
         };
         let mentorReturn = null;
-        let dataPermissionChannel = await this.channelPermissionService.findOne(dataUserUpdateFilter);
+        const dataPermissionChannel = await this.channelPermissionService.findOne(dataUserUpdateFilter);
         if (dataPermissionChannel) {
           mentorReturn = await this.channelPermissionService.update({
             _id: dataPermissionChannel._id?.toString(),
@@ -1136,17 +1136,17 @@ export class ChannelHelper {
         }
         //Update from_mentor
         let dataUserArray = [];
-        let dataUserToAdd = [];
-        let dataUserReturn = [];
+        const dataUserToAdd = [];
+        const dataUserReturn = [];
         if (dataUpdate?.user_ids?.indexOf(",") !== -1) {
           dataUserArray = dataUpdate?.user_ids?.split(",");
         } else {
           dataUserArray = [dataUpdate?.user_ids];
         }
         if (dataUserArray?.length) {
-          for (let userItem of dataUserArray) {
+          for (const userItem of dataUserArray) {
             try {
-              let objectId = new Types.ObjectId(userItem);
+              const objectId = new Types.ObjectId(userItem);
               if (!objectId) {
                 throw new NotFoundException("Partner is invalid (Not is an ObjectID)");
               } else {
@@ -1156,19 +1156,19 @@ export class ChannelHelper {
           }
         }
 
-        for (let itemToAdd of dataUserToAdd) {
+        for (const itemToAdd of dataUserToAdd) {
           //Update User from_mentor
-          let dataUpdateFilter = {
+          const dataUpdateFilter = {
             user_id: itemToAdd?.toString(),
             channel_id: dataUpdate?.channel_id,
           };
-          let dataUpdateMentor = {
+          const dataUpdateMentor = {
             from_mentor: dataUpdate?.mentor_id,
           };
-          let dataMentorObject = await this.channelPermissionService.updateOne(dataUpdateFilter, dataUpdateMentor);
+          const dataMentorObject = await this.channelPermissionService.updateOne(dataUpdateFilter, dataUpdateMentor);
           dataUserReturn.push(dataMentorObject);
           //Update count
-          let dataUpdateCount = {
+          const dataUpdateCount = {
             number_of_user: 1,
           };
           await this.channelPermissionService.updateCount(
@@ -1177,7 +1177,7 @@ export class ChannelHelper {
           );
         }
 
-        let dataReturn = {
+        const dataReturn = {
           mentor_id: mentorReturn,
           user_ids: dataUserReturn,
         };
@@ -1204,19 +1204,19 @@ export class ChannelHelper {
    */
   async updateChannel(dataUpdate: UpdateChannelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //Check Permission
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         channel_id: dataUpdate?._id,
         user_id: userObject?._id?.toString(),
       });
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       let isSuperAdmin = false;
 
-      let adminPermission = await this.userPermissionService.isHavePermission(userId, "channel/create");
+      const adminPermission = await this.userPermissionService.isHavePermission(userId, "channel/create");
       if (!dataPermission && !adminPermission) {
         throw new ForbiddenException("You not have permission for this action!");
       }
@@ -1265,7 +1265,7 @@ export class ChannelHelper {
       const oldChannel = await this.channelService.findById(dataUpdate?._id);
 
       if (dataUpdate?.domain && dataUpdate?.domain !== oldChannel?.domain) {
-        let isDomainExist = await this.channelService.filter(
+        const isDomainExist = await this.channelService.filter(
           {
             domain: dataUpdate?.domain,
           },
@@ -1276,7 +1276,7 @@ export class ChannelHelper {
         if (isDomainExist.length > 0) {
           throw new BadRequestException("Domain already Exist!");
         }
-        let createChannelDomainDto = { domain: dataUpdate?.domain, channel_id: dataUpdate?._id, user_id: userId };
+        const createChannelDomainDto = { domain: dataUpdate?.domain, channel_id: dataUpdate?._id, user_id: userId };
         const infoDomain = await this.checkDNSRecordChannel(createChannelDomainDto);
         dataUpdate.domain_id = infoDomain?.result?.id;
       }
@@ -1284,7 +1284,7 @@ export class ChannelHelper {
       console.log(dataUpdate, "dataUpdate");
 
       //Get Media Data
-      let dataCreate: any = await this.channelService.update(dataUpdate);
+      const dataCreate: any = await this.channelService.update(dataUpdate);
 
       //Đã udpate trong Service rồi, không cần Update lại nữa.
       // await this.channelService.updateCount({ _id: dataUpdate?._id }, { channel_version: 1 });
@@ -1306,13 +1306,13 @@ export class ChannelHelper {
    */
   async updateChannelLevel(dataUpdate: UpdateChannelLevelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataLevel = await this.channelLevelService.findOne({ _id: dataUpdate?._id });
+      const dataLevel = await this.channelLevelService.findOne({ _id: dataUpdate?._id });
 
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataLevel?.channel_id,
       });
@@ -1327,7 +1327,7 @@ export class ChannelHelper {
       }
 
       //Get Media Data
-      let dataCreate: any = await this.channelLevelService.update(dataUpdate);
+      const dataCreate: any = await this.channelLevelService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1347,12 +1347,12 @@ export class ChannelHelper {
    */
   async updateChannelPermission(dataUpdate: UpdateChannelPermissionDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataPermission = await this.channelPermissionService.findOne({
         _id: dataUpdate?._id,
       });
 
@@ -1360,12 +1360,12 @@ export class ChannelHelper {
         throw new ForbiddenException("The permission is not exist!");
       }
 
-      let dataUserPermission = await this.channelPermissionService.findOne({
+      const dataUserPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataPermission?.channel_id?._id?.toString(),
       });
-      let oldStatus = dataPermission.official_status;
-      let oldFromMentor = dataPermission?.from_mentor;
+      const oldStatus = dataPermission.official_status;
+      const oldFromMentor = dataPermission?.from_mentor;
 
       if (
         dataUserPermission?.channel_role !== "mentor" &&
@@ -1480,10 +1480,10 @@ export class ChannelHelper {
       }
 
       //Get Media Data
-      let dataCreate: any = await this.channelPermissionService.update(dataUpdate);
+      const dataCreate: any = await this.channelPermissionService.update(dataUpdate);
 
       if (oldStatus === 0 && dataUpdate.official_status === "1") {
-        let channel = await this.channelService.findById(dataUpdate.channel_id);
+        const channel = await this.channelService.findById(dataUpdate.channel_id);
         this.eventHookNotificationService.sendNotiNMailApllyJoinChannel({
           user_id: dataUpdate?.from_user,
           channel_id: dataUpdate?.channel_id?.toString(),
@@ -1517,28 +1517,28 @@ export class ChannelHelper {
    */
   async getChannelListByAdmin(query: ListChannelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "channel/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.channelService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.channelService.count(dataToFilter);
+        const dataReturn = await this.channelService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.channelService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -1560,7 +1560,7 @@ export class ChannelHelper {
    */
   async handleGetListLike(query: ListChannelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1570,30 +1570,30 @@ export class ChannelHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.channelLikeService.filterChannel(dataToFilter, {}, 1, query.limit, {
+      const dataReturn: any = await this.channelLikeService.filterChannel(dataToFilter, {}, 1, query.limit, {
         video_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let channelItem of dataReturn) {
+        for (const channelItem of dataReturn) {
           dataReturnFinal.push({ ...channelItem, ...{ is_like: true, is_view: false } });
         }
       }
@@ -1653,8 +1653,8 @@ export class ChannelHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let dataToFilter = { ...query };
       delete dataToFilter.page;
@@ -1663,12 +1663,12 @@ export class ChannelHelper {
 
       if (query?.search) {
         //Search User First
-        let dataSearch = {
+        const dataSearch = {
           search: query?.search,
           channel_permission: query?.channel_id,
         };
-        let dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
-        let ids = dataUserArray.map((itemValue, index) => {
+        const dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
+        const ids = dataUserArray.map((itemValue, index) => {
           return itemValue?._id?.toString();
         });
         if (ids && ids.length) {
@@ -1682,7 +1682,7 @@ export class ChannelHelper {
       }
 
       if (query?.unset && query?.channel_id) {
-        let userPermission = await this.channelPermissionService.findOne({
+        const userPermission = await this.channelPermissionService.findOne({
           user_id: query?.unset,
           channel_id: query?.channel_id,
         });
@@ -1693,14 +1693,14 @@ export class ChannelHelper {
 
       if (query?.course_id) {
         //Process Course
-        let dataCourseLike: CourseLike[] = await this.courseLikeService.filter(
+        const dataCourseLike: CourseLike[] = await this.courseLikeService.filter(
           { course_id: query?.course_id },
           {},
           1,
           1000,
           {}
         );
-        let dataIdsUserCourse = dataCourseLike?.map((dataItem: CourseLike, index: number) => {
+        const dataIdsUserCourse = dataCourseLike?.map((dataItem: CourseLike, index: number) => {
           return dataItem?.user_id?.toString();
         });
         if (dataIdsUserCourse && dataIdsUserCourse?.length) {
@@ -1708,46 +1708,46 @@ export class ChannelHelper {
         }
       }
 
-      let dataReturn: ChannelPermission[] = await this.channelPermissionService.filter(
+      const dataReturn: ChannelPermission[] = await this.channelPermissionService.filter(
         dataToFilter,
         orderByOBject,
         page,
         query.limit
       );
 
-      let dataCount = await this.channelPermissionService.count(dataToFilter);
+      const dataCount = await this.channelPermissionService.count(dataToFilter);
 
-      let dataIds = dataReturn?.map((value: ChannelPermission) => {
+      const dataIds = dataReturn?.map((value: ChannelPermission) => {
         return value.user_id?._id?.toString();
       });
       if (dataReturn?.length) {
         if (query?.auth_id) {
-          let dataToFilterFollow = {
+          const dataToFilterFollow = {
             partner_ids: dataIds,
             user_id: query?.auth_id,
           };
-          let orderByOBject = {};
-          let dataUserFollow = await this.userFollowService.filterUser(
+          const orderByOBject = {};
+          const dataUserFollow = await this.userFollowService.filterUser(
             dataToFilterFollow,
             orderByOBject,
             1,
             limit,
             false
           );
-          let dataPartnerFollow = dataUserFollow?.map((value) => {
+          const dataPartnerFollow = dataUserFollow?.map((value) => {
             return value?.partner_id?._id?.toString();
           });
 
-          for (let dataItemIndex in dataReturn) {
-            let partnerId = dataReturn[dataItemIndex]?.user_id?._id?.toString();
+          for (const dataItemIndex in dataReturn) {
+            const partnerId = dataReturn[dataItemIndex]?.user_id?._id?.toString();
             //@ts-ignore
-            let dataToAdd = dataReturn[dataItemIndex]?.toObject();
+            const dataToAdd = dataReturn[dataItemIndex]?.toObject();
             if (dataPartnerFollow.indexOf(partnerId) !== -1) {
               dataReturn[dataItemIndex] = { ...dataToAdd, ...{ is_follow: true } };
             } else {
               dataReturn[dataItemIndex] = { ...dataToAdd, ...{ is_follow: false } };
             }
-            let dataToMerge = {
+            const dataToMerge = {
               ...dataReturn[dataItemIndex]?.user_id,
               ...{
                 channel_role: dataReturn[dataItemIndex]?.channel_role,
@@ -1792,21 +1792,21 @@ export class ChannelHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.channelService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturnFinal = [];
-      let dataCount = await this.channelService.count(dataToFilter);
+      const dataReturn: any = await this.channelService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturnFinal = [];
+      const dataCount = await this.channelService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1829,20 +1829,20 @@ export class ChannelHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.channelBannerService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturnFinal = [];
+      const dataReturn: any = await this.channelBannerService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturnFinal = [];
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1866,20 +1866,20 @@ export class ChannelHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.channelLevelService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturnFinal = [];
+      const dataReturn: any = await this.channelLevelService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturnFinal = [];
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1911,7 +1911,7 @@ export class ChannelHelper {
       let dataToFilter = {};
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-        let dataReturn = await this.channelService.findOne(dataToFilter);
+        const dataReturn = await this.channelService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1940,7 +1940,7 @@ export class ChannelHelper {
       let dataToFilter = {};
       if (domain) {
         dataToFilter = { ...dataToFilter, ...{ domain: domain } };
-        let dataReturn = await this.channelService.findOne(dataToFilter);
+        const dataReturn = await this.channelService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1975,7 +1975,7 @@ export class ChannelHelper {
       let dataToFilter = {};
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-        let dataReturn = await this.channelLevelService.findOne(dataToFilter);
+        const dataReturn = await this.channelLevelService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1997,17 +1997,17 @@ export class ChannelHelper {
    */
   async handleUpdateChannelByAdmin(dataUpdate: UpdateChannelDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataChannel = await this.channelService.findById(dataUpdate._id.toString());
+      const userId = userObject._id.toString();
+      const dataChannel = await this.channelService.findById(dataUpdate._id.toString());
       if (
         dataChannel?.user_id?._id.toString() === userObject._id.toString() ||
         (await this.userPermissionService.isHavePermission(userId, "channel/update"))
       ) {
-        let dataReturn = await this.channelService.update(dataUpdate);
+        const dataReturn = await this.channelService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2029,18 +2029,18 @@ export class ChannelHelper {
    */
   async handleDeleteChannel(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let dataChannel = await this.channelService.findById(id.toString());
+      const dataChannel = await this.channelService.findById(id.toString());
       if (
         dataChannel?.user_id?._id.toString() === userObject?._id.toString() ||
         (await this.userPermissionService.isHavePermission(userId, "channel/delete"))
       ) {
-        let dataReturn = await this.channelService.remove(id);
+        const dataReturn = await this.channelService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2062,14 +2062,14 @@ export class ChannelHelper {
    */
   async handleDeleteChannelPermission(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let dataChannel = await this.channelPermissionService.findById(id.toString(), {});
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataChannel = await this.channelPermissionService.findById(id.toString(), {});
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataChannel?.channel_id?.toString(),
       });
@@ -2119,7 +2119,7 @@ export class ChannelHelper {
       }
 
       //Remove Channel
-      let dataReturn = await this.channelPermissionService.remove(id);
+      const dataReturn = await this.channelPermissionService.remove(id);
       this.eventHookWorkerService.RequestDeleteMultipleDocumentByChannelPermission({
         channel_id: dataChannel?.channel_id?._id?.toString(),
         user_id: dataChannel?.user_id?._id?.toString(),
@@ -2142,14 +2142,14 @@ export class ChannelHelper {
    */
   async handleDeleteChannelLevel(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let dataChannel = await this.channelLevelService.findById(id.toString(), {});
-      let dataPermission = await this.channelPermissionService.findOne({
+      const dataChannel = await this.channelLevelService.findById(id.toString(), {});
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataChannel?.channel_id?.toString(),
       });
@@ -2161,7 +2161,7 @@ export class ChannelHelper {
       }
 
       //Update logic if in Channel have only one Mentor
-      let dataPermissionArray = await this.channelLevelService.filter(
+      const dataPermissionArray = await this.channelLevelService.filter(
         { channel_id: dataChannel?.channel_id?.toString(), channel_role: "mentor" },
         {},
         1,
@@ -2174,7 +2174,7 @@ export class ChannelHelper {
         );
       }
       //Remove Channel
-      let dataReturn = await this.channelLevelService.remove(id);
+      const dataReturn = await this.channelLevelService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2212,24 +2212,24 @@ export class ChannelHelper {
    */
   async processFollowUser(dataPermission: CreateChannelLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.channelService.findById(dataPermission.video_id);
+      const videoObject = await this.channelService.findById(dataPermission.video_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         video_id: dataPermission.video_id.toString(),
       };
-      let dataReturn = await this.channelLikeService.update(dataUpdate);
+      const dataReturn = await this.channelLikeService.update(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id,
       };
       await this.channelService.updateCount(dataUpdateFilter, { like_number: 1 });
@@ -2251,17 +2251,17 @@ export class ChannelHelper {
    */
   async handleAddUserPermission(dataPermission: CreateChannelPermissionDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let channelObject = await this.channelService.findById(dataPermission.channel_id);
+      const channelObject = await this.channelService.findById(dataPermission.channel_id);
       if (!channelObject) {
         throw new NotFoundException("Channel is not found");
       }
 
       //Check user Permission
-      let userPermissionToCreate = await this.channelPermissionService.findOne({
+      const userPermissionToCreate = await this.channelPermissionService.findOne({
         user_id: userObject?._id?.toString(),
         channel_id: dataPermission?.channel_id,
       });
@@ -2278,7 +2278,7 @@ export class ChannelHelper {
       }
 
       //Check Permission
-      let dataPermissionObject = await this.channelPermissionService.findOne({
+      const dataPermissionObject = await this.channelPermissionService.findOne({
         user_id: dataPermission.user_id,
         channel_id: dataPermission?.channel_id,
       });
@@ -2286,7 +2286,7 @@ export class ChannelHelper {
       if (dataPermissionObject) {
         throw new NotFoundException("Exist permission for this user, please Update permission!");
       }
-      let dataFilterView = {
+      const dataFilterView = {
         user_id: userObject._id.toString(),
         channel_id: dataPermission.channel_id.toString(),
       };
@@ -2297,19 +2297,19 @@ export class ChannelHelper {
         dataPermission = { ...dataPermission, ...{ permission: [] } };
       }
 
-      let dataLevelOne = await this.channelLevelService.findOne({ level_number: 1 });
+      const dataLevelOne = await this.channelLevelService.findOne({ level_number: 1 });
       if (dataLevelOne) {
         dataPermission = { ...dataPermission, ...{ channel_level: dataLevelOne?._id?.toString() } };
       }
-      let dataReturn = await this.channelPermissionService.create(dataPermission);
+      const dataReturn = await this.channelPermissionService.create(dataPermission);
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: dataReturn.channel_id,
       };
       await this.channelService.updateCount(dataUpdateFilter, { view_number: 1 });
 
       //Update for User
-      let dataUpdateUser = {
+      const dataUpdateUser = {
         _id: dataPermission?.user_id,
         channel_permission: dataReturn?._id?.toString(),
       };
@@ -2317,7 +2317,7 @@ export class ChannelHelper {
 
       if (dataPermission?.channel_role === "mentor") {
         //Update for Channel
-        let dataUpdateChannel = {
+        const dataUpdateChannel = {
           _id: dataPermission?.channel_id,
           admin_user: dataPermission?.user_id,
         };
@@ -2373,25 +2373,25 @@ export class ChannelHelper {
    */
   async processUnFollowUser(dataPermission: CreateChannelLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.channelService.findById(dataPermission.video_id);
+      const videoObject = await this.channelService.findById(dataPermission.video_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         video_id: dataPermission.video_id.toString(),
       };
 
-      let dataReturn = await this.channelLikeService.removeOne(dataUpdate);
+      const dataReturn = await this.channelLikeService.removeOne(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id,
       };
       await this.channelService.updateCount(dataUpdateFilter, { like_number: -1 });
@@ -2414,13 +2414,13 @@ export class ChannelHelper {
   async plusPointHandleForUser(plusPointChannelDto: PlusPointChannelDto, res: Response, req: ExpressRequestDto) {
     try {
       if (plusPointChannelDto.point && Number(plusPointChannelDto.point) < 10) {
-        let userObject = req?.user_object;
-        let dataCountUserFilter = {
+        const userObject = req?.user_object;
+        const dataCountUserFilter = {
           channel_id: plusPointChannelDto.channel_id,
           user_id: plusPointChannelDto?.user_receive_id?.toString(),
         };
 
-        let dataPermission = await this.channelPermissionService.findOne(dataCountUserFilter);
+        const dataPermission = await this.channelPermissionService.findOne(dataCountUserFilter);
 
         //Update user level
         //Update Count

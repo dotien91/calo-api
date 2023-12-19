@@ -35,7 +35,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  permission: String[];
+  permission: string[];
 
   @Prop({
     type: Number,
@@ -43,7 +43,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  old_point: Number;
+  old_point: number;
 
   @Prop({
     type: Number,
@@ -51,7 +51,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  point_month: Number;
+  point_month: number;
 
   @Prop({
     type: Number,
@@ -59,7 +59,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  point_week: Number;
+  point_week: number;
 
   @Prop({
     type: Number,
@@ -67,7 +67,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  point: Number;
+  point: number;
 
   @Prop({
     type: Number,
@@ -75,7 +75,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  level_number: Number;
+  level_number: number;
 
   @Prop({
     type: String,
@@ -83,7 +83,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  channel_role: String;
+  channel_role: string;
 
   @Prop({
     type: String,
@@ -91,7 +91,7 @@ export class ChannelPermission {
     nullable: false,
     index: true,
   })
-  mentor_role: String;
+  mentor_role: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   from_mentor: User;
@@ -104,42 +104,42 @@ export class ChannelPermission {
     default: 0,
     nullable: false,
   })
-  coin_number: Number;
+  coin_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  number_of_user: Number;
+  number_of_user: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  official_status: Number;
+  official_status: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_like: Number;
+  total_like: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_comment: Number;
+  total_comment: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_view_course: Number;
+  total_view_course: number;
 }
 
 export const ChannelPermissionSchema = SchemaFactory.createForClass(ChannelPermission);

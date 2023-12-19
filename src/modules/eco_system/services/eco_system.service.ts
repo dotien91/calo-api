@@ -58,12 +58,12 @@ export class EcoSystemService {
    * @returns
    */
   async filter(filter: SearchEcoSystemDto, sortBy: SortByEcoSystemDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.ecoSystemModel
+    const dataReturn = await this.ecoSystemModel
       .find(condition)
       .sort(sortObject)
       .populate("public_album")
@@ -80,7 +80,7 @@ export class EcoSystemService {
    */
   public count = async (filter: SearchEcoSystemDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.ecoSystemModel.estimatedDocumentCount();
       } else {
@@ -98,7 +98,7 @@ export class EcoSystemService {
    */
   async create(createUser: CreateEcoSystemDto) {
     const createdEcoSystem = new this.ecoSystemModel(createUser);
-    let dataCreate = await createdEcoSystem.save();
+    const dataCreate = await createdEcoSystem.save();
     return dataCreate;
   }
 
@@ -108,9 +108,9 @@ export class EcoSystemService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -144,7 +144,7 @@ export class EcoSystemService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -183,7 +183,7 @@ export class EcoSystemService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.ecoSystemModel.findByIdAndUpdate(
+      const dataReturn = await this.ecoSystemModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

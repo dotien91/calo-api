@@ -50,14 +50,14 @@ export class PurchaseHelper {
    */
   async createNewPurchaseGoogle(createPurchaseData: CreatePurchaseGoogleDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       console.log(JSON.stringify(createPurchaseData));
-      let userId = userObject._id.toString();
-      let orderObject = await this.orderService.findById(createPurchaseData?.local_order_id);
+      const userId = userObject._id.toString();
+      const orderObject = await this.orderService.findById(createPurchaseData?.local_order_id);
       if (!orderObject) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -79,11 +79,11 @@ export class PurchaseHelper {
           .json({});
       }
       //Validate Google
-      let dataValidate = await this.validateGoogle(createPurchaseData, orderObject);
+      const dataValidate = await this.validateGoogle(createPurchaseData, orderObject);
 
       if (dataValidate === "success") {
         //Update Order
-        let dataUpdate = {
+        const dataUpdate = {
           _id: createPurchaseData?.local_order_id.toString(),
           status: "success",
           payment_method: orderObject.payment_method,
@@ -95,7 +95,7 @@ export class PurchaseHelper {
           await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id);
         }
         await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
-        let timeToSave = new Date(Number(createPurchaseData?.purchase_time) * 1000);
+        const timeToSave = new Date(Number(createPurchaseData?.purchase_time) * 1000);
         if (timeToSave.getTime() > 0) {
         } else {
           return res
@@ -103,7 +103,7 @@ export class PurchaseHelper {
             .status(HttpStatus.OK)
             .json({});
         }
-        let dataToAdd = {
+        const dataToAdd = {
           ...createPurchaseData,
           ...{
             purchase_time: timeToSave,
@@ -111,7 +111,7 @@ export class PurchaseHelper {
             purchase_method: "google",
           },
         };
-        let dataCreate = await this.purchaseService.create(dataToAdd);
+        const dataCreate = await this.purchaseService.create(dataToAdd);
 
         if (orderObject.plan_type === "coin") {
           await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataCreate, authCode);
@@ -142,14 +142,14 @@ export class PurchaseHelper {
    */
   async validatePurchase(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let purchaseObject = await this.purchaseService.findById(id);
+      const purchaseObject = await this.purchaseService.findById(id);
       console.log(purchaseObject);
       if (purchaseObject?.local_order_id?.payment_method == "google_payment") {
-        let createPurchaseData: any = {
+        const createPurchaseData: any = {
           order_id: purchaseObject.order_id,
           local_order_id: purchaseObject.local_order_id._id.toString(),
           product_id: purchaseObject.product_id,
@@ -161,9 +161,9 @@ export class PurchaseHelper {
           quantity: purchaseObject.quantity,
           developer_payload: purchaseObject.developer_payload.toString() || "abc",
         };
-        let orderObject = purchaseObject.local_order_id;
+        const orderObject = purchaseObject.local_order_id;
         //Validate with Google
-        let dataValidate = await this.validateGoogle(createPurchaseData, orderObject);
+        const dataValidate = await this.validateGoogle(createPurchaseData, orderObject);
         console.log(dataValidate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -194,13 +194,13 @@ export class PurchaseHelper {
    */
   async createNewPurchaseApple(dataCreate: CreatePurchaseAppleDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authCode = req?.auth_code;
+      const userObject = req?.user_object;
+      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let orderObject = await this.orderService.findById(dataCreate?.local_order_id);
+      const userId = userObject._id.toString();
+      const orderObject = await this.orderService.findById(dataCreate?.local_order_id);
       if (!orderObject) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -222,10 +222,10 @@ export class PurchaseHelper {
           .json({});
       }
 
-      var data = JSON.stringify({
+      const data = JSON.stringify({
         "receipt-data": String(dataCreate?.purchase_token || ""),
       });
-      var config = {
+      const config = {
         method: "post",
         url: process.env.APPLE_VERIFY_PURCHASE || "https://sandbox.itunes.apple.com/verifyReceipt",
         headers: {
@@ -233,10 +233,10 @@ export class PurchaseHelper {
         },
         data: data,
       };
-      let response = await axios(config);
+      const response = await axios(config);
 
       //Update Order
-      let dataUpdate = {
+      const dataUpdate = {
         _id: dataCreate?.local_order_id.toString(),
         status: "success",
         payment_method: orderObject.payment_method,
@@ -247,7 +247,7 @@ export class PurchaseHelper {
       await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
 
       console.log(">> Paid from Apple: >>" + response.data.environment);
-      let timeToSave = new Date(Number(dataCreate?.purchase_time) * 1000);
+      const timeToSave = new Date(Number(dataCreate?.purchase_time) * 1000);
       if (timeToSave.getTime() > 0) {
       } else {
         return res
@@ -256,7 +256,7 @@ export class PurchaseHelper {
           .json({});
       }
 
-      let dataToAdd = {
+      const dataToAdd = {
         ...dataCreate,
         ...{
           purchase_time: timeToSave,
@@ -265,7 +265,7 @@ export class PurchaseHelper {
         },
       };
 
-      let dataReturn = await this.purchaseService.create(dataToAdd);
+      const dataReturn = await this.purchaseService.create(dataToAdd);
 
       if (orderObject.plan_type !== "coin") {
         //Update Subscribe
@@ -292,11 +292,11 @@ export class PurchaseHelper {
    * @returns
    */
   async validateAppleCron(dataCreate: CreatePurchaseAppleDto, orderObject: Order) {
-    var data = JSON.stringify({
+    const data = JSON.stringify({
       "receipt-data": String(dataCreate?.purchase_token || ""),
       password: process.env.APPLE_SUBSCRIBE_SHARED_SECRET,
     });
-    var config = {
+    const config = {
       method: "post",
       url: process.env.APPLE_VERIFY_PURCHASE || "https://sandbox.itunes.apple.com/verifyReceipt",
       headers: {
@@ -304,7 +304,7 @@ export class PurchaseHelper {
       },
       data: data,
     };
-    let response = await axios(config)
+    const response = await axios(config)
       .then((response) => {
         return response;
       })
@@ -313,7 +313,7 @@ export class PurchaseHelper {
         return null;
       });
     if (response && response.data) {
-      let dataReturn = response.data;
+      const dataReturn = response.data;
       if (dataReturn && Number(dataReturn.status) === 0) {
         return true;
       } else {
@@ -331,12 +331,12 @@ export class PurchaseHelper {
    */
   async validateGoogle(dataCreate: CreatePurchaseGoogleDto, orderObject: Order) {
     console.log(dataCreate, "HEHEHE");
-    let options = {
+    const options = {
       email: process.env.GOOGLE_IAP_SERVICE_ACCOUNT,
       key: process.env.GOOGLE_IAP_SERVICE_PRIVATE_KEY,
     };
 
-    var verifier = new Verifier(options);
+    const verifier = new Verifier(options);
     let receipt = {
       packageName: dataCreate?.package_name,
       productId: dataCreate?.product_id,
@@ -352,11 +352,11 @@ export class PurchaseHelper {
             developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
           },
         };
-        let checkResult: any = await verifier.verifySub(receipt);
+        const checkResult: any = await verifier.verifySub(receipt);
         console.log(checkResult);
         if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
       } else {
-        let checkResult: any = await verifier.verifyINAPP(receipt);
+        const checkResult: any = await verifier.verifyINAPP(receipt);
         console.log(checkResult);
         if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
         if (checkResult.payload.purchaseState !== 0) throw new Error("payment_pending");
@@ -365,7 +365,7 @@ export class PurchaseHelper {
     } catch (e) {
       console.log(e);
       //Update Order
-      let dataUpdate = {
+      const dataUpdate = {
         _id: dataCreate?.local_order_id.toString(),
         status: "error",
         payment_method: orderObject.payment_method,
@@ -382,12 +382,12 @@ export class PurchaseHelper {
    * @returns
    */
   async validateGoogleCron(dataCreate: CreatePurchaseGoogleDto, orderObject: Order) {
-    let options = {
+    const options = {
       email: process.env.GOOGLE_IAP_SERVICE_ACCOUNT,
       key: process.env.GOOGLE_IAP_SERVICE_PRIVATE_KEY,
     };
 
-    var verifier = new Verifier(options);
+    const verifier = new Verifier(options);
     let receipt = {
       packageName: dataCreate?.package_name,
       productId: dataCreate?.product_id,
@@ -403,11 +403,11 @@ export class PurchaseHelper {
             developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
           },
         };
-        let checkResult: any = await verifier.verifySub(receipt);
+        const checkResult: any = await verifier.verifySub(receipt);
         //console.log(checkResult);
         if (checkResult.isSuccessful === false) return false;
       } else {
-        let checkResult: any = await verifier.verifyINAPP(receipt);
+        const checkResult: any = await verifier.verifyINAPP(receipt);
         //console.log(checkResult);
         if (checkResult.isSuccessful === false) return false;
         if (checkResult.payload.purchaseState !== 0) return false;
@@ -423,18 +423,18 @@ export class PurchaseHelper {
    * @author Tony Vu
    */
   async handleCronJob() {
-    let dataFilter = {
+    const dataFilter = {
       status_array: ["success", "trial"],
       plan_type: "recurring",
     };
-    let dataOrder = await this.orderService.filter(dataFilter, {}, 1, 10000);
+    const dataOrder = await this.orderService.filter(dataFilter, {}, 1, 10000);
     console.log(dataOrder.length, ">>>> LENGTH");
     if (dataOrder) {
-      for (let itemOrder of dataOrder) {
+      for (const itemOrder of dataOrder) {
         if (itemOrder.plan_type === "onetime") {
           continue;
         }
-        let purchaseData: any = await this.purchaseService.findOne({ local_order_id: itemOrder._id.toString() });
+        const purchaseData: any = await this.purchaseService.findOne({ local_order_id: itemOrder._id.toString() });
         if (purchaseData) {
           //Update by Google or Apple
           let dataValidate = null;
@@ -445,7 +445,7 @@ export class PurchaseHelper {
             dataValidate = await this.validateAppleCron(purchaseData, itemOrder);
           }
           if (dataValidate) {
-            let subscribeData = await this.subscribeService.filter(
+            const subscribeData = await this.subscribeService.filter(
               { service_name: itemOrder.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
               {},
               1,
@@ -453,23 +453,23 @@ export class PurchaseHelper {
             );
             if (subscribeData) {
               let lastEnd = 0;
-              for (let subscribeItem of subscribeData) {
-                let dataEnd = new Date(subscribeItem.end_at.toString());
-                let dataEndNumber = dataEnd.getTime();
+              for (const subscribeItem of subscribeData) {
+                const dataEnd = new Date(subscribeItem.end_at.toString());
+                const dataEndNumber = dataEnd.getTime();
                 if (dataEndNumber > lastEnd) {
                   lastEnd = dataEndNumber;
                 }
               }
-              let totalData = Date.now() - lastEnd;
-              let dataHour = totalData / (1000 * 60 * 60);
+              const totalData = Date.now() - lastEnd;
+              const dataHour = totalData / (1000 * 60 * 60);
               if (dataHour < 3) {
                 //Create new Sub
-                let amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
+                const amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
                 const date = new Date();
                 date.setDate(date.getDate() + amountOfDay);
-                let endTime = date;
+                const endTime = date;
                 //Update subscribe
-                let dataSubscribe = {
+                const dataSubscribe = {
                   user_id: itemOrder?.user_id?._id.toString(),
                   service_name: itemOrder.service_name,
                   service_id: itemOrder.service_id.toString(),
@@ -485,12 +485,12 @@ export class PurchaseHelper {
             } else {
               //Create New Purchase
               //Create new Sub
-              let amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
+              const amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
               const date = new Date();
               date.setDate(date.getDate() + amountOfDay);
-              let endTime = date;
+              const endTime = date;
               //Update subscribe
-              let dataSubscribe = {
+              const dataSubscribe = {
                 user_id: itemOrder?.user_id?._id.toString(),
                 service_name: itemOrder.service_name,
                 service_id: itemOrder.service_id.toString(),
@@ -505,15 +505,15 @@ export class PurchaseHelper {
             }
 
             //@ts-ignore
-            let dataStartSub = new Date(itemOrder.createdAt.toString());
+            const dataStartSub = new Date(itemOrder.createdAt.toString());
 
-            let dataStart = dataStartSub.getTime();
+            const dataStart = dataStartSub.getTime();
 
-            let currentDay = Date.now();
-            let dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
+            const currentDay = Date.now();
+            const dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
             //Update to Success
             //Update Order to trial-false
-            let dataUpdate = {
+            const dataUpdate = {
               _id: itemOrder._id?.toString(),
               status: "success",
             };
@@ -521,7 +521,7 @@ export class PurchaseHelper {
           } else {
             //When Validate is False
             //Check
-            let subscribeData = await this.subscribeService.filter(
+            const subscribeData = await this.subscribeService.filter(
               { service_name: itemOrder.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
               {},
               1,
@@ -530,27 +530,27 @@ export class PurchaseHelper {
             if (subscribeData) {
               let dataStart = 0;
               let lastTestSubscribe = null;
-              for (let subscribeItem of subscribeData) {
-                let dataStartSub = new Date(subscribeItem.start_at.toString());
+              for (const subscribeItem of subscribeData) {
+                const dataStartSub = new Date(subscribeItem.start_at.toString());
                 if (dataStartSub.getTime() > dataStart) {
                   dataStart = dataStartSub.getTime();
                   lastTestSubscribe = subscribeItem;
                 }
               }
-              let currentDay = Date.now();
-              let dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
+              const currentDay = Date.now();
+              const dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
               if (dataDay < 3) {
                 //Do no thing
               } else {
                 //Update Order to trial-false
-                let dataUpdate = {
+                const dataUpdate = {
                   _id: itemOrder._id?.toString(),
                   status: "trial_false",
                 };
                 await this.orderService.update(dataUpdate);
                 //Update subscribe
                 if (lastTestSubscribe) {
-                  let dataUpdate = {
+                  const dataUpdate = {
                     _id: lastTestSubscribe._id.toString(),
                     status: "deactivate",
                     end_at: new Date(),
@@ -560,7 +560,7 @@ export class PurchaseHelper {
               }
             } else {
               //Update Order to trial-false
-              let dataUpdate = {
+              const dataUpdate = {
                 _id: itemOrder._id?.toString(),
                 status: "done",
               };
@@ -580,9 +580,9 @@ export class PurchaseHelper {
    */
   async sendNotificationPublisher(partnerObject: User, req: ExpressRequestDto, res: Response, countryName: string) {
     setTimeout(async () => {
-      let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER_PREMIUM });
+      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER_PREMIUM });
       //Create new
-      let dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+      const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
         supportAccount,
         partnerObject._id.toString(),
         "personal",
@@ -594,11 +594,11 @@ export class PurchaseHelper {
         console.log("Not found");
       } else {
         //@ts-ignore
-        let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        let currentTime = new Date().getTime();
+        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+        const currentTime = new Date().getTime();
 
         //console.log(currentTime - updatedAt);
-        let leftTime = currentTime - updatedAt;
+        const leftTime = currentTime - updatedAt;
         //@ts-ignore
         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
           console.log("Not return");
@@ -606,7 +606,7 @@ export class PurchaseHelper {
         }
 
         let chatContent = "";
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           process.env.INFO_USER,
           supportAccount?.user_email?.toString(),
           process.env.INFO_SESSION,
@@ -638,7 +638,7 @@ export class PurchaseHelper {
           }
         }
 
-        let createChatHistoryDto = {
+        const createChatHistoryDto = {
           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
           chat_content: chatContent,
         };
@@ -648,7 +648,7 @@ export class PurchaseHelper {
         req.session_id = process.env.INFO_SESSION;
         req.auth_code = tokenReturn.toString();
 
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,

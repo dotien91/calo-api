@@ -30,13 +30,13 @@ export class RedeemHistory {
     type: String,
     default: "",
   })
-  action_name: String;
+  action_name: string;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  point_value: Number;
+  point_value: number;
 }
 
 export const RedeemHistorySchema = SchemaFactory.createForClass(RedeemHistory);

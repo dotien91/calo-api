@@ -40,11 +40,11 @@ export class LivestreamCommentService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        let objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        let objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lt: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
@@ -75,7 +75,7 @@ export class LivestreamCommentService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.livestreamLikeModel.findById(id, projection);
+    const dataReturn = await this.livestreamLikeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -106,7 +106,7 @@ export class LivestreamCommentService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<LivestreamComment[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.livestreamLikeModel.find(condition, {}).exec();
   }
 
@@ -129,7 +129,7 @@ export class LivestreamCommentService {
       if (!dataUpdate.user_id && !dataUpdate.livestream_id) {
         return null;
       }
-      let dataReturn = await this.livestreamLikeModel.findOneAndUpdate(
+      const dataReturn = await this.livestreamLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, livestream_id: dataUpdate.livestream_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -154,7 +154,7 @@ export class LivestreamCommentService {
       if (!dataUpdate.user_id && !dataUpdate.livestream_id) {
         return null;
       }
-      let dataReturn = await this.livestreamLikeModel.findOneAndUpdate(
+      const dataReturn = await this.livestreamLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, livestream_id: dataUpdate.livestream_id },
         { $set: dataUpdate }
       );
@@ -175,7 +175,7 @@ export class LivestreamCommentService {
    */
   public count = async (filter: FilterLivestreamCommentDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.livestreamLikeModel.estimatedDocumentCount();
       } else {
@@ -216,7 +216,7 @@ export class LivestreamCommentService {
     limit: number,
     projection: any = {}
   ): Promise<LivestreamComment[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -226,7 +226,7 @@ export class LivestreamCommentService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.livestreamLikeModel
+    const dataReturn = await this.livestreamLikeModel
       .find(condition, projection)
       .populate({
         path: "createBy",
@@ -250,9 +250,9 @@ export class LivestreamCommentService {
    * @returns
    */
   async filterWithId(filter: FilterLivestreamCommentDto, page: number, limit: number): Promise<LivestreamComment[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.livestreamLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.livestreamLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -270,12 +270,12 @@ export class LivestreamCommentService {
    * @returns
    */
   async filterUser(filter: FilterLivestreamCommentDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.livestreamLikeModel
+    const dataReturn = await this.livestreamLikeModel
       .find(condition)
       .populate({
         path: "user_id",

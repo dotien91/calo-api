@@ -105,14 +105,14 @@ export class ChatMedia {
     type: String,
     default: "",
   })
-  gender: String;
+  gender: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  function_type: String;
+  function_type: string;
 
   @Prop({
     type: Number,
@@ -125,7 +125,7 @@ export class ChatMedia {
     type: String,
     default: "",
   })
-  data_ai: String;
+  data_ai: string;
 
   @Prop({
     type: [MediaMetaSchema],

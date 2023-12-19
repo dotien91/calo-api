@@ -21,21 +21,21 @@ export class EventCategory {
     nullable: false,
     default: "",
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  icon: String;
+  icon: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "EventCategory" })
   parent_id: MongooseSchema.Types.ObjectId;

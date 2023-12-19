@@ -18,7 +18,7 @@ export class JwtHelperService {
    */
   async validateAuth(req: any, depthCheck: boolean = false) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString = "";
       if (req?.cookies["x-authorization"]) {
         authCodeString = req?.cookies["x-authorization"];
@@ -33,7 +33,7 @@ export class JwtHelperService {
         return this.handleGetDataAuth(false, null, null, null);
       }
       try {
-        let hashPassword = new ConfigService().get<string>("HASH_PASSWORD");
+        const hashPassword = new ConfigService().get<string>("HASH_PASSWORD");
         const { data, exp } = (await new JwtService().verify(authCodeString, {
           secret: hashPassword,
         })) as DecodeUserToken;
@@ -43,16 +43,16 @@ export class JwtHelperService {
         if (!depthCheck) {
           return this.handleGetDataAuth(true, data, authCodeString, data?.session);
         } else {
-          let dataToSearch = {
+          const dataToSearch = {
             user_id: data._id.toString(),
           };
-          let userSessionToCheck = await this.userSessionService.findOne(dataToSearch, true);
+          const userSessionToCheck = await this.userSessionService.findOne(dataToSearch, true);
           if (!userSessionToCheck) {
             return this.handleGetDataAuth(false, null, null, null);
           }
-          let userObject = userSessionToCheck.user_id;
-          let keyToCheck = this.MD5(userObject._id.toString() + "" + hashPassword);
-          let signature = this.MD5(userObject.user_email + "/" + hashPassword);
+          const userObject = userSessionToCheck.user_id;
+          const keyToCheck = this.MD5(userObject._id.toString() + "" + hashPassword);
+          const signature = this.MD5(userObject.user_email + "/" + hashPassword);
           if (keyToCheck === data.key && signature === data.signature) {
             return this.handleGetDataAuth(
               true,
@@ -84,7 +84,7 @@ export class JwtHelperService {
   async validateChannel(req: Request) {
     try {
       let channelId = "";
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
@@ -104,7 +104,7 @@ export class JwtHelperService {
    */
   generateJwt(userId: string, userEmail: string, sessionGenerator: string, longSession?: boolean) {
     try {
-      let HASH_PASSWORD = process.env.HASH_PASSWORD || "wawawawawawa";
+      const HASH_PASSWORD = process.env.HASH_PASSWORD || "wawawawawawa";
 
       let exp = Math.floor(Date.now() / 1000) + 86400; // 1 day
       if (longSession === true) {
@@ -149,7 +149,7 @@ export class JwtHelperService {
    * @returns
    */
   generateServerKey(dataString: string) {
-    let hashPassword = new ConfigService().get<string>("HASH_PASSWORD_CHAT");
+    const hashPassword = new ConfigService().get<string>("HASH_PASSWORD_CHAT");
     return this.MD5(dataString + hashPassword);
   }
 
@@ -164,7 +164,7 @@ export class JwtHelperService {
       return (k << d) | (k >>> (32 - d));
     }
     function K(G, k) {
-      var I, d, F, H, x;
+      let I, d, F, H, x;
       F = G & 2147483648;
       H = k & 2147483648;
       I = G & 1073741824;
@@ -212,14 +212,14 @@ export class JwtHelperService {
       return K(L(G, H), F);
     }
     function e(G) {
-      var Z;
-      var F = G.length;
-      var x = F + 8;
-      var k = (x - (x % 64)) / 64;
-      var I = (k + 1) * 16;
-      var aa = Array(I - 1);
-      var d = 0;
-      var H = 0;
+      let Z;
+      const F = G.length;
+      const x = F + 8;
+      const k = (x - (x % 64)) / 64;
+      const I = (k + 1) * 16;
+      const aa = Array(I - 1);
+      let d = 0;
+      let H = 0;
       while (H < F) {
         Z = (H - (H % 4)) / 4;
         d = (H % 4) * 8;
@@ -234,7 +234,7 @@ export class JwtHelperService {
       return aa;
     }
     function B(x) {
-      var k = "",
+      let k = "",
         F = "",
         G,
         d;
@@ -247,9 +247,9 @@ export class JwtHelperService {
     }
     function J(k) {
       k = k.replace(/rn/g, "n");
-      var d = "";
-      for (var F = 0; F < k.length; F++) {
-        var x = k.charCodeAt(F);
+      let d = "";
+      for (let F = 0; F < k.length; F++) {
+        const x = k.charCodeAt(F);
         if (x < 128) {
           d += String.fromCharCode(x);
         } else {
@@ -265,21 +265,21 @@ export class JwtHelperService {
       }
       return d;
     }
-    var C = Array();
-    var P, h, E, v, g, Y, X, W, V;
-    var S = 7,
+    let C = [];
+    let P, h, E, v, g, Y, X, W, V;
+    const S = 7,
       Q = 12,
       N = 17,
       M = 22;
-    var A = 5,
+    const A = 5,
       z = 9,
       y = 14,
       w = 20;
-    var o = 4,
+    const o = 4,
       m = 11,
       l = 16,
       j = 23;
-    var U = 6,
+    const U = 6,
       T = 10,
       R = 15,
       O = 21;
@@ -363,7 +363,7 @@ export class JwtHelperService {
       W = K(W, v);
       V = K(V, g);
     }
-    var i = B(Y) + B(X) + B(W) + B(V);
+    const i = B(Y) + B(X) + B(W) + B(V);
     return i.toLowerCase();
   }
 }

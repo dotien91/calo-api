@@ -7,7 +7,7 @@ export class CreateUserGiftDto {
 
   @IsString()
   @ApiProperty()
-  user_id: String;
+  user_id: string;
 
   @IsNumberString()
   @IsOptional(null)

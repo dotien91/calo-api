@@ -35,7 +35,7 @@ export class CourseView {
     nullable: false,
     index: true,
   })
-  total_time: Number;
+  total_time: number;
 }
 
 export const CourseViewSchema = SchemaFactory.createForClass(CourseView);

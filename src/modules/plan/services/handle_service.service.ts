@@ -25,7 +25,7 @@ export class HandleServiceService {
     }
     if (filter.service_type) {
       if (filter?.service_type?.indexOf(",") !== -1) {
-        let serviceTypeArray = filter?.service_type?.split(",");
+        const serviceTypeArray = filter?.service_type?.split(",");
         condition = Object.assign(condition, { service_type: { $in: serviceTypeArray } });
       } else {
         condition = Object.assign(condition, { service_type: filter.service_type });
@@ -56,12 +56,12 @@ export class HandleServiceService {
    * @returns
    */
   async filter(filter: SearchHandleServiceDto, sortBy: SortByHandleServiceDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.handleServiceModel
+    const dataReturn = await this.handleServiceModel
       .find(condition)
       .populate("public_album")
       .populate("avatar")
@@ -83,7 +83,7 @@ export class HandleServiceService {
    */
   public count = async (filter: SearchHandleServiceDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.handleServiceModel.estimatedDocumentCount();
       } else {
@@ -146,7 +146,7 @@ export class HandleServiceService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -188,7 +188,7 @@ export class HandleServiceService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.handleServiceModel
+      const dataReturn = await this.handleServiceModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false })
         .populate("public_album")
         .populate("avatar")

@@ -53,7 +53,7 @@ export class EsimCountryService {
    * @returns
    */
   async filter(filter: ListEsimCountryDto, sortBy: SortByEsimCountryDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -65,7 +65,7 @@ export class EsimCountryService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.requestModel
+    const dataReturn = await this.requestModel
       .find(condition)
       .populate(
         "user_id",
@@ -88,13 +88,13 @@ export class EsimCountryService {
    * @returns
    */
   async filterAdmin(filter: ListEsimCountryDto, sortBy: SortByEsimCountryDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.requestModel
+    const projection = {};
+    const dataReturn = await this.requestModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -115,7 +115,7 @@ export class EsimCountryService {
    */
   public count = async (filter: ListEsimCountryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.requestModel.estimatedDocumentCount();
       } else {
@@ -133,7 +133,7 @@ export class EsimCountryService {
    */
   async create(createUser: CreateEsimCountryDto) {
     const createdPost = new this.requestModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -143,9 +143,9 @@ export class EsimCountryService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -187,7 +187,7 @@ export class EsimCountryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

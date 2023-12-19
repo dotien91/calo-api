@@ -42,13 +42,13 @@ export class NeedHelpHelper {
    */
   async createNeedHelp(createNeedHelpData: CreateNeedHelpDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       createNeedHelpData = { ...createNeedHelpData, ...{ user_id: userId } };
-      let dataReturn = await this.needHelpService.create(createNeedHelpData);
+      const dataReturn = await this.needHelpService.create(createNeedHelpData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -67,14 +67,14 @@ export class NeedHelpHelper {
    */
   async updateNeedHelp(updateNeedHelpData: UpdateNeedHelpDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Check Permission
-      let contactFormData = await this.needHelpService.findOne({ _id: updateNeedHelpData._id.toString() });
+      const contactFormData = await this.needHelpService.findOne({ _id: updateNeedHelpData._id.toString() });
       if (contactFormData && contactFormData.user_id.toString()) {
         if (
           contactFormData.user_id.toString() !== userId &&
@@ -83,7 +83,7 @@ export class NeedHelpHelper {
           throw new BadRequestException("You haven't permission for this Action!");
         }
         updateNeedHelpData = { ...updateNeedHelpData, ...{ user_id: userId } };
-        let dataReturn = await this.needHelpService.update(updateNeedHelpData);
+        const dataReturn = await this.needHelpService.update(updateNeedHelpData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -109,19 +109,19 @@ export class NeedHelpHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
       //Check Permission
-      let dataToFilter = query;
+      const dataToFilter = query;
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.needHelpService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.needHelpService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -141,11 +141,11 @@ export class NeedHelpHelper {
    */
   async getNeedHelpByUserId(query: ListNeedHelpDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
@@ -159,18 +159,18 @@ export class NeedHelpHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilterBefore = query;
+      const dataToFilterBefore = query;
       delete dataToFilterBefore.page;
       delete dataToFilterBefore.limit;
       delete dataToFilterBefore.order_by;
       dataToFilter = { ...dataToFilterBefore, ...dataToFilter };
-      let dataReturn = await this.needHelpService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.needHelpService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -189,14 +189,14 @@ export class NeedHelpHelper {
    */
   async removeNeedHelp(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "contact_form/delete")) {
         //Check Permission
-        let dataReturn = await this.needHelpService.remove(id);
+        const dataReturn = await this.needHelpService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -218,11 +218,11 @@ export class NeedHelpHelper {
    */
   async handleGetDetailNeedHelp(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataFilter = {
+      const dataFilter = {
         _id: id,
       };
       //Check Permission
-      let dataReturn = await this.needHelpService.findOne(dataFilter);
+      const dataReturn = await this.needHelpService.findOne(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

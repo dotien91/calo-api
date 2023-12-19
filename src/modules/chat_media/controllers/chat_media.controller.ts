@@ -36,21 +36,21 @@ export class ChatMediaController {
   @Post("/create")
   async create(@Body() createChatMediaDto: CreateChatMediaPresignDto, @Req() req) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let mediaTypeAllowed = ["video", "image", "file", "audio", "link", "account", "gif"];
+      const mediaTypeAllowed = ["video", "image", "file", "audio", "link", "account", "gif"];
       if (mediaTypeAllowed.indexOf(createChatMediaDto.media_type) === -1) {
         throw new NotAcceptableException("Data input not valid!");
       }
 
-      let fileNameObject = createChatMediaDto?.media_file_name.split(".");
+      const fileNameObject = createChatMediaDto?.media_file_name.split(".");
       let fileExtensions = fileNameObject.pop();
       let fileNameOriginal = fileNameObject.join(".");
 
-      let fileType = createChatMediaDto.media_mime_type;
+      const fileType = createChatMediaDto.media_mime_type;
 
       if (fileType === "video/mp4") {
         fileNameOriginal = fileNameOriginal + fileExtensions;
@@ -81,10 +81,10 @@ export class ChatMediaController {
       };
       if (createChatMediaDto.media_type === "account") {
         //Check
-        let dataFilter = {
+        const dataFilter = {
           media_file_name: createChatMediaDto.media_file_name,
         };
-        let dataMedia = await this.chatMediaService.findOne(dataFilter);
+        const dataMedia = await this.chatMediaService.findOne(dataFilter);
         if (dataMedia) {
           dataToCreate = { ...dataToCreate, ...{ _id: dataMedia?._id } };
           return await this.chatMediaService.update(dataToCreate);
@@ -102,7 +102,7 @@ export class ChatMediaController {
   @Patch("/update")
   async updateMedia(@Body() createChatMediaDto: UpdateChatMediaDto, @Req() req) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -121,38 +121,38 @@ export class ChatMediaController {
     @Param("id") id: string
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataUserOptionFilter = {
+      const dataUserOptionFilter = {
         chat_room_id: id,
         user_id: userObject._id.toString(),
       };
 
-      let dataPermission = await this.chatRoomUserOptionService.findOne(dataUserOptionFilter);
+      const dataPermission = await this.chatRoomUserOptionService.findOne(dataUserOptionFilter);
       if (!dataPermission) {
         throw new ForbiddenException("User role not exist in this Room!");
       }
 
-      let page = Number(query?.page) || 1;
-      let limit = query?.limit || 150;
+      const page = Number(query?.page) || 1;
+      const limit = query?.limit || 150;
 
-      let mediaStatus = query?.media_status ? query?.media_status : "";
-      let mediaType = query?.media_type ? query?.media_type : "";
-      let orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
-      let dataFilter = {
+      const mediaStatus = query?.media_status ? query?.media_status : "";
+      const mediaType = query?.media_type ? query?.media_type : "";
+      const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
+      const dataFilter = {
         chat_room_id: id.toString(),
         media_type: mediaType,
         media_status: Number(mediaStatus),
       };
-      let dataOrder = {
+      const dataOrder = {
         createdAt: orderBy,
       };
 
-      let dataMedia = await this.chatMediaService.filter(dataFilter, dataOrder, page, limit);
-      let countMedia = await this.chatMediaService.count(dataFilter);
+      const dataMedia = await this.chatMediaService.filter(dataFilter, dataOrder, page, limit);
+      const countMedia = await this.chatMediaService.count(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countMedia })
         .status(HttpStatus.OK)
@@ -171,26 +171,26 @@ export class ChatMediaController {
     @Param("id") id: string
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
       if (await this.userPermissionService.isHavePermission(userObject._id.toString(), "chat_media/list")) {
-        let page = Number(query?.page) || 1;
-        let limit = query?.limit || 150;
+        const page = Number(query?.page) || 1;
+        const limit = query?.limit || 150;
 
-        let orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
+        const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
 
-        let dataUserOptionFilter = query;
+        const dataUserOptionFilter = query;
         delete dataUserOptionFilter.page;
         delete dataUserOptionFilter.limit;
         delete dataUserOptionFilter.order_by;
 
-        let dataOrder = {
+        const dataOrder = {
           createdAt: orderBy,
         };
-        let dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
+        const dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
         res.status(HttpStatus.OK).json(dataMedia);
       } else {
         throw new ForbiddenException("Not have permission !");
@@ -204,22 +204,22 @@ export class ChatMediaController {
   @Get("/list/user")
   async findByUserId(@Req() req: ExpressRequestDto, @Query() query: GetChatMediaRoomDto, @Res() res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let page = Number(query?.page) || 1;
-      let limit = query?.limit || 150;
+      const page = Number(query?.page) || 1;
+      const limit = query?.limit || 150;
 
-      let orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
+      const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
 
       let dataUserOptionFilter = query;
       delete dataUserOptionFilter.page;
       delete dataUserOptionFilter.limit;
       delete dataUserOptionFilter.order_by;
 
-      let dataOrder = {
+      const dataOrder = {
         createdAt: orderBy,
       };
       dataUserOptionFilter = {
@@ -228,7 +228,7 @@ export class ChatMediaController {
           createBy: userObject?._id?.toString(),
         },
       };
-      let dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
+      const dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
       res.status(HttpStatus.OK).json(dataMedia);
     } catch (error) {
       this.logger.log("findAll Error: " + JSON.stringify(error));
@@ -240,7 +240,7 @@ export class ChatMediaController {
   async handleGetDetailMedia(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     try {
       //Check Permission
-      let dataReturn = await this.chatMediaService.findById(id);
+      const dataReturn = await this.chatMediaService.findById(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

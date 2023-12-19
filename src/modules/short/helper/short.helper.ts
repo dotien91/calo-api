@@ -52,18 +52,18 @@ export class ShortHelper {
    */
   async createNewShort(createShortData: CreateShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
       if (createShortData.media_id) {
         //Get Media Data
-        let mediaData: any = await this.chatMediaService.findById(createShortData.media_id);
+        const mediaData: any = await this.chatMediaService.findById(createShortData.media_id);
         if (!mediaData) {
           throw new ForbiddenException("Media is invalid");
         } else {
-          let userId = userObject._id.toString();
+          const userId = userObject._id.toString();
           createShortData = { ...createShortData, ...{ user_id: userId } };
           let dataCreate: any = await this.shortService.create(createShortData);
           dataCreate = dataCreate.toObject();
@@ -102,7 +102,7 @@ export class ShortHelper {
    */
   async updateShort(dataUpdate: UpdateShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -117,7 +117,7 @@ export class ShortHelper {
         }
       }
 
-      let mediaData: any = await this.chatMediaService.findById(dataCreate.media_id);
+      const mediaData: any = await this.chatMediaService.findById(dataCreate.media_id);
       dataCreate = dataCreate.toObject();
       dataCreate = {
         ...dataCreate,
@@ -147,28 +147,28 @@ export class ShortHelper {
    */
   async getShortListByAdmin(query: ListShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "short/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.shortService.count(dataToFilter);
+        const dataReturn = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.shortService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -190,7 +190,7 @@ export class ShortHelper {
    */
   async handleGetListLike(query: ListShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -200,37 +200,37 @@ export class ShortHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.shortLikeService.filterShort(dataToFilter, {}, 1, query.limit, {
+      const dataReturn: any = await this.shortLikeService.filterShort(dataToFilter, {}, 1, query.limit, {
         video_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let shortItem of dataReturn) {
+        for (const shortItem of dataReturn) {
           dataReturnFinal.push({ ...shortItem, ...{ is_like: true, is_view: false } });
         }
       }
       if (Number(query?.only_id)) {
-        let dataReturn = [];
+        const dataReturn = [];
         if (dataReturnFinal && dataReturnFinal?.length) {
-          for (let dataItemFinal of dataReturnFinal) {
+          for (const dataItemFinal of dataReturnFinal) {
             dataReturn.push(dataItemFinal?._id?.toString());
           }
         }
@@ -259,7 +259,7 @@ export class ShortHelper {
    */
   async handleGetListView(query: ListShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -269,30 +269,30 @@ export class ShortHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.shortViewService.filterShort(dataToFilter, {}, 1, query.limit, {
+      const dataReturn: any = await this.shortViewService.filterShort(dataToFilter, {}, 1, query.limit, {
         video_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let shortItem of dataReturn) {
+        for (const shortItem of dataReturn) {
           dataReturnFinal.push({ ...shortItem, ...{ is_like: true, is_view: false } });
         }
       }
@@ -316,7 +316,7 @@ export class ShortHelper {
    */
   async getShortList(query: ListShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -326,29 +326,29 @@ export class ShortHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturnFinal = [];
+      const dataReturn: any = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        let videoIds: string[] = [];
-        for (let shortItem of dataReturn) {
+        const videoIds: string[] = [];
+        for (const shortItem of dataReturn) {
           videoIds.push(shortItem?._id?.toString());
         }
         let dataFilterLike = {
@@ -357,23 +357,25 @@ export class ShortHelper {
         };
 
         if (process.env.BRANCH_NAME === "tik_kid" && query?.is_exclude !== "false") {
-          let sessionArray = [];
+          const sessionArray = [];
           if (sessionObject && sessionObject?.length) {
-            for (let itemSession of sessionObject) {
+            for (const itemSession of sessionObject) {
               sessionArray.push(itemSession?.toString());
             }
             dataFilterLike = { ...dataFilterLike, ...{ unset: sessionArray } };
           }
         }
-        let dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, { video_id: true });
-        let dataVideoLikeIds = [];
+        const dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, {
+          video_id: true,
+        });
+        const dataVideoLikeIds = [];
         if (dataVideoLike) {
-          for (let videoLikeItem of dataVideoLike) {
+          for (const videoLikeItem of dataVideoLike) {
             dataVideoLikeIds.push(videoLikeItem?.video_id?.toString());
           }
         }
 
-        for (let shortItem of dataReturn) {
+        for (const shortItem of dataReturn) {
           if (dataVideoLikeIds.indexOf(shortItem._id.toString()) !== -1) {
             dataReturnFinal.push({ ...shortItem.toObject(), ...{ is_like: true, is_view: false } });
           } else {
@@ -413,7 +415,7 @@ export class ShortHelper {
       let dataToFilter = {};
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-        let dataReturn = await this.shortService.findOne(dataToFilter);
+        const dataReturn = await this.shortService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -435,17 +437,17 @@ export class ShortHelper {
    */
   async handleUpdateShortByAdmin(dataUpdate: UpdateShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataShort = await this.shortService.findById(dataUpdate._id.toString());
+      const userId = userObject._id.toString();
+      const dataShort = await this.shortService.findById(dataUpdate._id.toString());
       if (
         dataShort?.user_id?._id.toString() === userObject._id.toString() ||
         (await this.userPermissionService.isHavePermission(userId, "short/update"))
       ) {
-        let dataReturn = await this.shortService.update(dataUpdate);
+        const dataReturn = await this.shortService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -467,18 +469,18 @@ export class ShortHelper {
    */
   async handleDeleteShort(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let dataShort = await this.shortService.findById(id.toString());
+      const dataShort = await this.shortService.findById(id.toString());
       if (
         dataShort?.user_id?._id.toString() === userObject?._id.toString() ||
         (await this.userPermissionService.isHavePermission(userId, "short/delete"))
       ) {
-        let dataReturn = await this.shortService.remove(id);
+        const dataReturn = await this.shortService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -519,24 +521,24 @@ export class ShortHelper {
    */
   async processFollowUser(dataFollow: CreateShortLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.shortService.findById(dataFollow.video_id);
+      const videoObject = await this.shortService.findById(dataFollow.video_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         video_id: dataFollow.video_id.toString(),
       };
-      let dataReturn = await this.shortLikeService.update(dataUpdate);
+      const dataReturn = await this.shortLikeService.update(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       await this.shortService.updateCount(dataUpdateFilter, { like_number: 1 });
@@ -558,7 +560,7 @@ export class ShortHelper {
    */
   async processViewUser(dataFollow: CreateShortViewDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
 
       let sessionObject = null;
       if (req) {
@@ -568,18 +570,18 @@ export class ShortHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.shortService.findById(dataFollow.video_id);
+      const videoObject = await this.shortService.findById(dataFollow.video_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataFilterView = {
+      const dataFilterView = {
         user_id: userObject._id.toString(),
         video_id: dataFollow.video_id.toString(),
       };
 
-      let dataView = await this.shortViewService.findOne(dataFilterView);
+      const dataView = await this.shortViewService.findOne(dataFilterView);
 
       let dataUpdate = {
         user_id: userObject._id.toString(),
@@ -593,21 +595,21 @@ export class ShortHelper {
         dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time) } };
       }
 
-      let dataReturn = await this.shortViewService.update(dataUpdate);
+      const dataReturn = await this.shortViewService.update(dataUpdate);
 
       if (process.env.BRANCH_NAME === "tik_kid") {
         let dataToUpdate = [];
-        let dataUpdateSession = [dataFollow?.video_id];
-        let oldData = [];
+        const dataUpdateSession = [dataFollow?.video_id];
+        const oldData = [];
         if (sessionObject?.unset_ids) {
-          for (let dataSessionOld of sessionObject.unset_ids) {
+          for (const dataSessionOld of sessionObject.unset_ids) {
             oldData.push(dataSessionOld.toString());
           }
         }
         dataToUpdate = [...oldData, ...dataUpdateSession];
 
-        let afterData: any[] = _.union(dataToUpdate, []);
-        let dataSessionToUpdate = {
+        const afterData: any[] = _.union(dataToUpdate, []);
+        const dataSessionToUpdate = {
           _id: sessionObject?._id.toString(),
           unset_ids: afterData,
         };
@@ -615,7 +617,7 @@ export class ShortHelper {
       }
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       await this.shortService.updateCount(dataUpdateFilter, { view_number: 1 });
@@ -637,25 +639,25 @@ export class ShortHelper {
    */
   async processUnFollowUser(dataFollow: CreateShortLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.shortService.findById(dataFollow.video_id);
+      const videoObject = await this.shortService.findById(dataFollow.video_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         video_id: dataFollow.video_id.toString(),
       };
 
-      let dataReturn = await this.shortLikeService.removeOne(dataUpdate);
+      const dataReturn = await this.shortLikeService.removeOne(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       await this.shortService.updateCount(dataUpdateFilter, { like_number: -1 });

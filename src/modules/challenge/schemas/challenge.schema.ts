@@ -65,21 +65,21 @@ export class Challenge {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  long_description: String;
+  long_description: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -106,7 +106,7 @@ export class Challenge {
     default: "",
     nullable: false,
   })
-  slug: String;
+  slug: string;
 
   @Prop({
     type: String,
@@ -114,63 +114,63 @@ export class Challenge {
     nullable: false,
     index: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: String,
     default: "VN",
     nullable: false,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  version: String;
+  version: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  public_status: String;
+  public_status: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  subscribe: String;
+  subscribe: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  trash_status: String;
+  trash_status: string;
 
   @Prop({
     type: Number,
     default: 1,
     nullable: false,
   })
-  level_value: Number;
+  level_value: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  coin_value: Number;
+  coin_value: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  join_number: Number;
+  join_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -184,14 +184,14 @@ export class Challenge {
     default: 0,
     nullable: false,
   })
-  member_count: Number;
+  member_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  max_user: Number;
+  max_user: number;
 
   @Prop({
     type: [ChallengeStageSchema],
@@ -204,14 +204,14 @@ export class Challenge {
     default: false,
     nullable: false,
   })
-  create_next_cycle: Boolean;
+  create_next_cycle: boolean;
 
   @Prop({
     type: Boolean,
     default: false,
     nullable: false,
   })
-  add_all_user: Boolean;
+  add_all_user: boolean;
 }
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge).index({

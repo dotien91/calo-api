@@ -7,7 +7,7 @@ export class UpdateTicketCategoryDto extends PartialType(CreateTicketCategoryDto
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 
   @IsNumberString()
   @IsOptional(null)

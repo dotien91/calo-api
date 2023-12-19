@@ -53,7 +53,7 @@ import { Channel } from "../../../modules/channel/schemas/channel.schema";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 const { getFirestore } = require("firebase-admin/firestore");
 import HookExpress from "../../hook/hook_epress";
-let dataCrawl = `Other`;
+const dataCrawl = `Other`;
 let initHook = false;
 
 /**
@@ -115,12 +115,12 @@ export class RequestHelper {
 
   async handleUpdateCount() {
     try {
-      let dataRequest = await this.requestService.filter({}, {}, 1, 1000);
-      for (let dataItem of dataRequest) {
+      const dataRequest = await this.requestService.filter({}, {}, 1, 1000);
+      for (const dataItem of dataRequest) {
         console.log(dataItem?.user_id?.user_avatar);
         if (!dataItem?.user_id?.user_avatar) {
           console.log("NOT HAVE");
-          let dataUpdate = {
+          const dataUpdate = {
             _id: dataItem?._id,
             vote_number: 0,
             trending_number: 0,
@@ -141,8 +141,8 @@ export class RequestHelper {
     // }
     // return true;
 
-    let urlToCrawl = "https://www.reddit.com/r/legaladvice";
-    let dataAxios = await axios
+    const urlToCrawl = "https://www.reddit.com/r/legaladvice";
+    const dataAxios = await axios
       .get(urlToCrawl)
       .then((response) => {
         return response.data;
@@ -152,21 +152,21 @@ export class RequestHelper {
         return null;
       });
     if (dataAxios) {
-      let dataJquery = cheerio.load(dataAxios);
-      let dataScript = dataJquery("#data");
+      const dataJquery = cheerio.load(dataAxios);
+      const dataScript = dataJquery("#data");
       //  console.log(dataScript.html());
       const fs = require("fs");
 
       // // fs.writeFileSync("foo.txt", dataAxios);
       fs.writeFileSync("foo2.txt", dataScript.text());
-      let dataText = dataScript.text()?.replace("};", "}").replace("window.___r = ", "");
-      let dataJson = JSON.parse(dataText);
+      const dataText = dataScript.text()?.replace("};", "}").replace("window.___r = ", "");
+      const dataJson = JSON.parse(dataText);
       let count = 0;
       for (const [key, value] of Object.entries(dataJson?.posts?.models)) {
         //@ts-ignore
         if (value?.permalink?.indexOf("redditads") === -1) {
           //@ts-ignore
-          let dataUrl = value?.permalink;
+          const dataUrl = value?.permalink;
           // if (count == 0) {
           await this.handleProcessReditByUrl(dataUrl);
           // }
@@ -182,15 +182,15 @@ export class RequestHelper {
       // }
     }
     return true;
-    let dataUrl = "https://gql.reddit.com/";
-    let config = {
+    const dataUrl = "https://gql.reddit.com/";
+    const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization:
           "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IlNIQTI1NjpzS3dsMnlsV0VtMjVmcXhwTU40cWY4MXE2OWFFdWFyMnpLMUdhVGxjdWNZIiwidHlwIjoiSldUIn0.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjg5MTMwNzE1LjQyODE4MiwiaWF0IjoxNjg5MDQ0MzE1LjQyODE4MiwianRpIjoic2I1WEsyc05mUElXczV1WXZPUlNta1NCd1F4UExRIiwiY2lkIjoiOXRMb0Ywc29wNVJKZ0EiLCJsaWQiOiJ0Ml8xdWVud2pzaCIsImFpZCI6InQyXzF1ZW53anNoIiwibGNhIjoxNTMyNDM4MjEzNDIwLCJzY3AiOiJlSnhra2RHTzlDQUloZC1GYTVfZ2Y1VV9tNDFWT2tOV3BRSHNaTjUtWXl1ZEpudlZBLWRUNGZRX1lJMVVJTUJHQkFGaVN0eWJRWUFrbURPWlFnRE1ORHByaVNRUTRFbHFMRzhJUUJtYmtRMVphTWNhVzN3Z0JLaWNFN2VWSHBjMm9hVWJpNTRkdjZweUxqeXBPVWZsM05qbUxXeFA5RE1icTAycFdOWlRtY1IxcFhRV0xfb1pPOVMzOXVVel9TYTBSOE9LcXZHQm95TVk4X0haV01aaUd2ZnhucHIwWkYwd3E3M0xRV3BmNnJHNzlrV1QwREs0X1J4dnZEYVRHWEplbXA3Ul90MzFTLWpBUGNfTDlOcUJHYXY3WHJydFdidF8xUTVVemlqUldKejROQnk1Y3ZrZXZ3VGJOZWxmNDNaa0xMNFpjZE1iZm1zNk9uSng0dENuOGZVYkFBRF9fMThTMkZFIiwicmNpZCI6IlE4RFRSem0zMkdjeTVmbUpZOUx0Z1NYZnlQMkhHQ2NCdXg3NU1Bd2JOd1EiLCJmbG8iOjJ9.KC-SgoAO8awrQEO5YLAIMQYbGuchTrQ5T7j5afXPFlJaon3FrnFty1Q7Ow1OLzLO_J43QMYGgQCeM3R2iRQB6r52mfP0F7Gxznq8xUOf-jF8SbySXPz5Lns1qo5dHvtxzLA8nuu6Av_JzBGjIXBRrQWdQweITjN1pCmwiRCFC0F8l5F7ofrI2fI9wuTgffRhNXlpEcbolQSmWyo82OKjJq11WDXtABONz6a7ottcU5lCFS0pgcYPDpe_DqNwbfC3rQPYKK6qsmk0oNtWobZSo9Cr2XJdp1pTlHwWY54aY6VNPUYDlcL6VYHc0cCVxopD2vqaxJONDuHeyyqLOo_3dw",
       },
     };
-    let dataPayload = {
+    const dataPayload = {
       id: "abb696a96055",
       variables: {
         subredditName: "legaladvice",
@@ -217,7 +217,7 @@ export class RequestHelper {
         includeTopicLinks: false,
       },
     };
-    let dataReturn = await axios
+    const dataReturn = await axios
       .post(dataUrl, dataPayload, config)
       .then((response) => {
         return response?.data;
@@ -228,10 +228,10 @@ export class RequestHelper {
       });
     if (dataReturn) {
       // console.log(dataReturn?.data?.subredditInfoByName, 'dataReturn?.data?.subredditInfoByName')
-      let dataElement = dataReturn?.data?.subredditInfoByName?.elements?.edges;
+      const dataElement = dataReturn?.data?.subredditInfoByName?.elements?.edges;
       if (dataElement && dataElement?.length) {
         let dataCount = 0;
-        for (let dataItemElm of dataElement) {
+        for (const dataItemElm of dataElement) {
           console.log(dataItemElm?.node?.id);
           if (dataItemElm?.node?.id) {
             if (dataCount == 0) {
@@ -248,7 +248,7 @@ export class RequestHelper {
 
   async handleProcessReditByUrl(dataUrl: any) {
     try {
-      let dataAxios = await axios
+      const dataAxios = await axios
         .get(dataUrl)
         .then((response) => {
           return response.data;
@@ -262,33 +262,33 @@ export class RequestHelper {
         // // fs.writeFileSync("foo.txt", dataAxios);
         fs.writeFileSync("foo2.txt", dataAxios);
 
-        let dataJquery = cheerio.load(dataAxios);
-        let dataShReddit = dataJquery("shreddit-post");
+        const dataJquery = cheerio.load(dataAxios);
+        const dataShReddit = dataJquery("shreddit-post");
         // console.log(dataShReddit, "dataShReddit");
-        let dataAuthor = dataShReddit.attr("author");
-        let dataTitle = dataShReddit.attr("post-title");
-        let dataLanguage = dataShReddit.attr("post-language");
-        let dataComment = dataShReddit.attr("content-href");
+        const dataAuthor = dataShReddit.attr("author");
+        const dataTitle = dataShReddit.attr("post-title");
+        const dataLanguage = dataShReddit.attr("post-language");
+        const dataComment = dataShReddit.attr("content-href");
         let dataTextContent = dataJquery(".text-neutral-content.text-14").text();
         // console.log(dataTextContent, "dataTextContent");
         dataTextContent = dataTextContent.replace(/  +/g, " ");
         dataTextContent = dataTextContent.replace(/\n +/g, "\n");
         dataTextContent = dataTextContent.trim();
         // console.log(dataTextContent, "dataTextContent new");
-        let dataScores = dataShReddit.attr("score");
-        let commentCount = dataShReddit.attr("comment-count");
-        let postId = dataShReddit.attr("id");
+        const dataScores = dataShReddit.attr("score");
+        const commentCount = dataShReddit.attr("comment-count");
+        const postId = dataShReddit.attr("id");
         // console.log(postId, "postId");
         // console.log(dataTitle, "dataTitle");
 
-        let categories = "";
+        const categories = "";
 
         let categoryId = null;
         if (categories) {
-          let dataSearch = {
+          const dataSearch = {
             search: categories?.replace(".", ""),
           };
-          let dataCategory = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
+          const dataCategory = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
           // console.log(dataCategory, "dataCategory");
           if (dataCategory && dataCategory[0]) {
             categoryId = dataCategory[0]?._id?.toString();
@@ -297,7 +297,7 @@ export class RequestHelper {
           categoryId = "64a672f9eee28fcd235ebe01";
         }
 
-        let author = dataAuthor;
+        const author = dataAuthor;
         let email = "";
         if (author) {
           email = this.toSlug(author) + "@gmail.com";
@@ -308,7 +308,7 @@ export class RequestHelper {
 
         if (email) {
           //Create new User
-          let dataCreateUser = {
+          const dataCreateUser = {
             user_email: email,
             user_login: email,
             display_name: author,
@@ -334,13 +334,13 @@ export class RequestHelper {
           comment_number: commentCount,
         };
 
-        let dataSlug = this.toSlug(dataTitle);
+        const dataSlug = this.toSlug(dataTitle);
 
         if (dataSlug && userObject) {
           dataRequest = { ...dataRequest, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
         }
 
-        let dataRequestSearch = await this.requestService.findOne({ post_slug: dataSlug });
+        const dataRequestSearch = await this.requestService.findOne({ post_slug: dataSlug });
         // console.log(dataRequestSearch, "dataRequestSearch");
         // console.log(dataRequest, "dataRequest");
         let dataCreate = null;
@@ -371,7 +371,7 @@ export class RequestHelper {
    */
   async handleCreateUser(dataAuthor: string) {
     try {
-      let author = dataAuthor;
+      const author = dataAuthor;
       let email = "";
       if (author) {
         email = this.toSlug(author) + "@gmail.com";
@@ -382,7 +382,7 @@ export class RequestHelper {
 
       if (email) {
         //Create new User
-        let dataCreateUser = {
+        const dataCreateUser = {
           user_email: email,
           user_login: email,
           display_name: author,
@@ -403,7 +403,7 @@ export class RequestHelper {
   }
 
   async handleCrawlComment(dataUrl: string, localId: string) {
-    let dataAxios = await axios
+    const dataAxios = await axios
       .get(
         `https://gateway.reddit.com/desktopapi/v1/postcomments/${dataUrl}?rtj=only&emotes_as_images=true&redditWebClient=web2x&app=web2x-client-production&profile_img=true&include=identity&subredditName=legaladvice&hasSortParam=false&instanceId&include_categories=true&onOtherDiscussions=false&comment_awardings_by_current_user=true`
       )
@@ -423,22 +423,22 @@ export class RequestHelper {
     const fs = require("fs");
 
     fs.writeFileSync("foo3.txt", JSON.stringify(dataAxios));
-    let dataPost = dataAxios?.posts[dataUrl];
-    let dataFlair = dataPost?.flair;
+    const dataPost = dataAxios?.posts[dataUrl];
+    const dataFlair = dataPost?.flair;
     if (dataFlair && dataFlair[0]) {
-      let dataCategory = dataFlair[0]?.text?.toString();
+      const dataCategory = dataFlair[0]?.text?.toString();
       console.log(dataCategory, "dataCategory");
       if (dataCategory) {
         //Update
         if (dataCategory) {
-          let dataSearch = {
+          const dataSearch = {
             search: dataCategory?.replace(".", ""),
           };
-          let dataCategoryObject = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
+          const dataCategoryObject = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
           console.log(dataCategoryObject, "dataCategory");
           if (dataCategoryObject && dataCategoryObject[0]) {
-            let categoryId = dataCategoryObject[0]?._id?.toString();
-            let dataUpdateCategory = {
+            const categoryId = dataCategoryObject[0]?._id?.toString();
+            const dataUpdateCategory = {
               post_category: categoryId,
               _id: localId,
             };
@@ -447,23 +447,23 @@ export class RequestHelper {
         }
       }
     }
-    let dataComment: any = dataAxios?.comments;
+    const dataComment: any = dataAxios?.comments;
     console.log(dataComment, "dataComment");
 
     for (const [key, dataCommentItem] of Object.entries(dataComment)) {
       //Check comment in DB
       //@ts-ignore
-      let dataCheckComment = await this.requestCommentService.findOne({ ref_id: dataCommentItem.id });
+      const dataCheckComment = await this.requestCommentService.findOne({ ref_id: dataCommentItem.id });
       if (!dataCheckComment) {
         //Update
         //@ts-ignore
         // console.log(dataCommentItem?.media?.richtextContent, "rick");
         let dataText = "";
         //@ts-ignore
-        for (let dataItem of dataCommentItem?.media?.richtextContent?.document) {
+        for (const dataItem of dataCommentItem?.media?.richtextContent?.document) {
           // console.log(dataItem?.c);
-          let dataComment = dataItem?.c;
-          for (let dataItemCommentText of dataItem?.c) {
+          const dataComment = dataItem?.c;
+          for (const dataItemCommentText of dataItem?.c) {
             if (dataItemCommentText.t) {
               dataText = dataText + dataItemCommentText.t + "\n";
             }
@@ -481,22 +481,22 @@ export class RequestHelper {
             ref_parent_id: dataCommentItem?.parentId,
           };
           //@ts-ignore
-          let authorName = dataCommentItem?.author;
-          let dataUser = await this.handleCreateUser(authorName);
+          const authorName = dataCommentItem?.author;
+          const dataUser = await this.handleCreateUser(authorName);
           if (dataUser) {
             dataToCreate = { ...dataToCreate, ...{ user_id: dataUser?._id?.toString() } };
           }
           //@ts-ignore
           if (dataCommentItem?.parentId) {
             //@ts-ignore
-            let dataParent = await this.requestCommentService.findOne({ ref_id: dataCommentItem?.parentId });
+            const dataParent = await this.requestCommentService.findOne({ ref_id: dataCommentItem?.parentId });
             if (dataParent) {
               idParent = dataParent?._id?.toString();
               dataToCreate = { ...dataToCreate, ...{ parent_id: idParent } };
             }
           }
           console.log(dataToCreate, "dataToCreate");
-          let dataCreateComment = await this.requestCommentService.create(dataToCreate);
+          const dataCreateComment = await this.requestCommentService.create(dataToCreate);
         }
       }
     }
@@ -508,7 +508,7 @@ export class RequestHelper {
 
   async handleProcessReddit(dataUrl: any = "t2_8gksn5vzl") {
     console.log(dataUrl, "dataUrl");
-    let dataAxios = await axios
+    const dataAxios = await axios
       .get(
         `https://gateway.reddit.com/desktopapi/v1/postcomments/${dataUrl}?rtj=only&emotes_as_images=true&redditWebClient=web2x&app=web2x-client-production&profile_img=true&include=identity&subredditName=legaladvice&hasSortParam=false&instanceId&include_categories=true&onOtherDiscussions=false&comment_awardings_by_current_user=true`
       )
@@ -524,17 +524,17 @@ export class RequestHelper {
     }
 
     console.log(dataAxios, "dataAxios");
-    let dataPost = dataAxios?.posts[dataUrl];
+    const dataPost = dataAxios?.posts[dataUrl];
     console.log(dataPost, "dataPost");
     console.log(dataPost?.title);
-    let dataTitle = dataPost?.title;
+    const dataTitle = dataPost?.title;
     console.log(dataPost?.media?.richtextContent?.document);
 
     let dataText = "";
     if (dataPost?.media?.richtextContent?.document) {
-      for (let dataItem of dataPost?.media?.richtextContent?.document) {
+      for (const dataItem of dataPost?.media?.richtextContent?.document) {
         console.log(dataItem.c);
-        for (let dataItemC of dataItem.c) {
+        for (const dataItemC of dataItem.c) {
           console.log(dataItemC, "dataItemC");
           console.log(dataItemC.t);
           dataText = dataText + dataItemC.t + "\n";
@@ -542,14 +542,14 @@ export class RequestHelper {
       }
     }
 
-    let categories = dataPost?.dataCategories;
+    const categories = dataPost?.dataCategories;
 
     let categoryId = null;
     if (categories) {
-      let dataSearch = {
+      const dataSearch = {
         search: categories?.replace(".", ""),
       };
-      let dataCategory = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
+      const dataCategory = await this.requestCategoryService.filter(dataSearch, {}, 1, 1);
       console.log(dataCategory, "dataCategory");
       if (dataCategory && dataCategory[0]) {
         categoryId = dataCategory[0]?._id?.toString();
@@ -558,7 +558,7 @@ export class RequestHelper {
       categoryId = "64a672f9eee28fcd235ebe01";
     }
 
-    let author = dataPost?.author;
+    const author = dataPost?.author;
     let email = "";
     if (author) {
       email = this.toSlug(author) + "@gmail.com";
@@ -569,7 +569,7 @@ export class RequestHelper {
 
     if (email) {
       //Create new User
-      let dataCreateUser = {
+      const dataCreateUser = {
         user_email: email,
         user_login: email,
         display_name: author,
@@ -592,13 +592,13 @@ export class RequestHelper {
       country: "US",
     };
 
-    let dataSlug = this.toSlug(dataTitle);
+    const dataSlug = this.toSlug(dataTitle);
 
     if (dataSlug && userObject) {
       dataRequest = { ...dataRequest, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
     }
 
-    let dataRequestSearch = await this.requestService.findOne({ post_slug: dataSlug });
+    const dataRequestSearch = await this.requestService.findOne({ post_slug: dataSlug });
     console.log(dataRequestSearch, "dataRequestSearch");
     console.log(dataRequest, "dataRequest");
     if (!dataRequestSearch && dataSlug) {
@@ -640,12 +640,12 @@ export class RequestHelper {
   }
 
   async handleUpdateUserOption(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUserOption = await this.userOptionService.create(dataCreate);
+    const dataUserOption = await this.userOptionService.create(dataCreate);
     if (dataUserOption) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUserOption._id.toString(),
       };
@@ -657,14 +657,14 @@ export class RequestHelper {
   }
 
   async handleCategory() {
-    let dataCategory = await this.requestCategoryService.filter({}, {}, 1, 100);
-    for (let dataCategoryItem of dataCategory) {
-      let dataToUpdate = {
+    const dataCategory = await this.requestCategoryService.filter({}, {}, 1, 100);
+    for (const dataCategoryItem of dataCategory) {
+      const dataToUpdate = {
         version: 82,
         _id: dataCategoryItem?._id?.toString(),
       };
       console.log(dataToUpdate, "dataToUpdate");
-      let dataUpdate = await this.requestCategoryService.update(dataToUpdate);
+      const dataUpdate = await this.requestCategoryService.update(dataToUpdate);
       console.log(dataUpdate, "dataUpdate");
     }
   }
@@ -683,16 +683,16 @@ export class RequestHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let dataToFilter = { ...query };
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const dataToFilter = { ...query };
 
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataRequest = await this.requestService.findOne({ _id: query?.request_id });
+      const dataRequest = await this.requestService.findOne({ _id: query?.request_id });
       if (!dataRequest) {
         throw new ForbiddenException("Request is invalid!");
       }
@@ -700,16 +700,16 @@ export class RequestHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn: any = await this.requestLikeService.filterData(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.requestLikeService.filterData(dataToFilter, orderByOBject, page, limit);
 
       let dataChannelPermission = [];
       //Get Data level
       if (dataRequest?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: dataRequest?.channel_id?.toString(),
           user_ids: dataUserIds,
         };
@@ -722,28 +722,28 @@ export class RequestHelper {
       }
 
       if (dataReturn) {
-        let dataLikeId = dataReturn?.map((value) => {
+        const dataLikeId = dataReturn?.map((value) => {
           return value?.user_id?._id.toString();
         });
-        let dataLikeFilter = {
+        const dataLikeFilter = {
           user_id: query?.auth_id,
           partner_ids: dataLikeId,
         };
-        let dataLikeArray = await this.userFollowService.filter(dataLikeFilter, {}, 1, limit);
+        const dataLikeArray = await this.userFollowService.filter(dataLikeFilter, {}, 1, limit);
         // console.log(dataLikeArray, 'dataLikeArray')
-        let dataLikeIds = dataLikeArray?.map((value) => {
+        const dataLikeIds = dataLikeArray?.map((value) => {
           return value?.partner_id?._id?.toString();
         });
 
-        for (let dataReturnItem in dataReturn) {
-          let userIdCheck = dataReturn[dataReturnItem]?.user_id?._id?.toString();
+        for (const dataReturnItem in dataReturn) {
+          const userIdCheck = dataReturn[dataReturnItem]?.user_id?._id?.toString();
           if (dataLikeIds.indexOf(userIdCheck) !== -1) {
             dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem]?.toObject(), ...{ is_follow: true } };
           } else {
             dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem]?.toObject(), ...{ is_follow: false } };
           }
           //Check user
-          let dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
+          const dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
             if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
               filtered.push({
                 ...value?.user_id?.toObject(),
@@ -764,7 +764,7 @@ export class RequestHelper {
           }
         }
       }
-      let dataCount = await this.requestLikeService.count(dataToFilter);
+      const dataCount = await this.requestLikeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -776,10 +776,10 @@ export class RequestHelper {
 
   async processCategory() {
     try {
-      let dataCrawlArray = dataCrawl.split("\n");
+      const dataCrawlArray = dataCrawl.split("\n");
       console.log(dataCrawlArray);
-      for (let itemData of dataCrawlArray) {
-        let dataToCreate = {
+      for (const itemData of dataCrawlArray) {
+        const dataToCreate = {
           user_id: "642a49eb18acaeada350130e",
           category_language: "en",
           category_content: itemData,
@@ -801,12 +801,12 @@ export class RequestHelper {
 
   async updateRequest() {
     try {
-      let dataRequest = await this.requestService.filter({}, {}, 1, 1000);
-      for (let dataRequestItem of dataRequest) {
+      const dataRequest = await this.requestService.filter({}, {}, 1, 1000);
+      for (const dataRequestItem of dataRequest) {
         // console.log(dataRequestItem);
-        let userObject = await this.userService.findById(dataRequestItem?.user_id?._id?.toString(), {});
+        const userObject = await this.userService.findById(dataRequestItem?.user_id?._id?.toString(), {});
         console.log(userObject?.country, "country");
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataRequestItem?._id?.toString(),
           country: userObject?.country,
         };
@@ -824,15 +824,15 @@ export class RequestHelper {
    */
   async createNewRequestPoll(dataCreate: CreateRequestPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataQuestion = JSON.parse(dataCreate.question);
-      let dataReturn = [];
-      let dataToUpdatePoll = [];
-      for (let dataQuestionItem of dataQuestion) {
+      const dataQuestion = JSON.parse(dataCreate.question);
+      const dataReturn = [];
+      const dataToUpdatePoll = [];
+      for (const dataQuestionItem of dataQuestion) {
         let dataCreateNew = {
           ...dataCreate,
           ...{ question: dataQuestionItem, created_by: userObject?._id?.toString() },
@@ -840,13 +840,13 @@ export class RequestHelper {
         if (dataCreate?.request_id) {
           dataCreateNew = { ...dataCreateNew, ...{ request_id: dataCreate?.request_id } };
         }
-        let dataPollReturn = await this.requestPollService.create(dataCreateNew);
+        const dataPollReturn = await this.requestPollService.create(dataCreateNew);
         dataToUpdatePoll.push(dataPollReturn?._id?.toString());
         dataReturn.push(dataPollReturn);
       }
       if (dataCreate?.request_id) {
         //Update Request
-        let dataUpdate = {
+        const dataUpdate = {
           poll_ids: dataToUpdatePoll,
           _id: dataCreate?.request_id,
         };
@@ -870,29 +870,29 @@ export class RequestHelper {
    */
   async unVoteRequestPoll(dataCreate: CreateRequestPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataChoose = await this.requestPollService.findById(dataCreate?.poll_id, {});
+      const dataChoose = await this.requestPollService.findById(dataCreate?.poll_id, {});
       if (dataChoose?.users_choose?.indexOf(userObject?._id) == -1) {
         //Not have
         throw new ForbiddenException("Not Vote");
       }
       if (dataCreate?.poll_id && dataCreate?.request_id) {
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataCreate?.poll_id,
           users_choose: userObject?._id?.toString(),
         };
 
         //Update
         //Update Number
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           number_choose: -1,
         };
         await this.requestPollService.updateCount({ _id: dataCreate?.poll_id }, dataUpdateCount);
-        let dataReturn = await this.requestPollService.updateArray(dataUpdate, true);
+        const dataReturn = await this.requestPollService.updateArray(dataUpdate, true);
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -915,7 +915,7 @@ export class RequestHelper {
    */
   async voteRequestPoll(dataCreate: CreateRequestPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -924,34 +924,34 @@ export class RequestHelper {
 
       if (dataCreate?.poll_id && dataCreate?.request_id) {
         //ReUpdate
-        let dataPollArray = await this.requestPollService.filter({ request_id: dataCreate?.request_id }, {}, 1, 1000);
-        for (let dataItemPool of dataPollArray) {
+        const dataPollArray = await this.requestPollService.filter({ request_id: dataCreate?.request_id }, {}, 1, 1000);
+        for (const dataItemPool of dataPollArray) {
           if (dataItemPool?.users_choose?.indexOf(userObject?._id) !== -1) {
             //Update
-            let dataUpdateCount = {
+            const dataUpdateCount = {
               number_choose: -1,
             };
             await this.requestPollService.updateCount({ _id: dataItemPool?._id }, dataUpdateCount);
-            let dataUpdateNew = {
+            const dataUpdateNew = {
               _id: dataItemPool?._id?.toString(),
               users_choose: userObject?._id?.toString(),
             };
             await this.requestPollService.updateArray(dataUpdateNew, true);
           }
         }
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataCreate?.poll_id,
           users_choose: userObject?._id?.toString(),
         };
 
         //Update
         //Update Number
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           number_choose: 1,
         };
         await this.requestPollService.updateCount({ _id: dataCreate?.poll_id }, dataUpdateCount);
 
-        let dataReturn = await this.requestPollService.updateArray(dataUpdate);
+        const dataReturn = await this.requestPollService.updateArray(dataUpdate);
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -978,15 +978,15 @@ export class RequestHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataVote = await this.requestPollService.findOneWithLimit(query, limit, page, orderByOBject);
+      const dataVote = await this.requestPollService.findOneWithLimit(query, limit, page, orderByOBject);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1011,8 +1011,8 @@ export class RequestHelper {
       if (Number(query.limit) > 1000 || !query.limit) {
         query.limit = 1000;
       }
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
       if (query.order_by && (query.order_type == "time" || !query?.order_type)) {
@@ -1040,30 +1040,30 @@ export class RequestHelper {
       //   query = { ...query, ...{ country: dataSession?.country } };
       // }
 
-      let dataToFilter = { ...query, ...{ channel_id: req?.channel_id } };
+      const dataToFilter = { ...query, ...{ channel_id: req?.channel_id } };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.requestService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.requestService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataNotification = [];
+      const dataNotification = [];
 
       if (query?.auth_id) {
-        let dataAuth = await this.userService.findById(query?.auth_id, {});
+        const dataAuth = await this.userService.findById(query?.auth_id, {});
         if (dataAuth && dataAuth?.notification_request) {
-          for (let dataItemNotification of dataAuth?.notification_request) {
+          for (const dataItemNotification of dataAuth?.notification_request) {
             dataNotification.push(dataItemNotification?.toString());
           }
         }
       }
 
       if (dataReturn) {
-        let dataIds = [];
-        for (let itemReturn of dataReturn) {
+        const dataIds = [];
+        for (const itemReturn of dataReturn) {
           dataIds.push(itemReturn?._id);
         }
-        let dataLikeFilter = {
+        const dataLikeFilter = {
           user_id: query?.auth_id ? query?.auth_id : null,
           request_ids: dataIds,
         };
@@ -1075,27 +1075,27 @@ export class RequestHelper {
         }
         // console.log(dataLikeArray, 'dataLikeArray')
 
-        let dataLikeId = [];
-        for (let dataLikeItem of dataLikeArray) {
+        const dataLikeId = [];
+        for (const dataLikeItem of dataLikeArray) {
           dataLikeId.push(dataLikeItem?.request_id.toString());
         }
-        for (let dataIndexItem in dataReturn) {
+        for (const dataIndexItem in dataReturn) {
           dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
         }
 
-        let dataDisLikeId = [];
-        for (let dataDisLikeItem of dataDisLikeArray) {
+        const dataDisLikeId = [];
+        for (const dataDisLikeItem of dataDisLikeArray) {
           dataDisLikeId.push(dataDisLikeItem?.request_id.toString());
         }
 
         let dataChannelPermission = [];
         //Get Data level
         if (query?.channel_id) {
-          let dataUserIds = dataReturn?.map((value) => {
+          const dataUserIds = dataReturn?.map((value) => {
             return value?.user_id?._id?.toString();
           });
           //get permission
-          let dataFilterMember = {
+          const dataFilterMember = {
             channel_id: query?.channel_id,
             user_ids: dataUserIds,
           };
@@ -1106,8 +1106,8 @@ export class RequestHelper {
             limit
           );
         }
-        for (let dataReturnItem in dataReturn) {
-          let requestId = dataReturn[dataReturnItem]?._id?.toString();
+        for (const dataReturnItem in dataReturn) {
+          const requestId = dataReturn[dataReturnItem]?._id?.toString();
 
           if (dataNotification.indexOf(requestId) !== -1) {
             dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ is_notification: true } };
@@ -1127,7 +1127,7 @@ export class RequestHelper {
           }
 
           //Check user
-          let dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
+          const dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
             if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
               filtered.push({
                 ...value?.user_id?.toObject(),
@@ -1149,7 +1149,7 @@ export class RequestHelper {
         }
       }
 
-      let dataCount = await this.requestService.count(dataToFilter);
+      const dataCount = await this.requestService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1166,7 +1166,7 @@ export class RequestHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -1176,7 +1176,7 @@ export class RequestHelper {
       }
 
       try {
-        let hashPassword = process.env.HASH_PASSWORD;
+        const hashPassword = process.env.HASH_PASSWORD;
         const { data, exp } = (await new JwtService().decode(authCodeString)) as DecodeUserToken;
         if (!data || !exp) {
           return null;
@@ -1186,8 +1186,8 @@ export class RequestHelper {
           //Data User session
           dataSession = await this.userService.findById(data?._id?.toString(), {});
         } else {
-          let dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
-          let deviceId = dataAnonymousSession?.device_id;
+          const dataAnonymousSession = await this.userAnonymousSession.findById(data?._id, {});
+          const deviceId = dataAnonymousSession?.device_id;
           dataSession = await this.userAnonymousService.findOne({ device_id: deviceId });
         }
         return dataSession;
@@ -1208,21 +1208,21 @@ export class RequestHelper {
    */
   async createNewRequest(createRequestData: CreateRequestDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
       // console.log(authCode, ' 1205 authCode')
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: createRequestData.channel_id,
         user_id: userObject?._id?.toString(),
       };
-      let channel = await this.channelService.findById(createRequestData.channel_id);
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
-      let channelMentor = await this.channelPermissionService.filter(
+      const channel = await this.channelService.findById(createRequestData.channel_id);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const channelMentor = await this.channelPermissionService.filter(
         {
           channel_id: createRequestData.channel_id,
           channel_role: "mentor",
@@ -1231,7 +1231,7 @@ export class RequestHelper {
         1,
         99
       );
-      let channelMentorId = channelMentor.map((x) => {
+      const channelMentorId = channelMentor.map((x) => {
         return x?.user_id?._id.toString();
       });
       if (dataPermission.channel_role === "user") {
@@ -1261,11 +1261,11 @@ export class RequestHelper {
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this action!");
       }
-      let channelName = dataPermission?.channel_id;
-      let dataSlug = this.toSlug(createRequestData.post_title);
+      const channelName = dataPermission?.channel_id;
+      const dataSlug = this.toSlug(createRequestData.post_title);
       createRequestData = { ...createRequestData, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
 
-      let userCountry = userObject?.country;
+      const userCountry = userObject?.country;
       createRequestData = { ...createRequestData, ...{ country: userCountry } };
 
       if (this.validateJson(createRequestData?.attach_files)) {
@@ -1302,22 +1302,22 @@ export class RequestHelper {
 
       createRequestData = { ...createRequestData, ...{ popular_number: 10, trending_number: 10 } };
 
-      let dataCreate: any = await this.requestService.create(createRequestData);
-      let dataReturn = await this.requestService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.requestService.create(createRequestData);
+      const dataReturn = await this.requestService.findById(dataCreate?._id?.toString());
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_request: dataCreate?._id?.toString(),
       };
       await this.userService.updateArray(dataUpdateNotification, false);
 
       //Update
-      let dataChannelPoint = dataPermission?.channel_id?.point_data;
+      const dataChannelPoint = dataPermission?.channel_id?.point_data;
       //Check point
       let dataPoint = 5;
       if (dataChannelPoint && dataChannelPoint?.length) {
-        for (let dataChannelPointItem of dataChannelPoint) {
+        for (const dataChannelPointItem of dataChannelPoint) {
           if (dataChannelPointItem?.key == "post_new") {
             dataPoint = parseInt(dataChannelPointItem?.value);
           }
@@ -1385,15 +1385,15 @@ export class RequestHelper {
       if (notificationTitle && notificationTitle.length >= 70) {
         notificationTitle = notificationTitle.substring(0, 68) + "...";
       }
-      let userIdArray = [];
-      let channelId = dataRequest?.channel_id?.toString();
-      let emailArray = [];
+      const userIdArray = [];
+      const channelId = dataRequest?.channel_id?.toString();
+      const emailArray = [];
       for (let itemPage: number = 1; itemPage <= 10; itemPage++) {
-        let allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
-        for (let itemUser of allUser) {
+        const allUser = await this.channelPermissionService.filter({ channel_id: channelId }, {}, itemPage, 1000);
+        for (const itemUser of allUser) {
           if (itemUser?.user_id?._id) {
             userIdArray.push(itemUser?.user_id?._id?.toString());
-            let userEmail = itemUser?.user_id?.user_email;
+            const userEmail = itemUser?.user_id?.user_email;
             if (userEmail) {
               emailArray.push(itemUser?.user_id);
             }
@@ -1406,11 +1406,11 @@ export class RequestHelper {
 
       if (dataPermission?.channel_role == "mentor") {
         //Update Email
-        let dataFirestore = getFirestore();
+        const dataFirestore = getFirestore();
 
-        for (let emailItem of emailArray) {
+        for (const emailItem of emailArray) {
           //Let dataToUpdate
-          let dataToUpdate = {
+          const dataToUpdate = {
             brand_name: "Gamifa",
             channel: channelObject?.name?.toString(),
             post_name: dataRequest.post_title,
@@ -1437,13 +1437,13 @@ export class RequestHelper {
         }
 
         if (userIdArray && userIdArray?.length) {
-          let dataToSendNotification = {
+          const dataToSendNotification = {
             request_id: dataRequest?._id?.toString(),
             path: "/v/post/",
             data_id: dataRequest?.post_slug?.toString(),
           };
-          let notificationContent = chatContentToSend;
-          let dataNotification = {
+          const notificationContent = chatContentToSend;
+          const dataNotification = {
             createdBy: fromUser._id.toString(),
             user_id: userIdArray,
             channel_id: req?.channel_id,
@@ -1487,7 +1487,7 @@ export class RequestHelper {
     try {
       let notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       let chatContentToSend = `${notificationTitle} đã bình luận trong bài viết: ${dataComment.content}`;
-      let chatContentRaw = `${notificationTitle} đã bình luận trong bài viết: ${dataComment.content}`;
+      const chatContentRaw = `${notificationTitle} đã bình luận trong bài viết: ${dataComment.content}`;
       if (chatContentToSend && chatContentToSend.length >= 255) {
         chatContentToSend = chatContentToSend.substring(0, 250) + "...";
       }
@@ -1499,11 +1499,16 @@ export class RequestHelper {
         notificationTitle = notificationTitle + '"';
       }
 
-      let userIdArray = [];
-      let emailArray = [];
+      const userIdArray = [];
+      const emailArray = [];
 
-      let dataUser = await this.userService.filter({ notification_request: dataRequest?._id?.toString() }, {}, 1, 1000);
-      for (let userItem of dataUser) {
+      const dataUser = await this.userService.filter(
+        { notification_request: dataRequest?._id?.toString() },
+        {},
+        1,
+        1000
+      );
+      for (const userItem of dataUser) {
         if (userItem?._id?.toString() !== fromUser?._id?.toString()) {
           userIdArray.push(userItem._id.toString());
           emailArray.push(userItem);
@@ -1511,11 +1516,11 @@ export class RequestHelper {
       }
 
       //Update Email
-      let dataFirestore = getFirestore();
+      const dataFirestore = getFirestore();
 
-      for (let emailItem of emailArray) {
+      for (const emailItem of emailArray) {
         //Let dataToUpdate
-        let dataToUpdate = {
+        const dataToUpdate = {
           brand_name: "Gamifa",
           channel: channelObject?.name?.toString(),
           content: chatContentRaw,
@@ -1543,13 +1548,13 @@ export class RequestHelper {
       }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataRequest?._id?.toString(),
           path: "/v/post/",
           data_id: dataRequest?.post_slug?.toString(),
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           channel_id: req?.channel_id,
@@ -1582,29 +1587,29 @@ export class RequestHelper {
    */
   async createNewComment(createRequestData: CreateRequestCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
-      let dataRequestObject = await this.requestService.findById(createRequestData?.request_id);
+      const dataRequestObject = await this.requestService.findById(createRequestData?.request_id);
 
-      let dataCountUserFilter = {
+      const dataCountUserFilter = {
         request_id: createRequestData?.request_id,
         user_id: userObject?._id?.toString(),
       };
-      let dataCountUser = await this.requestCommentService.count(dataCountUserFilter);
+      const dataCountUser = await this.requestCommentService.count(dataCountUserFilter);
       if (!dataRequestObject) {
         throw new ForbiddenException("Request not exist!");
       }
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: dataRequestObject.channel_id?.toString(),
         user_id: userObject?._id?.toString(),
       };
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this action!");
       }
@@ -1615,7 +1620,7 @@ export class RequestHelper {
 
       dataCreate = { ...dataCreate?.toObject(), ...{ user_id: userObject } };
       if (createRequestData?.parent_id) {
-        let dataUpdate = {
+        const dataUpdate = {
           _id: createRequestData?.parent_id,
           child: dataCreate?._id,
         };
@@ -1623,25 +1628,25 @@ export class RequestHelper {
       }
 
       //Update Count
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         _id: createRequestData?.request_id,
       };
-      let dataUpdate = {
+      const dataUpdate = {
         comment_number: 1,
       };
-      let dataRequest = await this.requestService.updateCount(dataUpdateCount, dataUpdate);
+      const dataRequest = await this.requestService.updateCount(dataUpdateCount, dataUpdate);
 
       //Update child
 
       if (createRequestData?.parent_id) {
-        let dataToUpdateArray = {
+        const dataToUpdateArray = {
           child_number: 1,
         };
         await this.requestCommentService.updateCount({ _id: createRequestData?.parent_id }, dataToUpdateArray);
       }
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_request: createRequestData?.request_id,
       };
@@ -1660,11 +1665,11 @@ export class RequestHelper {
 
       if (!dataCountUser) {
         //Update
-        let dataChannelPoint = dataPermission?.channel_id?.point_data;
+        const dataChannelPoint = dataPermission?.channel_id?.point_data;
         //Check point
         let dataPoint = 2;
         if (dataChannelPoint && dataChannelPoint?.length) {
-          for (let dataChannelPointItem of dataChannelPoint) {
+          for (const dataChannelPointItem of dataChannelPoint) {
             if (dataChannelPointItem?.key == "comment") {
               dataPoint = parseInt(dataChannelPointItem?.value);
             }
@@ -1705,42 +1710,42 @@ export class RequestHelper {
    */
   async createLike(dataCreate: CreateRequestLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
-      let dataRequestObject = await this.requestService.findById(dataCreate?.request_id);
+      const dataRequestObject = await this.requestService.findById(dataCreate?.request_id);
       if (!dataRequestObject) {
         throw new ForbiddenException("Request not exist!");
       }
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: dataRequestObject.channel_id?.toString(),
         user_id: userObject?._id?.toString(),
       };
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this action!");
       }
 
-      let dataToCreate = {
+      const dataToCreate = {
         user_id: userObject?._id,
         request_id: dataCreate?.request_id,
       };
 
       //Check
-      let dataCheck = await this.requestLikeService.findOne(dataToCreate);
+      const dataCheck = await this.requestLikeService.findOne(dataToCreate);
 
       if (dataCheck) {
         let dataRemove: any = await this.requestLikeService.removeOne(dataToCreate);
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.request_id,
         };
         //Like Number
-        let dataLikeNumber = await this.requestService.updateCount(dataFilter, { like_number: -1, vote_number: -1 });
+        const dataLikeNumber = await this.requestService.updateCount(dataFilter, { like_number: -1, vote_number: -1 });
         dataRemove = dataRemove?.toObject();
         dataRemove = {
           ...dataRemove,
@@ -1754,7 +1759,7 @@ export class RequestHelper {
           .json(dataRemove);
       } else {
         //Remove Dislike
-        let dataRemove = await this.requestDisLikeService.removeOne(dataToCreate);
+        const dataRemove = await this.requestDisLikeService.removeOne(dataToCreate);
         let dataReturn: any = await this.requestLikeService.create(dataToCreate);
 
         //Update like
@@ -1766,11 +1771,11 @@ export class RequestHelper {
         if (dataRemove) {
           dataUpdate = { ...dataUpdate, ...{ vote_number: 2, dislike_number: -1 } };
         }
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.request_id,
         };
 
-        let dataLikeNumber = await this.requestService.updateCount(dataFilter, dataUpdate);
+        const dataLikeNumber = await this.requestService.updateCount(dataFilter, dataUpdate);
         dataReturn = dataReturn?.toObject();
         dataReturn = {
           ...dataReturn,
@@ -1779,11 +1784,11 @@ export class RequestHelper {
 
         if (!dataRemove) {
           //Update
-          let dataChannelPoint = dataPermission?.channel_id?.point_data;
+          const dataChannelPoint = dataPermission?.channel_id?.point_data;
           //Check point
           let dataPoint = 1;
           if (dataChannelPoint && dataChannelPoint?.length) {
-            for (let dataChannelPointItem of dataChannelPoint) {
+            for (const dataChannelPointItem of dataChannelPoint) {
               if (dataChannelPointItem?.key == "like_post") {
                 dataPoint = parseInt(dataChannelPointItem?.value);
               }
@@ -1824,22 +1829,22 @@ export class RequestHelper {
    */
   async createDislike(dataCreate: CreateRequestLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataToCreate = {
+      const dataToCreate = {
         user_id: userObject?._id,
         request_id: dataCreate?.request_id,
       };
 
       //Check
-      let dataCheck = await this.requestDisLikeService.findOne(dataToCreate);
+      const dataCheck = await this.requestDisLikeService.findOne(dataToCreate);
 
       if (dataCheck) {
-        let dataRemove = await this.requestDisLikeService.removeOne(dataToCreate);
-        let dataFilter = {
+        const dataRemove = await this.requestDisLikeService.removeOne(dataToCreate);
+        const dataFilter = {
           _id: dataCreate?.request_id,
         };
         await this.requestService.updateCount(dataFilter, { dislike_number: -1, vote_number: 1 });
@@ -1849,14 +1854,14 @@ export class RequestHelper {
           .status(HttpStatus.OK)
           .json(dataRemove);
       } else {
-        let dataReturn = await this.requestDisLikeService.create(dataToCreate);
-        let dataRemove = await this.requestLikeService.removeOne(dataToCreate);
+        const dataReturn = await this.requestDisLikeService.create(dataToCreate);
+        const dataRemove = await this.requestLikeService.removeOne(dataToCreate);
         //Update like
         let dataUpdate = {
           vote_number: -1,
           dislike_number: 1,
         };
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.request_id,
         };
 
@@ -1883,27 +1888,27 @@ export class RequestHelper {
    */
   async createLikeComment(dataCreate: CreateRequestLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
       //CheckComment
-      let dataComment = await this.requestCommentService.findOne({ _id: dataCreate?.comment_id });
-      let requestId = dataComment?.request_id?.toString();
+      const dataComment = await this.requestCommentService.findOne({ _id: dataCreate?.comment_id });
+      const requestId = dataComment?.request_id?.toString();
 
-      let dataRequestObject = await this.requestService.findById(requestId);
+      const dataRequestObject = await this.requestService.findById(requestId);
       if (!dataRequestObject) {
         throw new ForbiddenException("Request not exist!");
       }
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: dataRequestObject.channel_id?.toString(),
         user_id: userObject?._id?.toString(),
       };
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this action!");
       }
@@ -1924,7 +1929,7 @@ export class RequestHelper {
         }
       }
       //remove or add Up-vote
-      let dataUpdateDownVote = {
+      const dataUpdateDownVote = {
         _id: dataCreate?.comment_id,
         up_vote: userObject?._id,
       };
@@ -1932,7 +1937,7 @@ export class RequestHelper {
 
       if (isDownVoteBefore) {
         //Remove Downvote
-        let dataUpdateUpVote = {
+        const dataUpdateUpVote = {
           _id: dataCreate?.comment_id,
           down_vote: userObject?._id,
         };
@@ -1956,11 +1961,11 @@ export class RequestHelper {
 
       if (isLike) {
         //Update
-        let dataChannelPoint = dataPermission?.channel_id?.point_data;
+        const dataChannelPoint = dataPermission?.channel_id?.point_data;
         //Check point
         let dataPoint = 1;
         if (dataChannelPoint && dataChannelPoint?.length) {
-          for (let dataChannelPointItem of dataChannelPoint) {
+          for (const dataChannelPointItem of dataChannelPoint) {
             if (dataChannelPointItem?.key == "like_comment") {
               dataPoint = parseInt(dataChannelPointItem?.value);
             }
@@ -2000,12 +2005,12 @@ export class RequestHelper {
    */
   async createDislikeComment(dataCreate: CreateRequestLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //CheckComment
-      let dataComment = await this.requestCommentService.findOne({ _id: dataCreate?.comment_id });
+      const dataComment = await this.requestCommentService.findOne({ _id: dataCreate?.comment_id });
 
       let isRemove = false;
       let isUpvoteBefore = false;
@@ -2023,7 +2028,7 @@ export class RequestHelper {
         }
       }
       //Remove or add Downvote
-      let dataUpdateDownVote = {
+      const dataUpdateDownVote = {
         _id: dataCreate?.comment_id,
         down_vote: userObject?._id,
       };
@@ -2042,7 +2047,7 @@ export class RequestHelper {
 
       if (isUpvoteBefore) {
         //Remove Downvote
-        let dataUpdateUpVote = {
+        const dataUpdateUpVote = {
           _id: dataCreate?.comment_id,
           up_vote: userObject?._id,
         };
@@ -2070,15 +2075,15 @@ export class RequestHelper {
    */
   async createCategory(createRequestData: CreateRequestCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createRequestData.category_title?.toString());
+      const dataSlug = this.toSlug(createRequestData.category_title?.toString());
       createRequestData = { ...createRequestData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
 
-      let dataCreate = await this.requestCategoryService.create(createRequestData);
+      const dataCreate = await this.requestCategoryService.create(createRequestData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2094,15 +2099,15 @@ export class RequestHelper {
    */
   async processCategoryWhenCreateChannel(channelId: string) {
     try {
-      let allCagegory: any = await this.requestCategoryService.filter(
+      const allCagegory: any = await this.requestCategoryService.filter(
         { channel_id: process.env.DEFAULT_CHANNEL },
         {},
         1,
         100
       );
-      for (let categoryItem of allCagegory) {
+      for (const categoryItem of allCagegory) {
         // console.log(categoryItem, 'categoryItem')
-        let categoryToAdd = {
+        const categoryToAdd = {
           ...categoryItem?.toObject(),
           ...{ channel_id: channelId, category_avatar: categoryItem?.category_avatar?._id?.toString() },
         };
@@ -2130,17 +2135,17 @@ export class RequestHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataRequest = await this.requestService.findOne({ _id: query?.request_id });
+      const dataRequest = await this.requestService.findOne({ _id: query?.request_id });
       if (!dataRequest) {
         throw new ForbiddenException("Request is invalid");
       }
@@ -2148,57 +2153,57 @@ export class RequestHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturnBefore = await this.requestCommentService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturn: any = [];
-      for (let itemBefore of dataReturnBefore) {
+      const dataReturnBefore = await this.requestCommentService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = [];
+      for (const itemBefore of dataReturnBefore) {
         dataReturn.push(itemBefore?.toObject());
       }
-      let dataCount = await this.requestCommentService.count(dataToFilter);
-      let dataReturnFinal = [];
+      const dataCount = await this.requestCommentService.count(dataToFilter);
+      const dataReturnFinal = [];
 
       let dataPermissionArrayObject = [];
       if (query?.auth_id && dataRequest?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
 
-        let dataToFilterPermission = {
+        const dataToFilterPermission = {
           user_ids: dataUserIds,
           channel_id: dataRequest?.channel_id?.toString(),
         };
         dataPermissionArrayObject = await this.channelPermissionService.filter(dataToFilterPermission, {}, 1, limit);
       }
 
-      for (let dataItem of dataReturn) {
+      for (const dataItem of dataReturn) {
         let isLike = false;
         let isDislike = false;
-        let dataDisLike = dataItem?.down_vote;
-        let dataLike = dataItem?.up_vote;
+        const dataDisLike = dataItem?.down_vote;
+        const dataLike = dataItem?.up_vote;
 
-        let dataDisLikeArray = [];
-        for (let itemDislike of dataDisLike) {
+        const dataDisLikeArray = [];
+        for (const itemDislike of dataDisLike) {
           dataDisLikeArray.push(itemDislike?.toString());
         }
         if (dataDisLikeArray.indexOf(query?.auth_id) !== -1) {
           isDislike = true;
         }
 
-        let dataLikeArray = [];
-        for (let itemLike of dataLike) {
+        const dataLikeArray = [];
+        for (const itemLike of dataLike) {
           dataLikeArray.push(itemLike?.toString());
         }
         if (dataLikeArray.indexOf(query?.auth_id) !== -1) {
           isLike = true;
         }
-        let dataChild = [];
+        const dataChild = [];
         if (dataItem && dataItem?.child) {
-          for (let dataChildIndex in dataItem?.child) {
+          for (const dataChildIndex in dataItem?.child) {
             let dataItemChild = dataItem?.child[dataChildIndex];
 
             let isUpvoteChild = false;
-            let dataUpvoteChild = dataItemChild?.up_vote;
-            let dataUpvoteChildArray = [];
-            for (let itemDislikeChild of dataUpvoteChild) {
+            const dataUpvoteChild = dataItemChild?.up_vote;
+            const dataUpvoteChildArray = [];
+            for (const itemDislikeChild of dataUpvoteChild) {
               dataUpvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataUpvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -2206,9 +2211,9 @@ export class RequestHelper {
             }
 
             let isDownVoteChild = false;
-            let dataDownVoteChild = dataItemChild?.down_vote;
-            let dataDownvoteChildArray = [];
-            for (let itemDislikeChild of dataDownVoteChild) {
+            const dataDownVoteChild = dataItemChild?.down_vote;
+            const dataDownvoteChildArray = [];
+            for (const itemDislikeChild of dataDownVoteChild) {
               dataDownvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataDownvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -2222,7 +2227,7 @@ export class RequestHelper {
           }
         }
 
-        let dataUserObject = dataPermissionArrayObject?.map((value) => {
+        const dataUserObject = dataPermissionArrayObject?.map((value) => {
           if (value?.user_id?._id?.toString() == dataItem?.user_id?._id?.toString()) {
             return value;
           }
@@ -2230,7 +2235,7 @@ export class RequestHelper {
 
         let dataToPush = { ...dataItem, ...{ is_like: isLike, is_dislike: isDislike, child: dataChild } };
 
-        let dataToMerge = dataPermissionArrayObject?.reduce(function (filtered, value) {
+        const dataToMerge = dataPermissionArrayObject?.reduce(function (filtered, value) {
           if (value?.user_id?._id?.toString() == dataToPush?.user_id?._id?.toString()) {
             filtered.push({
               ...value?.user_id?.toObject(),
@@ -2267,7 +2272,7 @@ export class RequestHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -2311,7 +2316,7 @@ export class RequestHelper {
       let getDataLike = null;
       let dataDisLike = null;
       if (query?.auth_id) {
-        let dataToFilterLike = {
+        const dataToFilterLike = {
           user_id: query?.auth_id,
           request_id: dataReturn?._id?.toString(),
         };
@@ -2331,12 +2336,12 @@ export class RequestHelper {
         dataReturn = { ...dataReturn, ...{ is_dislike: false } };
       }
 
-      let dataNotification = [];
+      const dataNotification = [];
 
       if (query?.auth_id) {
-        let dataAuth = await this.userService.findById(query?.auth_id, {});
+        const dataAuth = await this.userService.findById(query?.auth_id, {});
         if (dataAuth && dataAuth?.notification_request) {
-          for (let dataItemNotification of dataAuth?.notification_request) {
+          for (const dataItemNotification of dataAuth?.notification_request) {
             dataNotification.push(dataItemNotification?.toString());
           }
         }
@@ -2383,7 +2388,7 @@ export class RequestHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
-      let dataReturn = await this.requestCategoryService.findOne(dataToFilter);
+      const dataReturn = await this.requestCategoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2417,7 +2422,7 @@ export class RequestHelper {
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
       }
-      let dataReturn = await this.requestCommentService.findOne(dataToFilter);
+      const dataReturn = await this.requestCommentService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2436,15 +2441,15 @@ export class RequestHelper {
    */
   async handleUpdateRequestByAdmin(dataUpdate: UpdateRequestDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let requestObject = await this.requestService.findById(dataUpdate?._id?.toString());
-      let channelId = requestObject.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const requestObject = await this.requestService.findById(dataUpdate?._id?.toString());
+      const channelId = requestObject.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       let canPin = false;
       if (
@@ -2480,19 +2485,19 @@ export class RequestHelper {
         dataUpdate = { ...dataUpdate, ...{ poll_ids: JSON.parse(dataUpdate.poll_ids) } };
       }
 
-      let dataReturn = await this.requestService.update(dataUpdate);
+      const dataReturn = await this.requestService.update(dataUpdate);
       if (requestObject.post_status === "pending" && dataUpdate?.post_status === "publish") {
         //user post
-        let dataPermission = await this.channelPermissionService.findOne({
+        const dataPermission = await this.channelPermissionService.findOne({
           user_id: requestObject.user_id,
           channel_id: channelId,
         });
         //Update
-        let dataChannelPoint = dataPermission?.channel_id?.point_data;
+        const dataChannelPoint = dataPermission?.channel_id?.point_data;
         //Check point
         let dataPoint = 5;
         if (dataChannelPoint && dataChannelPoint?.length) {
-          for (let dataChannelPointItem of dataChannelPoint) {
+          for (const dataChannelPointItem of dataChannelPoint) {
             if (dataChannelPointItem?.key == "post_new") {
               dataPoint = parseInt(dataChannelPointItem?.value);
             }
@@ -2542,24 +2547,24 @@ export class RequestHelper {
    */
   async handleUpdateRequestComment(dataUpdate: UpdateRequestCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Comment ID
-      let commentObject = await this.requestCommentService.findById(dataUpdate?._id?.toString());
+      const commentObject = await this.requestCommentService.findById(dataUpdate?._id?.toString());
 
       //Check User create
       if (commentObject?.user_id?.toString() !== userObject?._id?.toString()) {
-        let dataPermission = await this.userPermissionService.isHavePermission(userId, "request/update");
+        const dataPermission = await this.userPermissionService.isHavePermission(userId, "request/update");
         if (!dataPermission) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
 
-      let dataReturn = await this.requestCommentService.update(dataUpdate);
+      const dataReturn = await this.requestCommentService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2578,11 +2583,11 @@ export class RequestHelper {
    */
   async handleUpdateCategory(dataUpdate: UpdateRequestCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataReturn = await this.requestCategoryService.update(dataUpdate);
+      const dataReturn = await this.requestCategoryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -2601,15 +2606,15 @@ export class RequestHelper {
    */
   async handleDeleteRequest(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let requestObject = await this.requestService.findById(id);
-      let channelId = requestObject.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const requestObject = await this.requestService.findById(id);
+      const channelId = requestObject.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -2627,7 +2632,7 @@ export class RequestHelper {
 
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.requestService.remove(id);
+        const dataReturn = await this.requestService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2654,17 +2659,17 @@ export class RequestHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByOBject = {};
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.requestCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.requestCategoryService.count(dataToFilter);
+      const dataReturn = await this.requestCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.requestCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -2683,14 +2688,14 @@ export class RequestHelper {
    */
   async handleDeleteComment(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let getCommentObject = await this.requestCommentService.findByIdPopulate(id);
-      let channelId = getCommentObject?.request_id?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const getCommentObject = await this.requestCommentService.findByIdPopulate(id);
+      const channelId = getCommentObject?.request_id?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -2709,10 +2714,10 @@ export class RequestHelper {
       }
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.requestCommentService.remove(id);
+        const dataReturn = await this.requestCommentService.remove(id);
 
         if (dataReturn?.parent_id) {
-          let dataUpdateRemove = {
+          const dataUpdateRemove = {
             _id: dataReturn?.parent_id?.toString(),
             child: dataReturn?._id,
           };
@@ -2720,7 +2725,7 @@ export class RequestHelper {
         }
 
         //check subcomment
-        let subcomments = await this.requestCommentService.filter(
+        const subcomments = await this.requestCommentService.filter(
           {
             parent_id: id,
           },
@@ -2730,17 +2735,17 @@ export class RequestHelper {
         );
 
         //Update Count
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           _id: getCommentObject?.request_id?._id?.toString(),
         };
-        let dataUpdate = {
+        const dataUpdate = {
           comment_number: -(subcomments.length + 1),
         };
         await this.requestService.updateCount(dataUpdateCount, dataUpdate);
 
         //Update child
         if (getCommentObject?.parent_id) {
-          let dataToUpdateArray = {
+          const dataToUpdateArray = {
             child_number: -(subcomments.length + 1),
           };
           await this.requestCommentService.updateCount(
@@ -2776,14 +2781,14 @@ export class RequestHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "request/delete")) {
         //Check Permission
-        let dataReturn = await this.requestCategoryService.remove(id);
+        const dataReturn = await this.requestCategoryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -2798,22 +2803,22 @@ export class RequestHelper {
 
   async plusPointNNotiShareAction(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let channelId = req?.channel_id;
+      const userObject = req?.user_object;
+      const channelId = req?.channel_id;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataPermission = await this.channelPermissionService.findOne({
+      const userId = userObject._id.toString();
+      const dataPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: channelId,
       });
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         share_number: 1,
       };
       await this.requestService.updateCount({ _id: id }, dataUpdateCount);
-      let channel = await this.channelService.findById(channelId);
-      let foundGameSetting = channel.point_data.find((obj) => obj.key === "share");
+      const channel = await this.channelService.findById(channelId);
+      const foundGameSetting = channel.point_data.find((obj) => obj.key === "share");
       let point = "";
       if (!foundGameSetting) {
         point = "4";

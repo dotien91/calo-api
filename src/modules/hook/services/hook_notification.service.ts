@@ -100,7 +100,7 @@ export class EventHookNotificationService {
           year = data.start_date.getFullYear();
         }
         cron.schedule(`* ${minute} ${hour} ${day} ${month} * ${year}`, async () => {
-          for (let user_id of data?.list_user_id) {
+          for (const user_id of data?.list_user_id) {
             await this.notificationHelper.sendNotificationAndEmail({
               user_id: user_id,
               channel_id: data?.channel_id,

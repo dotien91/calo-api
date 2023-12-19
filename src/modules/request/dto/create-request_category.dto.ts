@@ -5,7 +5,7 @@ import { ChatMedia } from "../../../modules/chat_media/schemas/chat_media.schema
 export class CreateRequestCategoryDto {
   @IsString()
   @ApiProperty()
-  category_language?: string | String;
+  category_language?: string | string;
 
   @IsString()
   @ApiProperty()
@@ -14,26 +14,26 @@ export class CreateRequestCategoryDto {
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  category_content?: string | String;
+  category_content?: string | string;
 
   @IsString()
   @ApiPropertyOptional()
-  category_title?: string | String;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  category_excerpt?: string | String;
+  category_title?: string | string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_parent?: string | String;
+  category_excerpt?: string | string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_status?: string | String;
+  category_parent?: string | string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  category_status?: string | string;
 
   @IsString()
   @IsOptional(null)
@@ -43,10 +43,10 @@ export class CreateRequestCategoryDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  category_type?: string | String;
+  category_type?: string | string;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  public_status?: string | Number;
+  public_status?: string | number;
 }

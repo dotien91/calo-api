@@ -30,7 +30,7 @@ export class LivestreamLike {
     default: "",
     nullable: false,
   })
-  react_type: String;
+  react_type: string;
 }
 
 export const LivestreamLikeSchema = SchemaFactory.createForClass(LivestreamLike);

@@ -118,17 +118,17 @@ export class ChannelController {
   @Get("me")
   async getCurrentChannel(@Query() query: ListChannelMeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     if (query?.from_url) {
-      let channelDomain = await this.getDomainFromUrl(query?.from_url);
+      const channelDomain = await this.getDomainFromUrl(query?.from_url);
       return await this.channelHelper.handleGetDetailChannelByDomain(channelDomain, res, req);
     } else {
-      let channelId = req?.channel_id;
+      const channelId = req?.channel_id;
       if (!channelId || channelId === "undefined") {
-        let dataReferal = req.headers.referer;
-        let dataChannel = null;
+        const dataReferal = req.headers.referer;
+        const dataChannel = null;
         if (dataReferal) {
-          let data = new URL(dataReferal);
-          let originUrl = data?.origin;
-          let channelDomain = await this.getDomainFromUrl(originUrl);
+          const data = new URL(dataReferal);
+          const originUrl = data?.origin;
+          const channelDomain = await this.getDomainFromUrl(originUrl);
           return await this.channelHelper.handleGetDetailChannelByDomain(channelDomain, res, req);
         } else {
           throw new NotFoundException("Channel is not found!");

@@ -28,7 +28,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  post_language: String;
+  post_language: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PostCategory", index: true })
   post_category: PostCategory;
@@ -38,28 +38,28 @@ export class Post {
     default: "",
     nullable: false,
   })
-  post_content: String;
+  post_content: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  installation: String;
+  installation: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  introduction: String;
+  introduction: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_excerpt: String;
+  post_excerpt: string;
 
   @Prop({
     type: String,
@@ -67,28 +67,28 @@ export class Post {
     nullable: false,
     index: true,
   })
-  post_slug: String;
+  post_slug: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_parent: String;
+  post_parent: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_status: String;
+  post_status: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  other_status: String;
+  other_status: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -123,35 +123,35 @@ export class Post {
     default: "",
     nullable: false,
   })
-  post_title: String;
+  post_title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_information: String;
+  post_information: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  must_do: String;
+  must_do: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_additional: String;
+  post_additional: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  post_object: String;
+  post_object: string;
 
   @Prop({
     type: String,
@@ -159,7 +159,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  post_type: String;
+  post_type: string;
 
   @Prop({
     type: Number,
@@ -167,7 +167,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  post_view: Number;
+  post_view: number;
 
   @Prop({
     type: Number,
@@ -175,7 +175,7 @@ export class Post {
     nullable: false,
     index: true,
   })
-  total_user: Number;
+  total_user: number;
 
   @Prop({
     type: Number,
@@ -183,28 +183,28 @@ export class Post {
     nullable: false,
     index: true,
   })
-  money_per_post: Number;
+  money_per_post: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_title: String;
+  seo_title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_description: String;
+  seo_description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_keyword: String;
+  seo_keyword: string;
 
   @Prop({
     type: String,

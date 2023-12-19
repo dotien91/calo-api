@@ -203,12 +203,12 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
    */
   async handleDisconnect(client: SocketDataSocketĐto) {
     try {
-      let authObject = await this.jwtHelper.validateAuth(client.handshake, true);
+      const authObject = await this.jwtHelper.validateAuth(client.handshake, true);
       if (authObject.status) {
-        let userData = authObject.data;
+        const userData = authObject.data;
         //Update Status User
-        let userObject = authObject.data?.user_object;
-        let currentTime = new Date();
+        const userObject = authObject.data?.user_object;
+        const currentTime = new Date();
         //Update User Status
         let dataToUpdate = {
           _id: userObject._id.toString(),
@@ -245,12 +245,12 @@ export class ChatSocketService implements OnGatewayInit, OnGatewayConnection, On
    */
   public async handleConnection(client: SocketDataSocketĐto, ...args: any[]) {
     try {
-      let authObject = await this.jwtHelper.validateAuth(client.handshake, true);
+      const authObject = await this.jwtHelper.validateAuth(client.handshake, true);
       if (authObject.status) {
         //Update Status User
-        let userObject = authObject.data?.user_object;
+        const userObject = authObject.data?.user_object;
 
-        let currentTime = new Date();
+        const currentTime = new Date();
         this.logger.log("User " + userObject._id.toString() + " connect successfully!");
         client.user_id = userObject._id.toString();
         client.join("user_" + userObject._id.toString());

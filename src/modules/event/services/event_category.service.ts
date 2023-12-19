@@ -38,7 +38,7 @@ export class EventCategoryService {
    * @returns
    */
   async getCondition(filter: SearchEventTypeDto) {
-    let condition: any = {};
+    const condition: any = {};
     return condition;
   }
 
@@ -64,12 +64,12 @@ export class EventCategoryService {
    * @returns
    */
   async filter(filter: SearchEventTypeDto, sortBy: SortByEventDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.eventCategoryModel
+    const dataReturn = await this.eventCategoryModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -85,7 +85,7 @@ export class EventCategoryService {
    */
   public count = async (filter: SearchEventTypeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.eventCategoryModel.estimatedDocumentCount();
       } else {
@@ -114,7 +114,7 @@ export class EventCategoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -140,7 +140,7 @@ export class EventCategoryService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.eventCategoryModel.findByIdAndUpdate(
+      const dataReturn = await this.eventCategoryModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

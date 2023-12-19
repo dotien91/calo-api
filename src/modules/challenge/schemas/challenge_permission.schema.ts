@@ -30,14 +30,14 @@ export class ChallengePermission {
     default: 0,
     nullable: false,
   })
-  official_status: Number;
+  official_status: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_point: Number;
+  total_point: number;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, index: true })
   stage_id: MongooseSchema.Types.ObjectId;
@@ -53,7 +53,7 @@ export class ChallengePermission {
     default: "custom",
     nullable: false,
   })
-  game_type: String;
+  game_type: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,

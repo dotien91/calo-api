@@ -46,28 +46,28 @@ export class Redeem {
     default: 0,
     nullable: false,
   })
-  gift_coin: Number;
+  gift_coin: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  redeem_name: String;
+  redeem_name: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  total_day: Number;
+  total_day: number;
 
   @Prop({
     type: String,
     default: "open",
     nullable: false,
   })
-  redeem_status: String;
+  redeem_status: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -89,7 +89,7 @@ export class Redeem {
     nullable: false,
     index: true,
   })
-  join_total: Number;
+  join_total: number;
 
   @Prop({
     type: Number,
@@ -97,7 +97,7 @@ export class Redeem {
     nullable: false,
     index: true,
   })
-  redeem_level: Number;
+  redeem_level: number;
 }
 
 export const RedeemSchema = SchemaFactory.createForClass(Redeem);

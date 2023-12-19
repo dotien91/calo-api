@@ -36,7 +36,7 @@ export class UserInterest {
     default: "",
     nullable: true,
   })
-  interest_key: String;
+  interest_key: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserInterest", index: true })
   parent_id: UserInterest;
@@ -46,28 +46,28 @@ export class UserInterest {
     default: "",
     nullable: true,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  color: String;
+  color: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  image: String;
+  image: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -81,7 +81,7 @@ export class UserInterest {
     default: 0,
     index: true,
   })
-  priority: Number;
+  priority: number;
 
   @Prop({
     type: [UserInterestMetaSchema],

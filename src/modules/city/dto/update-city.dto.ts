@@ -1,7 +1,7 @@
 import { IsString, IsJSON, IsLatitude, IsLongitude, IsOptional } from "class-validator";
 export class UpdateCityDto {
   @IsString()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @IsOptional(null)

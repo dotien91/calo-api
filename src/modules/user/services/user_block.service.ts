@@ -50,7 +50,7 @@ export class UserBlockService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userBlockModel.findById(id, projection);
+    const dataReturn = await this.userBlockModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -100,12 +100,12 @@ export class UserBlockService {
    * @returns
    */
   async filter(filter: FilterBlockDto, sortBy: any, page: number, limit: number): Promise<UserBlock[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userBlockModel
+    const dataReturn = await this.userBlockModel
       .find(condition)
       .populate({
         path: "partner_id",
@@ -127,7 +127,7 @@ export class UserBlockService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserBlock[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userBlockModel.find(condition, {}).exec();
   }
 
@@ -150,7 +150,7 @@ export class UserBlockService {
       if (!dataUpdate.user_id && !dataUpdate.partner_id) {
         return null;
       }
-      let dataReturn = await this.userBlockModel.findOneAndUpdate(
+      const dataReturn = await this.userBlockModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, partner_id: dataUpdate.partner_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -172,7 +172,7 @@ export class UserBlockService {
    */
   public count = async (filter: FilterBlockDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userBlockModel.estimatedDocumentCount();
       } else {

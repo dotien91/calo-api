@@ -33,7 +33,7 @@ export class UserAnonymousSessionService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userAnonymousSession.findById(id, projection);
+    const dataReturn = await this.userAnonymousSession.findById(id, projection);
     return dataReturn;
   }
 
@@ -78,7 +78,7 @@ export class UserAnonymousSessionService {
    * @returns
    */
   getSort(sortBy: SortByUserAnonymousSessionDto) {
-    let sort = { priority: -1 };
+    const sort = { priority: -1 };
     return sort;
   }
 
@@ -96,12 +96,12 @@ export class UserAnonymousSessionService {
     page: number,
     limit: number
   ): Promise<UserAnonymousSession[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userAnonymousSession
+    const dataReturn = await this.userAnonymousSession
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -138,7 +138,7 @@ export class UserAnonymousSessionService {
       if (!dataUpdate.device_id) {
         return null;
       }
-      let dataReturn = await this.userAnonymousSession.findOneAndUpdate(
+      const dataReturn = await this.userAnonymousSession.findOneAndUpdate(
         { device_id: dataUpdate.device_id },
         { $set: dataUpdate },
         { new: false }

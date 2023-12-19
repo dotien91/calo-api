@@ -45,7 +45,7 @@ export class ContactFormHelper {
    */
   async createContactForm(createContactFormData: CreateContactFormDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -53,7 +53,7 @@ export class ContactFormHelper {
       let dataUpdate = {
         _id: createContactFormData?.entity_id,
       };
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (!createContactFormData?.user_id) {
         createContactFormData = { ...createContactFormData, ...{ user_id: userId } };
         createContactFormData = { ...createContactFormData, ...{ note: "user_edit" } };
@@ -65,7 +65,7 @@ export class ContactFormHelper {
 
       //Check Entity
       if (createContactFormData?.form_status) {
-        let dataEntity = await this.postService.findById(createContactFormData?.entity_id?.toString());
+        const dataEntity = await this.postService.findById(createContactFormData?.entity_id?.toString());
         //Check
         if (
           dataEntity?.user_id?._id?.toString() === userId ||
@@ -78,7 +78,7 @@ export class ContactFormHelper {
         }
       }
 
-      let dataReturn = await this.contactFormService.create(createContactFormData);
+      const dataReturn = await this.contactFormService.create(createContactFormData);
       await this.postService.updateUserEntity(dataUpdate);
 
       return res
@@ -99,14 +99,14 @@ export class ContactFormHelper {
    */
   async updateContactForm(updateContactFormData: UpdateContactFormDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Check Permission
-      let contactFormData = await this.contactFormService.findOne({ _id: updateContactFormData._id.toString() });
+      const contactFormData = await this.contactFormService.findOne({ _id: updateContactFormData._id.toString() });
       if (contactFormData && contactFormData.user_id.toString()) {
         if (
           contactFormData.user_id.toString() !== userId &&
@@ -115,7 +115,7 @@ export class ContactFormHelper {
           throw new BadRequestException("You haven't permission for this Action!");
         }
         updateContactFormData = { ...updateContactFormData, ...{ user_id: userId } };
-        let dataReturn = await this.contactFormService.update(updateContactFormData);
+        const dataReturn = await this.contactFormService.update(updateContactFormData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -140,24 +140,24 @@ export class ContactFormHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Update
-      let dataContactForm = await this.contactFormService.findOne({ _id: updateStatusContactForm });
+      const dataContactForm = await this.contactFormService.findOne({ _id: updateStatusContactForm });
       // if (dataContactForm?.note === "admin_edit") {
       //   if (!(await this.userPermissionService.isHavePermission(userId, "contact_form/update"))) {
       //     throw new BadRequestException("You haven't permission for this Action!");
       //   }
       // }
 
-      let dataReturn = await this.contactFormService.update(updateStatusContactForm);
+      const dataReturn = await this.contactFormService.update(updateStatusContactForm);
       if (updateStatusContactForm?.form_status === "choose") {
         //Let data To Count
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
         await this.postService.updateCount(dataToUpdate, { choose_user: 1 });
@@ -165,7 +165,7 @@ export class ContactFormHelper {
 
       if (updateStatusContactForm?.form_status === "noticed") {
         //Let data To Count
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
         await this.postService.updateCount(dataToUpdate, { done_user: 1 });
@@ -173,7 +173,7 @@ export class ContactFormHelper {
 
       if (updateStatusContactForm?.form_status === "done") {
         //Let data To Count
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: dataReturn?.entity_id,
         };
         await this.postService.updateCount(dataToUpdate, { done_user: 1 });
@@ -196,7 +196,7 @@ export class ContactFormHelper {
    */
   async getAllContactFormByAdmin(query: ListContactFormDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -204,21 +204,21 @@ export class ContactFormHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "contact_form/list")) {
         //Check Permission
-        let dataToFilter = query;
+        const dataToFilter = query;
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
-        let count = await this.contactFormService.count(dataToFilter);
+        const dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
+        const count = await this.contactFormService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": count })
           .status(HttpStatus.OK)
@@ -241,11 +241,11 @@ export class ContactFormHelper {
    */
   async getContactFormByUserId(query: ListContactFormDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "contact_form/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
@@ -259,18 +259,18 @@ export class ContactFormHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilterBefore = query;
+      const dataToFilterBefore = query;
       delete dataToFilterBefore.page;
       delete dataToFilterBefore.limit;
       delete dataToFilterBefore.order_by;
       dataToFilter = { ...dataToFilterBefore, ...dataToFilter };
-      let dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -289,16 +289,16 @@ export class ContactFormHelper {
    */
   async removeContactForm(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "contact_form/delete")) {
         //Check Permission
-        let dataReturn = await this.contactFormService.remove(id);
+        const dataReturn = await this.contactFormService.remove(id);
         //get entity
-        let dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
+        const dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
         let userEntity = dataEntity.user_entity;
         if (!userEntity) {
           userEntity = [];
@@ -310,7 +310,7 @@ export class ContactFormHelper {
             return true;
           }
         });
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataReturn?.entity_id?.toString(),
           user_entity: userEntity,
         };
@@ -339,17 +339,17 @@ export class ContactFormHelper {
    */
   async handleGetDetailContactForm(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "contact_form/list")) {
-        let dataFilter = {
+        const dataFilter = {
           _id: id,
         };
         //Check Permission
-        let dataReturn = await this.contactFormService.findOne(dataFilter);
+        const dataReturn = await this.contactFormService.findOne(dataFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

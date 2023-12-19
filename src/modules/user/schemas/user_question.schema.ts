@@ -42,7 +42,7 @@ export class UserQuestion {
     default: "",
     nullable: true,
   })
-  note: String;
+  note: string;
 
   @Prop({
     type: [UserQuestionMetaSchema],
@@ -55,7 +55,7 @@ export class UserQuestion {
     default: "",
     nullable: true,
   })
-  image: String;
+  image: string;
 }
 
 export const UserQuestionSchema = SchemaFactory.createForClass(UserQuestion);

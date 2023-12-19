@@ -52,12 +52,12 @@ export class NeedHelpService {
    * @returns
    */
   async filter(filter: SearchNeedHelpDto, sortBy: SortByNeedHelpDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.needHelperModel
+    const dataReturn = await this.needHelperModel
       .find(condition)
       .populate(
         "user_id",
@@ -77,7 +77,7 @@ export class NeedHelpService {
    */
   public count = async (filter: SearchNeedHelpDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.needHelperModel.estimatedDocumentCount();
       } else {
@@ -134,7 +134,7 @@ export class NeedHelpService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.needHelperModel.findByIdAndUpdate(
+      const dataReturn = await this.needHelperModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

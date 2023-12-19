@@ -32,18 +32,18 @@ export class LawyerTypeHelper {
    */
   async createNewLawyerType(createLawyerTypeData: CreateLawyerTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let permissionObject = await this.userPermissionService.isHavePermission(userId, "lawyer/create");
+      const permissionObject = await this.userPermissionService.isHavePermission(userId, "lawyer/create");
 
       if (!permissionObject) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataCreate = await this.lawyerTypeService.create(createLawyerTypeData);
+      const dataCreate = await this.lawyerTypeService.create(createLawyerTypeData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -63,18 +63,18 @@ export class LawyerTypeHelper {
    */
   async createNewLawyerCategory(createLawyerTypeData: CreateLawyerTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let permissionObject = await this.userPermissionService.isHavePermission(userId, "lawyer/create");
+      const permissionObject = await this.userPermissionService.isHavePermission(userId, "lawyer/create");
 
       if (!permissionObject) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataCreate = await this.lawyerCategoryService.create(createLawyerTypeData);
+      const dataCreate = await this.lawyerCategoryService.create(createLawyerTypeData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -98,18 +98,18 @@ export class LawyerTypeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.lawyerTypeService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.lawyerTypeService.count(dataToFilter);
+      const dataReturn = await this.lawyerTypeService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.lawyerTypeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -133,18 +133,18 @@ export class LawyerTypeHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.lawyerCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.lawyerCategoryService.count(dataToFilter);
+      const dataReturn = await this.lawyerCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.lawyerCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -163,14 +163,14 @@ export class LawyerTypeHelper {
    */
   async handleUpdateLawyerTypeByAdmin(dataUpdate: UpdateLawyerTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/update")) {
-        let dataReturn = await this.lawyerTypeService.update(dataUpdate);
+        const dataReturn = await this.lawyerTypeService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -192,14 +192,14 @@ export class LawyerTypeHelper {
    */
   async handleUpdateLawyerCategoryByAdmin(dataUpdate: UpdateLawyerTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/update")) {
-        let dataReturn = await this.lawyerCategoryService.update(dataUpdate);
+        const dataReturn = await this.lawyerCategoryService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -221,12 +221,12 @@ export class LawyerTypeHelper {
    */
   async getDetailLawyerType(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Lawyer Type is invalid");
       }
       //Check Permission
-      let dataReturn = await this.lawyerTypeService.findById(id.toString());
+      const dataReturn = await this.lawyerTypeService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -245,12 +245,12 @@ export class LawyerTypeHelper {
    */
   async getDetailLawyerCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Lawyer Category is invalid");
       }
       //Check Permission
-      let dataReturn = await this.lawyerCategoryService.findById(id.toString());
+      const dataReturn = await this.lawyerCategoryService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -269,14 +269,14 @@ export class LawyerTypeHelper {
    */
   async removeLawyerType(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/delete")) {
         //Check Permission
-        let dataReturn = await this.lawyerTypeService.remove(id);
+        const dataReturn = await this.lawyerTypeService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -298,14 +298,14 @@ export class LawyerTypeHelper {
    */
   async removeLawyerCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/delete")) {
         //Check Permission
-        let dataReturn = await this.lawyerCategoryService.remove(id);
+        const dataReturn = await this.lawyerCategoryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

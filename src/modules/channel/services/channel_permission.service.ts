@@ -157,7 +157,7 @@ export class ChannelPermissionService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.channelPermissionModel.findById(id, projection);
+    const dataReturn = await this.channelPermissionModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -205,7 +205,7 @@ export class ChannelPermissionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelPermissionModel.findOneAndUpdate(
+      const dataReturn = await this.channelPermissionModel.findOneAndUpdate(
         { _id: dataUpdate?._id },
         { $set: dataUpdate },
         { new: true, setDefaultsOnInsert: true }
@@ -227,7 +227,7 @@ export class ChannelPermissionService {
    */
   async updateOne(dataFilter: FilterViewChannelDto, dataUpdate: UpdateChannelPermissionDto) {
     try {
-      let dataReturn = await this.channelPermissionModel.findOneAndUpdate(
+      const dataReturn = await this.channelPermissionModel.findOneAndUpdate(
         dataFilter,
         { $set: dataUpdate },
         { new: true, setDefaultsOnInsert: true }
@@ -250,7 +250,7 @@ export class ChannelPermissionService {
    */
   async updateMany(dataFilter: FilterViewChannelDto, dataUpdate: UpdateChannelPermissionDto) {
     try {
-      let dataReturn = await this.channelPermissionModel.updateMany(dataFilter, { $set: dataUpdate }, { new: true });
+      const dataReturn = await this.channelPermissionModel.updateMany(dataFilter, { $set: dataUpdate }, { new: true });
       return dataReturn;
     } catch (e) {
       return e;
@@ -263,7 +263,7 @@ export class ChannelPermissionService {
    */
   public count = async (filter: FilterViewChannelDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.channelPermissionModel.estimatedDocumentCount();
       } else {
@@ -276,7 +276,7 @@ export class ChannelPermissionService {
 
   public checkChannelPermission = async (userId: string, channelId: string, permission: string) => {
     try {
-      let userPermission = await this.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -285,19 +285,19 @@ export class ChannelPermissionService {
       ) {
         havePermission = true;
       }
-      let superAdmin = process.env.SUPER_ADMIN;
+      const superAdmin = process.env.SUPER_ADMIN;
       if (superAdmin) {
-        let superAdminArray = superAdmin.split(",");
+        const superAdminArray = superAdmin.split(",");
         if (superAdminArray.indexOf(userId) !== -1) {
           return true;
         }
       }
 
-      let dataFilter = {
+      const dataFilter = {
         user_id: userId,
         permission: permission,
       };
-      let permissionObject = await this.findOne(dataFilter);
+      const permissionObject = await this.findOne(dataFilter);
       if (permissionObject && permissionObject._id) {
         return true;
       }
@@ -346,14 +346,14 @@ export class ChannelPermissionService {
    * @returns
    */
   async filter(filter: FilterViewChannelDto, sortBy: any, page: number, limit: number): Promise<ChannelPermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "channel_id",
       populate: [
         {
@@ -371,7 +371,7 @@ export class ChannelPermissionService {
       ],
     };
 
-    let dataReturn = await this.channelPermissionModel
+    const dataReturn = await this.channelPermissionModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -402,12 +402,12 @@ export class ChannelPermissionService {
     page: number,
     limit: number
   ): Promise<ChannelPermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelPermissionModel
+    const dataReturn = await this.channelPermissionModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -437,12 +437,12 @@ export class ChannelPermissionService {
     limit: number,
     projection: any = {}
   ): Promise<ChannelPermission[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "video_id",
       options: { strictPopulate: false },
       populate: [
@@ -460,7 +460,7 @@ export class ChannelPermissionService {
         },
       ],
     };
-    let dataReturn: any = await this.channelPermissionModel
+    const dataReturn: any = await this.channelPermissionModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -472,9 +472,9 @@ export class ChannelPermissionService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.video_id?.toObject() };
         delete dataItemToReturn.video_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -493,9 +493,9 @@ export class ChannelPermissionService {
    * @returns
    */
   async filterWithId(filter: FilterViewChannelDto, page: number, limit: number): Promise<ChannelPermission[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.channelPermissionModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.channelPermissionModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -513,12 +513,12 @@ export class ChannelPermissionService {
    * @returns
    */
   async filterUser(filter: FilterViewChannelDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.channelPermissionModel
+    const dataReturn = await this.channelPermissionModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -576,13 +576,13 @@ export class ChannelPermissionService {
     try {
       if (dataHistory) {
         //Check Data Old
-        let dataFindOld = {
+        const dataFindOld = {
           channel_id: dataFilter?.channel_id,
           user_id: new Types.ObjectId(dataHistory?.user_id),
           entity_id: new Types.ObjectId(dataHistory?.entity_id),
           entity_type: dataHistory?.entity_type,
         };
-        let dataHistoryObject = await this.channelPointHistoryModel.findOne(dataFindOld);
+        const dataHistoryObject = await this.channelPointHistoryModel.findOne(dataFindOld);
         if (dataHistoryObject) {
           return true;
         } else {
@@ -689,12 +689,12 @@ export class ChannelPermissionService {
 
         //-----COOKBOOK CHALLENGE------//
         //Handle get next level
-        let currentLevel = parseInt(dataReturn?.level_number) || 0;
-        let oldPoint = dataReturn?.old_point;
-        let currentPoint = dataReturn?.point;
-        let dataFilterLevel = { level_point: { $gt: oldPoint }, channel_id: oldData?.channel_id };
+        const currentLevel = parseInt(dataReturn?.level_number) || 0;
+        const oldPoint = dataReturn?.old_point;
+        const currentPoint = dataReturn?.point;
+        const dataFilterLevel = { level_point: { $gt: oldPoint }, channel_id: oldData?.channel_id };
         let pointNextLevel = 0;
-        let dataNextLevel = await this.channelLevelModel
+        const dataNextLevel = await this.channelLevelModel
           .find(dataFilterLevel)
           .sort({ level_number: 1 })
           .skip(0)
@@ -731,7 +731,7 @@ export class ChannelPermissionService {
             },
           };
 
-          let checkGiftPointLevelDto: CheckGiftPointLevelDto = {
+          const checkGiftPointLevelDto: CheckGiftPointLevelDto = {
             channel_id: dataReturn?.channel_id,
             user_id: dataReturn?.user_id,
             point: dataReturn?.point,
@@ -741,7 +741,7 @@ export class ChannelPermissionService {
             total_view_course: dataReturn?.total_view_course,
           };
           await this.queueService.addGiftToQueueForAccount(checkGiftPointLevelDto);
-          let dataNotification = await axios
+          const dataNotification = await axios
             .post(urlLogin + "/update-point", params, config)
             .then((response) => {
               if (response?.data) {
@@ -786,7 +786,7 @@ export class ChannelPermissionService {
 
       // const nowUTC7 = moment().tz('Asia/Ho_Chi_Minh');
       console.log(new Date(), "new Date()");
-      let redeemPermissions = await this.redeemPermissionModel.find({
+      const redeemPermissions = await this.redeemPermissionModel.find({
         user_id: new Types.ObjectId(user_id),
         start_time: { $lte: new Date() }, // Kiểm tra nếu start_date <= thời gian hiện tại
         end_time: { $gte: new Date() },
@@ -794,7 +794,7 @@ export class ChannelPermissionService {
         status: "process",
       });
       console.log(redeemPermissions?.length);
-      for (let redeemPermission of redeemPermissions) {
+      for (const redeemPermission of redeemPermissions) {
         // plus point process and check redeemPermission complete
         let checkPermission = true;
         let isSendSocket = false;
@@ -902,7 +902,7 @@ export class ChannelPermissionService {
 
               //send gift for user
               if (redeemMission?.gift_data?.length > 0) {
-                for (let gift of redeemMission?.gift_data) {
+                for (const gift of redeemMission?.gift_data) {
                   if (gift._id) {
                     await this.giftHelper.handleAutoGiveGift({
                       gift_id: gift,
@@ -928,7 +928,7 @@ export class ChannelPermissionService {
                 user_id: user_id,
                 redeem_id: redeemPermission.redeem_id,
               });
-              for (let redeemPermissionByRedeem of listRedeemPermissionByRedeem) {
+              for (const redeemPermissionByRedeem of listRedeemPermissionByRedeem) {
                 if (
                   redeemPermissionByRedeem?._id !== redeemPermission._id &&
                   redeemPermissionByRedeem?.status !== "done"
@@ -940,7 +940,7 @@ export class ChannelPermissionService {
                 const redeem = await this.redeemModel.findById(redeemPermission.redeem_id);
                 //check and send gift
                 if (redeem.gift_data && redeem.gift_data.length > 0) {
-                  for (let gift of redeem?.gift_data) {
+                  for (const gift of redeem?.gift_data) {
                     if (gift._id) {
                       await this.giftHelper.handleAutoGiveGift({
                         gift_id: gift,
@@ -992,17 +992,17 @@ export class ChannelPermissionService {
   async processRedeem(oldData: ChannelPermission, authCode: string, typeAction: string) {
     try {
       //Update
-      let dataRedeemFilter = {
+      const dataRedeemFilter = {
         user_id: oldData?.user_id?.toString(),
         channel_id: oldData?.channel_id?.toString(),
       };
-      let pageRedeem = 1;
-      let limitRedeem = 100;
-      let dataPopulate = {
+      const pageRedeem = 1;
+      const limitRedeem = 100;
+      const dataPopulate = {
         path: "redeem_mission_id",
         options: { strictPopulate: false },
       };
-      let redeemMissionArray: RedeemPermission[] = await this.redeemPermissionModel
+      const redeemMissionArray: RedeemPermission[] = await this.redeemPermissionModel
         .find(dataRedeemFilter, {})
         .sort({ _id: -1 })
         .skip(limitRedeem * (pageRedeem - 1))
@@ -1010,33 +1010,33 @@ export class ChannelPermissionService {
         .populate(dataPopulate)
         .exec();
       if (redeemMissionArray && redeemMissionArray?.length) {
-        for (let itemMission of redeemMissionArray) {
-          let numberOfDay = itemMission?.redeem_mission_id?.number_of_day;
-          let createdAt = new Date(itemMission?.redeem_mission_id?.createdAt);
-          let dayOfMission = new Date(createdAt);
+        for (const itemMission of redeemMissionArray) {
+          const numberOfDay = itemMission?.redeem_mission_id?.number_of_day;
+          const createdAt = new Date(itemMission?.redeem_mission_id?.createdAt);
+          const dayOfMission = new Date(createdAt);
           dayOfMission.setDate(dayOfMission.getDate() + Number(numberOfDay) - 1);
 
           if (await this.isSameDay(dayOfMission, new Date())) {
             //Update data
-            let dataUpdatePoint = [];
+            const dataUpdatePoint = [];
             //Check in missionAction
             let isAddToAction = false;
-            let listOfAcionName = itemMission?.redeem_mission_id?.mission_action?.map((value: any, index: number) => {
+            const listOfAcionName = itemMission?.redeem_mission_id?.mission_action?.map((value: any, index: number) => {
               return value?.action_name;
             });
             // console.log(listOfAcionName, 'listOfAcionName')
 
             let isSendSocket = false;
 
-            for (let dataPoinIndex in itemMission?.point_data) {
+            for (const dataPoinIndex in itemMission?.point_data) {
               if (itemMission?.point_data[dataPoinIndex]?.action_name === typeAction) {
                 if (listOfAcionName?.indexOf(typeAction) !== -1) {
-                  let dataAction = itemMission?.redeem_mission_id?.mission_action?.filter(
+                  const dataAction = itemMission?.redeem_mission_id?.mission_action?.filter(
                     (value: any, index: number) => {
                       return value?.action_name == typeAction;
                     }
                   );
-                  let dataMissionActionPoint = Number(dataAction[0]?.action_point);
+                  const dataMissionActionPoint = Number(dataAction[0]?.action_point);
                   //If poin < poin not count
                   if (Number(itemMission?.point_data[dataPoinIndex]?.point_number) < dataMissionActionPoint) {
                     dataUpdatePoint.push({
@@ -1063,7 +1063,7 @@ export class ChannelPermissionService {
               isSendSocket = true;
             }
             if (isSendSocket) {
-              let dataPopulateRedeem = {
+              const dataPopulateRedeem = {
                 path: "redeem_mission_id",
                 options: { strictPopulate: false },
                 populate: [
@@ -1078,7 +1078,7 @@ export class ChannelPermissionService {
                 ],
               };
 
-              let dataPopulate = {
+              const dataPopulate = {
                 path: "redeem_id",
                 options: { strictPopulate: false },
                 populate: [
@@ -1093,7 +1093,7 @@ export class ChannelPermissionService {
                 ],
               };
               //Update to permission
-              let dataToSendSocket = await this.redeemPermissionModel
+              const dataToSendSocket = await this.redeemPermissionModel
                 .findOneAndUpdate({ _id: itemMission?._id?.toString() }, { point_data: dataUpdatePoint }, { new: true })
                 .populate(dataPopulateRedeem)
                 .populate(dataPopulate);
@@ -1102,7 +1102,7 @@ export class ChannelPermissionService {
               //Check Total & Add
               const urlLogin = process.env.SOCKET_API;
               if (authCode && dataToSendSocket) {
-                let dataToObject = {
+                const dataToObject = {
                   redeem: JSON.stringify(dataToSendSocket?.toObject()),
                 };
                 const paramsRedeem = new URLSearchParams(dataToObject);
@@ -1112,7 +1112,7 @@ export class ChannelPermissionService {
                     "X-Authorization": authCode,
                   },
                 };
-                let dataNotification = await axios
+                const dataNotification = await axios
                   .post(urlLogin + "/update-redeem", paramsRedeem, config)
                   .then((response) => {
                     if (response?.data) {
@@ -1138,7 +1138,7 @@ export class ChannelPermissionService {
     //Send Socket
     const urlLogin = process.env.SOCKET_API;
     if (authCode && dataToSendSocket) {
-      let dataToObject = {
+      const dataToObject = {
         redeem: JSON.stringify(dataToSendSocket),
       };
       const paramsRedeem = new URLSearchParams(dataToObject);
@@ -1149,7 +1149,7 @@ export class ChannelPermissionService {
           "X-Authorization": authCode,
         },
       };
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/update-redeem", paramsRedeem, config)
         .then((response) => {
           if (response?.data) {

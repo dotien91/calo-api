@@ -32,11 +32,11 @@ export class LawyerRatingHelper {
    */
   async createNewLawyerRating(createLawyerTypeData: CreateLawyerRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/create")) {
         //Check if Exist Rating
         // let dataFilter = {
@@ -51,9 +51,9 @@ export class LawyerRatingHelper {
         if (createLawyerTypeData.rating_media) {
           publicAlbum = JSON.parse(createLawyerTypeData.rating_media.toString());
         }
-        let newCreate = { ...createLawyerTypeData, ...{ rating_media: publicAlbum, createBy: userId } };
+        const newCreate = { ...createLawyerTypeData, ...{ rating_media: publicAlbum, createBy: userId } };
 
-        let dataCreate = await this.lawyerRatingService.create(newCreate);
+        const dataCreate = await this.lawyerRatingService.create(newCreate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -75,11 +75,11 @@ export class LawyerRatingHelper {
    */
   async handleUpdateRating(dataUpdate: UpdateLawyerRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       let publicAlbum = [];
       if (dataUpdate.rating_media) {
@@ -89,7 +89,7 @@ export class LawyerRatingHelper {
 
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/update")) {
-        let dataReturn = await this.lawyerRatingService.update(dataUpdate);
+        const dataReturn = await this.lawyerRatingService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -111,17 +111,17 @@ export class LawyerRatingHelper {
    */
   async getMyRating(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Lawyer Type is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataFilter = {
+      const userId = userObject._id.toString();
+      const dataFilter = {
         user_id: userId,
         lawyer_id: id,
       };
       //Check Permission
-      let dataReturn = await this.lawyerRatingService.findOne(dataFilter);
+      const dataReturn = await this.lawyerRatingService.findOne(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -139,27 +139,27 @@ export class LawyerRatingHelper {
    */
   async getMyListRating(query: SearchMyLawyerRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, createBy: userId };
+      const dataToFilter = { ...query, createBy: userId };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.lawyerRatingService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.lawyerRatingService.count(dataToFilter);
+      const dataReturn = await this.lawyerRatingService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.lawyerRatingService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -181,18 +181,18 @@ export class LawyerRatingHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.lawyerRatingService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.lawyerRatingService.count(dataToFilter);
+      const dataReturn = await this.lawyerRatingService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.lawyerRatingService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -211,14 +211,14 @@ export class LawyerRatingHelper {
    */
   async removeRatingByAdmin(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "lawyer/delete")) {
         //Check Permission
-        let dataReturn = await this.lawyerRatingService.remove(id);
+        const dataReturn = await this.lawyerRatingService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

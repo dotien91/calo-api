@@ -28,91 +28,91 @@ export class ClockHistory {
     nullable: false,
     index: true,
   })
-  device_id: String;
+  device_id: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  sleep_time: String;
+  sleep_time: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  wake_time_setup: String;
+  wake_time_setup: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  sound: String;
+  sound: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  temperature: String;
+  temperature: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  oxy_ratio: String;
+  oxy_ratio: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  wake_time: String;
+  wake_time: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  brightness: String;
+  brightness: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  air_pressure: String;
+  air_pressure: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  breathing: String;
+  breathing: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  heartbeat: String;
+  heartbeat: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  magnetic: String;
+  magnetic: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  note: String;
+  note: string;
 }
 
 export const ClockHistorySchema = SchemaFactory.createForClass(ClockHistory);

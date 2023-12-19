@@ -66,7 +66,7 @@ export class TopicJoinService {
    * @returns
    */
   async filter(filter: SearchTopicJoinDto, sortBy: SortByTopicJoinDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -79,13 +79,13 @@ export class TopicJoinService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataJoin = {
+    const dataJoin = {
       path: "topic_id",
       options: { strictPopulate: false },
       populate: [{ path: "image" }, { path: "public_album" }, { path: "chat_room_id" }],
     };
 
-    let dataReturn = await this.topicJoinModel
+    const dataReturn = await this.topicJoinModel
       .find(condition)
       .populate(
         "user_id",
@@ -106,7 +106,7 @@ export class TopicJoinService {
    */
   public count = async (filter: SearchTopicJoinDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.topicJoinModel.estimatedDocumentCount();
       } else {
@@ -124,7 +124,7 @@ export class TopicJoinService {
    */
   async create(createUser: any) {
     const createdTopic = new this.topicJoinModel(createUser);
-    let dataCreate = await createdTopic.save();
+    const dataCreate = await createdTopic.save();
     return dataCreate;
   }
 
@@ -134,9 +134,9 @@ export class TopicJoinService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -170,7 +170,7 @@ export class TopicJoinService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -215,7 +215,7 @@ export class TopicJoinService {
       if (!dataUpdate.user_id && !dataUpdate.topic_id) {
         return null;
       }
-      let dataReturn = await this.topicJoinModel.findOneAndUpdate(
+      const dataReturn = await this.topicJoinModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, topic_id: dataUpdate.topic_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

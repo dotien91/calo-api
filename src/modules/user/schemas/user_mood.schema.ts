@@ -26,14 +26,14 @@ export class UserMood {
     default: "",
     nullable: true,
   })
-  text: String;
+  text: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  image: String;
+  image: string;
 }
 
 export const UserMoodSchema = SchemaFactory.createForClass(UserMood);

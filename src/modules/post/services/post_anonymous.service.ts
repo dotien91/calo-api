@@ -29,7 +29,7 @@ export class PostAnonymousService {
       condition = Object.assign(condition, { prompt_id: filter.prompt_id });
     }
     if (filter.from) {
-      let dateFrom = new Date(filter.from);
+      const dateFrom = new Date(filter.from);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom } });
     }
     return condition;
@@ -57,13 +57,13 @@ export class PostAnonymousService {
    * @returns
    */
   async filter(filter: SearchPostAnonymousDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let populateObject = {
+    const projection = {};
+    const populateObject = {
       path: "prompt_id",
       populate: [
         {
@@ -77,7 +77,7 @@ export class PostAnonymousService {
       ],
     };
 
-    let dataReturn = await this.postAnonymousModel
+    const dataReturn = await this.postAnonymousModel
       .find(condition)
       .populate("user_id")
       .populate(populateObject)
@@ -97,13 +97,13 @@ export class PostAnonymousService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let populateObject = {
+    const projection = {};
+    const populateObject = {
       path: "prompt_id",
       populate: [
         {
@@ -116,7 +116,7 @@ export class PostAnonymousService {
         },
       ],
     };
-    let dataReturn = await this.postAnonymousModel
+    const dataReturn = await this.postAnonymousModel
       .find(condition, projection)
       .populate("user_id")
       .populate(populateObject)
@@ -134,7 +134,7 @@ export class PostAnonymousService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.postAnonymousModel.estimatedDocumentCount();
       } else {
@@ -152,7 +152,7 @@ export class PostAnonymousService {
    */
   async create(createUser: CreateUserPromptDto) {
     const createdPost = new this.postAnonymousModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -162,9 +162,9 @@ export class PostAnonymousService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -186,7 +186,7 @@ export class PostAnonymousService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<PostAnonymous> {
-    let populateObject = {
+    const populateObject = {
       path: "prompt_id",
       populate: [
         {
@@ -216,11 +216,11 @@ export class PostAnonymousService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
-    let populateObject = {
+    const populateObject = {
       path: "prompt_id",
       populate: [
         {

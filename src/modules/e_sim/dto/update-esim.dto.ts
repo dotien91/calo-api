@@ -7,7 +7,7 @@ export class UpdateEsimDto extends PartialType(CreateEsimDto) {
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   plan_id?: string;
 }

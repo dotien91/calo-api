@@ -22,8 +22,8 @@ export class RequestCategoryService {
   async getCondition(filter: SearchRequestCategoryDto) {
     let condition: any = {};
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       // console.log(dataRegex);
       // condition = Object.assign(condition, { $text: { $search: dataRegex } });
       condition = Object.assign(condition, { $or: [{ category_title: dataRegex }, { category_content: dataRegex }] });
@@ -65,14 +65,14 @@ export class RequestCategoryService {
    * @returns
    */
   async filter(filter: SearchRequestCategoryDto, sortBy: SortByRequestCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataReturn = await this.requestModel
+    const dataReturn = await this.requestModel
       .find(condition)
       .populate(
         "user_id",
@@ -95,13 +95,13 @@ export class RequestCategoryService {
    * @returns
    */
   async filterAdmin(filter: SearchRequestCategoryDto, sortBy: SortByRequestCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.requestModel
+    const projection = {};
+    const dataReturn = await this.requestModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -122,7 +122,7 @@ export class RequestCategoryService {
    */
   public count = async (filter: SearchRequestCategoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.requestModel.estimatedDocumentCount();
       } else {
@@ -140,7 +140,7 @@ export class RequestCategoryService {
    */
   async create(createUser: CreateRequestCategoryDto) {
     const createdPost = new this.requestModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -150,9 +150,9 @@ export class RequestCategoryService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -194,7 +194,7 @@ export class RequestCategoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

@@ -26,7 +26,7 @@ export class Topic {
     type: String,
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -53,14 +53,14 @@ export class Topic {
     type: String,
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  is_official: Number;
+  is_official: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -74,20 +74,20 @@ export class Topic {
     default: 0,
     index: true,
   })
-  is_validate: Number;
+  is_validate: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  child_number: Number;
+  child_number: number;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  status: String;
+  status: string;
 }
 
 export const TopicSchema = SchemaFactory.createForClass(Topic).index({

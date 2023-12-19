@@ -30,8 +30,8 @@ export class ClockService {
       condition = Object.assign(condition, { $text: { $search: filter.search } });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { wake_time: { $gte: dateFrom, $lte: dateTo } });
     }
     return condition;
@@ -59,15 +59,15 @@ export class ClockService {
    * @returns
    */
   async filter(filter: SearchClockDto, sortBy: SortByClockDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let projection = {};
+    const projection = {};
 
-    let dataReturn = await this.topicModel
+    const dataReturn = await this.topicModel
       .find(condition)
       .populate("last_clock_history")
       .populate("device_id")
@@ -85,7 +85,7 @@ export class ClockService {
    */
   public count = async (filter: SearchClockDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.topicModel.estimatedDocumentCount();
       } else {
@@ -103,7 +103,7 @@ export class ClockService {
    */
   async create(createUser: any) {
     const createdClock = new this.topicModel(createUser);
-    let dataCreate = await createdClock.save();
+    const dataCreate = await createdClock.save();
     return dataCreate;
   }
 
@@ -113,9 +113,9 @@ export class ClockService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -149,7 +149,7 @@ export class ClockService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -175,7 +175,7 @@ export class ClockService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.topicModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      const dataReturn = await this.topicModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {

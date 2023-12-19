@@ -35,17 +35,17 @@ export class PostCategoryHelper {
    */
   async createNewCategory(createPostData: CreateCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-        let dataSlug = this.toSlug(createPostData.category_title);
+        const dataSlug = this.toSlug(createPostData.category_title);
         createPostData = { ...createPostData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
 
-        let dataCreate = await this.postCategoryService.create(createPostData);
+        const dataCreate = await this.postCategoryService.create(createPostData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -78,18 +78,18 @@ export class PostCategoryHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.postCategoryService.count(dataToFilter);
+      const dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.postCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -122,8 +122,8 @@ export class PostCategoryHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -135,8 +135,8 @@ export class PostCategoryHelper {
       if (query?.ids) {
         dataToFilter = { ...dataToFilter, ...{ ids: [query?.ids] } };
       }
-      let dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.postCategoryService.count(dataToFilter);
+      const dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.postCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -172,7 +172,7 @@ export class PostCategoryHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
-      let dataReturn = await this.postCategoryService.findOne(dataToFilter);
+      const dataReturn = await this.postCategoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -191,20 +191,20 @@ export class PostCategoryHelper {
    */
   async handleUpdateCategoryByAdmin(dataUpdate: UpdateCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       if (dataUpdate.category_slug) {
-        let dataToFind = await this.postCategoryService.findOne({ category_slug: dataUpdate.category_slug });
+        const dataToFind = await this.postCategoryService.findOne({ category_slug: dataUpdate.category_slug });
         if (dataToFind && dataToFind._id.toString() !== dataUpdate._id.toString()) {
           throw new ForbiddenException("Slug is exist!");
         }
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "post/update")) {
-        let dataReturn = await this.postCategoryService.update(dataUpdate);
+        const dataReturn = await this.postCategoryService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -226,14 +226,14 @@ export class PostCategoryHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "post/delete")) {
         //Check Permission
-        let dataReturn = await this.postCategoryService.remove(id);
+        const dataReturn = await this.postCategoryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -264,7 +264,7 @@ export class PostCategoryHelper {
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
     str = str.replace(/-+$/g, "");
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     return str + "-" + date;
   }
 }

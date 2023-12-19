@@ -62,7 +62,7 @@ export class NotificationHelper {
   async handleSendNotification(dataCreate: CreateNotificationDto, authCode: string = "") {
     //Check User
     try {
-      let dataReturn = await this.notificationService.create(dataCreate);
+      const dataReturn = await this.notificationService.create(dataCreate);
       if (dataReturn) {
         //Send to socket
         await this.handleSendNotificationToSession(dataReturn);
@@ -90,8 +90,8 @@ export class NotificationHelper {
         delete dataJson.user_id;
       }
       //Get Notification Object
-      let dataNotificationObject = await this.notificationService.findById(dataJson?._id?.toString());
-      let dataToUpdate = {
+      const dataNotificationObject = await this.notificationService.findById(dataJson?._id?.toString());
+      const dataToUpdate = {
         notification: JSON.stringify(dataNotificationObject),
       };
       const params = new URLSearchParams(dataToUpdate);
@@ -106,7 +106,7 @@ export class NotificationHelper {
 
       const urlLogin = process.env.SOCKET_API;
 
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/notification", params, config)
         .then((response) => {
           if (response?.data) {
@@ -133,7 +133,7 @@ export class NotificationHelper {
    */
   async getNotification(dataFilter: any) {
     try {
-      let dataNotification = await this.notificationService.findOne(dataFilter);
+      const dataNotification = await this.notificationService.findOne(dataFilter);
       return dataNotification;
     } catch (error) {
       return null;
@@ -148,13 +148,13 @@ export class NotificationHelper {
    */
   async handleGetDetailAdmin(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new BadRequestException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.notificationService.findById(id.toString());
+      const dataReturn = await this.notificationService.findById(id.toString());
       if (
         (await this.userPermissionService.isHavePermission(userId, "notification/list")) ||
         dataReturn.createdBy.toString() === userId
@@ -179,20 +179,20 @@ export class NotificationHelper {
    */
   async handleUpdateByAdmin(dataUpdate: UpdateNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "notification/update")) {
         dataUpdate = { ...dataUpdate, ...{ createdBy: userId } };
         if (dataUpdate.user_id && dataUpdate.user_id.indexOf(",") !== -1) {
-          let dataUserId = [];
-          let dataUserArray = dataUpdate?.user_id?.toString().split(",");
-          for (let userItemObject of dataUserArray) {
+          const dataUserId = [];
+          const dataUserArray = dataUpdate?.user_id?.toString().split(",");
+          for (const userItemObject of dataUserArray) {
             try {
-              let objectId = new Types.ObjectId(userItemObject);
+              const objectId = new Types.ObjectId(userItemObject);
               if (!objectId) {
                 continue;
               } else {
@@ -203,7 +203,7 @@ export class NotificationHelper {
           dataUpdate = { ...dataUpdate, ...{ user_id: dataUserId } };
         }
 
-        let dataReturn = await this.notificationService.update(dataUpdate);
+        const dataReturn = await this.notificationService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -225,17 +225,17 @@ export class NotificationHelper {
    */
   async updateNotification(dataUpdate: UpdateNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
       //Get data To check
-      let dataNotification = await this.notificationService.findOne({ _id: dataUpdate?._id });
+      const dataNotification = await this.notificationService.findOne({ _id: dataUpdate?._id });
 
       if (dataNotification?.user_id?.indexOf(userObject?._id) == -1) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataReturn = await this.notificationService.update(dataUpdate);
+      const dataReturn = await this.notificationService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -253,20 +253,20 @@ export class NotificationHelper {
    */
   async createNotificationAdmin(dataCreate: CreateNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (await this.userPermissionService.isHavePermission(userId, "notification/create")) {
         dataCreate = { ...dataCreate, ...{ createdBy: userId } };
         if (dataCreate.user_id && dataCreate.user_id.indexOf(",") !== -1) {
-          let dataUserId = [];
-          let dataUserArray = dataCreate?.user_id?.toString().split(",");
-          for (let userItemObject of dataUserArray) {
+          const dataUserId = [];
+          const dataUserArray = dataCreate?.user_id?.toString().split(",");
+          for (const userItemObject of dataUserArray) {
             try {
-              let objectId = new Types.ObjectId(userItemObject);
+              const objectId = new Types.ObjectId(userItemObject);
               if (!objectId) {
                 continue;
               } else {
@@ -276,7 +276,7 @@ export class NotificationHelper {
           }
           dataCreate = { ...dataCreate, ...{ user_id: dataUserId } };
         }
-        let dataReturn = await this.notificationService.create(dataCreate);
+        const dataReturn = await this.notificationService.create(dataCreate);
 
         if (dataReturn && Number(dataReturn.manual_mode) === 2) {
           await this.handleSendNotificationToSession(dataReturn);
@@ -311,14 +311,14 @@ export class NotificationHelper {
         }
         this.logger.log("Send a Message to " + userId);
         //Find Session
-        let sessionData = await this.userSessionService.filter({ user_id: userId }, { createdAt: "DESC" }, 1, 1000);
+        const sessionData = await this.userSessionService.filter({ user_id: userId }, { createdAt: "DESC" }, 1, 1000);
 
         // console.log(sessionData, '')
 
         if (sessionData && sessionData.length) {
           let deviceIds = [];
           let appleSignature = [];
-          for (let sessionItem of sessionData) {
+          for (const sessionItem of sessionData) {
             if (dataNotification.type_action === "link") {
               if (process.env.USE_APN_MESSAGE === "false") {
                 if (sessionItem.device_signature) {
@@ -409,7 +409,7 @@ export class NotificationHelper {
               },
             };
             const urlLogin = "https://fcm.googleapis.com/fcm/send";
-            let dataReturn = await axios
+            const dataReturn = await axios
               .post(urlLogin, JSON.stringify(data), config)
               .then((response) => {
                 if (response?.data) {
@@ -444,7 +444,7 @@ export class NotificationHelper {
    */
   async handleSendNotificationApple(token: string[], callString: string, payload: any) {
     try {
-      var options = {
+      const options = {
         production: process.env.APN_PRODUCT === "true" ? true : false,
         batchFeedback: true,
         interval: 300,
@@ -453,10 +453,10 @@ export class NotificationHelper {
         cert: process.env.CERT_PEM,
       };
 
-      var apnProvider = new apn.Provider(options);
+      const apnProvider = new apn.Provider(options);
 
-      let deviceToken = token;
-      var note = new apn.Notification({
+      const deviceToken = token;
+      const note = new apn.Notification({
         aps: {
           "content-available": true,
         },
@@ -473,7 +473,7 @@ export class NotificationHelper {
       note.contentAvailable = 1;
       note.topic = process.env.BUNDLE_NAME_VOIP;
 
-      let dataReturn = await apnProvider.send(note, deviceToken).then((result) => {
+      const dataReturn = await apnProvider.send(note, deviceToken).then((result) => {
         return result;
       });
 
@@ -493,7 +493,7 @@ export class NotificationHelper {
    */
   async handleSendNotificationAppleMessage(token: string[], dataTitle: string, payload: any) {
     try {
-      var options = {
+      const options = {
         production: process.env.APN_PRODUCT === "true" ? true : false,
         batchFeedback: true,
         interval: 300,
@@ -502,10 +502,10 @@ export class NotificationHelper {
         cert: process.env.CERT_PEM_NOTIFICATION,
       };
 
-      var apnProvider = new apn.Provider(options);
+      const apnProvider = new apn.Provider(options);
 
-      let deviceToken = token;
-      var note = new apn.Notification({
+      const deviceToken = token;
+      const note = new apn.Notification({
         aps: {
           "content-available": true,
         },
@@ -521,7 +521,7 @@ export class NotificationHelper {
       note.contentAvailable = 1;
       note.topic = process.env.BUNDLE_NAME_NOTIFICATION;
 
-      let dataReturn = await apnProvider.send(note, deviceToken).then((result) => {
+      const dataReturn = await apnProvider.send(note, deviceToken).then((result) => {
         return result;
       });
 
@@ -534,13 +534,13 @@ export class NotificationHelper {
 
   async handleCronJob() {
     try {
-      let dataFilter = {
+      const dataFilter = {
         manual_mode: 1,
       };
-      let totalNotification = await this.notificationService.filter(dataFilter, {}, 1, 1000);
-      for (let notificationItem of totalNotification) {
+      const totalNotification = await this.notificationService.filter(dataFilter, {}, 1, 1000);
+      for (const notificationItem of totalNotification) {
         await this.handleSendNotificationToSession(notificationItem);
-        let dataUpdate = {
+        const dataUpdate = {
           _id: notificationItem._id.toString(),
           send_status: 4,
         };
@@ -562,29 +562,29 @@ export class NotificationHelper {
    */
   async getNotificationByAdmin(query: ListNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (await this.userPermissionService.isHavePermission(userId, "notification/list")) {
         if (Number(query.limit) > 1000 || !query.limit) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByOBject = {};
         if (query.order_by) {
           orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.notificationService.count(dataToFilter);
+        const dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
+        const dataCount = await this.notificationService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -607,29 +607,29 @@ export class NotificationHelper {
    */
   async getUserList(query: ListNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000 || !query.limit) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userObject?._id?.toString(), channel_id: req?.channel_id } };
+      const dataToFilter = { ...query, ...{ user_id: userObject?._id?.toString(), channel_id: req?.channel_id } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.notificationService.count(dataToFilter);
-      let readCount = await this.notificationService.count({ ...dataToFilter, ...{ read_status: "0" } });
+      const dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.notificationService.count(dataToFilter);
+      const readCount = await this.notificationService.count({ ...dataToFilter, ...{ read_status: "0" } });
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count, X-Total-Unread",
@@ -649,8 +649,8 @@ export class NotificationHelper {
    * @returns
    */
   hextobin(hexstr) {
-    let buf = new Buffer(hexstr.length / 2);
-    for (var i = 0; i < hexstr.length / 2; i++) {
+    const buf = new Buffer(hexstr.length / 2);
+    for (let i = 0; i < hexstr.length / 2; i++) {
       buf[i] = (parseInt(hexstr[i * 2], 16) << 4) + parseInt(hexstr[i * 2 + 1], 16);
     }
     return buf;
@@ -661,8 +661,8 @@ export class NotificationHelper {
    */
   async sendNotificationAndEmailReceiveGift(dataChannel: Channel, dataUser: User, dataGift: Gift) {
     //Send E-Mail Notication to user receive gift
-    let dataFirestore = getFirestore();
-    let dataToUpdate = {
+    const dataFirestore = getFirestore();
+    const dataToUpdate = {
       brand_name: "Gamifa",
       channel: dataChannel?.name?.toString(),
       gift: dataGift?.name,
@@ -687,21 +687,21 @@ export class NotificationHelper {
       });
 
     //Send notication to user received gift
-    let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+    const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
 
-    let tokenReturn = this.jwtHelper.generateJwt(
+    const tokenReturn = this.jwtHelper.generateJwt(
       process.env.INFO_USER,
       supportAccount?.user_email?.toString(),
       process.env.INFO_SESSION,
       true
     );
-    let dataToSendNotification = {
+    const dataToSendNotification = {
       request_id: "",
       path: "/r/gift/receivers",
       data_id: "",
     };
-    let notificationContent = `Chúc mừng ${dataUser?.display_name} vừa được nhận ${dataGift?.name}`;
-    let dataNotification = {
+    const notificationContent = `Chúc mừng ${dataUser?.display_name} vừa được nhận ${dataGift?.name}`;
+    const dataNotification = {
       createdBy: process.env.INFO_USER,
       user_id: dataUser?._id.toString(),
       channel_id: dataChannel?._id?.toString(),
@@ -725,14 +725,14 @@ export class NotificationHelper {
     try {
       //Send E-Mail Notication to user receive gift
       // let dataUser = await this.appUserService.findOne({ _id: data?.user_id });
-      let dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
-      let dataChannel = await this.channelService.findById(data?.channel_id);
+      const dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
+      const dataChannel = await this.channelService.findById(data?.channel_id);
       if (!dataUser) {
         this.logger.log(`Cannot found account with id ${data?.user_id}`);
       } else if (!dataChannel) {
         this.logger.log(`Cannot found channel with id ${data?.channel_id}`);
       } else {
-        let dataFirestore = getFirestore();
+        const dataFirestore = getFirestore();
         let dataToUpdate = {
           brand_name: "Gamifa",
           channel: data?.dataChannel?.name?.toString() || dataChannel?.name?.toString(),
@@ -761,25 +761,25 @@ export class NotificationHelper {
           });
 
         //Send notication to user received gift
-        let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+        const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
 
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           process.env.INFO_USER,
           supportAccount?.user_email?.toString(),
           process.env.INFO_SESSION,
           true
         );
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: "",
           path: dataChannel?.domain + data?.path,
           data_id: "",
           order_id: data?.order_id,
         };
-        let notificationContent = data?.content({
+        const notificationContent = data?.content({
           display_name: dataUser?.display_name.toString(),
           channel_name: dataChannel?.name.toString(),
         });
-        let dataNotification = {
+        const dataNotification = {
           createdBy: data?.send_user_id,
           user_id: dataUser?._id.toString(),
           channel_id: dataChannel?._id?.toString(),
@@ -805,20 +805,20 @@ export class NotificationHelper {
    */
   async sendNotification(data: any) {
     //Send notication to user received gift
-    let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-    let tokenReturn = this.jwtHelper.generateJwt(
+    const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+    const tokenReturn = this.jwtHelper.generateJwt(
       process.env.INFO_USER,
       supportAccount?.user_email?.toString(),
       process.env.INFO_SESSION,
       true
     );
-    let dataToSendNotification = {
+    const dataToSendNotification = {
       request_id: "",
       path: data?.path,
       data_id: "",
     };
-    let notificationContent = data?.content();
-    let dataNotification = {
+    const notificationContent = data?.content();
+    const dataNotification = {
       createdBy: data?.send_user_id,
       channel_id: data?.channel_id || null,
       user_id: data?.user_id,

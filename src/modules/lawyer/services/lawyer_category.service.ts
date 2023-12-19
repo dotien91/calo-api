@@ -38,7 +38,7 @@ export class LawyerCategoryService {
    * @returns
    */
   async getCondition(filter: SearchLawyerTypeDto) {
-    let condition: any = {};
+    const condition: any = {};
     return condition;
   }
 
@@ -64,12 +64,12 @@ export class LawyerCategoryService {
    * @returns
    */
   async filter(filter: SearchLawyerTypeDto, sortBy: SortByLawyerDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.lawyerCategoryModel
+    const dataReturn = await this.lawyerCategoryModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -85,7 +85,7 @@ export class LawyerCategoryService {
    */
   public count = async (filter: SearchLawyerTypeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.lawyerCategoryModel.estimatedDocumentCount();
       } else {
@@ -114,7 +114,7 @@ export class LawyerCategoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -140,7 +140,7 @@ export class LawyerCategoryService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.lawyerCategoryModel.findByIdAndUpdate(
+      const dataReturn = await this.lawyerCategoryModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

@@ -35,8 +35,8 @@ export class UserLocationService {
       condition = Object.assign(condition, { user_id: filter.user_id });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
 
@@ -52,10 +52,10 @@ export class UserLocationService {
         radius = Number(filter.distance);
       }
 
-      let maxLatitude = parseFloat(filter?.latitude?.toString()) + oneKilometer * radius;
-      let minLatitude = parseFloat(filter?.latitude?.toString()) - oneKilometer * radius;
-      let maxLongitude = parseFloat(filter?.longitude?.toString()) + oneKilometer * radius;
-      let minLongitude = parseFloat(filter?.longitude?.toString()) - oneKilometer * radius;
+      const maxLatitude = parseFloat(filter?.latitude?.toString()) + oneKilometer * radius;
+      const minLatitude = parseFloat(filter?.latitude?.toString()) - oneKilometer * radius;
+      const maxLongitude = parseFloat(filter?.longitude?.toString()) + oneKilometer * radius;
+      const minLongitude = parseFloat(filter?.longitude?.toString()) - oneKilometer * radius;
       condition = Object.assign(condition, { latitude: { $gte: minLatitude, $lte: maxLatitude } });
       condition = Object.assign(condition, { longitude: { $gte: minLongitude, $lte: maxLongitude } });
     }
@@ -82,7 +82,7 @@ export class UserLocationService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userFollowModel.findById(id, projection);
+    const dataReturn = await this.userFollowModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -113,7 +113,7 @@ export class UserLocationService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserLocationHistory[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -182,7 +182,7 @@ export class UserLocationService {
    */
   public count = async (filter: FilterFollowDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userFollowModel.estimatedDocumentCount();
       } else {
@@ -222,12 +222,12 @@ export class UserLocationService {
     page: number,
     limit: number
   ): Promise<UserLocationHistory[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -242,11 +242,11 @@ export class UserLocationService {
       .exec();
 
     if (dataReturn?.length > 0) {
-      let dataReturnAfter = [];
-      let newLatitude = filter.latitude;
-      let newLongitude = filter.longitude;
+      const dataReturnAfter = [];
+      const newLatitude = filter.latitude;
+      const newLongitude = filter.longitude;
 
-      for (let userItem of dataReturn) {
+      for (const userItem of dataReturn) {
         if (userItem?.toObject()?._id?.toString()) {
           let distance = 0;
           if (
@@ -273,14 +273,14 @@ export class UserLocationService {
   }
 
   getDistanceFromLatLonInMeter(lat1: number, lon1: number, lat2: number, lon2: number) {
-    let R = 6371; // Radius of the earth in km
-    let dLat = this.deg2rad(lat2 - lat1); // deg2rad below
-    let dLon = this.deg2rad(lon2 - lon1);
-    let a =
+    const R = 6371; // Radius of the earth in km
+    const dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    let d = R * c * 1000; // Distance in meter
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c * 1000; // Distance in meter
     return d;
   }
 
@@ -297,9 +297,9 @@ export class UserLocationService {
    * @returns
    */
   async filterWithId(filter: FilterFollowDto, page: number, limit: number): Promise<UserLocationHistory[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.userFollowModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.userFollowModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -317,7 +317,7 @@ export class UserLocationService {
    * @returns
    */
   async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number, isPopulate: boolean = true) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -334,7 +334,7 @@ export class UserLocationService {
         populate: { path: "user_option_id" },
       };
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate(dataPopulate)
       .sort(sortObject)

@@ -57,7 +57,7 @@ export class PromptHistoryHelper {
    */
   async createNewPromptHistory(createDataHistory: CreatePromptHistoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -68,8 +68,8 @@ export class PromptHistoryHelper {
         createDataHistory = { ...createDataHistory, ...{ media_data: JSON.parse(createDataHistory.media_data) } };
       }
       console.log(createDataHistory, "createDataHistory");
-      let dataCreate = await this.promptHistoryService.create(createDataHistory);
-      let dataReturn = await this.promptHistoryService.findById(dataCreate?._id?.toString());
+      const dataCreate = await this.promptHistoryService.create(createDataHistory);
+      const dataReturn = await this.promptHistoryService.findById(dataCreate?._id?.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -93,19 +93,19 @@ export class PromptHistoryHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.promptHistoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.promptHistoryService.count(dataToFilter);
+      const dataReturn = await this.promptHistoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.promptHistoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -122,7 +122,7 @@ export class PromptHistoryHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -159,7 +159,7 @@ export class PromptHistoryHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ post_slug: id.toString() } };
       }
-      let dataReturn = await this.promptHistoryService.findOne(dataToFilter);
+      const dataReturn = await this.promptHistoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -187,7 +187,7 @@ export class PromptHistoryHelper {
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
     str = str.replace(/-+$/g, "");
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     return str + "-" + date;
   }
 }

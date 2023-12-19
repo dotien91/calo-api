@@ -73,7 +73,7 @@ export class ChallengeViewService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.challengeViewModel.findById(id, projection);
+    const dataReturn = await this.challengeViewModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -104,7 +104,7 @@ export class ChallengeViewService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<ChallengeView[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.challengeViewModel.find(condition, {}).exec();
   }
 
@@ -127,7 +127,7 @@ export class ChallengeViewService {
       if (!dataUpdate.user_id && !dataUpdate.module_id) {
         return null;
       }
-      let dataReturn = await this.challengeViewModel.findOneAndUpdate(
+      const dataReturn = await this.challengeViewModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, module_id: dataUpdate.module_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -152,7 +152,7 @@ export class ChallengeViewService {
       if (!dataUpdate.user_id && !dataUpdate.module_id) {
         return null;
       }
-      let dataReturn = await this.challengeViewModel.findOneAndUpdate(
+      const dataReturn = await this.challengeViewModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, module_id: dataUpdate.module_id },
         { $set: dataUpdate }
       );
@@ -173,7 +173,7 @@ export class ChallengeViewService {
    */
   public count = async (filter: FilterViewChallengeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.challengeViewModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class ChallengeViewService {
    * @returns
    */
   async filter(filter: FilterViewChallengeDto, sortBy: any, page: number, limit: number): Promise<ChallengeView[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeViewModel
+    const dataReturn = await this.challengeViewModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class ChallengeViewService {
     limit: number,
     projection: any = {}
   ): Promise<ChallengeView[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "module_id",
       options: { strictPopulate: false },
       populate: [
@@ -254,7 +254,7 @@ export class ChallengeViewService {
         },
       ],
     };
-    let dataReturn: any = await this.challengeViewModel
+    const dataReturn: any = await this.challengeViewModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -266,9 +266,9 @@ export class ChallengeViewService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.module_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.module_id?.toObject() };
         delete dataItemToReturn.module_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -287,9 +287,9 @@ export class ChallengeViewService {
    * @returns
    */
   async filterWithId(filter: FilterViewChallengeDto, page: number, limit: number): Promise<ChallengeView[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.challengeViewModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.challengeViewModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -307,12 +307,12 @@ export class ChallengeViewService {
    * @returns
    */
   async filterUser(filter: FilterViewChallengeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.challengeViewModel
+    const dataReturn = await this.challengeViewModel
       .find(condition)
       .populate({
         path: "user_id",

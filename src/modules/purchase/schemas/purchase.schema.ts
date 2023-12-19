@@ -30,70 +30,70 @@ export class Purchase {
     nullable: true,
     default: "",
   })
-  order_id: String;
+  order_id: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  package_name: String;
+  package_name: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  product_id: String;
+  product_id: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  purchase_state: String;
+  purchase_state: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  purchase_token: String;
+  purchase_token: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  quantity: String;
+  quantity: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  acknowledged: String;
+  acknowledged: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  purchase_method: String;
+  purchase_method: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "success",
   })
-  validate_status: String;
+  validate_status: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  developer_payload: String;
+  developer_payload: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   purchase_time: MongooseSchema.Types.Date;

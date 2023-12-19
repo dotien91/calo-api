@@ -9,12 +9,12 @@ export class LawyerLocation extends Document {
   @Prop({
     type: String,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
   })
-  coordinates: Number[];
+  coordinates: number[];
 }
 export const LawyerLocationSchema = SchemaFactory.createForClass(LawyerLocation);
 
@@ -23,22 +23,22 @@ export class DataCost extends Document {
   @Prop({
     type: String,
   })
-  retainer: String;
+  retainer: string;
 
   @Prop({
     type: String,
   })
-  contingency: String;
+  contingency: string;
 
   @Prop({
     type: String,
   })
-  free_consultation: String;
+  free_consultation: string;
 
   @Prop({
     type: String,
   })
-  hourly_rates: String;
+  hourly_rates: string;
 }
 export const DataCostSchema = SchemaFactory.createForClass(DataCost);
 
@@ -47,7 +47,7 @@ export class DataCategory extends Document {
   @Prop({
     type: String,
   })
-  slug: String;
+  slug: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -58,22 +58,22 @@ export class DataCategory extends Document {
   @Prop({
     type: String,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
   })
-  detail: String;
+  detail: string;
 
   @Prop({
     type: String,
   })
-  year: String;
+  year: string;
 
   @Prop({
     type: String,
   })
-  percent: String;
+  percent: string;
 }
 export const DataCategorySchema = SchemaFactory.createForClass(DataCategory);
 
@@ -82,47 +82,47 @@ export class MapData extends Document {
   @Prop({
     type: String,
   })
-  lawyer_id: String;
+  lawyer_id: string;
 
   @Prop({
     type: String,
   })
-  address_id: String;
+  address_id: string;
 
   @Prop({
     type: String,
   })
-  standardized: String;
+  standardized: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
   })
-  latlong: String[];
+  latlong: string[];
 
   @Prop({
     type: String,
   })
-  review_count: String;
+  review_count: string;
 
   @Prop({
     type: String,
   })
-  review_score: String;
+  review_score: string;
 
   @Prop({
     type: String,
   })
-  claimed_by: String;
+  claimed_by: string;
 
   @Prop({
     type: String,
   })
-  lawyer_name: String;
+  lawyer_name: string;
 
   @Prop({
     type: String,
   })
-  headshot_url: String;
+  headshot_url: string;
 }
 export const MapDataSchema = SchemaFactory.createForClass(MapData);
 
@@ -131,32 +131,32 @@ export class ContactLawyer extends Document {
   @Prop({
     type: String,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
   })
-  address: String;
+  address: string;
 
   @Prop({
     type: String,
   })
-  website: String;
+  website: string;
 
   @Prop({
     type: String,
   })
-  fax_number: String;
+  fax_number: string;
 
   @Prop({
     type: String,
   })
-  mobile_number: String;
+  mobile_number: string;
 
   @Prop({
     type: String,
   })
-  office_number: String;
+  office_number: string;
 }
 export const ContactLawyerSchema = SchemaFactory.createForClass(ContactLawyer);
 
@@ -217,35 +217,35 @@ export class Licensed extends Document {
     type: String,
     nullable: true,
   })
-  licensed_year: String;
+  licensed_year: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  state: String;
+  state: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  acquired: String;
+  acquired: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  status: String;
+  status: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  note: String;
+  note: string;
 }
 export const LicensedSchema = SchemaFactory.createForClass(Licensed);
 
@@ -255,14 +255,14 @@ export class RatingValue extends Document {
     type: Number,
     nullable: true,
   })
-  star_number: Number;
+  star_number: number;
 
   @Prop({
     type: Number,
     nullable: true,
     default: 0,
   })
-  star_value: Number;
+  star_value: number;
 }
 export const RatingValueSchema = SchemaFactory.createForClass(RatingValue);
 
@@ -287,7 +287,7 @@ export class Lawyer {
     nullable: true,
     default: "",
   })
-  sub_name: String;
+  sub_name: string;
 
   @Prop({
     type: String,
@@ -295,7 +295,7 @@ export class Lawyer {
     default: "",
     index: true,
   })
-  state_name: String;
+  state_name: string;
 
   @Prop({
     type: String,
@@ -303,14 +303,14 @@ export class Lawyer {
     default: "",
     index: true,
   })
-  city_name: String;
+  city_name: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  position: String;
+  position: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
@@ -326,7 +326,7 @@ export class Lawyer {
     type: String,
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -367,48 +367,48 @@ export class Lawyer {
     type: String,
     nullable: false,
   })
-  about: String;
+  about: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  sub_about: String;
+  sub_about: string;
 
   @Prop({
     type: String,
     nullable: false,
     index: true,
   })
-  ref_url: String;
+  ref_url: string;
 
   @Prop({
     type: Boolean,
     nullable: false,
     index: true,
   })
-  is_free_consultation: Boolean;
+  is_free_consultation: boolean;
 
   @Prop({
     type: Boolean,
     nullable: false,
     index: true,
   })
-  open_for_business: Boolean;
+  open_for_business: boolean;
 
   @Prop({
     type: Boolean,
     nullable: false,
     index: true,
   })
-  is_misconduct: Boolean;
+  is_misconduct: boolean;
 
   @Prop({
     type: Boolean,
     nullable: false,
     index: true,
   })
-  is_extra_virtual: Boolean;
+  is_extra_virtual: boolean;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -503,14 +503,14 @@ export class Lawyer {
     default: null,
     index: true,
   })
-  language_spoken: String[];
+  language_spoken: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     nullable: false,
     default: null,
   })
-  payment_method: String[];
+  payment_method: string[];
 
   @Prop({
     type: [WorkExperienceSchema],
@@ -538,7 +538,7 @@ export class Lawyer {
     nullable: false,
     default: 0,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: Number,
@@ -546,7 +546,7 @@ export class Lawyer {
     default: 0,
     index: true,
   })
-  review_value: Number;
+  review_value: number;
 
   @Prop({
     type: Number,
@@ -554,7 +554,7 @@ export class Lawyer {
     index: true,
     default: 0,
   })
-  review_number: Number;
+  review_number: number;
 
   @Prop({
     type: Number,
@@ -562,28 +562,28 @@ export class Lawyer {
     default: 0,
     index: true,
   })
-  license_year: Number;
+  license_year: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  longitude: Number;
+  longitude: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  points: Number;
+  points: number;
 
   @Prop({
     type: Number,
     default: 0,
     index: true,
   })
-  latitude: Number;
+  latitude: number;
 }
 
 export const LawyerSchema = SchemaFactory.createForClass(Lawyer)

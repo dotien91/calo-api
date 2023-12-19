@@ -51,27 +51,27 @@ export class Notification {
     type: String,
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  content: String;
-
-  @Prop({
-    type: String,
-    nullable: false,
-    index: true,
-  })
-  channel: String;
+  content: string;
 
   @Prop({
     type: String,
     nullable: false,
     index: true,
   })
-  type_action: String;
+  channel: string;
+
+  @Prop({
+    type: String,
+    nullable: false,
+    index: true,
+  })
+  type_action: string;
 
   @Prop({
     type: String,
@@ -79,25 +79,25 @@ export class Notification {
     index: true,
     default: "system",
   })
-  notification_type: String;
+  notification_type: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  param: String;
+  param: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  click_action: String;
+  click_action: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  image: String;
+  image: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null, index: true })
   send_start: MongooseSchema.Types.Date;
@@ -108,7 +108,7 @@ export class Notification {
     default: 0,
     index: true,
   })
-  manual_mode: Number;
+  manual_mode: number;
 
   @Prop({
     type: Number,
@@ -116,7 +116,7 @@ export class Notification {
     default: 0,
     index: true,
   })
-  send_status: Number;
+  send_status: number;
 
   @Prop({
     type: Number,
@@ -124,13 +124,13 @@ export class Notification {
     default: 0,
     index: true,
   })
-  read_status: Number;
+  read_status: number;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  router: String;
+  router: string;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

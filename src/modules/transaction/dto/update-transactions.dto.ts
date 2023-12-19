@@ -4,9 +4,9 @@ import { IsString, IsOptional, IsIn } from "class-validator";
 export class UpdateTransactionDto {
   @IsString()
   @ApiProperty()
-  _id?: String;
+  _id?: string;
 
   @IsString()
   @ApiProperty()
-  status: String;
+  status: string;
 }

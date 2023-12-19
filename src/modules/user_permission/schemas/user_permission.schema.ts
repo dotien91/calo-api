@@ -24,14 +24,14 @@ export class UserPermission {
     type: String,
     nullable: false,
   })
-  permission: String;
+  permission: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  group: String;
+  group: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   expired_at: MongooseSchema.Types.Date;

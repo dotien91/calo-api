@@ -20,13 +20,13 @@ export class VnpayLog {
     type: String,
     nullable: false,
   })
-  ip_address: String;
+  ip_address: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  data_log: String;
+  data_log: string;
 }
 
 export const VnpayLogSchema = SchemaFactory.createForClass(VnpayLog);

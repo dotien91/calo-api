@@ -41,11 +41,11 @@ export class PromptHistoryService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        let objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        let objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
@@ -79,13 +79,13 @@ export class PromptHistoryService {
    * @returns
    */
   async filter(filter: SearchPromptHistoryDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
-    let populateObject = {
+    const populateObject = {
       path: "prompt_user",
       populate: [
         {
@@ -94,7 +94,7 @@ export class PromptHistoryService {
       ],
     };
 
-    let dataReturn = await this.promptHistoryModel
+    const dataReturn = await this.promptHistoryModel
       .find(condition)
       .populate("createBy")
       .populate("parent_id")
@@ -114,7 +114,7 @@ export class PromptHistoryService {
    */
   public count = async (filter: SearchPromptHistoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.promptHistoryModel.estimatedDocumentCount();
       } else {
@@ -133,7 +133,7 @@ export class PromptHistoryService {
   async create(createUser: CreatePromptHistoryDto) {
     try {
       const createdPost = new this.promptHistoryModel(createUser);
-      let dataCreate = await createdPost.save();
+      const dataCreate = await createdPost.save();
       return dataCreate;
     } catch (error) {
       console.log(error);
@@ -147,9 +147,9 @@ export class PromptHistoryService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -190,7 +190,7 @@ export class PromptHistoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

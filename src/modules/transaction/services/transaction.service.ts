@@ -42,7 +42,7 @@ export class TransactionService {
     }
     if (filter.ref_id) {
       if (filter?.ref_id?.indexOf(",")) {
-        let dataRefArray = filter.ref_id?.split(",");
+        const dataRefArray = filter.ref_id?.split(",");
         condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
@@ -58,8 +58,8 @@ export class TransactionService {
       condition = Object.assign(condition, { status: { $in: filter.status_array } });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { successfully_on: { $gte: dateFrom, $lte: dateTo } });
     }
 
@@ -83,8 +83,8 @@ export class TransactionService {
       condition = Object.assign(condition, { method: filter.method });
     }
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
     return condition;
@@ -112,12 +112,12 @@ export class TransactionService {
    * @returns
    */
   async filter(filter: SearchTransactionDto, sortBy: SortByTransactionDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.transactionsModel
+    const dataReturn = await this.transactionsModel
       .find(condition)
       .populate(
         "user_id",
@@ -136,13 +136,13 @@ export class TransactionService {
   }
 
   async getUserIncome(filter: SearchTransactionDto, sortBy: SortByTransactionDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     console.log(condition, "condition");
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.transactionsModel
+    const dataReturn = await this.transactionsModel
       .aggregate()
       .match(condition)
       .group({
@@ -163,15 +163,15 @@ export class TransactionService {
    * @returns
    */
   async filterAdmin(filter: SearchAdminFilterDto, sortBy: SortByTransactionDto, page: number, limit: number) {
-    let condition = await this.getConditionAdmin(filter);
+    const condition = await this.getConditionAdmin(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     if (filter.user_birthday_year_from && filter.user_birthday_year_to) {
-      let dataPopulate = {
+      const dataPopulate = {
         path: "user_id",
         options: { strictPopulate: false },
         select:
@@ -187,7 +187,7 @@ export class TransactionService {
         },
       };
 
-      let dataReturn = await this.transactionsModel
+      const dataReturn = await this.transactionsModel
         .find(condition, projection)
         .populate(dataPopulate)
         .populate(
@@ -202,14 +202,14 @@ export class TransactionService {
         .then((orders) => orders.filter((order) => order.user_id.user_option_id != null));
       return dataReturn;
     } else {
-      let dataPopulate = {
+      const dataPopulate = {
         path: "user_id",
         options: { strictPopulate: false },
         select:
           "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
         populate: { path: "user_option_id" },
       };
-      let dataReturn = await this.transactionsModel
+      const dataReturn = await this.transactionsModel
         .find(condition, projection)
         .populate(dataPopulate)
         .populate(
@@ -232,7 +232,7 @@ export class TransactionService {
    */
   public countAdmin = async (filter: SearchAdminFilterDto) => {
     try {
-      let condition = await this.getConditionAdmin(filter);
+      const condition = await this.getConditionAdmin(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.transactionsModel.estimatedDocumentCount();
       } else {
@@ -250,7 +250,7 @@ export class TransactionService {
    */
   public count = async (filter: SearchTransactionDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.transactionsModel.estimatedDocumentCount();
       } else {
@@ -268,7 +268,7 @@ export class TransactionService {
    */
   async create(createUser: CreateTransactionDto) {
     const createdTransaction = new this.transactionsModel(createUser);
-    let dataCreate = await createdTransaction.save();
+    const dataCreate = await createdTransaction.save();
     return dataCreate;
   }
 
@@ -278,9 +278,9 @@ export class TransactionService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -314,7 +314,7 @@ export class TransactionService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -351,7 +351,7 @@ export class TransactionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.transactionsModel.findByIdAndUpdate(
+      const dataReturn = await this.transactionsModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

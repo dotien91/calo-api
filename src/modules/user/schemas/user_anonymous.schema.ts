@@ -19,56 +19,56 @@ export class UserAnonymous {
   _id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: String, required: true, index: true })
-  device_id: String;
+  device_id: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_ip: String;
+  user_ip: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  display_name: String;
+  display_name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_uuid: String;
+  device_uuid: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_type: String;
+  user_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_type: String;
+  device_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  device_signature: String;
+  device_signature: string;
 
   @Prop({
     type: String,
@@ -76,7 +76,7 @@ export class UserAnonymous {
     nullable: true,
     index: true,
   })
-  apple_signature: String;
+  apple_signature: string;
 
   @Prop({
     type: Boolean,
@@ -84,7 +84,7 @@ export class UserAnonymous {
     nullable: true,
     index: true,
   })
-  is_ab_testing: Boolean;
+  is_ab_testing: boolean;
 
   @Prop({
     type: String,
@@ -92,7 +92,7 @@ export class UserAnonymous {
     nullable: true,
     index: true,
   })
-  apple_notification: String;
+  apple_notification: string;
 }
 
 export const UserAnonymousSchema = SchemaFactory.createForClass(UserAnonymous);

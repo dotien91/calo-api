@@ -40,20 +40,20 @@ export class FaceDetection {
     nullable: false,
     default: 0,
   })
-  point: Number;
+  point: number;
 
   @Prop({
     type: Number,
     nullable: false,
     default: 0,
   })
-  validate_status: Number;
+  validate_status: number;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  response: String;
+  response: string;
 }
 
 export const FaceDetectionSchema = SchemaFactory.createForClass(FaceDetection);

@@ -29,37 +29,37 @@ export class Report {
     default: "report",
     nullable: false,
   })
-  report_type: String;
+  report_type: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  report_content: String;
+  report_content: string;
 
   @Prop({
     type: String,
     default: "pending",
   })
-  report_status: String;
+  report_status: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  report_image: String;
+  report_image: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  report_email: String;
+  report_email: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  report_name: String;
+  report_name: string;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

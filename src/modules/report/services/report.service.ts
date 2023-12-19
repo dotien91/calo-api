@@ -58,12 +58,12 @@ export class ReportService {
    * @returns
    */
   async filter(filter: SearchReportDto, sortBy: SortByReportDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.reportModel
+    const dataReturn = await this.reportModel
       .find(condition)
       .populate(
         "user_id",
@@ -87,7 +87,7 @@ export class ReportService {
    */
   public count = async (filter: SearchReportDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.reportModel.estimatedDocumentCount();
       } else {
@@ -154,7 +154,7 @@ export class ReportService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.reportModel.findByIdAndUpdate(
+      const dataReturn = await this.reportModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }

@@ -38,20 +38,20 @@ export class TopicJoin {
     default: 0,
     index: true,
   })
-  is_official: Number;
+  is_official: number;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  child_number: Number;
+  child_number: number;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  status: String;
+  status: string;
 }
 
 export const TopicJoinSchema = SchemaFactory.createForClass(TopicJoin).index({

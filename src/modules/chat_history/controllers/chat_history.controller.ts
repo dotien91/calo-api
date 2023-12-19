@@ -78,7 +78,7 @@ export class ChatHistoryController {
     @Res() res: Response
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
@@ -86,11 +86,11 @@ export class ChatHistoryController {
         throw new BadRequestException("Can't create new Room!");
       }
       if (await this.userPermissionService.isHavePermission(userObject?._id.toString(), "chat_history/create")) {
-        let dataToReturnAll: any = [];
+        const dataToReturnAll: any = [];
         if (createChatRoomDto.partner_id) {
-          let dataPartner = createChatRoomDto.partner_id.split(",");
-          for (let dataPartnerItem of dataPartner) {
-            let dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
+          const dataPartner = createChatRoomDto.partner_id.split(",");
+          for (const dataPartnerItem of dataPartner) {
+            const dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
               userObject,
               dataPartnerItem,
               "personal",
@@ -102,22 +102,22 @@ export class ChatHistoryController {
               continue;
             }
 
-            let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-            let currentTime = new Date().getTime();
+            const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+            const currentTime = new Date().getTime();
 
-            let leftTime = currentTime - updatedAt;
+            const leftTime = currentTime - updatedAt;
             if (leftTime < 3600000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
               console.log("Not return");
               continue;
             }
 
-            let createChatHistoryDto = {
+            const createChatHistoryDto = {
               chat_room_id: dataCreateReturnRoom.chat_room_id._id.toString(),
               chat_content: createChatRoomDto?.chat_content,
               media_data: createChatRoomDto?.media_data,
             };
 
-            let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+            const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
               req,
               res,
               createChatHistoryDto,

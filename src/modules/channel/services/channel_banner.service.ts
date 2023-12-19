@@ -60,19 +60,19 @@ export class ChannelBannerService {
     page: number,
     limit: number
   ): Promise<ChannelBanner[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
+      const countData = await this.count(filter);
       page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
     }
 
-    let dataReturn = await this.channelBannerModel
+    const dataReturn = await this.channelBannerModel
       .find(condition)
       .populate("media_id")
       .sort(sortObject)
@@ -96,13 +96,13 @@ export class ChannelBannerService {
     page: number,
     limit: number
   ): Promise<ChannelBanner[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.channelBannerModel
+    const projection = {};
+    const dataReturn = await this.channelBannerModel
       .find(condition, projection)
       .populate("media_id")
       .sort(sortObject)
@@ -119,7 +119,7 @@ export class ChannelBannerService {
    */
   public count = async (filter: SearchChannelBannerDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.channelBannerModel.estimatedDocumentCount();
       } else {
@@ -137,7 +137,7 @@ export class ChannelBannerService {
    */
   async create(createUser: CreateChannelBannerDto) {
     const createdChannelBanner = new this.channelBannerModel(createUser);
-    let dataCreate = await createdChannelBanner.save();
+    const dataCreate = await createdChannelBanner.save();
     return dataCreate;
   }
 
@@ -147,9 +147,9 @@ export class ChannelBannerService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -186,7 +186,7 @@ export class ChannelBannerService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.channelBannerModel.findOneAndUpdate(
@@ -227,7 +227,7 @@ export class ChannelBannerService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -253,7 +253,7 @@ export class ChannelBannerService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.channelBannerModel
+      const dataReturn = await this.channelBannerModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate("media_id");
       return dataReturn;

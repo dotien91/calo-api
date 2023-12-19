@@ -45,7 +45,7 @@ export class ChatMediaService {
       if (filter.media_type.indexOf(",") === -1) {
         condition = Object.assign(condition, { media_type: filter.media_type });
       } else {
-        let arrayMediaType = filter.media_type.split(",");
+        const arrayMediaType = filter.media_type.split(",");
         condition = Object.assign(condition, { media_type: { $in: arrayMediaType } });
       }
     }
@@ -54,8 +54,8 @@ export class ChatMediaService {
     }
 
     if (filter.from && filter.to) {
-      let dateFrom = new Date(filter.from);
-      let dateTo = new Date(filter.to);
+      const dateFrom = new Date(filter.from);
+      const dateTo = new Date(filter.to);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom, $lte: dateTo } });
     }
 
@@ -107,7 +107,7 @@ export class ChatMediaService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -138,14 +138,14 @@ export class ChatMediaService {
     limit: number,
     projection: object = {}
   ) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
 
     if (!filter.is_history) {
-      let dataRoom = await this.chatMediaService
+      const dataRoom = await this.chatMediaService
         .find(condition, projection)
         .populate({
           path: "createBy",
@@ -159,7 +159,7 @@ export class ChatMediaService {
         .exec();
       return dataRoom;
     } else {
-      let dataRoom = await this.chatMediaService
+      const dataRoom = await this.chatMediaService
         .find(condition, projection)
         .sort(sortObject)
         .skip(limit * (page - 1))
@@ -185,7 +185,7 @@ export class ChatMediaService {
    */
   public count = async (filter: FilterChatMediaDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.chatMediaService.estimatedDocumentCount();
       } else {

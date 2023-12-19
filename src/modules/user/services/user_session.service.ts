@@ -34,7 +34,7 @@ export class UserSessionService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userSessionModel.findById(id, projection);
+    const dataReturn = await this.userSessionModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -68,7 +68,7 @@ export class UserSessionService {
     let condition: any = {};
     if (filter.user_id) {
       if (filter.user_id.indexOf(",") !== -1) {
-        let dataUserArray = filter.user_id.split(",");
+        const dataUserArray = filter.user_id.split(",");
         condition = Object.assign(condition, { user_id: { $in: dataUserArray } });
       } else {
         condition = Object.assign(condition, { user_id: filter.user_id });
@@ -84,7 +84,7 @@ export class UserSessionService {
    * @returns
    */
   getSort(sortBy: SortByUserSessionDto) {
-    let sort = { priority: -1 };
+    const sort = { priority: -1 };
     return sort;
   }
 
@@ -102,12 +102,12 @@ export class UserSessionService {
     page: number,
     limit: number
   ): Promise<UserSession[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userSessionModel
+    const dataReturn = await this.userSessionModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -144,7 +144,7 @@ export class UserSessionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.userSessionModel.findByIdAndUpdate(
+      const dataReturn = await this.userSessionModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

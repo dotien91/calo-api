@@ -70,14 +70,14 @@ export class CourseHelper {
   }
 
   async handleProcessModuleCount() {
-    let dataCourse = await this.courseService.filter({}, {}, 1, 1000);
-    for (let dataaCourseItem of dataCourse) {
-      let countChild = await this.courseModuleService.count({
+    const dataCourse = await this.courseService.filter({}, {}, 1, 1000);
+    for (const dataaCourseItem of dataCourse) {
+      const countChild = await this.courseModuleService.count({
         course_id: dataaCourseItem?._id?.toString(),
         is_child: "1",
       });
-      let count = await this.courseModuleService.count({ course_id: dataaCourseItem?._id?.toString() });
-      let dataUpdate = {
+      const count = await this.courseModuleService.count({ course_id: dataaCourseItem?._id?.toString() });
+      const dataUpdate = {
         _id: dataaCourseItem?._id?.toString(),
         module_child_count: countChild,
         module_count: count,
@@ -96,19 +96,19 @@ export class CourseHelper {
    */
   async createNewCourse(createCourseData: CreateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = "";
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -129,16 +129,16 @@ export class CourseHelper {
       if (channelId) {
         createCourseData = { ...createCourseData, ...{ channel_id: channelId } };
       }
-      let dataCreate: any = await this.courseService.create(createCourseData);
+      const dataCreate: any = await this.courseService.create(createCourseData);
       let dataReturn: any = await this.courseService.findById(dataCreate?._id?.toString());
       if (dataReturn?.coin_value) {
         dataReturn = await this.handleUpdateServiceCourse(dataReturn);
       }
-      let channel = await this.channelService.findById(channelId);
+      const channel = await this.channelService.findById(channelId);
 
       setTimeout(async () => {
         if (channel?.user_id.toString() === userObject?._id.toString() && channelId) {
-          let channelUserPermissions = await this.channelPermissionService.filter(
+          const channelUserPermissions = await this.channelPermissionService.filter(
             {
               channel_id: channelId,
             },
@@ -146,7 +146,7 @@ export class CourseHelper {
             1,
             9999999
           );
-          for (let userPermission of channelUserPermissions) {
+          for (const userPermission of channelUserPermissions) {
             this.eventHookNotificationService.sendNotiNewCourse({
               send_user_id: req?.user_id?.toString(),
               user_id: userPermission?.user_id?._id.toString(),
@@ -174,7 +174,7 @@ export class CourseHelper {
   async handleUpdateServiceCourse(courseData: Course) {
     try {
       //Check Service
-      let dataServiceToAdd = {
+      const dataServiceToAdd = {
         handle: courseData?._id?.toString(),
         title: courseData?.title?.toString(),
         channel_id: courseData?.channel_id?.toString(),
@@ -185,9 +185,9 @@ export class CourseHelper {
         is_show_side_bar: false,
         router_link: "r/courses/view/" + courseData?._id,
       };
-      let serviceData = await this.handleServiceService.create(dataServiceToAdd);
+      const serviceData = await this.handleServiceService.create(dataServiceToAdd);
       if (serviceData) {
-        let dataPlanCreate = {
+        const dataPlanCreate = {
           service_id: serviceData?._id?.toString(),
           channel_id: courseData?.channel_id?.toString(),
           name: courseData?.title?.toString(),
@@ -203,16 +203,16 @@ export class CourseHelper {
           ref_id: courseData?._id?.toString(),
           google_store_product_id: "",
         };
-        let planService = await this.planService.create(dataPlanCreate);
+        const planService = await this.planService.create(dataPlanCreate);
         // console.log(planService, 'planService')
 
         if (planService) {
-          let dataUpdate = {
+          const dataUpdate = {
             _id: courseData?._id?.toString(),
             service_id: serviceData?._id?.toString(),
             plan_id: planService?._id?.toString(),
           };
-          let dataReturn = await this.courseService.update(dataUpdate);
+          const dataReturn = await this.courseService.update(dataUpdate);
           // console.log(dataReturn, 'dataReturn')
           return dataReturn;
         }
@@ -231,7 +231,7 @@ export class CourseHelper {
    */
   async handleUpdatePlan(courseData: Course) {
     try {
-      let dataPlanCreate = {
+      const dataPlanCreate = {
         _id: courseData?.plan_id?.toString(),
         service_id: courseData?.service_id.toString(),
         channel_id: courseData?.channel_id?.toString(),
@@ -248,7 +248,7 @@ export class CourseHelper {
         ref_id: courseData?._id?.toString(),
         google_store_product_id: "",
       };
-      let planService = await this.planService.update(dataPlanCreate);
+      const planService = await this.planService.update(dataPlanCreate);
       return {};
     } catch (error) {
       console.log(error);
@@ -266,12 +266,12 @@ export class CourseHelper {
    */
   async createNewCourseModule(createCourseData: CreateCourseModuleDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = userObject._id.toString();
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -309,7 +309,7 @@ export class CourseHelper {
       } else {
         await this.courseService.updateCount({ _id: createCourseData?.course_id }, { module_count: 1 });
       }
-      let dataReturn = await this.courseModuleService.findOne({ _id: dataCreate?._id?.toString() });
+      const dataReturn = await this.courseModuleService.findOne({ _id: dataCreate?._id?.toString() });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -329,12 +329,12 @@ export class CourseHelper {
    */
   async updateCourse(dataUpdate: UpdateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -363,7 +363,7 @@ export class CourseHelper {
       }
       if (!Number(dataCreate?.coin_value) && dataCreate?.service_id) {
         //Update service
-        let dataUpdate = {
+        const dataUpdate = {
           service_id: null,
           plan_id: null,
           _id: dataCreate?._id?.toString(),
@@ -388,13 +388,13 @@ export class CourseHelper {
    */
   async updateCourseModule(dataUpdate: UpdateCourseModuleDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -415,7 +415,7 @@ export class CourseHelper {
       }
 
       //Get Media Data
-      let dataCreate: any = await this.courseModuleService.update(dataUpdate);
+      const dataCreate: any = await this.courseModuleService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -435,28 +435,28 @@ export class CourseHelper {
    */
   async getCourseListByAdmin(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "course/list")) {
         if (Number(query.limit) > 1000) {
           query.limit = 1000;
         }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
+        const limit = query.limit ? query.limit : 1000;
+        const page = query.page ? query.page : 1;
         let orderByObject = {};
         if (query.order_by) {
           orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
         }
-        let dataToFilter = { ...query };
+        const dataToFilter = { ...query };
         delete dataToFilter.page;
         delete dataToFilter.limit;
         delete dataToFilter.order_by;
-        let dataReturn = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
-        let dataCount = await this.courseService.count(dataToFilter);
+        const dataReturn = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+        const dataCount = await this.courseService.count(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
           .status(HttpStatus.OK)
@@ -478,7 +478,7 @@ export class CourseHelper {
    */
   async handleGetListMember(query: ListMemberDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -492,8 +492,8 @@ export class CourseHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
@@ -505,12 +505,12 @@ export class CourseHelper {
 
       if (query?.search) {
         //Search User First
-        let dataSearch = {
+        const dataSearch = {
           search: query?.search,
           channel_permission: req?.channel_id,
         };
-        let dataUserArray = await this.userService.filter(dataSearch, orderByObject, page, limit * 10);
-        let ids = dataUserArray.map((itemValue, index) => {
+        const dataUserArray = await this.userService.filter(dataSearch, orderByObject, page, limit * 10);
+        const ids = dataUserArray.map((itemValue, index) => {
           return itemValue?._id?.toString();
         });
         if (ids && ids.length) {
@@ -523,18 +523,18 @@ export class CourseHelper {
         }
       }
 
-      let dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
+      const dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
         course_id: true,
       });
 
       let dataChannelPermission = [];
       //Get Data level
       if (req?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: req?.channel_id,
           user_ids: dataUserIds,
         };
@@ -545,9 +545,9 @@ export class CourseHelper {
           limit
         );
       }
-      for (let dataReturnItem in dataReturn) {
+      for (const dataReturnItem in dataReturn) {
         //Check user
-        let dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
+        const dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
           if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
             filtered.push({
               ...value?.user_id?.toObject(),
@@ -571,7 +571,7 @@ export class CourseHelper {
         dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ is_like: true, is_view: false } };
       }
 
-      let countData = await this.courseLikeService.count(dataToFilter);
+      const countData = await this.courseLikeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countData })
         .status(HttpStatus.OK)
@@ -591,7 +591,7 @@ export class CourseHelper {
    */
   async handleGetListLike(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -601,34 +601,34 @@ export class CourseHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId, channel_id: req?.channel_id } };
+      const dataToFilter = { ...query, ...{ user_id: userId, channel_id: req?.channel_id } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
+      const dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
         course_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let courseItem of dataReturn) {
+        for (const courseItem of dataReturn) {
           dataReturnFinal.push({ ...courseItem, ...{ is_like: true, is_view: false } });
         }
       }
-      let countData = await this.courseLikeService.count(dataToFilter);
+      const countData = await this.courseLikeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countData })
         .status(HttpStatus.OK)
@@ -647,7 +647,7 @@ export class CourseHelper {
    */
   async handleGetListView(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -657,30 +657,30 @@ export class CourseHelper {
         sessionObject = req?.session_data;
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.courseViewService.filterCourse(dataToFilter, {}, 1, query.limit, {
+      const dataReturn: any = await this.courseViewService.filterCourse(dataToFilter, {}, 1, query.limit, {
         course_id: true,
       });
 
-      let dataReturnFinal = [];
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
-        for (let courseItem of dataReturn) {
+        for (const courseItem of dataReturn) {
           dataReturnFinal.push({ ...courseItem, ...{ is_like: true, is_view: false } });
         }
       }
@@ -708,7 +708,7 @@ export class CourseHelper {
         query.limit = 1000;
       }
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = "";
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
@@ -718,13 +718,13 @@ export class CourseHelper {
         query = { ...query, ...{ channel_id: channelId } };
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -732,40 +732,40 @@ export class CourseHelper {
       // console.log(dataToFilter, "dataToFilter");
 
       //Check Video View
-      let dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+      const dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
 
-      let countCourse = await this.courseService.count(dataToFilter);
-      let dataReturnFinal = [];
-      let dataCourseIds = dataReturn?.map((value) => {
+      const countCourse = await this.courseService.count(dataToFilter);
+      const dataReturnFinal = [];
+      const dataCourseIds = dataReturn?.map((value) => {
         return value?._id?.toString();
       });
 
-      for (let dataIndexCourse in dataReturn) {
+      for (const dataIndexCourse in dataReturn) {
         dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
       }
 
       if (query?.auth_id) {
         //Process total View
-        let dataFilterView = {
+        const dataFilterView = {
           course_ids: dataCourseIds,
           user_id: query?.auth_id,
         };
-        let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+        const dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
 
-        let dataFilterJoin = {
+        const dataFilterJoin = {
           course_ids: dataCourseIds,
           user_id: query?.auth_id,
         };
-        let dataJoin: CourseLike[] = await this.courseLikeService.filter(dataFilterJoin, {}, 1, 1000);
+        const dataJoin: CourseLike[] = await this.courseLikeService.filter(dataFilterJoin, {}, 1, 1000);
 
-        for (let dataIndexCourse in dataReturn) {
-          let dataObjectByCourse = dataView?.filter((value) => {
+        for (const dataIndexCourse in dataReturn) {
+          const dataObjectByCourse = dataView?.filter((value) => {
             if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
               return value?.module_id?.toString();
             }
           });
 
-          let dataObjectJoinCourse = dataJoin?.filter((value) => {
+          const dataObjectJoinCourse = dataJoin?.filter((value) => {
             if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
               return value?.course_id?.toString();
             }
@@ -813,37 +813,37 @@ export class CourseHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.courseModuleService.filter(dataToFilter, orderByObject, page, limit);
-      let dataReturnFinal = [];
+      const dataReturn: any = await this.courseModuleService.filter(dataToFilter, orderByObject, page, limit);
+      const dataReturnFinal = [];
 
-      let dataModuleIds = dataReturn?.map((value) => {
+      const dataModuleIds = dataReturn?.map((value) => {
         return value?._id?.toString();
       });
 
       if (query?.auth_id) {
         //Process total View
-        let dataFilterView = {
+        const dataFilterView = {
           module_ids: dataModuleIds,
           user_id: query?.auth_id,
         };
-        let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
-        let dataModuleIdsView = dataView?.map((value) => {
+        const dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+        const dataModuleIdsView = dataView?.map((value) => {
           return value?.module_id?.toString();
         });
 
-        for (let dataIndexCourse in dataReturn) {
+        for (const dataIndexCourse in dataReturn) {
           //Check Is View
           if (dataModuleIdsView.indexOf(dataReturn[dataIndexCourse]?._id?.toString()) != -1) {
             dataReturn[dataIndexCourse] = { ...dataReturn[dataIndexCourse]?.toObject(), ...{ is_view: true } };
@@ -897,20 +897,20 @@ export class CourseHelper {
 
         if (query?.auth_id) {
           //Process total View
-          let dataFilterView = {
+          const dataFilterView = {
             course_id: dataReturn?._id?.toString(),
             user_id: query?.auth_id,
           };
-          let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+          const dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
 
-          let dataFilterLike = {
+          const dataFilterLike = {
             course_id: dataReturn?._id?.toString(),
             user_id: query?.auth_id,
           };
-          let dataLike: CourseLike[] = await this.courseLikeService.filter(dataFilterView, {}, 1, 1000);
+          const dataLike: CourseLike[] = await this.courseLikeService.filter(dataFilterView, {}, 1, 1000);
 
           if (dataView && dataView[0]) {
-            let dataObjectByCourse = dataView?.map((value) => {
+            const dataObjectByCourse = dataView?.map((value) => {
               return value?.module_id?.toString();
             });
             dataReturn = {
@@ -961,7 +961,7 @@ export class CourseHelper {
       let dataToFilter = {};
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-        let dataReturn = await this.courseModuleService.findOne(dataToFilter);
+        const dataReturn = await this.courseModuleService.findOne(dataToFilter);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -983,13 +983,13 @@ export class CourseHelper {
    */
   async handleUpdateCourseByAdmin(dataUpdate: UpdateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = userObject._id.toString();
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -1009,8 +1009,8 @@ export class CourseHelper {
         throw new ForbiddenException("You not have permission for this action!");
       }
 
-      let dataCourse = await this.courseService.findById(dataUpdate._id.toString());
-      let dataReturn = await this.courseService.update(dataUpdate);
+      const dataCourse = await this.courseService.findById(dataUpdate._id.toString());
+      const dataReturn = await this.courseService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1029,16 +1029,16 @@ export class CourseHelper {
    */
   async handleDeleteCourse(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let channelObject = await this.courseService.findById(id);
-      let channelId = channelObject?.channel_id?.toString();
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const channelObject = await this.courseService.findById(id);
+      const channelId = channelObject?.channel_id?.toString();
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1054,7 +1054,7 @@ export class CourseHelper {
         havePermission = true;
       }
       if (havePermission) {
-        let dataReturn = await this.courseService.remove(id);
+        const dataReturn = await this.courseService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1076,15 +1076,15 @@ export class CourseHelper {
    */
   async handleDeleteCourseModule(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let requestObject = await this.courseModuleService.findByIdPopulate(id, {});
-      let channelId = requestObject?.course_id?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const requestObject = await this.courseModuleService.findByIdPopulate(id, {});
+      const channelId = requestObject?.course_id?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -1111,7 +1111,7 @@ export class CourseHelper {
       }
 
       if (havePermission) {
-        let dataReturn = await this.courseModuleService.remove(id);
+        const dataReturn = await this.courseModuleService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1150,11 +1150,11 @@ export class CourseHelper {
    */
   async processFollowUser(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.courseService.findById(dataFollow.course_id);
+      const videoObject = await this.courseService.findById(dataFollow.course_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
@@ -1164,7 +1164,7 @@ export class CourseHelper {
         //Can't Join
         throw new NotFoundException("Can't Join manual!");
       }
-      let dataReturn = this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
+      const dataReturn = this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1183,15 +1183,15 @@ export class CourseHelper {
    */
   async handleAddUserToCorse(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.courseService.findById(dataFollow.course_id);
+      const videoObject = await this.courseService.findById(dataFollow.course_id);
 
       //Check Admin
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -1224,7 +1224,7 @@ export class CourseHelper {
             .status(HttpStatus.OK)
             .json(dataFollow);
         } else {
-          let dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
+          const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
           console.log(dataReturn, "dataReturn");
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1232,7 +1232,7 @@ export class CourseHelper {
             .json(dataReturn);
         }
       } else {
-        let dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
+        const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
         console.log(dataReturn, "dataReturn");
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1270,19 +1270,19 @@ export class CourseHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let userIdToAdd = dataFollow?.user_id || userObject?._id?.toString();
-      let dataUpdate = {
+      const userIdToAdd = dataFollow?.user_id || userObject?._id?.toString();
+      const dataUpdate = {
         user_id: userIdToAdd,
         course_id: dataFollow.course_id.toString(),
       };
-      let dataReturn = await this.courseLikeService.update(dataUpdate);
+      const dataReturn = await this.courseLikeService.update(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
 
-      let userObjectNew = await this.userService.findById(userIdToAdd?.toString(), {});
+      const userObjectNew = await this.userService.findById(userIdToAdd?.toString(), {});
 
       //set hook send noti when user complete join course.
       this.eventHookNotificationService.sendNotiNMailJoinCourse({
@@ -1314,19 +1314,19 @@ export class CourseHelper {
    */
   async processViewCourse(dataFollow: CreateCourseViewDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
-      let moduleObject = await this.courseModuleService.findById(dataFollow.module_id, {});
+      const moduleObject = await this.courseModuleService.findById(dataFollow.module_id, {});
 
-      let dataFilterPermission = {
+      const dataFilterPermission = {
         channel_id: moduleObject?.course_id?.channel_id?.toString(),
         user_id: userObject?._id?.toString(),
       };
-      let dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
+      const dataPermission = await this.channelPermissionService.findOne(dataFilterPermission);
       if (!dataPermission) {
         throw new ForbiddenException("You not have permission to this action!");
       }
@@ -1335,20 +1335,20 @@ export class CourseHelper {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         course_id: moduleObject.course_id?._id?.toString(),
         module_id: dataFollow?.module_id?.toString(),
       };
 
-      let dataReturn = await this.courseViewService.update(dataUpdate);
+      const dataReturn = await this.courseViewService.update(dataUpdate);
 
       //Update
-      let dataChannelPoint = dataPermission?.channel_id?.point_data;
+      const dataChannelPoint = dataPermission?.channel_id?.point_data;
       //Check point
       let dataPoint = 1;
       if (dataChannelPoint && dataChannelPoint?.length) {
-        for (let dataChannelPointItem of dataChannelPoint) {
+        for (const dataChannelPointItem of dataChannelPoint) {
           if (dataChannelPointItem?.key == "view_course") {
             dataPoint = parseInt(dataChannelPointItem?.value);
           }
@@ -1388,11 +1388,11 @@ export class CourseHelper {
    */
   async processUnFollowUser(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.courseService.findById(dataFollow.course_id);
+      const videoObject = await this.courseService.findById(dataFollow.course_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
@@ -1400,8 +1400,8 @@ export class CourseHelper {
 
       if (dataFollow?.user_id?.toString() !== userObject?._id?.toString()) {
         //Check Admin
-        let userId = req?.user_id;
-        let userPermission = await this.channelPermissionService.findOne({
+        const userId = req?.user_id;
+        const userPermission = await this.channelPermissionService.findOne({
           user_id: userId,
           channel_id: req?.channel_id,
         });
@@ -1422,18 +1422,18 @@ export class CourseHelper {
         }
       }
 
-      let userIdArray = dataFollow.user_id?.split(",");
-      let dataReturn = [];
-      for (let dataUserId of userIdArray) {
-        let dataUpdate = {
+      const userIdArray = dataFollow.user_id?.split(",");
+      const dataReturn = [];
+      for (const dataUserId of userIdArray) {
+        const dataUpdate = {
           user_id: dataUserId,
           course_id: dataFollow.course_id.toString(),
         };
 
-        let dataToAdd = await this.courseLikeService.removeOne(dataUpdate);
+        const dataToAdd = await this.courseLikeService.removeOne(dataUpdate);
         dataReturn.push(dataToAdd);
         //Update count Video
-        let dataUpdateFilter = {
+        const dataUpdateFilter = {
           _id: videoObject._id.toString(),
         };
         await this.courseService.updateCount(dataUpdateFilter, { join_number: -1 });

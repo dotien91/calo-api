@@ -31,42 +31,42 @@ export class TicketCategory {
     nullable: false,
     index: true,
   })
-  category_language: String;
+  category_language: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_content: String;
+  category_content: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_excerpt: String;
+  category_excerpt: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_parent: String;
+  category_parent: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_slug: String;
+  category_slug: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_status: String;
+  category_status: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -80,7 +80,7 @@ export class TicketCategory {
     default: "",
     nullable: false,
   })
-  category_title: String;
+  category_title: string;
 
   @Prop({
     type: String,
@@ -88,7 +88,7 @@ export class TicketCategory {
     nullable: false,
     index: true,
   })
-  category_type: String;
+  category_type: string;
 
   @Prop({
     type: Number,
@@ -96,7 +96,7 @@ export class TicketCategory {
     nullable: false,
     index: true,
   })
-  category_view: Number;
+  category_view: number;
 
   @Prop({
     type: Number,
@@ -104,7 +104,7 @@ export class TicketCategory {
     nullable: false,
     index: true,
   })
-  version: Number;
+  version: number;
 
   @Prop({
     type: Number,
@@ -112,7 +112,7 @@ export class TicketCategory {
     nullable: false,
     index: true,
   })
-  public_status: Number;
+  public_status: number;
 }
 
 export const TicketCategorySchema = SchemaFactory.createForClass(TicketCategory).index({

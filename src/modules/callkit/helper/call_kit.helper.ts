@@ -54,7 +54,7 @@ export class CallKitHelper {
   private readonly logger = new Logger("call");
   async handleCall(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
     try {
-      let dataToken = query;
+      const dataToken = query;
       this.logger.log("Data Call: " + JSON.stringify(query));
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -77,16 +77,16 @@ export class CallKitHelper {
     query: PostMakeRoomDto,
     req: ExpressRequestDto,
     res: Response,
-    isAuto: Boolean = false,
+    isAuto: boolean = false,
     isExpired: number = 0
   ) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new NotFoundException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let objectId = new Types.ObjectId(query.partner_id);
+      const authCode = req?.auth_code;
+      const objectId = new Types.ObjectId(query.partner_id);
       if (!objectId) {
         throw new NotFoundException("Partner is invalid (Not is an ObjectID)");
       }
@@ -94,16 +94,16 @@ export class CallKitHelper {
       if (!query?.partner_id) {
         throw new NotFoundException("Partner is invalid");
       }
-      let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+      const roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
 
-      let callkitObject = await this.callkitService.findOne({ room_name: roomName });
+      const callkitObject = await this.callkitService.findOne({ room_name: roomName });
       let dataFromUser = null;
       let dataUser = null;
       let dataPartner = null;
       if (callkitObject) {
         try {
-          let partnerObject = await this.userService.findById(query.partner_id.toString(), {});
-          let fromUserId = callkitObject.user_id.toString();
+          const partnerObject = await this.userService.findById(query.partner_id.toString(), {});
+          const fromUserId = callkitObject.user_id.toString();
           dataFromUser = await this.userService.findById(fromUserId, {});
           dataUser = {
             _id: dataFromUser._id.toString(),
@@ -140,28 +140,28 @@ export class CallKitHelper {
               accountSid: process.env.TWILIO_ACCOUNT_SID,
             });
 
-            let roomName =
+            const roomName =
               "user_" + query.call_type + "_" + query.call_time + "_" + callkitObject?.partner_id?.toString();
             await twilioClient.video.rooms(callkitObject.room_name).update({ status: "completed" });
           }
         } catch (error) {}
 
-        let currentTime = new Date();
+        const currentTime = new Date();
 
         let dataToUpdate = {
           _id: callkitObject._id.toString(),
           end_time: currentTime.toUTCString(),
         };
         if (callkitObject.start_time) {
-          let startTimeObject = new Date(callkitObject.start_time.toString());
-          let totalSecond = Math.round((currentTime.getTime() - startTimeObject.getTime()) / 1000);
+          const startTimeObject = new Date(callkitObject.start_time.toString());
+          const totalSecond = Math.round((currentTime.getTime() - startTimeObject.getTime()) / 1000);
           dataToUpdate = {
             ...dataToUpdate,
             ...{
               call_time: totalSecond,
             },
           };
-          let userIdToUpdate = callkitObject.user_id.toString();
+          const userIdToUpdate = callkitObject.user_id.toString();
 
           await this.chatRoomUserOption.incCountVideo(
             { user_id: userIdToUpdate, chat_room_id: query.chat_room_id },
@@ -173,13 +173,13 @@ export class CallKitHelper {
             { call_count: totalSecond }
           );
         }
-        let dataCallkitToHistory = await this.callkitService.update(dataToUpdate);
+        const dataCallkitToHistory = await this.callkitService.update(dataToUpdate);
 
         if (!callkitObject?.end_time) {
           await this.handleCreateHistory(req, res, query, dataCallkitToHistory, false);
         }
 
-        let dataToSend = {
+        const dataToSend = {
           from_user: dataUser,
           to_user: dataPartner,
           call_type: query.call_type,
@@ -187,7 +187,7 @@ export class CallKitHelper {
           chat_room_id: query.chat_room_id,
           call_time: query.call_time,
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: dataFromUser?._id.toString(),
           channel_id: req?.channel_id,
           user_id: query.partner_id,
@@ -225,21 +225,21 @@ export class CallKitHelper {
    */
   async handleUpdateCall(dataUpdate: UpdateCallkitDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
-      let auth = req?.auth_code;
+      const userObject = req?.user_object;
+      const auth = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
 
-      let callKitObject = await this.callkitService.findOne({ room_name: dataUpdate.room_id });
+      const callKitObject = await this.callkitService.findOne({ room_name: dataUpdate.room_id });
       if (!callKitObject) {
         throw new ForbiddenException("Call is not invalid");
       } else {
         //Update Room
-        let dataAnswerCandidates = callKitObject?.answer_candidates ? callKitObject?.answer_candidates : [];
-        let dataOfferCandidates = callKitObject?.offer_candidates ? callKitObject?.offer_candidates : [];
+        const dataAnswerCandidates = callKitObject?.answer_candidates ? callKitObject?.answer_candidates : [];
+        const dataOfferCandidates = callKitObject?.offer_candidates ? callKitObject?.offer_candidates : [];
 
         let dataToUpdate = {
           user_id: callKitObject?.user_id?.toString(),
@@ -281,7 +281,7 @@ export class CallKitHelper {
           dataToUpdate = { ...dataToUpdate, ...{ camera_position: dataUpdate?.camera_position } };
         }
 
-        let dataUpdateReturn = await this.callkitService.update(dataUpdateToDB);
+        const dataUpdateReturn = await this.callkitService.update(dataUpdateToDB);
         //Send Socket
 
         const params = new URLSearchParams(dataToUpdate);
@@ -293,7 +293,7 @@ export class CallKitHelper {
           timeout: 10000,
         };
         const urlLogin = process.env.SOCKET_API;
-        let dataNotification = await axios
+        const dataNotification = await axios
           .post(urlLogin + "/update-call", params, config)
           .then((response) => {
             if (response?.data) {
@@ -324,32 +324,32 @@ export class CallKitHelper {
    */
   async handleMakeCall(query: PostMakeRoomDto, req: ExpressRequestDto, res: Response) {
     try {
-      let isHasCall = false;
-      let authCode = req?.auth_code;
-      let userObject = req?.user_object;
+      const isHasCall = false;
+      const authCode = req?.auth_code;
+      const userObject = req?.user_object;
       if (!userObject || !query?.partner_id?.toString()) {
         throw new NotFoundException("User is invalid");
       }
-      let partnerObject: any = await this.userService.findOneLogin({ _id: query.partner_id.toString() });
+      const partnerObject: any = await this.userService.findOneLogin({ _id: query.partner_id.toString() });
       if (!partnerObject) {
         throw new BadRequestException("Partner is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (query.partner_id) {
-        let blockFilter = {
+        const blockFilter = {
           partner_id: userObject._id.toString(),
           user_id: query.partner_id,
         };
-        let dataBlock = await this.userBlockService.findOne(blockFilter);
+        const dataBlock = await this.userBlockService.findOne(blockFilter);
         if (dataBlock) {
           throw new BadRequestException("Can't call to this user!");
         }
       }
 
       if (userObject?.block_users && query.partner_id) {
-        let blockUserObject = [];
-        for (let blockItem of userObject?.block_users) {
+        const blockUserObject = [];
+        for (const blockItem of userObject?.block_users) {
           blockUserObject.push(blockItem.toString());
         }
         if (blockUserObject?.indexOf(query.partner_id) !== -1) {
@@ -389,7 +389,7 @@ export class CallKitHelper {
 
       this.logger.log("Data Call: " + JSON.stringify(query));
       let dataToken = "";
-      let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+      const roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
 
       if (process.env.BRANCH_NAME !== "live_video" && Number(query?.version) !== 2) {
         const twilioClient = require("twilio")(process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, {
@@ -430,7 +430,7 @@ export class CallKitHelper {
         dataToken = token.toJwt();
       }
 
-      let dataUser = {
+      const dataUser = {
         _id: userObject._id.toString(),
         user_login: userObject.user_login,
         user_avatar: userObject.user_avatar,
@@ -438,7 +438,7 @@ export class CallKitHelper {
         user_active: userObject.user_active,
         last_active: userObject.last_active,
       };
-      let dataPartner = {
+      const dataPartner = {
         _id: partnerObject._id.toString(),
         user_login: partnerObject.user_login,
         user_avatar: partnerObject.user_avatar,
@@ -464,7 +464,7 @@ export class CallKitHelper {
         call_time: query.call_time,
       };
 
-      let callkitObject = await this.callkitService.findOne({ room_name: roomName });
+      const callkitObject = await this.callkitService.findOne({ room_name: roomName });
       if (callkitObject) {
         if (callkitObject?.end_time) {
           //isHasCall = true;
@@ -478,7 +478,7 @@ export class CallKitHelper {
           );
         }
         dataUserFrom = await this.userService.findOneLogin({ _id: callkitObject?.user_id?.toString() });
-        let currentTime = new Date();
+        const currentTime = new Date();
         let dataToUpdate = {
           _id: callkitObject._id.toString(),
           start_time: currentTime.toUTCString(),
@@ -498,7 +498,7 @@ export class CallKitHelper {
         if (query?.offer_candidates && Number(query?.version) == 2) {
           dataToUpdate = { ...dataToUpdate, ...{ offer_candidates: JSON.parse(query?.offer_candidates) } };
         }
-        let dataUpdate = await this.callkitService.update(dataToUpdate);
+        const dataUpdate = await this.callkitService.update(dataToUpdate);
         answerCandidatesSocket = JSON.stringify(dataUpdate?.answer_candidates);
         offerCandidatesSocket = JSON.stringify(dataUpdate?.offer_candidates);
         dataToSend = {
@@ -526,7 +526,7 @@ export class CallKitHelper {
             if (Number(query?.notification) != 1) {
               //Set Timeout to End call
               setTimeout(async () => {
-                let dataCall = await this.callkitService.findOne({
+                const dataCall = await this.callkitService.findOne({
                   room_name: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
                 });
                 if (Number(callkitObject.call_time) == 0) {
@@ -538,7 +538,7 @@ export class CallKitHelper {
           }
         }
       } else {
-        let currentTime = new Date();
+        const currentTime = new Date();
         let dataCallkitCreate = {
           user_id: userObject._id.toString(),
           partner_id: query.partner_id,
@@ -559,7 +559,7 @@ export class CallKitHelper {
         if (query?.version) {
           dataCallkitCreate = { ...dataCallkitCreate, ...{ version: query?.version } };
         }
-        let dataCreate = await this.callkitService.create(dataCallkitCreate);
+        const dataCreate = await this.callkitService.create(dataCallkitCreate);
         dataToSend = {
           ...dataToSend,
           ...{
@@ -626,12 +626,12 @@ export class CallKitHelper {
 
         if (!query.notification || Number(query.notification) == 1) {
           console.log("That to Call");
-          let dataToSendNotification = JSON.parse(JSON.stringify(dataToSend));
+          const dataToSendNotification = JSON.parse(JSON.stringify(dataToSend));
           delete dataToSendNotification.offer;
           delete dataToSendNotification.answer;
           delete dataToSendNotification.offer_candidates;
           delete dataToSendNotification.answer_candidates;
-          let dataNotification = {
+          const dataNotification = {
             createdBy: userObject._id.toString(),
             channel_id: req?.channel_id,
             user_id: query.partner_id,
@@ -679,8 +679,8 @@ export class CallKitHelper {
    * @param chatRoomId
    */
   async handleSendNewVersion(userObject: User, chatRoomId: string, req: any, res: any) {
-    let newMessage = `Hi ${userObject?.display_name} please update your app so you can call your friend. Currently your friend using the new app version!`;
-    let roomName = "New call";
+    const newMessage = `Hi ${userObject?.display_name} please update your app so you can call your friend. Currently your friend using the new app version!`;
+    const roomName = "New call";
     await this.chatRoomHelper.setSystemMessage(newMessage, userObject, chatRoomId, roomName, req, res);
   }
 
@@ -697,7 +697,7 @@ export class CallKitHelper {
       if (data.param) {
         dataParam = JSON.parse(data.param);
       }
-      let dataReturn = await this.notificationHelper.handleSendNotificationApple(
+      const dataReturn = await this.notificationHelper.handleSendNotificationApple(
         [data.token],
         "Call to you!",
         dataParam
@@ -716,10 +716,10 @@ export class CallKitHelper {
     callkitObject: Callkit,
     isMissCall: boolean
   ) {
-    let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
-    let currentTime = new Date();
+    const roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+    const currentTime = new Date();
 
-    let objectId = new Types.ObjectId(query?.chat_room_id);
+    const objectId = new Types.ObjectId(query?.chat_room_id);
     if (!objectId) {
       return null;
     }
@@ -730,7 +730,7 @@ export class CallKitHelper {
     }
 
     //Update to Media & Chat
-    let mediaMeta = [
+    const mediaMeta = [
       {
         key: "start_time",
         value: callkitObject.start_time,
@@ -756,7 +756,7 @@ export class CallKitHelper {
         value: !isHaveMinute ? "miss_call_" + query.call_type : query.call_type,
       },
     ];
-    let dataToCreate = {
+    const dataToCreate = {
       media_url: roomName,
       createBy: callkitObject.user_id.toString(),
       media_type: query.call_type,
@@ -768,7 +768,7 @@ export class CallKitHelper {
       chat_history_id: null,
       media_status: 1,
     };
-    let dataMedia = await this.chatMediaService.create(dataToCreate);
+    const dataMedia = await this.chatMediaService.create(dataToCreate);
     if (dataMedia) {
       // let dataCreate = {
       //   user_type: "customer",
@@ -786,13 +786,13 @@ export class CallKitHelper {
       //await this.chatHistoryService.create(dataCreate);
       //Send Notification
 
-      let createChatHistoryDto = {
+      const createChatHistoryDto = {
         chat_room_id: query.chat_room_id,
         chat_content: "",
         media_data: JSON.stringify([dataMedia._id.toString()]),
       };
 
-      let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+      const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
         req,
         res,
         createChatHistoryDto,
@@ -825,9 +825,9 @@ export class CallKitHelper {
     offer_candidates: string = ""
   ) {
     try {
-      let partnerId = partnerObject._id.toString();
+      const partnerId = partnerObject._id.toString();
       this.logger.log("Send a Call to room: " + partnerId);
-      let dataToUpdate = {
+      const dataToUpdate = {
         userObject: JSON.stringify(userObject),
         partnerObject: JSON.stringify(partnerObject),
         token: token,
@@ -849,7 +849,7 @@ export class CallKitHelper {
         timeout: 10000,
       };
       const urlLogin = process.env.SOCKET_API;
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/make-call", params, config)
         .then((response) => {
           if (response?.data) {
@@ -879,28 +879,28 @@ export class CallKitHelper {
    */
   async getListCall(query: GetCallkitDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ from_id: userId } };
+      const dataToFilter = { ...query, ...{ from_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.callkitService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.callkitService.count(dataToFilter);
+      const dataReturn = await this.callkitService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.callkitService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -927,10 +927,10 @@ export class CallKitHelper {
     isExpired: number
   ) {
     try {
-      let partnerId = partnerObject._id.toString();
+      const partnerId = partnerObject._id.toString();
       this.logger.log("Send a Call to room partner: " + partnerId);
       this.logger.log("Send a Call to room user: " + userObject?._id?.toString());
-      let dataToUpdate = {
+      const dataToUpdate = {
         userObject: JSON.stringify(userObject),
         partnerObject: JSON.stringify(partnerObject),
         token: "",
@@ -948,7 +948,7 @@ export class CallKitHelper {
         },
       };
       const urlLogin = process.env.SOCKET_API;
-      let dataNotification = await axios
+      const dataNotification = await axios
         .post(urlLogin + "/end-call", params, config)
         .then((response) => {
           if (response?.data) {

@@ -26,9 +26,9 @@ export class FaceDetectionService {
     }
 
     if (Number(filter.is_today)) {
-      let currentTime = Math.floor(Date.now() / 1);
-      let timeToCompare = currentTime - 24 * 60 * 60 * 1000;
-      let dateToCompare = new Date(timeToCompare);
+      const currentTime = Math.floor(Date.now() / 1);
+      const timeToCompare = currentTime - 24 * 60 * 60 * 1000;
+      const dateToCompare = new Date(timeToCompare);
       condition = Object.assign(condition, { createdAt: { $gt: dateToCompare } });
     }
 
@@ -57,12 +57,12 @@ export class FaceDetectionService {
    * @returns
    */
   async filter(filter: SearchFaceDetectionDto, sortBy: SortByFaceDetectionDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.FaceDetectionModel.find(condition)
+    const dataReturn = await this.FaceDetectionModel.find(condition)
       .populate(
         "user_id",
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
@@ -81,7 +81,7 @@ export class FaceDetectionService {
    */
   public count = async (filter: SearchFaceDetectionDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.FaceDetectionModel.estimatedDocumentCount();
       } else {
@@ -99,7 +99,7 @@ export class FaceDetectionService {
    */
   async create(createUser: CreateFaceDetectionDto) {
     const createdFaceDetection = new this.FaceDetectionModel(createUser);
-    let dataCreate = await createdFaceDetection.save();
+    const dataCreate = await createdFaceDetection.save();
     return dataCreate;
   }
 
@@ -109,9 +109,9 @@ export class FaceDetectionService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -145,7 +145,7 @@ export class FaceDetectionService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -176,7 +176,7 @@ export class FaceDetectionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.FaceDetectionModel.findByIdAndUpdate(
+      const dataReturn = await this.FaceDetectionModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: true }

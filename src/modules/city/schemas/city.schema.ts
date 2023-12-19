@@ -10,12 +10,12 @@ export class UserLocation extends Document {
   @Prop({
     type: String,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
   })
-  coordinates: Number[];
+  coordinates: number[];
 }
 export const UserLocationSchema = SchemaFactory.createForClass(UserLocation);
 
@@ -24,12 +24,12 @@ export class NameCity extends Document {
   @Prop({
     type: String,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: String,
   })
-  name: String;
+  name: string;
 }
 export const NameCitySchema = SchemaFactory.createForClass(NameCity);
 
@@ -38,7 +38,7 @@ export class UserPolygon extends Document {
   @Prop({
     type: String,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -65,20 +65,20 @@ export class City {
     type: String,
     nullable: false,
   })
-  city_name: String;
+  city_name: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  city_ascii: String;
+  city_ascii: string;
 
   @Prop({
     type: String,
     nullable: false,
     index: true,
   })
-  capital: String;
+  capital: string;
 
   @Prop({
     type: UserLocationSchema,
@@ -101,14 +101,14 @@ export class City {
     index: true,
     default: "",
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: String,
     nullable: false,
     index: true,
   })
-  index_name: String;
+  index_name: string;
 
   @Prop({
     type: String,
@@ -116,7 +116,7 @@ export class City {
     index: true,
     default: "",
   })
-  country_code: String;
+  country_code: string;
 
   @Prop({
     type: String,
@@ -124,14 +124,14 @@ export class City {
     default: "",
     index: true,
   })
-  country_iso2: String;
+  country_iso2: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  country_iso3: String;
+  country_iso3: string;
 
   @Prop({
     type: String,
@@ -139,7 +139,7 @@ export class City {
     default: "",
     index: true,
   })
-  localname: String;
+  localname: string;
 
   @Prop({
     type: [NameCitySchema],
@@ -153,14 +153,14 @@ export class City {
     nullable: false,
     default: "",
   })
-  avatar: String;
+  avatar: string;
 
   @Prop({
     type: String,
     nullable: false,
     default: "",
   })
-  avatar_thumbnail: String;
+  avatar_thumbnail: string;
 
   @Prop({
     type: Number,
@@ -168,7 +168,7 @@ export class City {
     default: 0,
     index: true,
   })
-  user_number: Number;
+  user_number: number;
 
   @Prop({
     type: Number,
@@ -176,7 +176,7 @@ export class City {
     default: 0,
     index: true,
   })
-  visit_number: Number;
+  visit_number: number;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatRoom", default: null, index: true, nullable: true })
   chat_group: ChatRoom;
@@ -187,7 +187,7 @@ export class City {
     index: true,
     default: 0,
   })
-  is_viewable: Number;
+  is_viewable: number;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,

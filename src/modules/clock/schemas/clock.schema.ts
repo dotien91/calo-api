@@ -30,7 +30,7 @@ export class Clock {
     type: String,
     nullable: false,
   })
-  clock_type: String;
+  clock_type: string;
 
   @Prop({
     type: String,
@@ -38,7 +38,7 @@ export class Clock {
     index: true,
     default: "enable",
   })
-  status: String;
+  status: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null, index: true })
   last_wake_time: MongooseSchema.Types.Date;

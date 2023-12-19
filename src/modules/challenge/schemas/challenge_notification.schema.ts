@@ -34,14 +34,14 @@ export class ChallengeNotification {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({ type: MongooseSchema.Types.Array, ref: "ChatMedia", index: true })
   public_album: ChatMedia[];

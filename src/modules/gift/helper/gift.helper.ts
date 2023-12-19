@@ -77,7 +77,7 @@ export class GiftHelper {
         stock_qty: "0",
         gift_type: "gift",
       };
-      let giftsDelivered = await this.giftService.filter(giftFilter, {}, 1, 100000);
+      const giftsDelivered = await this.giftService.filter(giftFilter, {}, 1, 100000);
 
       giftsDelivered.forEach(async (gift) => {
         let channelPermissionFilter = {
@@ -103,10 +103,10 @@ export class GiftHelper {
             level_number: { $gte: gift.gift_conditions.level },
           });
         }
-        let userSatisfy = await this.channelPermissionService.filter(channelPermissionFilter, {}, 1, 100000);
+        const userSatisfy = await this.channelPermissionService.filter(channelPermissionFilter, {}, 1, 100000);
         if (userSatisfy.length > 0) {
           console.log(userSatisfy.map((item) => console.log(item?.user_id?._id)));
-          let createGiveGiftDto: NotiGiveGiftDto = {
+          const createGiveGiftDto: NotiGiveGiftDto = {
             quantity: gift.stock_qty.valueOf(),
             gift_id: gift,
             partner_id: userSatisfy.map((item) => item?.user_id?._id).join(","),
@@ -128,19 +128,19 @@ export class GiftHelper {
    */
   async createGift(createGiftData: CreateGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let headerObject = req?.headers;
+      const headerObject = req?.headers;
       let channelId: string = "";
       if (headerObject && headerObject["x-channel"]) {
         channelId = headerObject["x-channel"]?.toString();
       }
 
-      let userPermission = await this.channelPermissionService.findOne({
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -181,8 +181,8 @@ export class GiftHelper {
         delete createGiftData?.gift_digital_media;
       }
 
-      let dataCreate = await this.giftService.create(createGiftData);
-      let dataReturn = await this.giftService.findOne({ _id: dataCreate?._id });
+      const dataCreate = await this.giftService.create(createGiftData);
+      const dataReturn = await this.giftService.findOne({ _id: dataCreate?._id });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -201,12 +201,12 @@ export class GiftHelper {
    */
   async updateGift(updateGiftData: UpdateGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = userObject._id.toString();
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -237,7 +237,7 @@ export class GiftHelper {
         };
       }
 
-      let dataReturn = await this.giftService.update(updateGiftData);
+      const dataReturn = await this.giftService.update(updateGiftData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -256,13 +256,13 @@ export class GiftHelper {
    */
   async updateUserGift(updateGiftData: UpdateUserGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -282,8 +282,8 @@ export class GiftHelper {
         throw new ForbiddenException("You not have permission for this action!");
       }
 
-      let oldUserGift = await this.userGiftService.findOne({ _id: updateGiftData._id });
-      let dataReturn = await this.userGiftService.update(updateGiftData);
+      const oldUserGift = await this.userGiftService.findOne({ _id: updateGiftData._id });
+      const dataReturn = await this.userGiftService.update(updateGiftData);
       if (updateGiftData.gift_status !== "pending" && oldUserGift.gift_status !== updateGiftData?.gift_status) {
         this.eventHookNotificationService.sendNotiApplyReceiveGift({
           send_user_id: req?.user_id?.toString(),
@@ -324,7 +324,7 @@ export class GiftHelper {
    */
   async getAllUserGiftByAdmin(query: ListUserGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -332,40 +332,40 @@ export class GiftHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       // if (await this.userPermissionService.isHavePermission(userId, "gift/list")) {
       //Check Permission
       let dataToFilter = query;
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let channelId = req?.channel_id || query?.channel_id;
+      const channelId = req?.channel_id || query?.channel_id;
 
       if (channelId) {
         dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
       }
 
-      let dataReturn = await this.userGiftService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.userGiftService.filter(dataToFilter, orderByOBject, page, limit);
 
       let dataChannelPermission = [];
 
-      for (let dataIndexItem in dataReturn) {
+      for (const dataIndexItem in dataReturn) {
         dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
       }
 
       //Get Data level
       if (channelId) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: channelId,
           user_ids: dataUserIds,
         };
@@ -376,9 +376,9 @@ export class GiftHelper {
           limit
         );
       }
-      for (let dataReturnItem in dataReturn) {
+      for (const dataReturnItem in dataReturn) {
         //Check user
-        let dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
+        const dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
           if (value?.user_id?._id?.toString() == dataReturn[dataReturnItem]?.user_id?._id?.toString()) {
             filtered.push({
               ...value?.user_id?.toObject(),
@@ -399,7 +399,7 @@ export class GiftHelper {
         }
       }
 
-      let dataCount = await this.userGiftService.count(dataToFilter);
+      const dataCount = await this.userGiftService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -425,8 +425,8 @@ export class GiftHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
 
       if (query?.order_by && query?.order_type == "price") {
@@ -453,8 +453,8 @@ export class GiftHelper {
       if (req?.channel_id) {
         dataToFilter = { ...dataToFilter, ...{ channel_id: req?.channel_id } };
       }
-      let dataReturn = await this.giftService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.giftService.count(dataToFilter);
+      const dataReturn = await this.giftService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.giftService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -473,28 +473,28 @@ export class GiftHelper {
    */
   async handleSellGift(updateGiftData: CreateSellGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let userId = userObject._id.toString();
-      let dataReturn = null;
+      const authCode = req?.auth_code;
+      const userId = userObject._id.toString();
+      const dataReturn = null;
 
       //Check Coin
-      let dataGift = await this.giftService.findOne({ _id: updateGiftData.gift_id });
+      const dataGift = await this.giftService.findOne({ _id: updateGiftData.gift_id });
 
       if (dataGift) {
         //get gif Coin
-        let coinOfGift = Number(dataGift?.price);
-        let totalCoin = coinOfGift * Number(updateGiftData?.quantity);
+        const coinOfGift = Number(dataGift?.price);
+        const totalCoin = coinOfGift * Number(updateGiftData?.quantity);
 
         //Check Coin of User
-        let userAfterObject: any = await this.appUserService.findOneLogin({ _id: userId });
+        const userAfterObject: any = await this.appUserService.findOneLogin({ _id: userId });
         //let userCoin = Number(userAfterObject?.current_coin);
 
         //Check coin before;
-        let dataUserCoinBefore = await this.userGiftService.findOne({
+        const dataUserCoinBefore = await this.userGiftService.findOne({
           user_id: userObject?._id,
           gift_id: updateGiftData?.gift_id,
         });
@@ -502,7 +502,7 @@ export class GiftHelper {
         if (!dataUserCoinBefore) {
           throw new BadRequestException("Not enough gift to sell!");
         }
-        let totalQuantity = Number(dataUserCoinBefore?.quantity);
+        const totalQuantity = Number(dataUserCoinBefore?.quantity);
         if (totalQuantity < Number(updateGiftData?.quantity)) {
           throw new BadRequestException("Not enough gift to sell!");
         } else {
@@ -517,9 +517,9 @@ export class GiftHelper {
               .status(HttpStatus.OK)
               .json(dataUserCoinBefore);
           } else {
-            let giftQuantityAfter = totalQuantity - Number(updateGiftData?.quantity);
-            let totalCoinAfter = giftQuantityAfter * Number(dataGift?.price);
-            let dataCoinUser = {
+            const giftQuantityAfter = totalQuantity - Number(updateGiftData?.quantity);
+            const totalCoinAfter = giftQuantityAfter * Number(dataGift?.price);
+            const dataCoinUser = {
               _id: dataUserCoinBefore?._id?.toString(),
               quantity: giftQuantityAfter,
               total_price: totalCoinAfter,
@@ -543,34 +543,34 @@ export class GiftHelper {
 
   async handleAutoGiveGift(updateGiftData: NotiGiveGiftDto) {
     try {
-      let dataGift = updateGiftData.gift_id;
+      const dataGift = updateGiftData.gift_id;
       // if (Number(dataGift?.stock_qty) > 0 && Number(dataGift?.gift_conditions?.coin) > 0) {
       if (Number(dataGift?.stock_qty) > 0) {
-        let dataChannel = await this.channelService.findOne({ _id: dataGift.channel_id });
+        const dataChannel = await this.channelService.findOne({ _id: dataGift.channel_id });
 
         //Check Mentor
         if (dataGift) {
           //get gif Coin
-          let coinOfGift = Number(dataGift?.price);
-          let quantityOfGift = Number(dataGift.stock_qty);
-          let dataPartnerObject = updateGiftData?.partner_id?.split(",");
+          const coinOfGift = Number(dataGift?.price);
+          const quantityOfGift = Number(dataGift.stock_qty);
+          const dataPartnerObject = updateGiftData?.partner_id?.split(",");
 
           if (quantityOfGift == 0 && quantityOfGift < dataPartnerObject?.length) {
             throw new BadRequestException("Not enough gift to sell!");
           }
           let totalQuantityUpdate = 0;
           let stock_qty = Number(dataGift?.stock_qty);
-          for (let partnerObject of dataPartnerObject) {
-            let dataUserGift = await this.notificationService.findOne({
+          for (const partnerObject of dataPartnerObject) {
+            const dataUserGift = await this.notificationService.findOne({
               gift_id: dataGift._id.toString(),
               user_id: partnerObject,
             });
             if (!dataUserGift && stock_qty > 0) {
-              let totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
-              let dataUser = await this.userService.findOne({ _id: partnerObject });
+              const totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
+              const dataUser = await this.userService.findOne({ _id: partnerObject });
 
               // let dataToReturn = null;
-              let dataCoinUser = {
+              const dataCoinUser = {
                 user_id: partnerObject,
                 channel_id: dataGift?.channel_id?.toString(),
                 gift_id: dataGift._id.toString(),
@@ -579,7 +579,7 @@ export class GiftHelper {
                 gift_status: "received",
               };
               totalQuantityUpdate = totalQuantityUpdate + Number(updateGiftData?.quantity);
-              let dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
+              const dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
               this.logger.log("Send Gift To Memmer Success" + JSON.stringify(dataToReturnPartner));
               await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift });
               // await this.notificationHelper.sendNotificationAndEmailReceiveGift(dataChannel, dataUser, dataGift);
@@ -603,24 +603,24 @@ export class GiftHelper {
    */
   async handleGiveGift(updateGiftData: CreateGiveGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let sessionId = req?.session_id;
+      const authCode = req?.auth_code;
+      const sessionId = req?.session_id;
       // let channelId = req?.channel_id;
-      let userId = userObject._id.toString();
-      let dataReturn = null;
-      let dataGiftArray = updateGiftData?.gift_id?.split(",");
-      let dataToReturn = [];
-      for (let dataGiftItem of dataGiftArray) {
+      const userId = userObject._id.toString();
+      const dataReturn = null;
+      const dataGiftArray = updateGiftData?.gift_id?.split(",");
+      const dataToReturn = [];
+      for (const dataGiftItem of dataGiftArray) {
         //Check Coin
-        let dataGift = await this.giftService.findOne({ _id: dataGiftItem });
-        let channelId = dataGift?.channel_id?.toString();
-        let dataChannel = await this.channelService.findOne({ _id: channelId });
+        const dataGift = await this.giftService.findOne({ _id: dataGiftItem });
+        const channelId = dataGift?.channel_id?.toString();
+        const dataChannel = await this.channelService.findOne({ _id: channelId });
 
-        let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+        const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
         let havePermission = false;
         if (
           userPermission?.channel_role == "mentor" ||
@@ -639,21 +639,21 @@ export class GiftHelper {
         //Check Mentor
         if (dataGift) {
           //get gif Coin
-          let coinOfGift = Number(dataGift?.price);
-          let quantityOfGift = Number(dataGift.stock_qty);
-          let dataPartnerObject = updateGiftData?.partner_id?.split(",");
+          const coinOfGift = Number(dataGift?.price);
+          const quantityOfGift = Number(dataGift.stock_qty);
+          const dataPartnerObject = updateGiftData?.partner_id?.split(",");
 
           if (quantityOfGift == 0 && quantityOfGift < dataPartnerObject?.length) {
             throw new BadRequestException("Not enough gift to sell!");
           }
           let totalQuantityUpdate = 0;
 
-          for (let partnerObject of dataPartnerObject) {
-            let totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
-            let dataUser = await this.userService.findOne({ _id: partnerObject });
+          for (const partnerObject of dataPartnerObject) {
+            const totalPrice = Number(coinOfGift) * Number(updateGiftData?.quantity);
+            const dataUser = await this.userService.findOne({ _id: partnerObject });
 
             // let dataToReturn = null;
-            let dataCoinUser = {
+            const dataCoinUser = {
               user_id: partnerObject,
               gift_id: dataGiftItem,
               quantity: updateGiftData?.quantity,
@@ -662,7 +662,7 @@ export class GiftHelper {
               gift_status: "prepare",
             };
             totalQuantityUpdate = totalQuantityUpdate + Number(updateGiftData?.quantity);
-            let dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
+            const dataToReturnPartner: any = await this.userGiftService.create(dataCoinUser);
             dataToReturn.push(dataToReturnPartner?.toObject());
             await this.queueService.addTaskNoti({ dataChannel: dataChannel, dataUser: dataUser, dataGift: dataGift });
             // await this.notificationHelper.sendNotificationAndEmailReceiveGift(dataChannel, dataUser, dataGift);
@@ -697,46 +697,46 @@ export class GiftHelper {
    */
   async handleBuyGift(updateGiftData: CreateBuyGiftDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code;
-      let userId = userObject._id.toString();
-      let dataReturn = null;
+      const authCode = req?.auth_code;
+      const userId = userObject._id.toString();
+      const dataReturn = null;
 
       //Check Coin
-      let dataGift = await this.giftService.findOne({ _id: updateGiftData.gift_id });
+      const dataGift = await this.giftService.findOne({ _id: updateGiftData.gift_id });
 
       if (dataGift) {
         //get gif Coin
-        let coinOfGift = Number(dataGift?.price);
-        let totalCoin = coinOfGift * Number(updateGiftData?.quantity);
+        const coinOfGift = Number(dataGift?.price);
+        const totalCoin = coinOfGift * Number(updateGiftData?.quantity);
         //Check Coin of User
-        let userAfterObject: any = await this.appUserService.findOneLogin({ _id: userId });
-        let userCoin = Number(userAfterObject?.current_coin);
+        const userAfterObject: any = await this.appUserService.findOneLogin({ _id: userId });
+        const userCoin = Number(userAfterObject?.current_coin);
         if (userCoin < totalCoin) {
           throw new BadRequestException("Not enough coin to buy this gift!");
         } else {
           //Update coin and update gift
           await this.transactionHelper.handleProcessUpdateCoinGift(userAfterObject, totalCoin, 0, dataGift, authCode);
           //Check coin before;
-          let dataUserCoinBefore = await this.userGiftService.findOne({
+          const dataUserCoinBefore = await this.userGiftService.findOne({
             user_id: userObject?._id,
             gift_id: updateGiftData?.gift_id,
           });
           let dataToReturn = null;
           if (dataUserCoinBefore) {
-            let totalPrice = Number(totalCoin) + Number(dataUserCoinBefore?.total_price);
-            let totalQuantity = Number(updateGiftData?.quantity) + Number(dataUserCoinBefore?.quantity);
-            let dataCoinUser = {
+            const totalPrice = Number(totalCoin) + Number(dataUserCoinBefore?.total_price);
+            const totalQuantity = Number(updateGiftData?.quantity) + Number(dataUserCoinBefore?.quantity);
+            const dataCoinUser = {
               _id: dataUserCoinBefore?._id?.toString(),
               quantity: totalQuantity,
               total_price: totalPrice,
             };
             dataToReturn = await this.userGiftService.update(dataCoinUser);
           } else {
-            let dataCoinUser = {
+            const dataCoinUser = {
               user_id: userObject?._id?.toString(),
               gift_id: updateGiftData?.gift_id,
               channel_id: dataGift?.channel_id,
@@ -770,11 +770,11 @@ export class GiftHelper {
    */
   async getUserGiftByUserId(query: ListUserGiftDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
         if (!(await this.userPermissionService.isHavePermission(userId, "gift/list"))) {
           throw new BadRequestException("You haven't permission for this Action!");
@@ -788,18 +788,18 @@ export class GiftHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilterBefore = query;
+      const dataToFilterBefore = query;
       delete dataToFilterBefore.page;
       delete dataToFilterBefore.limit;
       delete dataToFilterBefore.order_by;
       dataToFilter = { ...dataToFilterBefore, ...dataToFilter };
-      let dataReturn = await this.userGiftService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.userGiftService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -818,13 +818,13 @@ export class GiftHelper {
    */
   async removeGift(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = req?.user_id;
-      let userPermission = await this.channelPermissionService.findOne({
+      const userId = req?.user_id;
+      const userPermission = await this.channelPermissionService.findOne({
         user_id: userId,
         channel_id: req?.channel_id,
       });
@@ -846,7 +846,7 @@ export class GiftHelper {
 
       if (await this.userPermissionService.isHavePermission(userId, "gift/delete")) {
         //Check Permission
-        let dataReturn = await this.giftService.remove(id);
+        const dataReturn = await this.giftService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -868,23 +868,23 @@ export class GiftHelper {
    */
   async handleGetDetailGift(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       let userId = "";
       if (userObject) {
         userId = userObject._id.toString();
       }
-      let dataFilter = {
+      const dataFilter = {
         _id: id,
       };
       //Check Permission
       let dataReturn: any = await this.giftService.findOne(dataFilter);
       //Check gift
       if (userId) {
-        let dataUserGiftFilterr = {
+        const dataUserGiftFilterr = {
           user_id: userId,
           gift_id: id,
         };
-        let dataUserGift: any = await this.userGiftService.findOne(dataUserGiftFilterr);
+        const dataUserGift: any = await this.userGiftService.findOne(dataUserGiftFilterr);
         dataReturn = { ...dataReturn.toObject(), ...{ last_user_gift: dataUserGift?.toObject() } };
       }
 
@@ -915,7 +915,7 @@ export class GiftHelper {
     authCode: string,
     sessionId: string
   ) {
-    let mediaMeta = [
+    const mediaMeta = [
       {
         key: "display_name",
         value: userObject?.display_name,
@@ -931,7 +931,7 @@ export class GiftHelper {
       },
     ];
 
-    let dataToCreate = {
+    const dataToCreate = {
       media_url: roomName,
       createBy: userObject._id.toString(),
       media_type: "gift",
@@ -943,10 +943,10 @@ export class GiftHelper {
       chat_history_id: null,
       media_status: 1,
     };
-    let currentTime = new Date();
-    let dataMedia = await this.chatMediaService.create(dataToCreate);
+    const currentTime = new Date();
+    const dataMedia = await this.chatMediaService.create(dataToCreate);
     if (dataMedia) {
-      let createChatHistoryDto = {
+      const createChatHistoryDto = {
         chat_room_id: chatRoomId,
         chat_content: "",
         media_data: JSON.stringify([dataMedia._id.toString()]),
@@ -958,7 +958,7 @@ export class GiftHelper {
       req.auth_code = authCode;
 
       try {
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,

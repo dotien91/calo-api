@@ -52,7 +52,7 @@ export class TicketService {
 
     if (filter.post_category) {
       if (filter.post_category?.indexOf(",") !== -1) {
-        let dataRefArray = filter.post_category?.split(",");
+        const dataRefArray = filter.post_category?.split(",");
         condition = Object.assign(condition, { post_category: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { post_category: filter.post_category });
@@ -102,7 +102,7 @@ export class TicketService {
    * @returns
    */
   async filter(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -113,7 +113,7 @@ export class TicketService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-    let dataReturn = await this.ticketModel
+    const dataReturn = await this.ticketModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -139,13 +139,13 @@ export class TicketService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.ticketModel
+    const projection = {};
+    const dataReturn = await this.ticketModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -169,7 +169,7 @@ export class TicketService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       let sortObject = {};
       let projection = {};
       if (filter.search) {
@@ -193,7 +193,7 @@ export class TicketService {
    */
   async create(createUser: CreateTicketDto) {
     const createdPost = new this.ticketModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -203,9 +203,9 @@ export class TicketService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -250,7 +250,7 @@ export class TicketService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

@@ -18,12 +18,12 @@ export class EcoSystemHelper {
 
   async updateEcosystem() {
     try {
-      let dataEcosystem = await this.ecoSystemService.filter({}, {}, 1, 1000);
-      for (let itemEcosystem of dataEcosystem) {
+      const dataEcosystem = await this.ecoSystemService.filter({}, {}, 1, 1000);
+      for (const itemEcosystem of dataEcosystem) {
         // console.log(itemEcosystem?.id)
-        let dataUrlAndroid = "https://play.google.com/store/apps/details?id=" + itemEcosystem.id;
-        let dataIOS = "https://apps.apple.com/developer/iceo-technology-joint-stock/id1449105284";
-        let dataUpdate = {
+        const dataUrlAndroid = "https://play.google.com/store/apps/details?id=" + itemEcosystem.id;
+        const dataIOS = "https://apps.apple.com/developer/iceo-technology-joint-stock/id1449105284";
+        const dataUpdate = {
           _id: itemEcosystem?._id,
           link: {
             android: dataUrlAndroid,
@@ -31,9 +31,9 @@ export class EcoSystemHelper {
             website: "",
           },
         };
-        let dataLength = Object.keys(itemEcosystem?.des).length;
+        const dataLength = Object.keys(itemEcosystem?.des).length;
         if (!dataLength) {
-          let dataUpdateDes = {
+          const dataUpdateDes = {
             _id: itemEcosystem?._id,
             des: {
               "com.taki.lgbt.whiteg":
@@ -64,11 +64,11 @@ export class EcoSystemHelper {
    */
   async createNewEcoSystem(createEcoSystemData: CreateEcoSystemDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Update
       if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
         if (createEcoSystemData.des) {
@@ -94,7 +94,7 @@ export class EcoSystemHelper {
             ...{ white_list: JSON.parse(createEcoSystemData.white_list) },
           };
         }
-        let dataCreate = await this.ecoSystemService.create(createEcoSystemData);
+        const dataCreate = await this.ecoSystemService.create(createEcoSystemData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -121,18 +121,18 @@ export class EcoSystemHelper {
         query.limit = 10;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
-      let orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
+      const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
 
-      let configByOBject = {
+      const configByOBject = {
         createdAt: orderBy,
       };
 
-      let dataToFilter = { ...query };
-      let isWhiteList = false;
-      let dataWhiteListToSort = [];
+      const dataToFilter = { ...query };
+      const isWhiteList = false;
+      const dataWhiteListToSort = [];
       // if (query?.white_list) {
       //   isWhiteList = true;
       //   let dataWhiteList = await this.ecoSystemService.findOne({ id: dataToFilter?.white_list });
@@ -145,8 +145,8 @@ export class EcoSystemHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.ecoSystemService.filter(dataToFilter, configByOBject, page, limit);
-      let dataCount = await this.ecoSystemService.count(dataToFilter);
+      const dataReturn = await this.ecoSystemService.filter(dataToFilter, configByOBject, page, limit);
+      const dataCount = await this.ecoSystemService.count(dataToFilter);
 
       // if (isWhiteList) {
       //   dataReturn = _.sortBy(dataReturn, function(item:any){
@@ -156,11 +156,11 @@ export class EcoSystemHelper {
 
       //Update
       if (dataReturn) {
-        let dataIds = [];
-        for (let itemReturn of dataReturn) {
+        const dataIds = [];
+        for (const itemReturn of dataReturn) {
           dataIds.push(itemReturn?._id);
         }
-        let dataFilter = { _id: { $in: dataIds } };
+        const dataFilter = { _id: { $in: dataIds } };
         await this.ecoSystemService.updateCount(dataFilter, { view_count: 1 });
       }
       return res
@@ -182,8 +182,8 @@ export class EcoSystemHelper {
    */
   async getEcoSystemListByUser(type: string, query: ListEcoSystemDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataToFilter = { id: type };
-      let dataReturnEcoSystem: any = await this.ecoSystemService.findOne(dataToFilter);
+      const dataToFilter = { id: type };
+      const dataReturnEcoSystem: any = await this.ecoSystemService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -202,14 +202,14 @@ export class EcoSystemHelper {
    */
   async handleDeleteEcoSystem(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "config/delete")) {
         //Check Permission
-        let dataReturn = await this.ecoSystemService.remove(id);
+        const dataReturn = await this.ecoSystemService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -231,13 +231,13 @@ export class EcoSystemHelper {
    */
   async handleGetDetailEcoSystem(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.ecoSystemService.findById(id.toString());
+      const dataReturn = await this.ecoSystemService.findById(id.toString());
       if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -260,11 +260,11 @@ export class EcoSystemHelper {
    */
   async handleUpdateEcoSystemByAdmin(dataUpdate: UpdateEcoSystemDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "config/update")) {
         if (dataUpdate.des) {
@@ -283,7 +283,7 @@ export class EcoSystemHelper {
         if (dataUpdate.public_album) {
           dataUpdate = { ...dataUpdate, ...{ public_album: JSON.parse(dataUpdate.public_album) } };
         }
-        let dataReturn = await this.ecoSystemService.update(dataUpdate);
+        const dataReturn = await this.ecoSystemService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

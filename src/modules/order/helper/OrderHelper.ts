@@ -78,7 +78,7 @@ export class OrderHelper {
    */
   async processCreateOrderCourse(dataJoin: CreateCourseLikeDto, courseData: Course) {
     try {
-      let dataToAdd = {
+      const dataToAdd = {
         channel_id: courseData?.channel_id?.toString(),
         payment_method: "transfer",
         user_id: dataJoin?.user_id,
@@ -114,13 +114,13 @@ export class OrderHelper {
   async handleVnpayIpn(res: Response, req: ExpressRequestDto) {
     try {
       let vnp_Params = req.query;
-      let secureHash = vnp_Params["vnp_SecureHash"];
+      const secureHash = vnp_Params["vnp_SecureHash"];
 
-      let orderId = vnp_Params["vnp_TxnRef"];
-      let rspCode = vnp_Params["vnp_ResponseCode"];
-      let amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
+      const orderId = vnp_Params["vnp_TxnRef"];
+      const rspCode = vnp_Params["vnp_ResponseCode"];
+      const amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
 
-      let allowedIpdArray = [
+      const allowedIpdArray = [
         "113.160.92.202",
         "113.52.45.78",
         "116.97.245.130",
@@ -131,12 +131,12 @@ export class OrderHelper {
         "103.220.86.4",
       ];
 
-      let ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
+      const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
       if (allowedIpdArray?.indexOf(ipAddr?.toString()) === -1) {
         res.status(200).json({ RspCode: "99", Message: "Unknow error" });
       }
 
-      let dataCreate = {
+      const dataCreate = {
         ip_address: ipAddr,
         data_log: JSON.stringify(vnp_Params),
       };
@@ -147,20 +147,20 @@ export class OrderHelper {
 
       vnp_Params = this.sortObject(vnp_Params);
 
-      let secretKey = process.env.VNPAY_SECRET_KEY;
-      let querystring = require("qs");
-      let signData = querystring.stringify(vnp_Params, { encode: false });
-      let crypto = require("crypto");
-      let hmac = crypto.createHmac("sha512", secretKey);
-      let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+      const secretKey = process.env.VNPAY_SECRET_KEY;
+      const querystring = require("qs");
+      const signData = querystring.stringify(vnp_Params, { encode: false });
+      const crypto = require("crypto");
+      const hmac = crypto.createHmac("sha512", secretKey);
+      const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
-      let paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
+      const paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
 
       //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
       //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-      let dataOrder = await this.orderService.findById(orderId?.toString() || "");
+      const dataOrder = await this.orderService.findById(orderId?.toString() || "");
 
       if (dataOrder) {
         checkOrderId = true;
@@ -185,7 +185,7 @@ export class OrderHelper {
                 //thanh cong
                 //paymentStatus = '1'
                 // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-                let dataUpdate = {
+                const dataUpdate = {
                   _id: orderId?.toString(),
                   status: "success",
                 };
@@ -196,7 +196,7 @@ export class OrderHelper {
                 //that bai
                 //paymentStatus = '2'
                 // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
-                let dataUpdate = {
+                const dataUpdate = {
                   _id: orderId?.toString(),
                   status: "close",
                 };
@@ -204,7 +204,7 @@ export class OrderHelper {
                 res.status(200).json({ RspCode: "00", Message: "Success" });
               }
             } else {
-              let dataUpdate = {
+              const dataUpdate = {
                 _id: orderId?.toString(),
                 status: "close",
               };
@@ -213,7 +213,7 @@ export class OrderHelper {
               res.status(200).json({ RspCode: "02", Message: "This order has been updated to the payment status" });
             }
           } else {
-            let dataUpdate = {
+            const dataUpdate = {
               _id: orderId?.toString(),
               status: "close",
             };
@@ -257,36 +257,36 @@ export class OrderHelper {
         return res.json({ status: "false" }).status(404);
       }
 
-      let secureHash = vnp_Params["vnp_SecureHash"];
-      let rspCode = vnp_Params["vnp_ResponseCode"];
+      const secureHash = vnp_Params["vnp_SecureHash"];
+      const rspCode = vnp_Params["vnp_ResponseCode"];
 
       delete vnp_Params["vnp_SecureHash"];
       delete vnp_Params["vnp_SecureHashType"];
 
-      let orderId = vnp_Params["vnp_TxnRef"];
-      let amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
+      const orderId = vnp_Params["vnp_TxnRef"];
+      const amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
 
-      let paymentStatus = "0";
+      const paymentStatus = "0";
 
       vnp_Params = this.sortObject(vnp_Params);
       // let secretKey = process.env.
-      let tmnCode = process.env.VNPAY_TMNCODE;
-      let secretKey = process.env.VNPAY_SECRET_KEY;
-      let vnpUrl = process.env.VNPAY_URL;
-      let returnUrl = process.env.VNPAY_RETURN_URL;
+      const tmnCode = process.env.VNPAY_TMNCODE;
+      const secretKey = process.env.VNPAY_SECRET_KEY;
+      const vnpUrl = process.env.VNPAY_URL;
+      const returnUrl = process.env.VNPAY_RETURN_URL;
 
-      let querystring = require("qs");
-      let signData = querystring.stringify(vnp_Params, { encode: false });
-      let crypto = require("crypto");
-      let hmac = crypto.createHmac("sha512", secretKey);
-      let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+      const querystring = require("qs");
+      const signData = querystring.stringify(vnp_Params, { encode: false });
+      const crypto = require("crypto");
+      const hmac = crypto.createHmac("sha512", secretKey);
+      const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-      let dataOrder = await this.orderService.findById(orderId?.toString() || "");
+      const dataOrder = await this.orderService.findById(orderId?.toString() || "");
 
-      let channelId = dataOrder?.channel_id;
-      let channelObject = await this.channelService.findOne({ _id: channelId });
+      const channelId = dataOrder?.channel_id;
+      const channelObject = await this.channelService.findOne({ _id: channelId });
 
       let dataRedirect =
         (channelObject?.domain || "https://gamifa.vn") + "/r/orders/detail/" + dataOrder?._id?.toString();
@@ -311,28 +311,28 @@ export class OrderHelper {
                 //thanh cong
                 //paymentStatus = '1'
                 // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-                let dataUpdate = {
+                const dataUpdate = {
                   _id: orderId?.toString(),
                   status: "success",
                 };
                 await this.orderService.update(dataUpdate);
                 await this.updateOrderAfter(orderId?.toString(), dataOrder?.status?.toString());
               } else {
-                let dataUpdate = {
+                const dataUpdate = {
                   _id: orderId?.toString(),
                   status: "close",
                 };
                 await this.orderService.update(dataUpdate);
               }
             } else {
-              let dataUpdate = {
+              const dataUpdate = {
                 _id: orderId?.toString(),
                 status: "close",
               };
               await this.orderService.update(dataUpdate);
             }
           } else {
-            let dataUpdate = {
+            const dataUpdate = {
               _id: orderId?.toString(),
               status: "close",
             };
@@ -360,19 +360,19 @@ export class OrderHelper {
    */
   async createNewOrder(createOrderData: CreateOrderDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let planObject = await this.planService.findById(createOrderData.plan_id);
-      let oldOrder = await this.orderService.findOne({});
+      const planObject = await this.planService.findById(createOrderData.plan_id);
+      const oldOrder = await this.orderService.findOne({});
       let oldShortId = 1;
       if (oldOrder) {
         oldShortId = Number(oldOrder.short_id) + 1;
       }
-      let channelId = req?.channel_id || "";
+      const channelId = req?.channel_id || "";
       if (channelId) {
         createOrderData = { ...createOrderData, ...{ channel_id: channelId } };
       }
@@ -385,7 +385,7 @@ export class OrderHelper {
       //Kiểm tra trường hợp có ngày dùng thử
       if (Number(planObject?.trial_day)) {
         //Check Subscribe
-        let subscribe = await this.subscribeService.filter(
+        const subscribe = await this.subscribeService.filter(
           {
             user_id: userId,
             service_id: planObject?.service_id?.toString(),
@@ -459,8 +459,8 @@ export class OrderHelper {
         //Nếu là chuyển khoản thì bay tới trang detail luôn!
         if (dataCreate.payment_method == "transfer") {
           //Return after
-          let redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          let dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
           dataCreate = await this.orderService.update(dataUpdate);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -470,8 +470,8 @@ export class OrderHelper {
 
         //Trường hợp này là payment_method là miễn phí!
         if (dataCreate.payment_method == "free") {
-          let redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          let dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl, status: "success" };
+          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl, status: "success" };
           dataCreate = await this.orderService.update(dataUpdate);
           dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
           return res
@@ -480,14 +480,14 @@ export class OrderHelper {
             .json(dataCreate);
         }
         if (dataCreate.payment_method == "vn_pay") {
-          let redirectUrl = await this.createVNPayLink(
+          const redirectUrl = await this.createVNPayLink(
             req,
             Number(planObject.price) * Number(createOrderData.amount_of_package),
             "",
             "",
             dataCreate?._id?.toString()
           );
-          let dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
           dataCreate = await this.orderService.update(dataUpdate);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -498,8 +498,8 @@ export class OrderHelper {
         if (dataCreate?.status == "success") {
           //Update After
           //Update Channel
-          let redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          let dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
           dataCreate = await this.orderService.update(dataUpdate);
           dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
           return res
@@ -530,15 +530,15 @@ export class OrderHelper {
    */
   async getOrderListByAdmin(query: ListOrderDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
       //Check User Role
-      let userId = userObject._id.toString();
-      let channelId = req?.channel_id;
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userId = userObject._id.toString();
+      const channelId = req?.channel_id;
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -559,8 +559,8 @@ export class OrderHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -570,13 +570,13 @@ export class OrderHelper {
       //Check Channel
       if (channelId?.toString() !== process.env.DEFAULT_CHANNEL) {
         //Get Service Id
-        let dataServiceArray = await this.handleService.filter(
+        const dataServiceArray = await this.handleService.filter(
           { service_type: "extension,channel,domain,mobile" },
           {},
           1,
           1000
         );
-        let dataServiceId = dataServiceArray?.map((valueService: HandleService, index: number) => {
+        const dataServiceId = dataServiceArray?.map((valueService: HandleService, index: number) => {
           return valueService?._id?.toString();
         });
         dataToFilter = { ...dataToFilter, ...{ service_not_in: dataServiceId } };
@@ -588,8 +588,8 @@ export class OrderHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.orderService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.orderService.count(dataToFilter);
+      const dataReturn = await this.orderService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.orderService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -604,12 +604,12 @@ export class OrderHelper {
 
   async getListPaymentMethod(query: ListPaymentMethodDto, res: Response, req: ExpressRequestDto) {
     try {
-      let channelId = req?.channel_id || query?.channel_id;
+      const channelId = req?.channel_id || query?.channel_id;
       if (!channelId) {
         throw new ForbiddenException("Channel is invalid");
       }
-      let serviceObject = await this.handleService.findById(query?.service_id);
-      let channelObject = await this.channelService.findById(channelId);
+      const serviceObject = await this.handleService.findById(query?.service_id);
+      const channelObject = await this.channelService.findById(channelId);
       if (serviceObject) {
         if (serviceObject?.service_type == "extension" || serviceObject?.service_type == "channel") {
           return res
@@ -617,7 +617,7 @@ export class OrderHelper {
             .status(HttpStatus.OK)
             .json(["vn_pay", "transfer"]);
         } else {
-          let dataPayment = channelObject?.payment_method;
+          const dataPayment = channelObject?.payment_method;
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -641,29 +641,29 @@ export class OrderHelper {
    */
   async getOrderListByUser(query: ListOrderDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let channelId = req?.channel_id || "";
-      let dataToFilter = { ...query, ...{ user_id: userId, channel_id: channelId } };
+      const channelId = req?.channel_id || "";
+      const dataToFilter = { ...query, ...{ user_id: userId, channel_id: channelId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.orderService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.orderService.count(dataToFilter);
+      const dataReturn = await this.orderService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.orderService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -682,13 +682,13 @@ export class OrderHelper {
    */
   async handleGetDetailOrder(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataReturn = await this.orderService.findById(id.toString());
+      const dataReturn = await this.orderService.findById(id.toString());
       // if (
       //   (await this.userPermissionService.isHavePermission(userId, "order/list")) ||
       //   dataReturn.user_id?._id.toString() === userId
@@ -714,21 +714,21 @@ export class OrderHelper {
    */
   async handleUpdateOrderByAdmin(dataUpdate: UpdateOrderDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Check User Role
       let channelId = process.env.DEFAULT_CHANNEL;
 
-      let dataOrderBefore = await this.orderService.findById(dataUpdate?._id?.toString());
+      const dataOrderBefore = await this.orderService.findById(dataUpdate?._id?.toString());
       if (dataOrderBefore?.service_id?.service_type === "course") {
         channelId = req?.channel_id;
       }
 
-      let userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
+      const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       let havePermission = false;
       if (
         userPermission?.channel_role == "mentor" ||
@@ -747,7 +747,7 @@ export class OrderHelper {
       //Check Order
       //Check Permission
       // if (await this.userPermissionService.isHavePermission(userId, "order/update")) {
-      let dataReturn = await this.orderService.update(dataUpdate);
+      const dataReturn = await this.orderService.update(dataUpdate);
       await this.updateOrderAfter(dataReturn._id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -770,16 +770,16 @@ export class OrderHelper {
    */
   async handleUpdateOrderByUser(dataUpdate: UpdateOrderDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       //Check Order Object
-      let orderObject = await this.orderService.findById(dataUpdate?._id?.toString());
+      const orderObject = await this.orderService.findById(dataUpdate?._id?.toString());
       if (orderObject) {
-        let userCreate = orderObject?.user_id?._id?.toString();
+        const userCreate = orderObject?.user_id?._id?.toString();
         if (userCreate !== userId) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
@@ -790,15 +790,15 @@ export class OrderHelper {
           if (dataUpdate?.hasOwnProperty("media_id") && !dataUpdate?.media_id) {
             delete dataUpdate?.media_id;
           }
-          let dataReturn = await this.orderService.update(dataUpdate);
+          const dataReturn = await this.orderService.update(dataUpdate);
 
-          let url = process.env.TELEGRAM_URL;
+          const url = process.env.TELEGRAM_URL;
           // let channelId = dataReturn?.trans_id;
           try {
             setTimeout(async () => {
               // let channel = await this.channelService.findById(channelId);
-              let channelObject = await this.channelService?.findById(req?.channel_id);
-              let dataToPost = {
+              const channelObject = await this.channelService?.findById(req?.channel_id);
+              const dataToPost = {
                 text: `${orderObject?.user_id.display_name} vừa chuyển khoản thành công thanh toán với số tiền:  (${
                   orderObject.price
                 } VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${
@@ -853,13 +853,13 @@ export class OrderHelper {
       // console.log(beforeStatus, "beforeStatus");
       // console.log(orderObject.status, "orderObject.status");
       if (orderObject.status == "success" && beforeStatus == "pending") {
-        let amountOfDay = Number(orderObject.plan_id.amount_of_day) * Number(orderObject.amount_of_package);
+        const amountOfDay = Number(orderObject.plan_id.amount_of_day) * Number(orderObject.amount_of_package);
         const date = new Date();
         date.setDate(date.getDate() + amountOfDay);
-        let endTime = date;
-        let dataIsTrial = orderObject?.payment_method == "free" ? true : false;
+        const endTime = date;
+        const dataIsTrial = orderObject?.payment_method == "free" ? true : false;
         //Update subscribe
-        let dataSubscribe = {
+        const dataSubscribe = {
           is_trial: dataIsTrial,
           user_id: orderObject?.user_id?._id.toString(),
           channel_id: orderObject?.channel_id?.toString(),
@@ -871,7 +871,7 @@ export class OrderHelper {
           start_at: new Date(),
           end_at: endTime,
         };
-        let dataToCreate = await this.subscribeService.create(dataSubscribe);
+        const dataToCreate = await this.subscribeService.create(dataSubscribe);
         // console.log(orderObject?.service_id, "orderObject?.service_id");
         //Check if service is Extension
         if (
@@ -893,21 +893,21 @@ export class OrderHelper {
             });
           }
           //Update for Channel
-          let dataUdpate = {
+          const dataUdpate = {
             _id: orderObject?.channel_id?.toString(),
             service_id: orderObject?.service_id?._id?.toString(),
           };
-          let dataUpdate = await this.channelService.updateArray(dataUdpate);
+          const dataUpdate = await this.channelService.updateArray(dataUdpate);
           // console.log(dataUpdate, "dataUpdate");
         }
         if (orderObject?.service_id?.service_type == "channel") {
           //Update for Channel
-          let dataUdpate = {
+          const dataUdpate = {
             _id: orderObject?.channel_id?.toString(),
             official_status: 1,
           };
           await this.channelService.update(dataUdpate);
-          let dataUpdate = {
+          const dataUpdate = {
             _id: orderObject?._id?.toString(),
             product_url: "/r/domain/create",
           };
@@ -915,27 +915,27 @@ export class OrderHelper {
         }
 
         if (orderObject?.service_id?.service_type === "extension") {
-          let dataUpdate = {
+          const dataUpdate = {
             _id: orderObject?._id?.toString(),
             product_url: orderObject?.service_id?.router_link,
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
         if (orderObject?.service_id?.service_type == "mobile") {
-          let getTotalAdmin = await this.channelPermissionService.filter(
+          const getTotalAdmin = await this.channelPermissionService.filter(
             { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
             {},
             1,
             100
           );
-          let userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: Number) => {
+          const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
             return channelPermissionItem?.user_id?._id?.toString();
           });
-          let totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
-          let contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
+          const totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
+          const contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
 1: Tiếp nhận thông tin 1-2 ngày)\n2: Trao đổi & Thống nhất về App (2-5 ngày)\n3: Xây dựng App (3 - 4 tuần)\n4: Gửi bản Demo (1 tuần)\n5: Publish lên Store\nBạn có thể trao đổi với đội ngũ kĩ thuật tại đây, chúng tôi sẵn sàng thảo luận và hỗ trợ bạn. Ticket của bạn sẽ nhận được thông báo và Email khi có cập nhật mới!`;
           //Create Ticket from trans_id
-          let dataCreateTicket = {
+          const dataCreateTicket = {
             post_language: "vi",
             post_content: contentTicket,
             post_title: "Đơn đặt hàng ứng dụng Mobile mới",
@@ -944,10 +944,10 @@ export class OrderHelper {
             user_id: totalArray,
             channel_id: [orderObject?.channel_id?.toString(), process.env.DEFAULT_CHANNEL?.toString()],
           };
-          let dataTicket = await this.ticketService.create(dataCreateTicket);
+          const dataTicket = await this.ticketService.create(dataCreateTicket);
           //Return
           //Update Return
-          let dataUpdate = {
+          const dataUpdate = {
             _id: orderObject?._id?.toString(),
             redirect_url: "/r/support/" + dataTicket?._id?.toString(),
             product_url: "/r/support/" + dataTicket?._id?.toString(),
@@ -957,7 +957,7 @@ export class OrderHelper {
 
         if (orderObject?.service_id?.service_type == "course") {
           await this.handleUpdateCourseAfter(orderObject);
-          let dataUpdate = {
+          const dataUpdate = {
             _id: orderObject?._id?.toString(),
             product_url: "/r/courses/view/" + orderObject?.service_id?.handle?.toString(),
           };
@@ -995,41 +995,41 @@ export class OrderHelper {
    */
   async handleUpdateCourseAfter(orderObject: Order) {
     try {
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: orderObject?.user_id?._id.toString(),
         course_id: orderObject?.service_id?.handle?.toString(),
       };
-      let dataReturn = await this.courseLikeService.update(dataUpdate);
+      const dataReturn = await this.courseLikeService.update(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: orderObject?.service_id?.handle?.toString(),
       };
-      let dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
+      const dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
 
       //Update Transaction
       //Channel ID
-      let channelId = dataCourse?.channel_id?.toString();
-      let dataChannel = await this.channelService.findById(channelId);
+      const channelId = dataCourse?.channel_id?.toString();
+      const dataChannel = await this.channelService.findById(channelId);
 
-      let transactionValue = Number(orderObject?.price);
+      const transactionValue = Number(orderObject?.price);
 
       //For User
       //Get Current User permission Channel
-      let userPermissionFilter = {
+      const userPermissionFilter = {
         user_id: orderObject?.user_id?._id.toString(),
         channel_id: channelId,
       };
-      let dataPermission = await this.channelPermissionService.findOneWithPopulate(userPermissionFilter);
+      const dataPermission = await this.channelPermissionService.findOneWithPopulate(userPermissionFilter);
       let bossCommission = 100;
 
-      let userCommision = Number(dataChannel?.user_commission) || 0;
+      const userCommision = Number(dataChannel?.user_commission) || 0;
       let mentorCommission = Number(dataChannel?.mentor_commission) || 0;
 
       let isUserCommision = false;
       if (dataPermission?.from_user) {
         //Check user From
-        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+        const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
           user_id: dataPermission?.from_user?.toString(),
           channelId,
         });
@@ -1072,7 +1072,7 @@ export class OrderHelper {
 
       if (dataPermission?.from_mentor) {
         //Check user From
-        let dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
+        const dataPermissionFromUser = await this.channelPermissionService.findOneWithPopulate({
           user_id: dataPermission?.from_mentor?.toString(),
           channelId,
         });
@@ -1119,14 +1119,14 @@ export class OrderHelper {
       bossTransactionValue = Math.round(bossTransactionValue * 100) / 100;
 
       //Plus money for boss
-      let bossUserPermissionArray = await this.channelPermissionService.filter(
+      const bossUserPermissionArray = await this.channelPermissionService.filter(
         { channel_id: channelId, channel_role: "mentor" },
         {},
         1,
         100
       );
 
-      for (let bossItem of bossUserPermissionArray) {
+      for (const bossItem of bossUserPermissionArray) {
         //Check User Permission
         //Update for Bosss
         await this.handleCreateTransaction(
@@ -1164,10 +1164,10 @@ export class OrderHelper {
     channelId: string,
     commmissionValue: number
   ) {
-    let dataFilter = {
+    const dataFilter = {
       user_id: userIdTransaction,
     };
-    let newDataTransaction = await this.transactionService.findOne(dataFilter);
+    const newDataTransaction = await this.transactionService.findOne(dataFilter);
     let lastToken = 0;
     if (newDataTransaction) {
       lastToken = Number(newDataTransaction.current_token);
@@ -1175,7 +1175,7 @@ export class OrderHelper {
     let currentToken = 0;
     currentToken = lastToken + Number(transactionValue);
 
-    let dataTransactionToAdd = {
+    const dataTransactionToAdd = {
       user_id: userIdTransaction,
       channel_id: channelId,
       ref_id: orderObject?.service_id?.handle?.toString(),
@@ -1202,7 +1202,7 @@ export class OrderHelper {
       from_user: orderObject?.user_id?._id.toString(),
       type_system: "system",
     };
-    let dataTransaction = await this.transactionService.create(dataTransactionToAdd);
+    const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
     // setTimeout(() => {
     //   console.log("đã vào cộng điểm!!!");
     //   this.eventHookWorkerService.PlusPointChallengePusher({
@@ -1233,14 +1233,14 @@ export class OrderHelper {
   async updateEsim(orderObject: Order, subscribeObject: Subscribe) {
     try {
       //Handle EsimObject
-      let planNote = orderObject?.plan_id?.note;
-      let planObject = orderObject?.plan_id?.options;
+      const planNote = orderObject?.plan_id?.note;
+      const planObject = orderObject?.plan_id?.options;
       let urlAxios = "";
       let authCode = "";
       let packageName = "";
       let bodyData = "";
       let contentType = "application/json";
-      for (let itemOption of planObject) {
+      for (const itemOption of planObject) {
         if (itemOption?.key === "url") {
           urlAxios = itemOption?.value;
         }
@@ -1272,7 +1272,7 @@ export class OrderHelper {
       } catch (error) {
         params = "";
       }
-      let dataReturn = await axios
+      const dataReturn = await axios
         .post(urlAxios, params, config)
         .then((response) => {
           if (response?.data) {
@@ -1307,7 +1307,7 @@ export class OrderHelper {
 
             //@ts-ignore
             // let dataSendSocket = {...subscribeObject?.toObject(), ...{dataUpdate}}
-            let dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
+            const dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
             //Update socket
             this.socketService.handleSendOrder(dataSendSocket, orderObject?.user_id?._id?.toString());
             break;
@@ -1329,20 +1329,20 @@ export class OrderHelper {
   ) {
     process.env.TZ = "Asia/Ho_Chi_Minh";
 
-    let date = new Date();
-    let createDate = moment(date).format("YYYYMMDDHHmmss");
+    const date = new Date();
+    const createDate = moment(date).format("YYYYMMDDHHmmss");
 
-    let ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
+    const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
 
-    let tmnCode = process.env.VNPAY_TMNCODE;
-    let secretKey = process.env.VNPAY_SECRET_KEY;
+    const tmnCode = process.env.VNPAY_TMNCODE;
+    const secretKey = process.env.VNPAY_SECRET_KEY;
     let vnpUrl = process.env.VNPAY_URL;
-    let returnUrl = process.env.VNPAY_RETURN_URL;
+    const returnUrl = process.env.VNPAY_RETURN_URL;
     // let orderId = moment(date).format("DDHHmmss");
     if (locale === null || locale === "") {
       locale = "vn";
     }
-    let currCode = "VND";
+    const currCode = "VND";
     let vnp_Params = {};
     vnp_Params["vnp_Version"] = "2.1.0";
     vnp_Params["vnp_Command"] = "pay";
@@ -1361,19 +1361,19 @@ export class OrderHelper {
     }
 
     vnp_Params = this.sortObject(vnp_Params);
-    let querystring = require("qs");
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+    const querystring = require("qs");
+    const signData = querystring.stringify(vnp_Params, { encode: false });
+    const crypto = require("crypto");
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
     vnp_Params["vnp_SecureHash"] = signed;
     vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
     return vnpUrl;
   }
 
   sortObject(obj: any) {
-    let sorted = {};
-    let str = [];
+    const sorted = {};
+    const str = [];
     let key;
     for (key in obj) {
       if (obj.hasOwnProperty(key)) {

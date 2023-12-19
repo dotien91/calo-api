@@ -55,7 +55,7 @@ export class UserQuestionService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userQuestionModel.findById(id, projection);
+    const dataReturn = await this.userQuestionModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -86,7 +86,7 @@ export class UserQuestionService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserQuestion[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.userQuestionModel.find(condition, {}).exec();
   }
 
@@ -109,7 +109,7 @@ export class UserQuestionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.userQuestionModel.findOneAndUpdate(
+      const dataReturn = await this.userQuestionModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -131,7 +131,7 @@ export class UserQuestionService {
    */
   public count = async (filter: FilterFollowDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userQuestionModel.estimatedDocumentCount();
       } else {
@@ -166,12 +166,12 @@ export class UserQuestionService {
    * @returns
    */
   async filter(filter: FilterFollowDto, sortBy: any, page: number, limit: number): Promise<UserQuestion[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userQuestionModel
+    const dataReturn = await this.userQuestionModel
       .find(condition)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -189,9 +189,9 @@ export class UserQuestionService {
    * @returns
    */
   async filterWithId(filter: FilterFollowDto, page: number, limit: number): Promise<UserQuestion[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.userQuestionModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.userQuestionModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -209,12 +209,12 @@ export class UserQuestionService {
    * @returns
    */
   async filterUser(filter: FilterFollowDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userQuestionModel
+    const dataReturn = await this.userQuestionModel
       .find(condition)
       .populate({
         path: "user_id",

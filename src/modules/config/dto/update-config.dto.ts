@@ -3,5 +3,5 @@ import { CreateConfigDto } from "./create-config.dto";
 
 export class UpdateConfigDto extends CreateConfigDto {
   @IsString()
-  _id?: String;
+  _id?: string;
 }

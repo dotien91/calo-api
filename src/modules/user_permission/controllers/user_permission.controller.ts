@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req } from "@nestjs/common";
-import { UserPermissionHelper } from "../helper/update_user_permission.helper";
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateUserPermissionDto } from "../dto/create-user_permission.dto";
 import { ListUserPermissionDto } from "../dto/list-user_permission.dto";
+import { UserPermissionHelper } from "../helper/update_user_permission.helper";
 
 @Controller("user-permission")
 export class UserPermissionController {

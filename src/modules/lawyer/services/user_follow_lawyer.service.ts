@@ -50,7 +50,7 @@ export class UserFollowLawyerService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.userFollowModel.findById(id, projection);
+    const dataReturn = await this.userFollowModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -81,7 +81,7 @@ export class UserFollowLawyerService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<UserFollowLawyer[]> {
-    let condition = { user_id: userId, lawyer_id: { $in: userPartners } };
+    const condition = { user_id: userId, lawyer_id: { $in: userPartners } };
     return await this.userFollowModel.find(condition, {}).exec();
   }
 
@@ -104,7 +104,7 @@ export class UserFollowLawyerService {
       if (!dataUpdate.user_id && !dataUpdate.lawyer_id) {
         return null;
       }
-      let dataReturn = await this.userFollowModel.findOneAndUpdate(
+      const dataReturn = await this.userFollowModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, lawyer_id: dataUpdate.lawyer_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -126,7 +126,7 @@ export class UserFollowLawyerService {
    */
   public count = async (filter: FilterFollowLawyerDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userFollowModel.estimatedDocumentCount();
       } else {
@@ -161,12 +161,12 @@ export class UserFollowLawyerService {
    * @returns
    */
   async filter(filter: FilterFollowLawyerDto, sortBy: any, page: number, limit: number): Promise<UserFollowLawyer[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate({
         path: "lawyer_id",
@@ -193,12 +193,12 @@ export class UserFollowLawyerService {
     page: number,
     limit: number
   ): Promise<UserFollowLawyer[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userFollowModel
+    const dataReturn = await this.userFollowModel
       .find(condition)
       .populate({
         path: "user_id",

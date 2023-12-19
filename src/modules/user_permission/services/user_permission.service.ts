@@ -48,12 +48,12 @@ export class UserPermissionService {
    * @returns
    */
   async filter(filter: SearchUserPermissionDto, sortBy: SortByUserPermissionDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userPermissionModel
+    const dataReturn = await this.userPermissionModel
       .find(condition)
       .populate("user_id", "user_login display_name user_role user_status user_avatar last_active user_active")
       .sort(sortObject)
@@ -70,7 +70,7 @@ export class UserPermissionService {
    */
   public count = async (filter: SearchUserPermissionDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userPermissionModel.estimatedDocumentCount();
       } else {
@@ -97,9 +97,9 @@ export class UserPermissionService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -118,19 +118,19 @@ export class UserPermissionService {
       return false;
     }
 
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
     }
 
-    let dataFilter = {
+    const dataFilter = {
       user_id: userId,
       permission: permission,
     };
-    let permissionObject = await this.findOne(dataFilter);
+    const permissionObject = await this.findOne(dataFilter);
     if (permissionObject && permissionObject._id) {
       return true;
     }
@@ -173,7 +173,7 @@ export class UserPermissionService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.userPermissionModel.findByIdAndUpdate(
+      const dataReturn = await this.userPermissionModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }

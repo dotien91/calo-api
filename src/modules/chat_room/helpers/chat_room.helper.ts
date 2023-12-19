@@ -73,14 +73,14 @@ export class ChatRoomHelper {
           sessionObject = req?.session_data;
           authCode = req?.auth_code;
         }
-        let userId = userObject._id.toString();
+        const userId = userObject._id.toString();
         //Check Chat Room
-        let dataToFind = {
+        const dataToFind = {
           user_id: userId,
           partner_id: partnerId,
           room_type: chatType,
         };
-        let dataRoomUserOption = await this.chatRoomUserOptionService.findOne(dataToFind);
+        const dataRoomUserOption = await this.chatRoomUserOptionService.findOne(dataToFind);
         if (dataRoomUserOption) {
           let dataToReturn = dataRoomUserOption.toObject();
           if (userObject.chat_count >= Number(process.env.FREE_CHAT)) {
@@ -100,7 +100,7 @@ export class ChatRoomHelper {
           }
           return dataToReturn;
         } else {
-          let dataPartner = await this.appUserService.findById(partnerId, {});
+          const dataPartner = await this.appUserService.findById(partnerId, {});
           if (!dataPartner || !Number(dataPartner.user_status)) {
             if (!isReturn) {
               throw new BadRequestException("Partner is not exist!");
@@ -109,10 +109,10 @@ export class ChatRoomHelper {
             }
           }
 
-          let roomTitleUser = dataPartner?.display_name ? dataPartner?.display_name : dataPartner?.user_login;
-          let roomTitlePartner = userObject?.display_name ? userObject?.display_name : userObject?.user_login;
+          const roomTitleUser = dataPartner?.display_name ? dataPartner?.display_name : dataPartner?.user_login;
+          const roomTitlePartner = userObject?.display_name ? userObject?.display_name : userObject?.user_login;
 
-          let dataCreate = {
+          const dataCreate = {
             user_id: userId,
             room_type: chatType,
             room_limit_number: 100,
@@ -121,9 +121,9 @@ export class ChatRoomHelper {
             last_message: "Send message to " + roomTitleUser,
           };
 
-          let dataCreateReturn = await this.chatRoomService.create(dataCreate);
+          const dataCreateReturn = await this.chatRoomService.create(dataCreate);
           //Process Save User & Advisor To Option
-          let dataOptionUser = {
+          const dataOptionUser = {
             chat_room_id: dataCreateReturn._id.toString(),
             user_role: userObject.user_role ? userObject.user_role : "user",
             user_permission: "write",
@@ -135,7 +135,7 @@ export class ChatRoomHelper {
             is_payment: isPayment,
             ref_user: userObject._id.toString(),
           };
-          let dataOptionPartner = {
+          const dataOptionPartner = {
             chat_room_id: dataCreateReturn._id.toString(),
             user_role: dataPartner.user_role ? dataPartner.user_role : "user",
             user_permission: "write",
@@ -147,9 +147,9 @@ export class ChatRoomHelper {
             is_payment: 0,
             ref_user: userObject._id.toString(),
           };
-          let dataReturnOption = await this.chatRoomUserOptionService.create(dataOptionUser);
+          const dataReturnOption = await this.chatRoomUserOptionService.create(dataOptionUser);
           await this.chatRoomUserOptionService.create(dataOptionPartner);
-          let dataPartnerObject = {
+          const dataPartnerObject = {
             _id: dataPartner._id.toString(),
             user_id: dataPartner._id.toString(),
             user_role: dataPartner.user_role,
@@ -159,8 +159,8 @@ export class ChatRoomHelper {
             display_name: dataPartner.display_name,
             last_active: dataPartner.last_active,
           };
-          let dataReturnOptionObject = dataReturnOption.toObject();
-          let dataToReturn = {
+          const dataReturnOptionObject = dataReturnOption.toObject();
+          const dataToReturn = {
             ...dataReturnOptionObject,
             ...{ chat_room_id: dataCreateReturn.toObject() },
             ...{ partner_id: dataPartnerObject },
@@ -168,17 +168,17 @@ export class ChatRoomHelper {
 
           if (process.env.BRANCH_NAME === "masked_chat" && sessionObject) {
             let dataToUpdate = [];
-            let dataUpdateSession = [partnerId];
-            let oldData = [];
+            const dataUpdateSession = [partnerId];
+            const oldData = [];
             if (sessionObject?.unset_ids) {
-              for (let dataSessionOld of sessionObject.unset_ids) {
+              for (const dataSessionOld of sessionObject.unset_ids) {
                 oldData.push(dataSessionOld.toString());
               }
             }
             dataToUpdate = [...oldData, ...dataUpdateSession];
 
-            let afterData: any[] = _.union(dataToUpdate, []);
-            let dataSessionToUpdate = {
+            const afterData: any[] = _.union(dataToUpdate, []);
+            const dataSessionToUpdate = {
               _id: sessionObject?._id.toString(),
               unset_ids: afterData,
             };
@@ -187,9 +187,9 @@ export class ChatRoomHelper {
           return dataToReturn;
         }
       } else {
-        let userId = userObject._id.toString();
+        const userId = userObject._id.toString();
         //Create Group Room
-        let partnerArray = partnerId.split(",");
+        const partnerArray = partnerId.split(",");
         if (partnerArray && partnerArray.length >= 2) {
           if (partnerArray.indexOf(userId) !== -1) {
             if (!isReturn) {
@@ -199,11 +199,11 @@ export class ChatRoomHelper {
             }
           }
           //Create New Room
-          let dataFilterPartner = {
+          const dataFilterPartner = {
             ids: partnerArray,
           };
-          let newPartnerArray = [userId];
-          let dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
+          const newPartnerArray = [userId];
+          const dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
           if (!dataPartner || !dataPartner.length) {
             if (!isReturn) {
               throw new BadRequestException("Partner is not exist!");
@@ -223,10 +223,10 @@ export class ChatRoomHelper {
           partnerArray.push(userId);
 
           let groupName = "";
-          for (let partnerIndex in dataPartner) {
+          for (const partnerIndex in dataPartner) {
             newPartnerArray.push(dataPartner[partnerIndex]._id.toString());
             if (Number(partnerIndex) <= 1) {
-              let displayName = dataPartner[partnerIndex].display_name
+              const displayName = dataPartner[partnerIndex].display_name
                 ? dataPartner[partnerIndex].display_name
                 : dataPartner[partnerIndex].user_login;
               groupName = groupName + ", " + displayName;
@@ -236,13 +236,13 @@ export class ChatRoomHelper {
             groupName = groupName.substring(2);
           }
 
-          let roomTitleUser = groupName;
+          const roomTitleUser = groupName;
           let lastMessage = "New group with " + roomTitleUser;
           if (process.env.BRANCH_NAME === "chat_gpt") {
             lastMessage = "New conversation with Chat GPT";
           }
 
-          let dataCreate = {
+          const dataCreate = {
             user_id: userId,
             room_type: chatType,
             room_limit_number: 100,
@@ -256,11 +256,11 @@ export class ChatRoomHelper {
 
           let dataCreateReturn: any = await this.chatRoomService.create(dataCreate);
 
-          let dataUserReturn = [];
+          const dataUserReturn = [];
           dataUserReturn.push(await this.handleGetUserBase(userObject));
 
           //Process Save User & Advisor To Option
-          let dataOptionUser = {
+          const dataOptionUser = {
             chat_room_id: dataCreateReturn._id.toString(),
             user_role: "admin",
             user_permission: "write",
@@ -270,11 +270,11 @@ export class ChatRoomHelper {
             room_image: "",
             chat_history_count: 1,
           };
-          let dataRoomUserOption = await this.chatRoomUserOptionService.create(dataOptionUser);
+          const dataRoomUserOption = await this.chatRoomUserOptionService.create(dataOptionUser);
 
-          for (let partnerItem of dataPartner) {
+          for (const partnerItem of dataPartner) {
             //Process Save User & Advisor To Option
-            let dataOptionUser = {
+            const dataOptionUser = {
               chat_room_id: dataCreateReturn._id.toString(),
               user_role: partnerItem.user_role ? partnerItem.user_role : "user",
               user_permission: "write",
@@ -288,14 +288,14 @@ export class ChatRoomHelper {
             dataUserReturn.push(await this.handleGetUserBase(partnerItem));
           }
 
-          let mediaMeta = [
+          const mediaMeta = [
             {
               key: "message",
               value: userObject.display_name + " create new Group!",
             },
           ];
 
-          let dataToCreate = {
+          const dataToCreate = {
             media_url: roomName,
             createBy: userObject._id.toString(),
             media_type: "system_message",
@@ -307,10 +307,10 @@ export class ChatRoomHelper {
             chat_history_id: null,
             media_status: 1,
           };
-          let currentTime = new Date();
-          let dataMedia = await this.chatMediaService.create(dataToCreate);
+          const currentTime = new Date();
+          const dataMedia = await this.chatMediaService.create(dataToCreate);
           if (dataMedia) {
-            let dataCreate = {
+            const dataCreate = {
               user_type: "customer",
               parent_id: null,
               chat_room_id: dataCreateReturn._id.toString(),
@@ -333,7 +333,7 @@ export class ChatRoomHelper {
             },
           };
 
-          let dataToReturn = {
+          const dataToReturn = {
             ...dataRoomUserOption.toObject(),
             ...{ group_partners: dataUserReturn, chat_room_id: dataCreateReturn },
           };
@@ -378,23 +378,23 @@ export class ChatRoomHelper {
   async removeRoom(id: string, res: Response, req: ExpressRequestDto) {
     //Room ID
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new BadRequestException("Data is invalid");
       }
 
-      let dataPermissionFilter = {
+      const dataPermissionFilter = {
         chat_room_id: id,
         user_id: userObject._id.toString(),
       };
-      let dataRoomUserOption = await this.chatRoomUserOptionService.findOneWithId(dataPermissionFilter);
+      const dataRoomUserOption = await this.chatRoomUserOptionService.findOneWithId(dataPermissionFilter);
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: dataRoomUserOption._id.toString(),
         chat_history_count: 0,
         query_from: dataRoomUserOption.chat_room_id.last_history,
       };
-      let dataReturn = await this.chatRoomUserOptionService.update(dataToUpdate);
+      const dataReturn = await this.chatRoomUserOptionService.update(dataToUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -414,27 +414,27 @@ export class ChatRoomHelper {
    */
   async handleViewRoom(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
 
-      let objectId = new Types.ObjectId(id);
+      const objectId = new Types.ObjectId(id);
       if (!objectId) {
         throw new BadRequestException("Chat Room ID is invalid (Not is an ObjectID)");
       }
-      let dataRoomObject = await this.chatRoomService.findOneRoom({ _id: id });
+      const dataRoomObject = await this.chatRoomService.findOneRoom({ _id: id });
 
-      let dataPermissionFilter = {
+      const dataPermissionFilter = {
         chat_room_id: id,
         user_id: userObject._id.toString(),
       };
-      let dataUpdate = {
+      const dataUpdate = {
         last_view: dataRoomObject.last_history,
         read_count: 0,
       };
       //Update to List
-      let dataToUpdate = await this.chatRoomUserOptionService.updateByCondition(dataPermissionFilter, dataUpdate);
+      const dataToUpdate = await this.chatRoomUserOptionService.updateByCondition(dataPermissionFilter, dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -453,8 +453,8 @@ export class ChatRoomHelper {
    */
 
   async handleGetRoomByUser(query: GetChatRoomListDto, userObject: User, res: Response) {
-    let page = Number(query?.page) || 1;
-    let limit = query?.limit || 20;
+    const page = Number(query?.page) || 1;
+    const limit = query?.limit || 20;
     let orderBy = <"ASC" | "DESC">"DESC";
     if (query?.order_by === "ASC" || query?.order_by === "DESC") {
       orderBy = query?.order_by;
@@ -462,22 +462,22 @@ export class ChatRoomHelper {
     delete query.order_by;
     delete query.limit;
     delete query.page;
-    let dataFilter = {
+    const dataFilter = {
       ...query,
       ...{ user_id: userObject._id.toString() },
     };
 
-    let dataOrder = {
+    const dataOrder = {
       updatedAt: orderBy,
     };
     let dataChat = null;
-    let partnerIds = [];
-    let dataToReturn = [];
+    const partnerIds = [];
+    const dataToReturn = [];
     let dataCount = 0;
     if (!query?.is_join || query?.is_join === "true") {
       dataChat = await this.chatRoomUserOptionService.filter(dataFilter, dataOrder, page, limit);
       if (dataChat && dataChat.length) {
-        for (let dataChatItem of dataChat) {
+        for (const dataChatItem of dataChat) {
           let dataToPush = dataChatItem.toObject();
           if (userObject.chat_count >= Number(process.env.FREE_CHAT)) {
             //Check & Set Tag
@@ -501,17 +501,17 @@ export class ChatRoomHelper {
 
     if (query?.is_join && query?.is_join === "false") {
       //Add Chat List
-      let dataFilter: any = {
+      const dataFilter: any = {
         room_private: 0,
         room_type: "group",
         unset: userObject?._id?.toString(),
       };
-      let dataSort: any = {
+      const dataSort: any = {
         numberMember: "DESC",
       };
-      let dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, page, limit);
-      for (let dataRoomItem of dataRoomToAdd) {
-        let dataToAddNew = {
+      const dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, page, limit);
+      for (const dataRoomItem of dataRoomToAdd) {
+        const dataToAddNew = {
           chat_room_id: dataRoomItem.toObject(),
           user_permission: "read",
           room_title: "",
@@ -525,20 +525,20 @@ export class ChatRoomHelper {
 
     if (!query.is_join) {
       if ((dataChat?.length ? dataChat.length : 0) < Number(limit) && query.room_type === "group") {
-        let lastPage = page - Math.floor(dataCount / limit);
+        const lastPage = page - Math.floor(dataCount / limit);
         if (lastPage >= 1) {
           //Add Chat List
-          let dataFilter: any = {
+          const dataFilter: any = {
             room_private: 0,
             room_type: "group",
             unset: userObject?._id?.toString(),
           };
-          let dataSort: any = {
+          const dataSort: any = {
             numberMember: "DESC",
           };
-          let dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, lastPage, limit);
-          for (let dataRoomItem of dataRoomToAdd) {
-            let dataToAddNew = {
+          const dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, lastPage, limit);
+          for (const dataRoomItem of dataRoomToAdd) {
+            const dataToAddNew = {
               chat_room_id: dataRoomItem.toObject(),
               user_permission: "read",
               room_title: "",
@@ -552,40 +552,40 @@ export class ChatRoomHelper {
       }
     }
 
-    let userId = userObject._id.toString();
+    const userId = userObject._id.toString();
     //Check Permission
-    let dataToFilter = {
+    const dataToFilter = {
       partner_id: userId,
       user_ids: partnerIds,
       match_status: 1,
     };
-    let orderByOBject = {};
-    let dataUserFollow = await this.userFollowService.filterUser(dataToFilter, orderByOBject, 1, limit, false);
-    let dataPartnerFollow = [];
-    for (let dataUserFollowItem of dataUserFollow) {
+    const orderByOBject = {};
+    const dataUserFollow = await this.userFollowService.filterUser(dataToFilter, orderByOBject, 1, limit, false);
+    const dataPartnerFollow = [];
+    for (const dataUserFollowItem of dataUserFollow) {
       dataPartnerFollow.push(dataUserFollowItem?.user_id?._id?.toString());
     }
 
     let dataChannelPermission = [];
     //Get Data level
     if (query?.channel_id) {
-      let dataUserIds = dataToReturn?.map((value) => {
+      const dataUserIds = dataToReturn?.map((value) => {
         return value?.partner_id?._id?.toString();
       });
       //get permission
-      let dataFilterMember = {
+      const dataFilterMember = {
         channel_id: query?.channel_id?.toString(),
         user_ids: dataUserIds,
       };
       dataChannelPermission = await this.channelPermissionService.filterWithoutChannel(dataFilterMember, {}, 1, limit);
     }
 
-    let dataReturnFinal = [];
+    const dataReturnFinal = [];
     for (let dataItemProcess of dataToReturn) {
-      let partnerId = dataItemProcess?.partner_id?._id?.toString();
+      const partnerId = dataItemProcess?.partner_id?._id?.toString();
 
       //Check user
-      let dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
+      const dataToMerge = dataChannelPermission?.reduce(function (filtered, value) {
         if (value?.user_id?._id?.toString() == dataItemProcess?.partner_id?._id?.toString()) {
           filtered.push({
             ...value?.user_id?.toObject(),
@@ -629,12 +629,12 @@ export class ChatRoomHelper {
     delete query.order_by;
     delete query.limit;
     delete query.page;
-    let dataFilter = {
+    const dataFilter = {
       ...query,
       ...{ user_id: userObject._id.toString() },
     };
 
-    let dataCount = await this.chatRoomUserOptionService.count(dataFilter);
+    const dataCount = await this.chatRoomUserOptionService.count(dataFilter);
 
     return res
       .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
@@ -651,18 +651,18 @@ export class ChatRoomHelper {
    */
   async addUserRole(res: Response, req: ExpressRequestDto, updateChatRoomDto: UpdateChatRoomUserRoleDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
 
       if (!userObject) {
         throw new BadRequestException("User is not found!");
       }
 
       //Get Room Option
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userObject._id.toString(),
         chat_room_id: updateChatRoomDto.chat_room_id,
       };
-      let dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
+      const dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
       if (!dataUserOption) {
         throw new BadRequestException("You not in Room!");
       }
@@ -674,31 +674,31 @@ export class ChatRoomHelper {
       }
 
       let partnerArray = [];
-      let userId = updateChatRoomDto.user_id;
+      const userId = updateChatRoomDto.user_id;
       if (userId.indexOf(",") !== -1) {
         partnerArray = userId.split(",");
       } else {
         partnerArray.push(updateChatRoomDto.user_id);
       }
-      let oldPartner = dataUserOption.chat_room_id?.group_partners;
+      const oldPartner = dataUserOption.chat_room_id?.group_partners;
 
-      for (let partnerItem of partnerArray) {
+      for (const partnerItem of partnerArray) {
         if (oldPartner.indexOf(partnerItem) !== -1) {
           throw new BadRequestException("User " + partnerItem + " is Exist in Room!");
         }
       }
       //Create New Room
-      let dataFilterPartner = {
+      const dataFilterPartner = {
         ids: partnerArray,
       };
-      let dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
-      let dataReturn = [];
+      const dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
+      const dataReturn = [];
 
       if (dataPartner && dataPartner.length) {
-        for (let partnerItem of dataPartner) {
+        for (const partnerItem of dataPartner) {
           dataReturn.push(await this.handleGetUserBase(partnerItem));
         }
-        let userRole = updateChatRoomDto.role;
+        const userRole = updateChatRoomDto.role;
         await this.handleUpdateUserRole(
           dataPartner,
           updateChatRoomDto.chat_room_id,
@@ -706,7 +706,7 @@ export class ChatRoomHelper {
           updateChatRoomDto.user_permission,
           dataUserOption.chat_room_id
         );
-        let dataToReturn = {
+        const dataToReturn = {
           group_partners: dataReturn,
         };
         return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(dataToReturn);
@@ -735,22 +735,22 @@ export class ChatRoomHelper {
     userPermission: string,
     roomObject: ChatRoom
   ) {
-    let dataPartnerToAdd = [];
-    for (let userItem of dataPartner) {
+    const dataPartnerToAdd = [];
+    for (const userItem of dataPartner) {
       dataPartnerToAdd.push(userItem._id.toString());
     }
-    for (let partnerItem of dataPartner) {
+    for (const partnerItem of dataPartner) {
       //Get Room Option
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: partnerItem._id.toString(),
         chat_room_id: roomId,
       };
-      let roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
+      const roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
       if (roomUserObject) {
         throw new BadRequestException("User role have exist in this Room!");
       } else {
         //Process Save User & Advisor To Option
-        let dataOptionUser = {
+        const dataOptionUser = {
           chat_room_id: roomId,
           user_role: userRole,
           user_permission: userPermission,
@@ -764,8 +764,8 @@ export class ChatRoomHelper {
       }
     }
     //Update Room Data
-    let newGroupPartner = [...roomObject.group_partners, ...dataPartnerToAdd];
-    let dataToUpdate = {
+    const newGroupPartner = [...roomObject.group_partners, ...dataPartnerToAdd];
+    const dataToUpdate = {
       _id: roomObject._id.toString(),
       group_partners: newGroupPartner,
       partner_count: newGroupPartner.length,
@@ -782,15 +782,15 @@ export class ChatRoomHelper {
    */
   async handleUpdateRoom(res: Response, req: ExpressRequestDto, dataUpdate: UpdateChatRoomUserDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is not invalid");
       }
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userObject._id.toString(),
         chat_room_id: dataUpdate._id.toString(),
       };
-      let roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
+      const roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
 
       if (!roomUserObject) {
         throw new BadRequestException("You not in Room!");
@@ -807,13 +807,13 @@ export class ChatRoomHelper {
       if (roomUserObject.chat_room_id.room_type !== "group") {
         throw new BadRequestException("Can't update this Room, because this Room is not Group!");
       }
-      let objectId = new Types.ObjectId(dataUpdate.room_image);
+      const objectId = new Types.ObjectId(dataUpdate.room_image);
       if (!objectId) {
         throw new BadRequestException("Room Media is invalid (Not is an ObjectID)");
       }
 
-      let dataUpdateReturn = await this.chatRoomService.update(dataUpdate);
-      let newDataReturn = { ...dataUpdateReturn.toObject(), ...{ room_image: mediaObject } };
+      const dataUpdateReturn = await this.chatRoomService.update(dataUpdate);
+      const newDataReturn = { ...dataUpdateReturn.toObject(), ...{ room_image: mediaObject } };
       return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(newDataReturn);
     } catch (error) {
       this.logger.log("findMemberByRoom Error: " + JSON.stringify(error));
@@ -829,25 +829,25 @@ export class ChatRoomHelper {
    */
   async handleUpdateRoomOption(res: Response, req: ExpressRequestDto, dataUpdate: UpdateChatRoomUserDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is not invalid");
       }
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userObject._id.toString(),
         chat_room_id: dataUpdate._id.toString(),
       };
-      let roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
+      const roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
 
       if (!roomUserObject) {
         throw new BadRequestException("You not in Room!");
       }
 
-      let dataNewToUpdate = {
+      const dataNewToUpdate = {
         _id: roomUserObject._id,
         mute_status: Number(dataUpdate.mute_status),
       };
-      let dataUpdateReturn = await this.chatRoomUserOptionService.update(dataNewToUpdate);
+      const dataUpdateReturn = await this.chatRoomUserOptionService.update(dataNewToUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization" })
         .status(HttpStatus.OK)
@@ -867,18 +867,18 @@ export class ChatRoomHelper {
    */
   async removeUserRole(res: Response, req: ExpressRequestDto, deleteChatRoomDto: DeleteChatRoomUserRoleDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
 
       if (!userObject) {
         throw new BadRequestException("User is not found!");
       }
 
       //Get Room Option
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: deleteChatRoomDto.user_id,
         chat_room_id: deleteChatRoomDto.chat_room_id,
       };
-      let dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
+      const dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
       if (!dataUserOption) {
         throw new BadRequestException("You is not in Room!");
       }
@@ -894,29 +894,29 @@ export class ChatRoomHelper {
       }
       await this.chatRoomUserOptionService.remove(dataUserOption._id.toString());
 
-      let userToSet = await this.appUserService.findById(deleteChatRoomDto.user_id, {});
+      const userToSet = await this.appUserService.findById(deleteChatRoomDto.user_id, {});
 
-      let totalMember = await this.chatRoomUserOptionService.filterWithUserObject(
+      const totalMember = await this.chatRoomUserOptionService.filterWithUserObject(
         { chat_room_id: deleteChatRoomDto.chat_room_id },
         {}
       );
       let haveAdmin = false;
       if (totalMember && totalMember.length) {
-        for (let memberItem of totalMember) {
+        for (const memberItem of totalMember) {
           if (memberItem.user_role === "admin") {
             haveAdmin = true;
           }
         }
         if (!haveAdmin) {
           //Update new Admin
-          let dataUpdate = {
+          const dataUpdate = {
             user_id: totalMember[0]?.user_id?._id.toString(),
             chat_room_id: deleteChatRoomDto.chat_room_id,
             user_role: "admin",
           };
 
           await this.chatRoomUserOptionService.update(dataUpdate);
-          let newMessage = "Set " + totalMember[0].user_id.display_name + " to Admin!";
+          const newMessage = "Set " + totalMember[0].user_id.display_name + " to Admin!";
           await this.setSystemMessage(
             newMessage,
             userToSet,
@@ -937,14 +937,14 @@ export class ChatRoomHelper {
           return true;
         }
       });
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: dataUserOption.chat_room_id._id.toString(),
         group_partners: userGroupOld,
         partner_count: userGroupOld.length,
       };
       await this.chatRoomService.update(dataToUpdate);
 
-      let newMessage = userToSet?.display_name + " leave";
+      const newMessage = userToSet?.display_name + " leave";
       await this.setSystemMessage(
         newMessage,
         userToSet,
@@ -956,7 +956,7 @@ export class ChatRoomHelper {
 
       //Un-join Topic
       if (process.env.BRANCH_NAME === "masked_chat") {
-        let oldTopic = userToSet?.join_topics;
+        const oldTopic = userToSet?.join_topics;
         let dataToAdd: string[] = [];
         if (oldTopic && oldTopic?.length) {
           //@ts-ignore
@@ -970,12 +970,12 @@ export class ChatRoomHelper {
         }
         dataToAdd = _.sample(dataToAdd);
         //Update User
-        let dataToUpdate = {
+        const dataToUpdate = {
           _id: userToSet._id?.toString(),
           join_topics: dataToAdd,
         };
 
-        let dataToUpdateJoin = {
+        const dataToUpdateJoin = {
           user_id: userObject._id?.toString(),
           topic_id: dataUserOption.chat_room_id?.topic_id,
         };
@@ -995,14 +995,14 @@ export class ChatRoomHelper {
   }
 
   async setSystemMessage(message: string, userObject: User, chatRoomId: string, roomName: string, req: any, res: any) {
-    let mediaMeta = [
+    const mediaMeta = [
       {
         key: "message",
         value: message,
       },
     ];
 
-    let dataToCreate = {
+    const dataToCreate = {
       media_url: roomName,
       createBy: userObject._id.toString(),
       media_type: "system_message",
@@ -1014,20 +1014,20 @@ export class ChatRoomHelper {
       chat_history_id: null,
       media_status: 1,
     };
-    let currentTime = new Date();
-    let dataMedia = await this.chatMediaService.create(dataToCreate);
+    const currentTime = new Date();
+    const dataMedia = await this.chatMediaService.create(dataToCreate);
 
     if (!dataMedia) {
       return false;
     }
 
-    let createChatHistoryDto = {
+    const createChatHistoryDto = {
       chat_room_id: chatRoomId,
       chat_content: "",
       media_data: JSON.stringify([dataMedia._id.toString()]),
     };
 
-    let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+    const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
       req,
       res,
       createChatHistoryDto,
@@ -1046,12 +1046,12 @@ export class ChatRoomHelper {
    */
   async getSameGroup(req: ExpressRequestDto, res: Response, query: GetSameGroupDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is not invalid");
       }
-      let page = Number(query?.page) || 1;
-      let limit = query?.limit || 20;
+      const page = Number(query?.page) || 1;
+      const limit = query?.limit || 20;
       let orderBy = <"ASC" | "DESC">"DESC";
       if (query?.order_by === "ASC" || query?.order_by === "DESC") {
         orderBy = query?.order_by;
@@ -1059,16 +1059,16 @@ export class ChatRoomHelper {
       delete query.order_by;
       delete query.limit;
       delete query.page;
-      let dataFilter = {
+      const dataFilter = {
         ...query,
         ...{ group_partners: [userObject._id.toString(), query.partner_id] },
       };
 
-      let dataOrder = {
+      const dataOrder = {
         updatedAt: orderBy,
       };
-      let dataChat = await this.chatRoomService.filter(dataFilter, dataOrder, page, limit);
-      let dataCount = await this.chatRoomService.count(dataFilter);
+      const dataChat = await this.chatRoomService.filter(dataFilter, dataOrder, page, limit);
+      const dataCount = await this.chatRoomService.count(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1087,28 +1087,28 @@ export class ChatRoomHelper {
    */
   async handleJoinGroup(ids: string[], res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
 
       if (!userObject) {
         throw new BadRequestException("User is not found!");
       }
-      let dataRoomObjectUpdate = [];
-      for (let id of ids) {
+      const dataRoomObjectUpdate = [];
+      for (const id of ids) {
         //Get Room Option
-        let dataToFilter = {
+        const dataToFilter = {
           user_id: userObject._id.toString(),
           chat_room_id: id,
         };
-        let dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
+        const dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
         //Get Room ID
-        let dataRoomObject = await this.chatRoomService.findOneRoom({ _id: id });
+        const dataRoomObject = await this.chatRoomService.findOneRoom({ _id: id });
 
         //Join Topic
         if (process.env.BRANCH_NAME === "masked_chat") {
-          let oldTopic = userObject?.join_topics;
+          const oldTopic = userObject?.join_topics;
           let dataToAdd: string[] = [];
           if (oldTopic && oldTopic?.length) {
-            for (let itemTopic of oldTopic) {
+            for (const itemTopic of oldTopic) {
               dataToAdd.push(itemTopic?.toString());
             }
           }
@@ -1118,7 +1118,7 @@ export class ChatRoomHelper {
           }
           dataToAdd = _.sample(dataToAdd);
           //Update User
-          let dataToUpdate = {
+          const dataToUpdate = {
             _id: userObject._id?.toString(),
             join_topics: dataToAdd,
           };
@@ -1128,7 +1128,7 @@ export class ChatRoomHelper {
             user_id: userObject._id?.toString(),
             topic_id: dataRoomObject?.topic_id?.toString(),
           };
-          let dataTopic = await this.topicService.findOne({ _id: dataRoomObject?.topic_id?.toString() });
+          const dataTopic = await this.topicService.findOne({ _id: dataRoomObject?.topic_id?.toString() });
           if (dataTopic) {
             dataToUpdateJoin = {
               ...dataToUpdateJoin,
@@ -1137,7 +1137,7 @@ export class ChatRoomHelper {
           }
           await this.topicJoinService.update(dataToUpdateJoin);
           if (dataTopic?.parent_id) {
-            let dataToUpdateJoinParent = {
+            const dataToUpdateJoinParent = {
               user_id: userObject._id?.toString(),
               topic_id: dataTopic?.parent_id?.toString(),
             };
@@ -1146,7 +1146,7 @@ export class ChatRoomHelper {
         }
 
         if (dataUserOption) {
-          let dataReturn = {
+          const dataReturn = {
             ...dataUserOption?.toObject(),
             ...{
               chat_room_id: dataRoomObject,
@@ -1168,10 +1168,10 @@ export class ChatRoomHelper {
           throw new BadRequestException("Room is not for Public!");
         }
 
-        let partnerArray = [];
-        let userId = userObject._id.toString();
+        const partnerArray = [];
+        const userId = userObject._id.toString();
         partnerArray.push(userId);
-        let oldPartner = dataRoomObject?.group_partners;
+        const oldPartner = dataRoomObject?.group_partners;
 
         // for (let partnerItem of partnerArray) {
         //   if (oldPartner.indexOf(partnerItem) !== -1) {
@@ -1180,12 +1180,12 @@ export class ChatRoomHelper {
         // }
         //let dataArray = [...oldPartner, ...partnerArray];
 
-        let dataArray = _.union(oldPartner, partnerArray);
+        const dataArray = _.union(oldPartner, partnerArray);
 
-        let userRole = "user";
+        const userRole = "user";
 
         //Process Save User & Advisor To Option
-        let dataOptionUser = {
+        const dataOptionUser = {
           chat_room_id: id,
           user_role: userRole,
           user_permission: "write",
@@ -1194,8 +1194,8 @@ export class ChatRoomHelper {
           room_image: "",
           room_type: "group",
         };
-        let dataUserOptionObject = await this.chatRoomUserOptionService.create(dataOptionUser);
-        let dataToUpdate = {
+        const dataUserOptionObject = await this.chatRoomUserOptionService.create(dataOptionUser);
+        const dataToUpdate = {
           _id: id,
           group_partners: dataArray,
           partner_count: dataArray.length,
@@ -1207,7 +1207,7 @@ export class ChatRoomHelper {
         };
         dataRoomObjectUpdate.push(dataRoomObjectUpdateNew);
 
-        let newMessage = userObject?.display_name + " join Group";
+        const newMessage = userObject?.display_name + " join Group";
         await this.setSystemMessage(newMessage, userObject, id, dataUserOptionObject.room_title, req, res);
       }
 

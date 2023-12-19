@@ -37,21 +37,21 @@ export class Answer {
     nullable: false,
     index: true,
   })
-  answer: String;
+  answer: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  point: Number;
+  point: number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  status: String;
+  status: string;
 }
 
 export const AnswerSchema = SchemaFactory.createForClass(Answer).index({

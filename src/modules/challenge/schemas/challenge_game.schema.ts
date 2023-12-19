@@ -12,7 +12,7 @@ export class GameActivity extends Document {
   @Prop({
     type: String,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
@@ -22,12 +22,12 @@ export class GameActivity extends Document {
   @Prop({
     type: Number,
   })
-  point_tracking: Number;
+  point_tracking: number;
 
   @Prop({
     type: String,
   })
-  module_tracking: String;
+  module_tracking: string;
 }
 
 export const GameActivitySchema = SchemaFactory.createForClass(GameActivity);
@@ -37,7 +37,7 @@ export class GameCustomField extends Document {
   @Prop({
     type: String,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
@@ -47,17 +47,17 @@ export class GameCustomField extends Document {
   @Prop({
     type: Number,
   })
-  default_value: Number;
+  default_value: number;
 
   @Prop({
     type: String,
   })
-  max_value: String;
+  max_value: string;
 
   @Prop({
     type: String,
   })
-  min_value: String;
+  min_value: string;
 }
 
 export const GameCustomFieldSchema = SchemaFactory.createForClass(GameCustomField);
@@ -86,21 +86,21 @@ export class ChallengeGame {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  game_type: String;
+  game_type: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "ChatMedia", index: true })
   media_id: ChatMedia;

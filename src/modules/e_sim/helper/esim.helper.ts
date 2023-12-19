@@ -52,8 +52,8 @@ export class EsimHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let dataToFilter = { ...query };
 
       let orderByOBject = {};
@@ -62,16 +62,16 @@ export class EsimHelper {
       }
 
       if (query?.country_code) {
-        let dataCountry = await this.esimCountryService.findOne({ country_code: query?.country_code });
+        const dataCountry = await this.esimCountryService.findOne({ country_code: query?.country_code });
         dataToFilter = { ...dataToFilter, ...{ country: dataCountry?._id?.toString() } };
       }
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.esimService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.esimService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.esimService.count(dataToFilter);
+      const dataCount = await this.esimService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -95,9 +95,9 @@ export class EsimHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let dataToFilter = { ...query };
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const dataToFilter = { ...query };
 
       let orderByOBject = {};
       if (query.order_by) {
@@ -107,9 +107,9 @@ export class EsimHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.esimCountryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.esimCountryService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.esimCountryService.count(dataToFilter);
+      const dataCount = await this.esimCountryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -129,12 +129,12 @@ export class EsimHelper {
    */
   async createNewEsim(createEsimData: CreateEsimDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataPermission = await this.userPermissionService.isHavePermission(
+      const dataPermission = await this.userPermissionService.isHavePermission(
         userObject?._id?.toString(),
         "esim/create"
       );
@@ -192,8 +192,8 @@ export class EsimHelper {
 
       //Check Permission
 
-      let dataCreate: any = await this.esimService.create(createEsimData);
-      let dataService = await this.handleServiceService.findById(createEsimData?.service_id);
+      const dataCreate: any = await this.esimService.create(createEsimData);
+      const dataService = await this.handleServiceService.findById(createEsimData?.service_id);
 
       //Update to Plan
       let dataToUpdate = {
@@ -230,12 +230,12 @@ export class EsimHelper {
 
       // var resultDataUpdate = _(dataToUpdate).omitBy(_.isUndefined).omitBy(_.isNull).value();
       //Update
-      let dataPlan = await this.planService.create(dataToUpdate);
+      const dataPlan = await this.planService.create(dataToUpdate);
 
       //Update Esim
       await this.esimService.update({ _id: dataCreate?._id?.toString(), plan_id: dataPlan?._id?.toString() });
 
-      let dataReturn = await this.esimService.findById(dataCreate?._id?.toString());
+      const dataReturn = await this.esimService.findById(dataCreate?._id?.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -255,12 +255,12 @@ export class EsimHelper {
    */
   async createNewEsimCountry(createEsimData: CreateEsimCountryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataPermission = await this.userPermissionService.isHavePermission(
+      const dataPermission = await this.userPermissionService.isHavePermission(
         userObject?._id?.toString(),
         "esim/create"
       );
@@ -284,8 +284,8 @@ export class EsimHelper {
         };
       }
 
-      let dataCreate: any = await this.esimCountryService.create(createEsimData);
-      let dataReturn = await this.esimCountryService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.esimCountryService.create(createEsimData);
+      const dataReturn = await this.esimCountryService.findById(dataCreate?._id?.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -302,7 +302,7 @@ export class EsimHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -335,7 +335,7 @@ export class EsimHelper {
 
       let dataToFilter = {};
       dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-      let dataReturn: any = await this.esimService.findOne(dataToFilter);
+      const dataReturn: any = await this.esimService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -367,7 +367,7 @@ export class EsimHelper {
 
       let dataToFilter = {};
       dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
-      let dataReturn: any = await this.esimCountryService.findOne(dataToFilter);
+      const dataReturn: any = await this.esimCountryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -386,15 +386,15 @@ export class EsimHelper {
    */
   async handleUpdateEsimByAdmin(dataUpdate: UpdateEsimDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       // console.log(userId);
 
-      let dataPermission = await this.userPermissionService.isHavePermission(userId, "esim/update");
+      const dataPermission = await this.userPermissionService.isHavePermission(userId, "esim/update");
       if (!dataPermission) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
@@ -420,10 +420,10 @@ export class EsimHelper {
         };
       }
 
-      let dataReturn = await this.esimService.update(dataUpdate);
+      const dataReturn = await this.esimService.update(dataUpdate);
 
       //Update to Plan
-      let dataToUpdate = {
+      const dataToUpdate = {
         country: dataUpdate?.country,
         description: dataUpdate?.description,
         service_id: dataUpdate?.service_id,
@@ -434,7 +434,7 @@ export class EsimHelper {
         version: dataUpdate?.version,
       };
 
-      var resultDataUpdate = _(dataToUpdate).omitBy(_.isUndefined).omitBy(_.isNull).value();
+      let resultDataUpdate = _(dataToUpdate).omitBy(_.isUndefined).omitBy(_.isNull).value();
 
       if (this.validateJson(dataUpdate?.options)) {
         resultDataUpdate = {
@@ -452,7 +452,7 @@ export class EsimHelper {
         };
       }
       //Update
-      let dataToUpdatePlan = { ...resultDataUpdate, ...{ _id: dataReturn?.plan_id?._id.toString() } };
+      const dataToUpdatePlan = { ...resultDataUpdate, ...{ _id: dataReturn?.plan_id?._id.toString() } };
       await this.planService.update(dataToUpdatePlan);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -472,15 +472,15 @@ export class EsimHelper {
    */
   async handleUpdateEsimCountryByAdmin(dataUpdate: UpdateEsimCountryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       // console.log(userId);
 
-      let dataPermission = await this.userPermissionService.isHavePermission(userId, "esim/update");
+      const dataPermission = await this.userPermissionService.isHavePermission(userId, "esim/update");
       if (!dataPermission) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
@@ -489,7 +489,7 @@ export class EsimHelper {
         dataUpdate = { ...dataUpdate, ...{ translate: JSON.parse(dataUpdate.translate) } };
       }
 
-      let dataReturn = await this.esimCountryService.update(dataUpdate);
+      const dataReturn = await this.esimCountryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -508,16 +508,16 @@ export class EsimHelper {
    */
   async handleDeleteEsim(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (await this.userPermissionService.isHavePermission(userId, "esim/delete")) {
         //Check Permission
-        let dataReturn = await this.esimService.remove(id);
-        let planId = dataReturn?.plan_id?._id?.toString();
+        const dataReturn = await this.esimService.remove(id);
+        const planId = dataReturn?.plan_id?._id?.toString();
         await this.planService.remove(planId);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -540,14 +540,14 @@ export class EsimHelper {
    */
   async handleDeleteEsimCountry(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "esim/delete")) {
         //Check Permission
-        let dataReturn = await this.esimCountryService.remove(id);
+        const dataReturn = await this.esimCountryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -578,7 +578,7 @@ export class EsimHelper {
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
     str = str.replace(/-+$/g, "");
-    let date = new Date().getTime();
+    const date = new Date().getTime();
     return str + "-" + date;
   }
 }

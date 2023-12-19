@@ -36,17 +36,17 @@ export class EventRatingHelper {
    */
   async createNewEventRating(createEventTypeData: CreateEventRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check if Exist Rating
-      let dataFilter = {
+      const dataFilter = {
         user_id: userId,
         event_id: createEventTypeData.event_id,
       };
-      let dataEvent = await this.eventRatingService.findOne(dataFilter);
+      const dataEvent = await this.eventRatingService.findOne(dataFilter);
       if (dataEvent) {
         throw new BadRequestException("You have created Rating before!");
       }
@@ -54,9 +54,9 @@ export class EventRatingHelper {
       if (createEventTypeData.rating_media) {
         publicAlbum = JSON.parse(createEventTypeData.rating_media.toString());
       }
-      let newCreate = { ...createEventTypeData, ...{ rating_media: publicAlbum, user_id: userId } };
+      const newCreate = { ...createEventTypeData, ...{ rating_media: publicAlbum, user_id: userId } };
 
-      let dataCreate = await this.eventRatingService.create(newCreate);
+      const dataCreate = await this.eventRatingService.create(newCreate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -75,11 +75,11 @@ export class EventRatingHelper {
    */
   async handleUpdateRating(dataUpdate: UpdateEventRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       let publicAlbum = [];
       if (dataUpdate.rating_media) {
@@ -89,7 +89,7 @@ export class EventRatingHelper {
 
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "event/update")) {
-        let dataReturn = await this.eventRatingService.update(dataUpdate);
+        const dataReturn = await this.eventRatingService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -111,17 +111,17 @@ export class EventRatingHelper {
    */
   async getMyRating(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Event Type is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataFilter = {
+      const userId = userObject._id.toString();
+      const dataFilter = {
         user_id: userId,
         event_id: id,
       };
       //Check Permission
-      let dataReturn = await this.eventRatingService.findOne(dataFilter);
+      const dataReturn = await this.eventRatingService.findOne(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -139,27 +139,27 @@ export class EventRatingHelper {
    */
   async getMyListRating(query: SearchMyEventRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, user_id: userId };
+      const dataToFilter = { ...query, user_id: userId };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.eventRatingService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.eventRatingService.count(dataToFilter);
+      const dataReturn = await this.eventRatingService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.eventRatingService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -177,27 +177,27 @@ export class EventRatingHelper {
    */
   async getAdminList(query: SearchMyEventRatingDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.eventRatingService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.eventRatingService.count(dataToFilter);
+      const dataReturn = await this.eventRatingService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.eventRatingService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -216,14 +216,14 @@ export class EventRatingHelper {
    */
   async removeRatingByAdmin(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "event/delete")) {
         //Check Permission
-        let dataReturn = await this.eventRatingService.remove(id);
+        const dataReturn = await this.eventRatingService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

@@ -30,65 +30,65 @@ export class User {
     required: true,
     index: true,
   })
-  user_login: String;
+  user_login: string;
 
   @Prop({
     type: String,
     required: true,
     index: true,
   })
-  user_email: String;
+  user_email: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_avatar: String;
+  user_avatar: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  public_sound: String;
+  public_sound: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_avatar_thumbnail: String;
+  user_avatar_thumbnail: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_avatar_square: String;
+  user_avatar_square: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  user_cover: String;
+  user_cover: string;
 
   @Prop({
     type: String,
   })
-  user_password: String;
+  user_password: string;
 
   @Prop({
     type: String,
   })
-  display_name: String;
+  display_name: string;
 
   @Prop({
     type: String,
     default: "user",
   })
-  user_role: String;
+  user_role: string;
 
   @Prop({
     type: Number,
@@ -101,33 +101,33 @@ export class User {
     type: String,
     default: "",
   })
-  bio: String;
+  bio: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
   })
-  user_referrer: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    index: true,
-  })
-  country: String;
+  user_referrer: string;
 
   @Prop({
     type: String,
     default: "",
     index: true,
   })
-  email_token: String;
+  country: string;
+
+  @Prop({
+    type: String,
+    default: "",
+    index: true,
+  })
+  email_token: string;
 
   @Prop({
     type: Number,
@@ -215,21 +215,21 @@ export class User {
     default: "",
     index: true,
   })
-  user_phone: String;
+  user_phone: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: true,
   })
-  phone_session: String;
+  phone_session: string;
 
   @Prop({
     type: Boolean,
     default: false,
     nullable: true,
   })
-  is_validate_phone: Boolean;
+  is_validate_phone: boolean;
 
   @Prop({
     type: Number,

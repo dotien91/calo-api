@@ -75,7 +75,7 @@ export class UserFilterHelper {
    */
   async searchBlockList(query: SearchBlockListDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -83,19 +83,19 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userId,
       };
-      let dataReturn = await this.userBlockService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.userBlockService.filter(dataToFilter, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -114,7 +114,7 @@ export class UserFilterHelper {
    */
   async handleFilterUser(query: SearchUserDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -122,14 +122,14 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       // if (await this.userPermissionService.isHavePermission(userId, "user/list")) {
       //Check Permission
       let dataToFilter = {
@@ -138,15 +138,15 @@ export class UserFilterHelper {
       };
       if (query?.ids) {
         if (query?.ids?.indexOf(",")) {
-          let dataIds = query?.ids?.split(",");
+          const dataIds = query?.ids?.split(",");
           dataToFilter = { ...dataToFilter, ...{ ids: dataIds } };
         } else {
           dataToFilter = { ...dataToFilter, ...{ ids: [query?.ids] } };
         }
       }
 
-      let dataReturn = await this.appUserService.filterAdminWithSearch(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.appUserService.count(dataToFilter);
+      const dataReturn = await this.appUserService.filterAdminWithSearch(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.appUserService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -172,30 +172,30 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = query?.user_id;
-      let authId = query?.auth_id;
+      const userId = query?.user_id;
+      const authId = query?.auth_id;
 
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userId,
       };
-      let dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
 
       let dataChannelPermission = [];
       //Get Data level
       if (query?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.partner_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: query?.channel_id,
           user_ids: dataUserIds,
         };
@@ -208,16 +208,16 @@ export class UserFilterHelper {
       }
 
       if (dataReturn) {
-        let dataIds = dataReturn?.map((dataItem) => {
+        const dataIds = dataReturn?.map((dataItem) => {
           return dataItem?.partner_id?._id?.toString();
         });
 
-        let dataToFilterFollow = {
+        const dataToFilterFollow = {
           partner_ids: dataIds,
           user_id: query?.auth_id,
         };
-        let orderByOBject = {};
-        let dataUserFollow = await this.userFollowService.filterUser(
+        const orderByOBject = {};
+        const dataUserFollow = await this.userFollowService.filterUser(
           dataToFilterFollow,
           orderByOBject,
           1,
@@ -225,13 +225,13 @@ export class UserFilterHelper {
           false
         );
 
-        let dataPartnerFollow = dataUserFollow?.map((value) => {
+        const dataPartnerFollow = dataUserFollow?.map((value) => {
           return value?.partner_id?._id?.toString();
         });
-        for (let dataItemIndex in dataReturn) {
-          let partnerId = dataReturn[dataItemIndex]?.partner_id?._id?.toString();
+        for (const dataItemIndex in dataReturn) {
+          const partnerId = dataReturn[dataItemIndex]?.partner_id?._id?.toString();
           //@ts-ignore
-          let dataToAdd = dataReturn[dataItemIndex]?.toObject();
+          const dataToAdd = dataReturn[dataItemIndex]?.toObject();
           if (dataPartnerFollow.indexOf(partnerId) !== -1) {
             dataReturn[dataItemIndex] = {
               ...dataToAdd,
@@ -245,7 +245,7 @@ export class UserFilterHelper {
           }
 
           //Check user
-          let dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
+          const dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
             if (value?.user_id?._id?.toString() == dataReturn[dataItemIndex]?.partner_id?._id?.toString()) {
               filtered.push({
                 ...value?.user_id?.toObject(),
@@ -292,30 +292,30 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = query?.user_id;
-      let authId = query?.auth_id;
+      const userId = query?.user_id;
+      const authId = query?.auth_id;
 
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         partner_id: userId,
       };
-      let dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
 
       let dataChannelPermission = [];
       //Get Data level
       if (query?.channel_id) {
-        let dataUserIds = dataReturn?.map((value) => {
+        const dataUserIds = dataReturn?.map((value) => {
           return value?.user_id?._id?.toString();
         });
         //get permission
-        let dataFilterMember = {
+        const dataFilterMember = {
           channel_id: query?.channel_id,
           user_ids: dataUserIds,
         };
@@ -328,29 +328,29 @@ export class UserFilterHelper {
       }
 
       if (dataReturn) {
-        let dataIds = dataReturn?.map((dataItem) => {
+        const dataIds = dataReturn?.map((dataItem) => {
           return dataItem?.user_id?._id?.toString();
         });
 
-        let dataToFilterFollow = {
+        const dataToFilterFollow = {
           partner_ids: dataIds,
           user_id: query?.auth_id,
         };
-        let orderByOBject = {};
-        let dataUserFollow = await this.userFollowService.filterUser(
+        const orderByOBject = {};
+        const dataUserFollow = await this.userFollowService.filterUser(
           dataToFilterFollow,
           orderByOBject,
           1,
           limit,
           false
         );
-        let dataPartnerFollow = dataUserFollow?.map((value) => {
+        const dataPartnerFollow = dataUserFollow?.map((value) => {
           return value?.user_id?._id?.toString();
         });
-        for (let dataItemIndex in dataReturn) {
-          let partnerId = dataReturn[dataItemIndex]?.user_id?._id?.toString();
+        for (const dataItemIndex in dataReturn) {
+          const partnerId = dataReturn[dataItemIndex]?.user_id?._id?.toString();
           //@ts-ignore
-          let dataToAdd = dataReturn[dataItemIndex]?.toObject();
+          const dataToAdd = dataReturn[dataItemIndex]?.toObject();
           if (dataPartnerFollow.indexOf(partnerId) !== -1) {
             dataReturn[dataItemIndex] = {
               ...dataToAdd,
@@ -364,7 +364,7 @@ export class UserFilterHelper {
           }
 
           //Check user
-          let dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
+          const dataToMerge = dataChannelPermission?.reduce(function (filtered: any, value: any) {
             if (value?.user_id?._id?.toString() == dataReturn[dataItemIndex]?.partner_id?._id?.toString()) {
               filtered.push({
                 ...value?.user_id?.toObject(),
@@ -403,7 +403,7 @@ export class UserFilterHelper {
    */
   async getListUserLocation(query: SearchUserLocationDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -411,14 +411,14 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let dataReturn = await this.userLocationService.filter(query, orderByOBject, page, limit);
+      const dataReturn = await this.userLocationService.filter(query, orderByOBject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -437,7 +437,7 @@ export class UserFilterHelper {
    */
   async getListDisagree(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -445,22 +445,22 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userId,
       };
-      let dataReturn = await this.userDisagreeService.filterUser(dataToFilter, orderByOBject, page, limit);
-      let dataToAdd = [];
+      const dataReturn = await this.userDisagreeService.filterUser(dataToFilter, orderByOBject, page, limit);
+      const dataToAdd = [];
       if (dataReturn) {
-        for (let dataItem of dataReturn) {
+        for (const dataItem of dataReturn) {
           dataToAdd.push({ ...dataItem.toObject(), ...{ user_id: dataItem.user_id, partner_id: userId } });
         }
       }
@@ -482,7 +482,7 @@ export class UserFilterHelper {
    */
   async getListMatch(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -493,32 +493,32 @@ export class UserFilterHelper {
         query.order_by = "DESC";
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         partner_id: userId,
         match_status: 1,
       };
-      let dataReturn = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
-      let dataToAdd = [];
+      const dataReturn = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
+      const dataToAdd = [];
       if (dataReturn) {
-        for (let dataItem of dataReturn) {
+        for (const dataItem of dataReturn) {
           dataToAdd.push({ ...dataItem.toObject(), ...{ partner_id: dataItem.user_id, user_id: userId } });
         }
       }
 
-      let dataToFilterUnMatch = {
+      const dataToFilterUnMatch = {
         partner_id: userId,
         match_status: 0,
       };
-      let dataCountFollowing = await this.userFollowService.count(dataToFilterUnMatch);
+      const dataCountFollowing = await this.userFollowService.count(dataToFilterUnMatch);
 
       return res
         .set({
@@ -541,7 +541,7 @@ export class UserFilterHelper {
    */
   async getListMatchLocation(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -552,32 +552,32 @@ export class UserFilterHelper {
         query.order_by = "DESC";
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
-      let dataToFilter = {
+      const dataToFilter = {
         partner_id: userId,
         match_status: 1,
       };
-      let dataReturn = await this.userFollowService.filterLocation(dataToFilter, orderByOBject, page, limit);
-      let dataToAdd = [];
+      const dataReturn = await this.userFollowService.filterLocation(dataToFilter, orderByOBject, page, limit);
+      const dataToAdd = [];
       if (dataReturn) {
-        for (let dataItem of dataReturn) {
+        for (const dataItem of dataReturn) {
           dataToAdd.push({ ...dataItem.toObject(), ...{ partner_id: dataItem.user_id, user_id: userId } });
         }
       }
 
-      let dataToFilterUnMatch = {
+      const dataToFilterUnMatch = {
         partner_id: userId,
         match_status: 0,
       };
-      let dataCountFollowing = await this.userFollowService.count(dataToFilterUnMatch);
+      const dataCountFollowing = await this.userFollowService.count(dataToFilterUnMatch);
 
       return res
         .set({
@@ -600,7 +600,7 @@ export class UserFilterHelper {
    */
   async getListView(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -608,21 +608,21 @@ export class UserFilterHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let userId = userObject._id.toString();
-      let dataToFilter = {
+      const userId = userObject._id.toString();
+      const dataToFilter = {
         partner_id: userId,
       };
-      let dataReturn = await this.userViewService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataToAdd = [];
+      const dataReturn = await this.userViewService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataToAdd = [];
       if (dataReturn) {
-        for (let dataItem of dataReturn) {
+        for (const dataItem of dataReturn) {
           //@ts-ignore
           dataToAdd.push({ ...dataItem.toObject(), ...{ partner_id: dataItem.user_id, user_id: userId } });
         }
@@ -645,7 +645,7 @@ export class UserFilterHelper {
    */
   async getListAdminFilter(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -653,8 +653,8 @@ export class UserFilterHelper {
         query.limit = 100;
       }
 
-      let limit = query.limit ? query.limit : 100;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 100;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
@@ -669,7 +669,7 @@ export class UserFilterHelper {
 
       let dataToBrowser = [];
       if (dataReturn) {
-        for (let returnItem of dataReturn) {
+        for (const returnItem of dataReturn) {
           if (query.select === "_id" || !query.select) {
             dataToBrowser.push(returnItem?.user_id?._id.toString());
           }
@@ -696,16 +696,16 @@ export class UserFilterHelper {
 
   async handleProcessUser(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
     try {
-      let dataFilterMediaOld = {
+      const dataFilterMediaOld = {
         base_role: "men",
       };
-      let dataObjectOld = await this.userOptionService.filter(dataFilterMediaOld, {}, 1, 50000);
+      const dataObjectOld = await this.userOptionService.filter(dataFilterMediaOld, {}, 1, 50000);
       //console.log(dataObject);
       if (dataObjectOld) {
         let dataCount = 0;
-        for (let dataMedia of dataObjectOld) {
+        for (const dataMedia of dataObjectOld) {
           try {
-            let dataUpdate = {
+            const dataUpdate = {
               user_id: dataMedia?.user_id?.toString(),
               base_role: "man",
             };
@@ -722,15 +722,15 @@ export class UserFilterHelper {
         .status(HttpStatus.OK)
         .send({ status: "Done" });
 
-      let dataFilterMedia = {
+      const dataFilterMedia = {
         from: "2022-05-01T04:02:39.976+00:00",
         to: "2022-11-01T04:02:39.976+00:00",
       };
-      let dataObject = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
+      const dataObject = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
       //console.log(dataObject);
       if (dataObject) {
         let dataCount = 0;
-        for (let dataMedia of dataObject) {
+        for (const dataMedia of dataObject) {
           try {
             let dataUrl = dataMedia.media_url;
             let dataThumb = dataMedia.media_thumbnail;
@@ -743,7 +743,7 @@ export class UserFilterHelper {
               "https://lgbtapp.s3.ap-southeast-1.amazonaws.com.whiteg.app/"
             );
             //console.log(dataMedia);
-            let dataToUpdate = {
+            const dataToUpdate = {
               media_url: dataUrl,
               media_thumbnail: dataThumb,
               _id: dataMedia._id.toString(),
@@ -760,14 +760,14 @@ export class UserFilterHelper {
         .status(HttpStatus.OK)
         .send({ status: "Done" });
 
-      let dataObject2 = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
+      const dataObject2 = await this.chatMediaService.filter(dataFilterMedia, {}, 1, 50000);
       //console.log(dataObject);
       if (dataObject) {
-        for (let dataMedia of dataObject) {
+        for (const dataMedia of dataObject) {
           try {
-            let dataUrl = dataMedia.media_url;
+            const dataUrl = dataMedia.media_url;
 
-            let base64SingleFaceObject = await axios
+            const base64SingleFaceObject = await axios
               .get(dataUrl, {
                 responseType: "arraybuffer",
               })
@@ -780,18 +780,18 @@ export class UserFilterHelper {
             if (!base64SingleFaceObject) {
               continue;
             }
-            let base64SingleFace1 = Buffer.from(base64SingleFaceObject.data).toString("base64");
+            const base64SingleFace1 = Buffer.from(base64SingleFaceObject.data).toString("base64");
 
             const apiUrl = process.env.GENDER_URL;
             const subscriptionKey = process.env.FACE_COMPARE_KEY; //change subscription key
 
-            var FormData = require("form-data");
-            var data = new FormData();
+            const FormData = require("form-data");
+            const data = new FormData();
             data.append("secret_compare", subscriptionKey);
             data.append("key_compare", "ABC");
             data.append("image", base64SingleFace1);
 
-            var config = {
+            const config = {
               method: "post",
               url: apiUrl,
               headers: {
@@ -801,7 +801,7 @@ export class UserFilterHelper {
             };
             //console.log(config)
 
-            let dataResponse = await axios(config)
+            const dataResponse = await axios(config)
               .then((response) => {
                 return response.data;
               })
@@ -816,9 +816,9 @@ export class UserFilterHelper {
             if (dataResponse?.is_male) {
               gender = "male";
             }
-            let dataAi = JSON.stringify(dataResponse);
+            const dataAi = JSON.stringify(dataResponse);
 
-            let dataToUpdate = {
+            const dataToUpdate = {
               gender: gender,
               _id: dataMedia._id.toString(),
               data_ai: dataAi,
@@ -827,7 +827,7 @@ export class UserFilterHelper {
             console.log(dataMedia._id.toString());
           } catch (error) {
             console.log(error);
-            let dataToUpdate = {
+            const dataToUpdate = {
               gender: "unknown",
               _id: dataMedia._id.toString(),
               data_ai: "",
@@ -841,17 +841,17 @@ export class UserFilterHelper {
         .status(HttpStatus.OK)
         .send({ status: "Done" });
 
-      let dataFilter = {
+      const dataFilter = {
         from: "2022-07-20T04:02:39.976+00:00",
         to: "2022-10-21T04:02:39.976+00:00",
         is_avatar: "1",
       };
-      let dataUser = await this.userOptionService.filterFree(dataFilter, {}, 1, 20000);
+      const dataUser = await this.userOptionService.filterFree(dataFilter, {}, 1, 20000);
       let countUpdate = 0;
-      for (let dataItem of dataUser) {
-        let isUpdate = false;
+      for (const dataItem of dataUser) {
+        const isUpdate = false;
         //console.log(dataItem);
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataItem._id.toString(),
         };
         let dataUserOptionUpdate = {
@@ -940,11 +940,11 @@ export class UserFilterHelper {
       let dataObject = null;
       if (Number(query.page) === 1) {
         //Update Like Point
-        let dataFilterMedia = {
+        const dataFilterMedia = {
           not_circle_point: true,
         };
         dataObject = await this.userOptionService.filter(dataFilterMedia, {}, 1, 30000);
-        for (let dataItem of dataObject) {
+        for (const dataItem of dataObject) {
           let dataToUpdate = {
             user_id: dataItem.user_id.toString(),
           };
@@ -971,13 +971,13 @@ export class UserFilterHelper {
       if (Number(query.page) === 2) {
         //Update Avatar point
         //Update Like Point
-        let dataFilterAvatar = {
+        const dataFilterAvatar = {
           is_avatar: "1",
         };
         dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 30000);
-        for (let dataItem of dataObject) {
-          let avatarUrl = dataItem?.user_avatar;
-          let image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
+        for (const dataItem of dataObject) {
+          const avatarUrl = dataItem?.user_avatar;
+          const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
 
           let genderPoint = 0;
           if (image1Object && image1Object?.gender) {
@@ -994,15 +994,15 @@ export class UserFilterHelper {
             genderPoint = 10;
           }
 
-          let userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
-          let oldPoint = userOptionData?.avatar_point;
-          let pointToPlus =
+          const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
+          const oldPoint = userOptionData?.avatar_point;
+          const pointToPlus =
             parseFloat(userOptionData?.circle_point?.toString()) -
             parseFloat(oldPoint?.toString()) +
             parseFloat(genderPoint?.toString());
 
           //Update Gender Point
-          let dataUpdateAfter = {
+          const dataUpdateAfter = {
             user_id: dataItem._id?.toString(),
             avatar_point: genderPoint,
             avatar_gender: image1Object?.gender,
@@ -1015,25 +1015,25 @@ export class UserFilterHelper {
       if (Number(query.page) === 3) {
         //Update Day point
         //Update Like Point
-        let dataFilterAvatar = {};
+        const dataFilterAvatar = {};
         dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 80000);
-        for (let dataItem of dataObject) {
-          let lastActive = dataItem.last_active;
+        for (const dataItem of dataObject) {
+          const lastActive = dataItem.last_active;
 
-          let dateLastActive = new Date(lastActive);
-          let currentTime = Date.now() - dateLastActive.getTime();
+          const dateLastActive = new Date(lastActive);
+          const currentTime = Date.now() - dateLastActive.getTime();
 
-          let leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
+          const leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
 
-          let userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
-          let oldPoint = userOptionData?.time_point;
-          let pointToPlus =
+          const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
+          const oldPoint = userOptionData?.time_point;
+          const pointToPlus =
             parseFloat(userOptionData?.circle_point?.toString()) -
             parseFloat(oldPoint?.toString()) +
             parseFloat(leftTime?.toString());
 
           //Update Gender Point
-          let dataUpdateAfter = {
+          const dataUpdateAfter = {
             user_id: dataItem._id?.toString(),
             circle_point: pointToPlus,
             time_point: leftTime,
@@ -1044,13 +1044,13 @@ export class UserFilterHelper {
 
       if (Number(query.page) === 4) {
         //Update Like Point
-        let dataFilterMedia = {
+        const dataFilterMedia = {
           from: "2022-09-30T04:02:39.976+00:00",
           to: "2022-11-01T04:02:39.976+00:00",
         };
         dataObject = await this.appUserService.filter(dataFilterMedia, {}, 1, 50000);
         let dataCount = 0;
-        for (let dataItem of dataObject) {
+        for (const dataItem of dataObject) {
           let userAvatar = dataItem.user_avatar;
           let userThumb = dataItem.user_avatar_thumbnail;
           let publicSound = dataItem.public_sound;
@@ -1144,24 +1144,24 @@ export class UserFilterHelper {
   async handleCronJob() {
     //Update Day point
     //Update Like Point
-    let dataFilterAvatar = {
+    const dataFilterAvatar = {
       is_circle_point: "true",
     };
-    let dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 20000);
-    for (let dataItem of dataObject) {
+    const dataObject = await this.userOptionService.filterFree(dataFilterAvatar, {}, 1, 20000);
+    for (const dataItem of dataObject) {
       try {
-        let lastActive = dataItem.last_active;
+        const lastActive = dataItem.last_active;
 
-        let dateLastActive = new Date(lastActive);
+        const dateLastActive = new Date(lastActive);
         //console.log(dateLastActive);
         //Total time from Last active to now
-        let currentTime = Date.now() - dateLastActive.getTime();
+        const currentTime = Date.now() - dateLastActive.getTime();
 
         //Total Time in day!
-        let leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
+        const leftTime = Math.floor(currentTime / (1000 * 60 * 60 * 24));
 
-        let userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
-        let oldPoint = userOptionData?.time_point;
+        const userOptionData = await this.userOptionService.findOne({ user_id: dataItem._id?.toString() });
+        const oldPoint = userOptionData?.time_point;
 
         console.log(userOptionData, "userOptionData");
 
@@ -1169,13 +1169,13 @@ export class UserFilterHelper {
         console.log(oldPoint?.toString(), "oldPoint?.toString()");
         console.log(userOptionData?.circle_point?.toString(), "userOptionData?.circle_point?.toString()");
         //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-        let pointToPlus =
+        const pointToPlus =
           parseFloat(userOptionData?.circle_point?.toString()) -
           parseFloat(oldPoint?.toString()) +
           parseFloat(leftTime?.toString());
 
         //Update Gender Point
-        let dataUpdateAfter = {
+        const dataUpdateAfter = {
           user_id: dataItem._id?.toString(),
           circle_point: pointToPlus,
           time_point: leftTime,
@@ -1222,7 +1222,7 @@ export class UserFilterHelper {
    */
   async getListAdminSearch(query: SearchAdminFilterDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1230,8 +1230,8 @@ export class UserFilterHelper {
         query.limit = 10000;
       }
 
-      let limit = query.limit ? query.limit : 100;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 100;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
@@ -1255,10 +1255,10 @@ export class UserFilterHelper {
           } else {
             dataReturn = await this.userOptionService.filterAdmin(query, orderByObject, page, limit);
             if (process.env.BRANCH_NAME === "revu") {
-              for (let index in dataReturn) {
+              for (const index in dataReturn) {
                 if (dataReturn[index]?.user_interest?.length) {
-                  let dataUserFilter = { ids: dataReturn[index]?.user_interest };
-                  let dataUserArray = await this.appUserService.filter(dataUserFilter, {}, 1, 1000);
+                  const dataUserFilter = { ids: dataReturn[index]?.user_interest };
+                  const dataUserArray = await this.appUserService.filter(dataUserFilter, {}, 1, 1000);
                   dataReturn[index].user_interest = dataUserArray;
                 }
               }
@@ -1286,7 +1286,7 @@ export class UserFilterHelper {
    */
   async getUserMoodList(query: SearchUserMoodDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1294,13 +1294,13 @@ export class UserFilterHelper {
         query.limit = 10000;
       }
 
-      let limit = query.limit ? query.limit : 100;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 100;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataReturn = await this.userMoodService.filter(
+      const dataReturn = await this.userMoodService.filter(
         { user_id: userObject._id.toString() },
         orderByObject,
         page,
@@ -1324,7 +1324,7 @@ export class UserFilterHelper {
    */
   async getUserQuestionList(query: SearchUserMoodDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1332,13 +1332,13 @@ export class UserFilterHelper {
         query.limit = 10000;
       }
 
-      let limit = query.limit ? query.limit : 100;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 100;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataReturn = await this.userQuestionService.filter({}, orderByObject, page, limit);
+      const dataReturn = await this.userQuestionService.filter({}, orderByObject, page, limit);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1356,23 +1356,23 @@ export class UserFilterHelper {
    */
   async getFollowCount(dataQuery: SearchFollowCountDto, req: ExpressRequestDto, res: Response) {
     try {
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: dataQuery?.user_id,
       };
-      let dataCountFollowing = await this.userFollowService.count(dataToFilter);
-      let dataToFilterFollower = {
+      const dataCountFollowing = await this.userFollowService.count(dataToFilter);
+      const dataToFilterFollower = {
         partner_id: dataQuery?.user_id,
       };
-      let dataCountFollower = await this.userFollowService.count(dataToFilterFollower);
+      const dataCountFollower = await this.userFollowService.count(dataToFilterFollower);
 
-      let dataContributeCount = await this.requestService.count({ user_id: dataQuery?.user_id });
+      const dataContributeCount = await this.requestService.count({ user_id: dataQuery?.user_id });
 
-      let dataToFilterView = {
+      const dataToFilterView = {
         partner_id: dataQuery?.user_id,
         updatedAt: true,
       };
-      let dataCountView = await this.userViewService.count(dataToFilterView);
-      let dataReturn = {
+      const dataCountView = await this.userViewService.count(dataToFilterView);
+      const dataReturn = {
         following: Number(dataCountFollowing),
         followers: Number(dataCountFollower),
         view_number: Number(dataCountView),
@@ -1396,14 +1396,14 @@ export class UserFilterHelper {
    */
   async handleGetUserDetail(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new NotFoundException("User is invalid");
       }
-      let projection = {
+      const projection = {
         user_email: false,
       };
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       let dataUser = await this.userOptionService.findById(id, projection);
       if (!Number(dataUser?.user_status)) {
@@ -1413,8 +1413,8 @@ export class UserFilterHelper {
       dataUser = { ...dataUser, ...{ is_block: false } };
       dataUser = { ...dataUser, ...{ is_follow: false, follow_id: null } };
       if (userObject?.block_users && userObject?.block_users?.length) {
-        let dataBlock = [];
-        for (let blockItem of userObject?.block_users) {
+        const dataBlock = [];
+        for (const blockItem of userObject?.block_users) {
           dataBlock.push(blockItem.toString());
         }
         if (dataBlock.indexOf(id) !== -1) {
@@ -1422,9 +1422,9 @@ export class UserFilterHelper {
         }
       }
 
-      let publicInstagram = [];
+      const publicInstagram = [];
       if (dataUser?.public_instagram?.length) {
-        for (let instagramItem of dataUser?.public_instagram) {
+        for (const instagramItem of dataUser?.public_instagram) {
           if (instagramItem && instagramItem?.avatar) {
             publicInstagram.push(instagramItem);
           }
@@ -1432,27 +1432,27 @@ export class UserFilterHelper {
       }
       dataUser = { ...dataUser, ...{ public_instagram: publicInstagram } };
 
-      let dataToFilter = {
+      const dataToFilter = {
         user_id: userId,
         partner_id: id,
       };
-      let dataMatch = await this.userFollowService.findOne(dataToFilter, false);
+      const dataMatch = await this.userFollowService.findOne(dataToFilter, false);
       if (dataMatch) {
         dataUser = { ...dataUser, ...{ match_status: dataMatch?.match_status, is_follow: true } };
       } else {
         dataUser = { ...dataUser, ...{ match_status: false } };
       }
 
-      let dataVideoReturn: any = [];
+      const dataVideoReturn: any = [];
       if (Number(dataUser?.video_number) > 0) {
-        let dataVideoObject: any = await this.shortService.filter(
+        const dataVideoObject: any = await this.shortService.filter(
           { user_id: dataUser?._id.toString() },
           { createdAt: "DESC" },
           1,
           3
         );
         if (dataVideoObject && dataVideoObject.length) {
-          for (let dataVideoItem of dataVideoObject) {
+          for (const dataVideoItem of dataVideoObject) {
             dataVideoReturn.push(dataVideoItem?.toObject());
           }
         }
@@ -1473,15 +1473,15 @@ export class UserFilterHelper {
 
   async getOwnUser(req: ExpressRequestDto, res: Response) {
     try {
-      let dataSession = await this.handleSession(req);
+      const dataSession = await this.handleSession(req);
 
       if (!dataSession) {
         throw new NotFoundException("Token is invalid");
       }
 
-      let userId = dataSession._id.toString();
+      const userId = dataSession._id.toString();
 
-      let projection = {};
+      const projection = {};
       let dataUser = await this.userOptionService.findById(userId, projection);
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
@@ -1490,9 +1490,9 @@ export class UserFilterHelper {
       dataUser = { ...dataUser, ...{ is_block: false } };
       dataUser = { ...dataUser, ...{ is_follow: false, follow_id: null } };
 
-      let publicInstagram = [];
+      const publicInstagram = [];
       if (dataUser?.public_instagram?.length) {
-        for (let instagramItem of dataUser?.public_instagram) {
+        for (const instagramItem of dataUser?.public_instagram) {
           if (instagramItem && instagramItem?.avatar) {
             publicInstagram.push(instagramItem);
           }
@@ -1519,7 +1519,7 @@ export class UserFilterHelper {
    */
   async handleSession(req: ExpressRequestDto) {
     try {
-      let authCodeHeader = req?.headers;
+      const authCodeHeader = req?.headers;
       let authCodeString: string = "";
       if (authCodeHeader && authCodeHeader["x-authorization"]) {
         authCodeString = authCodeHeader["x-authorization"]?.toString();
@@ -1532,7 +1532,7 @@ export class UserFilterHelper {
         authCodeString = authCodeHeader["authorization"].replace("Bearer ", "");
       }
 
-      let hashPassword = new ConfigServiceNest().get<string>("HASH_PASSWORD");
+      const hashPassword = new ConfigServiceNest().get<string>("HASH_PASSWORD");
       const { data, exp } = (await new JwtService().verify(authCodeString, {
         secret: hashPassword,
       })) as DecodeUserToken;
@@ -1551,11 +1551,11 @@ export class UserFilterHelper {
    */
   async getUserQuestionDetail(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new NotFoundException("User is invalid");
       }
-      let dataUser = await this.userQuestionService.findById(id, {});
+      const dataUser = await this.userQuestionService.findById(id, {});
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1573,8 +1573,8 @@ export class UserFilterHelper {
    */
   async searchBaseUser(query: SearchBaseUserDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
-      let sessionObject = req?.session_data;
+      const userObject = req?.user_object;
+      const sessionObject = req?.session_data;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -1612,7 +1612,7 @@ export class UserFilterHelper {
         parseFloat(query?.longitude?.toString()) != -1
       ) {
         if (!dataToFilter.city && !dataToFilter?.is_map) {
-          let dataToUpdate = {
+          const dataToUpdate = {
             user_id: userObject?._id?.toString(),
             loc: {
               type: "Point",
@@ -1629,7 +1629,7 @@ export class UserFilterHelper {
         (parseFloat(query?.latitude?.toString()) == -1 && parseFloat(query?.longitude?.toString()) == -1)
       ) {
         //Check
-        let dataOption = await this.userOptionService.findOne({ user_id: userObject._id.toString() });
+        const dataOption = await this.userOptionService.findOne({ user_id: userObject._id.toString() });
         if (
           dataOption &&
           dataOption?.loc?.coordinates &&
@@ -1647,7 +1647,7 @@ export class UserFilterHelper {
       }
 
       if (dataToFilter?.city) {
-        let dataToFilterAdd = {
+        const dataToFilterAdd = {
           latitude: 0,
           longitude: 0,
         };
@@ -1680,7 +1680,7 @@ export class UserFilterHelper {
         dataUnset = [...dataUnset, ...userObject?.block_users];
       }
 
-      let checkPage = page;
+      const checkPage = page;
 
       //If not Map, Not filter by User Active,
       if (
@@ -1701,19 +1701,19 @@ export class UserFilterHelper {
         page = 1;
       }
 
-      let dataUnsetNew = [];
+      const dataUnsetNew = [];
 
       if (query?.id_unset) {
-        let dataIdsUnset = query?.id_unset?.split(",");
-        for (let idUnset of dataIdsUnset) {
+        const dataIdsUnset = query?.id_unset?.split(",");
+        for (const idUnset of dataIdsUnset) {
           dataUnset.push(idUnset);
         }
       }
 
       if (dataUnset && dataUnset.length) {
-        for (let unsetItem of dataUnset) {
+        for (const unsetItem of dataUnset) {
           try {
-            let objectId = new Types.ObjectId(unsetItem);
+            const objectId = new Types.ObjectId(unsetItem);
             if (!objectId) {
               continue;
             }
@@ -1727,23 +1727,23 @@ export class UserFilterHelper {
       }
 
       if (userObject?.country && !dataToFilter?.distance) {
-        let countryArrayString: any = process?.env?.OPEN_COUNTRY;
-        let countryArray = countryArrayString?.split(",");
+        const countryArrayString: any = process?.env?.OPEN_COUNTRY;
+        const countryArray = countryArrayString?.split(",");
         if (countryArray.indexOf(userObject?.country.toString()) !== -1) {
           dataToFilter = { ...dataToFilter, ...{ distance: Number(process?.env?.DISTANCE_COUNTRY) } };
         }
       }
 
-      let dataWithIn = [];
+      const dataWithIn = [];
       if (checkPage == 1) {
-        let dataToFilter = {
+        const dataToFilter = {
           partner_id: userObject?._id.toString(),
           match_status: 0,
         };
-        let dataIdLike = await this.userFollowService.filterWithId(dataToFilter, page, 10);
+        const dataIdLike = await this.userFollowService.filterWithId(dataToFilter, page, 10);
         if (dataIdLike && dataIdLike.length) {
-          for (let dataLikeItem of dataIdLike) {
-            let dataIdToPush = dataLikeItem.user_id.toString();
+          for (const dataLikeItem of dataIdLike) {
+            const dataIdToPush = dataLikeItem.user_id.toString();
             if (dataUnsetNew && dataUnsetNew.length && dataUnsetNew.indexOf(dataIdToPush) === -1) {
               dataWithIn.push(dataIdToPush);
             }
@@ -1755,8 +1755,8 @@ export class UserFilterHelper {
       }
 
       if (Number(dataToFilter?.is_map) == 1) {
-        let dataUserOption: any = await this.appUserService.findOneLogin({ _id: userObject._id.toString() });
-        let dataLoc = dataUserOption?.loc?.coordinates;
+        const dataUserOption: any = await this.appUserService.findOneLogin({ _id: userObject._id.toString() });
+        const dataLoc = dataUserOption?.loc?.coordinates;
         dataToFilter = {
           ...dataToFilter,
           ...{
@@ -1794,10 +1794,10 @@ export class UserFilterHelper {
         !userObject?.travel_city &&
         !dataToFilter?.is_map
       ) {
-        let newDataFilter = {
+        const newDataFilter = {
           user_ids: dataWithIn,
         };
-        let dataReturnToAdd = await this.userOptionService.filterFree(newDataFilter, orderByOBject, 1, 10);
+        const dataReturnToAdd = await this.userOptionService.filterFree(newDataFilter, orderByOBject, 1, 10);
         if (dataReturnToAdd && dataReturnToAdd.length) {
           dataReturn = [...dataReturn, ...dataReturnToAdd];
           dataReturn = _.sampleSize(dataReturn, dataReturn?.length);
@@ -1805,40 +1805,40 @@ export class UserFilterHelper {
       }
 
       let dataFinalReturn = [];
-      let dataUpdateSession = [];
+      const dataUpdateSession = [];
 
       //Update Data Result
       if (dataReturn && dataReturn.length) {
-        for (let dataPrepareItem of dataReturn) {
+        for (const dataPrepareItem of dataReturn) {
           dataUpdateSession.push(dataPrepareItem._id.toString());
           let isFollow = false;
-          let followUserObject = [];
+          const followUserObject = [];
           if (userObject?.follow_users && userObject?.follow_users?.length) {
-            for (let followItem of userObject?.follow_users) {
+            for (const followItem of userObject?.follow_users) {
               followUserObject.push(followItem.toString());
             }
           }
           if (followUserObject.indexOf(dataPrepareItem._id.toString()) !== -1) {
             isFollow = true;
           }
-          let publicInstagram = [];
+          const publicInstagram = [];
           if (dataPrepareItem?.public_instagram?.length) {
-            for (let instagramItem of dataPrepareItem?.public_instagram) {
+            for (const instagramItem of dataPrepareItem?.public_instagram) {
               if (instagramItem && instagramItem?.avatar) {
                 publicInstagram.push(instagramItem);
               }
             }
           }
-          let dataVideoReturn: any = [];
+          const dataVideoReturn: any = [];
           if (Number(dataPrepareItem?.video_number) > 0) {
-            let dataVideoObject: any = await this.shortService.filter(
+            const dataVideoObject: any = await this.shortService.filter(
               { user_id: dataPrepareItem?._id.toString() },
               { createdAt: "DESC" },
               1,
               3
             );
             if (dataVideoObject && dataVideoObject.length) {
-              for (let dataVideoItem of dataVideoObject) {
+              for (const dataVideoItem of dataVideoObject) {
                 dataVideoReturn.push(dataVideoItem?.toObject());
               }
             }
@@ -1851,20 +1851,20 @@ export class UserFilterHelper {
       }
 
       if (process.env.BRANCH_NAME === "ishare") {
-        let dataToFilter = {
+        const dataToFilter = {
           partner_id: userObject?._id?.toString(),
           user_ids: dataUpdateSession,
           match_status: 1,
         };
-        let orderByOBject = {};
-        let dataUserFollow = await this.userFollowService.filterUser(dataToFilter, orderByOBject, 1, limit, false);
-        let dataPartnerFollow = [];
-        for (let dataUserFollowItem of dataUserFollow) {
+        const orderByOBject = {};
+        const dataUserFollow = await this.userFollowService.filterUser(dataToFilter, orderByOBject, 1, limit, false);
+        const dataPartnerFollow = [];
+        for (const dataUserFollowItem of dataUserFollow) {
           // console.log(dataUserFollowItem, 'dataUserFollowItem')
           dataPartnerFollow.push(dataUserFollowItem?.user_id?._id?.toString());
         }
-        for (let dataItemIndex in dataFinalReturn) {
-          let partnerId = dataFinalReturn[dataItemIndex]?._id?.toString();
+        for (const dataItemIndex in dataFinalReturn) {
+          const partnerId = dataFinalReturn[dataItemIndex]?._id?.toString();
           if (dataPartnerFollow.indexOf(partnerId) !== -1) {
             dataFinalReturn[dataItemIndex] = { ...dataFinalReturn[dataItemIndex], ...{ is_match: "1" } };
           } else {
@@ -1883,9 +1883,9 @@ export class UserFilterHelper {
       ) {
         let dataToUpdate = [];
         if (checkPage > 1) {
-          let oldData = [];
+          const oldData = [];
           if (sessionObject?.unset_ids) {
-            for (let dataSessionOld of sessionObject.unset_ids) {
+            for (const dataSessionOld of sessionObject.unset_ids) {
               oldData.push(dataSessionOld.toString());
             }
           }
@@ -1893,8 +1893,8 @@ export class UserFilterHelper {
         } else {
           dataToUpdate = dataUpdateSession;
         }
-        let afterData: any[] = _.union(dataToUpdate, []);
-        let dataSessionToUpdate = {
+        const afterData: any[] = _.union(dataToUpdate, []);
+        const dataSessionToUpdate = {
           _id: sessionObject?._id.toString(),
           unset_ids: afterData,
         };
@@ -1909,7 +1909,7 @@ export class UserFilterHelper {
         parseFloat(query?.latitude?.toString()) != -1 &&
         parseFloat(query?.longitude?.toString()) != -1
       ) {
-        let randomTimeout = Math.floor(Math.random() * 20);
+        const randomTimeout = Math.floor(Math.random() * 20);
         setTimeout(async () => {
           //Update User Option
           let cityObject = await this.cityService.findOneWithFilter({
@@ -1918,7 +1918,7 @@ export class UserFilterHelper {
 
           if (!cityObject) {
             //Find nearby
-            let filterCity = await this.cityService.filter(
+            const filterCity = await this.cityService.filter(
               { is_nearby: "1", latitude: query.latitude, longitude: query.longitude },
               {},
               1,
@@ -1933,7 +1933,7 @@ export class UserFilterHelper {
           let countryName = "";
 
           if (cityObject) {
-            let oldCity = userObject?.city?.toString();
+            const oldCity = userObject?.city?.toString();
             if (userObject?.city?.toString() !== cityObject?._id?.toString()) {
               //Update New City
               let dataUpdate = {
@@ -2007,9 +2007,9 @@ export class UserFilterHelper {
     countryName: string
   ) {
     setTimeout(async () => {
-      let supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+      const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
       //Create new
-      let dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
+      const dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
         supportAccount,
         partnerObject._id.toString(),
         "personal",
@@ -2020,18 +2020,18 @@ export class UserFilterHelper {
       if (!dataCreateReturnRoom) {
         console.log("Not found");
       } else {
-        let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-        let currentTime = new Date().getTime();
+        const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+        const currentTime = new Date().getTime();
 
         //console.log(currentTime - updatedAt);
-        let leftTime = currentTime - updatedAt;
+        const leftTime = currentTime - updatedAt;
         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
           console.log("Not return");
           return null;
         }
 
         let chatContent = "";
-        let tokenReturn = this.jwtHelper.generateJwt(
+        const tokenReturn = this.jwtHelper.generateJwt(
           process.env.INFO_USER,
           supportAccount?.user_email?.toString(),
           process.env.INFO_SESSION,
@@ -2042,7 +2042,7 @@ export class UserFilterHelper {
           branchName = "Honee";
         }
         if (countryName === "Vietnam") {
-          let localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
+          const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
@@ -2050,7 +2050,7 @@ export class UserFilterHelper {
 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
         } else {
-          let localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
+          const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
@@ -2058,7 +2058,7 @@ export class UserFilterHelper {
 🔔 If you have any problems, contact us directly using the Support feature.
 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
         }
-        let createChatHistoryDto = {
+        const createChatHistoryDto = {
           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
           chat_content: chatContent,
         };
@@ -2068,7 +2068,7 @@ export class UserFilterHelper {
         req.session_id = process.env.INFO_SESSION;
         req.auth_code = tokenReturn.toString();
 
-        let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
           req,
           res,
           createChatHistoryDto,

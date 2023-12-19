@@ -35,18 +35,18 @@ export class EventTypeHelper {
    */
   async createNewEventType(createEventTypeData: CreateEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let permissionObject = await this.userPermissionService.isHavePermission(userId, "event/create");
+      const permissionObject = await this.userPermissionService.isHavePermission(userId, "event/create");
 
       if (!permissionObject) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataCreate = await this.eventTypeService.create(createEventTypeData);
+      const dataCreate = await this.eventTypeService.create(createEventTypeData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -66,18 +66,18 @@ export class EventTypeHelper {
    */
   async createNewEventCategory(createEventTypeData: CreateEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
-      let permissionObject = await this.userPermissionService.isHavePermission(userId, "event/create");
+      const permissionObject = await this.userPermissionService.isHavePermission(userId, "event/create");
 
       if (!permissionObject) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataCreate = await this.eventCategoryService.create(createEventTypeData);
+      const dataCreate = await this.eventCategoryService.create(createEventTypeData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -97,27 +97,27 @@ export class EventTypeHelper {
    */
   async getListEventType(query: SearchEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.eventTypeService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.eventTypeService.count(dataToFilter);
+      const dataReturn = await this.eventTypeService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.eventTypeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -137,27 +137,27 @@ export class EventTypeHelper {
    */
   async getListEventCategory(query: SearchEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.eventCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.eventCategoryService.count(dataToFilter);
+      const dataReturn = await this.eventCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.eventCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -176,14 +176,14 @@ export class EventTypeHelper {
    */
   async handleUpdateEventTypeByAdmin(dataUpdate: UpdateEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "event/update")) {
-        let dataReturn = await this.eventTypeService.update(dataUpdate);
+        const dataReturn = await this.eventTypeService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -205,14 +205,14 @@ export class EventTypeHelper {
    */
   async handleUpdateEventCategoryByAdmin(dataUpdate: UpdateEventTypeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "event/update")) {
-        let dataReturn = await this.eventCategoryService.update(dataUpdate);
+        const dataReturn = await this.eventCategoryService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -234,12 +234,12 @@ export class EventTypeHelper {
    */
   async getDetailEventType(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Event Type is invalid");
       }
       //Check Permission
-      let dataReturn = await this.eventTypeService.findById(id.toString());
+      const dataReturn = await this.eventTypeService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -258,12 +258,12 @@ export class EventTypeHelper {
    */
   async getDetailEventCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User/Event Category is invalid");
       }
       //Check Permission
-      let dataReturn = await this.eventCategoryService.findById(id.toString());
+      const dataReturn = await this.eventCategoryService.findById(id.toString());
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -282,14 +282,14 @@ export class EventTypeHelper {
    */
   async removeEventType(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "event/delete")) {
         //Check Permission
-        let dataReturn = await this.eventTypeService.remove(id);
+        const dataReturn = await this.eventTypeService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -311,14 +311,14 @@ export class EventTypeHelper {
    */
   async removeEventCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "event/delete")) {
         //Check Permission
-        let dataReturn = await this.eventCategoryService.remove(id);
+        const dataReturn = await this.eventCategoryService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

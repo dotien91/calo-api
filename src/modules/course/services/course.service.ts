@@ -56,7 +56,7 @@ export class CourseService {
 
     if (filter.ref_id) {
       if (filter.ref_id?.indexOf(",") !== -1) {
-        let dataRefArray = filter.ref_id?.split(",");
+        const dataRefArray = filter.ref_id?.split(",");
         condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
@@ -64,13 +64,13 @@ export class CourseService {
     }
 
     if (filter.ids) {
-      let dataIds = filter.ids.split(",");
+      const dataIds = filter.ids.split(",");
       condition = Object.assign(condition, { _id: { $in: dataIds } });
     }
 
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
     }
     return condition;
@@ -98,19 +98,19 @@ export class CourseService {
    * @returns
    */
   async filter(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     // if (filter.search) {
     //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
     //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
     // }
 
-    let dataReturn = await this.courseModel
+    const dataReturn = await this.courseModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -134,13 +134,13 @@ export class CourseService {
    * @returns
    */
   async filterAdmin(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.courseModel
+    const projection = {};
+    const dataReturn = await this.courseModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -162,7 +162,7 @@ export class CourseService {
    */
   public count = async (filter: SearchCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseModel.estimatedDocumentCount();
       } else {
@@ -180,7 +180,7 @@ export class CourseService {
    */
   async create(createUser: CreateCourseDto) {
     const createdCourse = new this.courseModel(createUser);
-    let dataCreate = await createdCourse.save();
+    const dataCreate = await createdCourse.save();
     return dataCreate;
   }
 
@@ -190,9 +190,9 @@ export class CourseService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -235,7 +235,7 @@ export class CourseService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -277,7 +277,7 @@ export class CourseService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseModel
+      const dataReturn = await this.courseModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",

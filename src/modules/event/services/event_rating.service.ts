@@ -50,7 +50,7 @@ export class EventRatingService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -76,7 +76,7 @@ export class EventRatingService {
       if (!dataUpdate.event_id || !dataUpdate.user_id) {
         return null;
       }
-      let dataReturn = await this.eventRatingModel.findOneAndUpdate(
+      const dataReturn = await this.eventRatingModel.findOneAndUpdate(
         {
           event_id: dataUpdate.event_id,
           user_id: dataUpdate.user_id,
@@ -132,12 +132,12 @@ export class EventRatingService {
    * @returns
    */
   async filter(filter: SearchMyEventRatingDto, sortBy: SortByMyEventRatingDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.eventRatingModel
+    const dataReturn = await this.eventRatingModel
       .find(condition)
       .populate("rating_media")
       .sort(sortObject)
@@ -154,7 +154,7 @@ export class EventRatingService {
    */
   public count = async (filter: SearchMyEventRatingDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.eventRatingModel.estimatedDocumentCount();
       } else {

@@ -8,5 +8,5 @@ export class UpdateRequestCommentDto extends PartialType(CreateRequestCommentDto
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  _id?: String;
+  _id?: string;
 }

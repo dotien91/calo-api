@@ -64,7 +64,7 @@ import { UserModule } from "./modules/user/user.module";
 import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
-let dataImport = [
+const dataImport = [
   ConfigModule.forRoot(),
   MongooseModule.forRootAsync({
     imports: [ConfigModule],

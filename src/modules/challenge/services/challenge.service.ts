@@ -52,7 +52,7 @@ export class ChallengeService {
 
     if (filter.ref_id) {
       if (filter.ref_id?.indexOf(",") !== -1) {
-        let dataRefArray = filter.ref_id?.split(",");
+        const dataRefArray = filter.ref_id?.split(",");
         condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
@@ -60,13 +60,13 @@ export class ChallengeService {
     }
 
     if (filter.ids) {
-      let dataIds = filter.ids.split(",");
+      const dataIds = filter.ids.split(",");
       condition = Object.assign(condition, { _id: { $in: dataIds } });
     }
 
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
     }
 
@@ -112,19 +112,19 @@ export class ChallengeService {
     page: number,
     limit: number
   ): Promise<Challenge[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
     // if (filter.search) {
     //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
     //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
     // }
 
-    let dataPopulate = {
+    const dataPopulate = {
       path: "gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -133,7 +133,7 @@ export class ChallengeService {
         },
       ],
     };
-    let dataPopulateStage = {
+    const dataPopulateStage = {
       path: "challenge_stage.gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -143,7 +143,7 @@ export class ChallengeService {
       ],
     };
 
-    let dataReturn = await this.challengeModel
+    const dataReturn = await this.challengeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -175,13 +175,13 @@ export class ChallengeService {
     page: number,
     limit: number
   ): Promise<Challenge[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataPopulate = {
+    const projection = {};
+    const dataPopulate = {
       path: "gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -190,7 +190,7 @@ export class ChallengeService {
         },
       ],
     };
-    let dataPopulateStage = {
+    const dataPopulateStage = {
       path: "challenge_stage.gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -199,7 +199,7 @@ export class ChallengeService {
         },
       ],
     };
-    let dataReturn = await this.challengeModel
+    const dataReturn = await this.challengeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -224,7 +224,7 @@ export class ChallengeService {
    */
   public count = async (filter: SearchChallengeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.challengeModel.estimatedDocumentCount();
       } else {
@@ -242,7 +242,7 @@ export class ChallengeService {
    */
   async create(createUser: CreateChallengeDto) {
     const createdChallenge = new this.challengeModel(createUser);
-    let dataCreate = await createdChallenge.save();
+    const dataCreate = await createdChallenge.save();
     return dataCreate;
   }
 
@@ -252,9 +252,9 @@ export class ChallengeService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -276,7 +276,7 @@ export class ChallengeService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<Challenge> {
-    let dataPopulate = {
+    const dataPopulate = {
       path: "gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -286,7 +286,7 @@ export class ChallengeService {
       ],
     };
 
-    let dataPopulateStage = {
+    const dataPopulateStage = {
       path: "challenge_stage.gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -319,11 +319,11 @@ export class ChallengeService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -333,7 +333,7 @@ export class ChallengeService {
       ],
     };
 
-    let dataPopulateStage = {
+    const dataPopulateStage = {
       path: "challenge_stage.gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -362,7 +362,7 @@ export class ChallengeService {
    * @returns
    */
   async remove(id: string) {
-    let dataPopulate = {
+    const dataPopulate = {
       path: "gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -372,7 +372,7 @@ export class ChallengeService {
       ],
     };
 
-    let dataPopulateStage = {
+    const dataPopulateStage = {
       path: "challenge_stage.gift_data",
       options: { strictPopulate: false },
       populate: [
@@ -406,7 +406,7 @@ export class ChallengeService {
         return null;
       }
 
-      let dataPopulate = {
+      const dataPopulate = {
         path: "gift_data",
         options: { strictPopulate: false },
         populate: [
@@ -416,7 +416,7 @@ export class ChallengeService {
         ],
       };
 
-      let dataPopulateStage = {
+      const dataPopulateStage = {
         path: "challenge_stage.gift_data",
         options: { strictPopulate: false },
         populate: [
@@ -425,7 +425,7 @@ export class ChallengeService {
           },
         ],
       };
-      let dataReturn = await this.challengeModel
+      const dataReturn = await this.challengeModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",

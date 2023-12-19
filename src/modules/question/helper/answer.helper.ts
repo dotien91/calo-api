@@ -40,13 +40,13 @@ export class AnswerHelper {
    */
   async createNewPost(createPostData: CreateAnswerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
       //if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-      let questionObject = await this.questionService.findById(createPostData.question_id);
+      const questionObject = await this.questionService.findById(createPostData.question_id);
       if (questionObject) {
         createPostData = {
           ...createPostData,
@@ -56,7 +56,7 @@ export class AnswerHelper {
           },
         };
 
-        let dataCreate = await this.answerService.create(createPostData);
+        const dataCreate = await this.answerService.create(createPostData);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -89,18 +89,18 @@ export class AnswerHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.answerService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.answerService.count(dataToFilter);
+      const dataReturn = await this.answerService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.answerService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -123,28 +123,28 @@ export class AnswerHelper {
    */
   async getPostListByUser(query: ListAnswerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.answerService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.answerService.count(dataToFilter);
+      const dataReturn = await this.answerService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.answerService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -180,7 +180,7 @@ export class AnswerHelper {
       } else {
         throw new ForbiddenException("Not found!");
       }
-      let dataReturn = await this.answerService.findOne(dataToFilter);
+      const dataReturn = await this.answerService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -199,14 +199,14 @@ export class AnswerHelper {
    */
   async handleUpdatePostByAdmin(dataUpdate: UpdateAnswerDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       //Check Permission
       if (await this.userPermissionService.isHavePermission(userId, "answer/update")) {
-        let dataReturn = await this.answerService.update(dataUpdate);
+        const dataReturn = await this.answerService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -228,14 +228,14 @@ export class AnswerHelper {
    */
   async handleDeletePost(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (await this.userPermissionService.isHavePermission(userId, "answer/delete")) {
         //Check Permission
-        let dataReturn = await this.answerService.remove(id);
+        const dataReturn = await this.answerService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)

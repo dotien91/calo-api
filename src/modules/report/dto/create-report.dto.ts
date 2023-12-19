@@ -5,7 +5,7 @@ export class CreateReportDto {
 
   @IsString()
   @IsOptional(null)
-  partner_id: String;
+  partner_id: string;
 
   @IsString()
   @IsOptional(null)

@@ -3,7 +3,7 @@ import { IsOptional, IsDateString, IsString, IsNumberString, IsJSON, IsBooleanSt
 export class CreateHandleServiceDto {
   @IsString()
   @ApiProperty()
-  handle: string | String;
+  handle: string | string;
 
   @IsString()
   @IsOptional(null)
