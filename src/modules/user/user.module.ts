@@ -33,7 +33,6 @@ import { UserFollow, UserFollowSchema } from "./schemas/user_follow.schema";
 import { UserInterest, UserInterestSchema } from "./schemas/user_interest.schema";
 import { UserLocationHistory, UserLocationHistorySchema } from "./schemas/user_location_history.schema";
 import { UserMood, UserMoodSchema } from "./schemas/user_mood.schema";
-import { UserOption, UserOptionSchema } from "./schemas/user_option.schema";
 import { UserQuestion, UserQuestionSchema } from "./schemas/user_question.schema";
 import { UserSession, UserSessionSchema } from "./schemas/user_session.schema";
 import { UserView, UserViewSchema } from "./schemas/user_view.schema";
@@ -46,7 +45,6 @@ import { UserFollowService } from "./services/user_follow.service";
 import { UserInterestService } from "./services/user_interest.service";
 import { UserLocationService } from "./services/user_location.service";
 import { UserMoodService } from "./services/user_mood.service";
-import { UserOptionService } from "./services/user_option.service";
 import { UserQuestionService } from "./services/user_question.service";
 import { UserSessionService } from "./services/user_session.service";
 import { UserViewService } from "./services/user_view.service";
@@ -68,7 +66,6 @@ import { UserViewService } from "./services/user_view.service";
       { name: User.name, schema: UserSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
-      { name: UserOption.name, schema: UserOptionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: UserBlock.name, schema: UserBlockSchema },
       { name: UserView.name, schema: UserViewSchema },
@@ -106,7 +103,6 @@ import { UserViewService } from "./services/user_view.service";
     UserPermissionService,
     UserFilterHelper,
     UserDisagreeService,
-    UserOptionService,
     OrderService,
     UserFollowService,
     UserBlockService,
@@ -128,11 +124,10 @@ import { UserViewService } from "./services/user_view.service";
     UserInterestService,
     UserLocationService,
     UserMoodService,
-    UserOptionService,
     UserQuestionService,
     UserSessionService,
     UserViewService,
     UserService,
   ],
 })
-export class UserModule {}
+export class UserModule { }

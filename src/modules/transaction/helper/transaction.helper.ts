@@ -16,7 +16,6 @@ import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserOptionService } from "../../../modules/user/services/user_option.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
@@ -38,10 +37,9 @@ export class TransactionHelper {
     private transactionService: TransactionService,
     private transactionBankService: TransactionBankService,
     private userPermissionService: UserPermissionService,
-    private userOptionService: UserOptionService,
     private userService: UserService,
     private readonly eventHookNotificationService: EventHookNotificationService
-  ) {}
+  ) { }
 
   private readonly logger = new Logger("chat_history_controller");
 
@@ -114,7 +112,7 @@ export class TransactionHelper {
           },
         };
 
-        const userToUpdate = await this.userOptionService.findById(createTransactionData.user_id, {});
+        const userToUpdate = await this.userService.findById(createTransactionData.user_id, {});
 
         //@ts-ignore
         await this.handleProcessUpdateCoin(userToUpdate, currentCoin, lastToken, authCode);
@@ -620,8 +618,7 @@ export class TransactionHelper {
       if (query?.search) {
         //Search User First
         const dataSearch = {
-          search: query?.search,
-          channel_permission: channelId,
+          search: query?.search
         };
         const dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
         const ids = dataUserArray.map((itemValue, index) => {
@@ -788,7 +785,7 @@ export class TransactionHelper {
         current_coin: coinNumber,
         current_token: tokenNumber,
       };
-      const dataUpdateUser = await this.userOptionService.update(dataToUpdate);
+      const dataUpdateUser = await this.userService.update(dataToUpdate);
       // let dataToSend = {
       //   data_update: JSON.stringify(dataToUpdate),
       // };

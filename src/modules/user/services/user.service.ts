@@ -12,7 +12,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name)
     private appUserModel: Model<UserDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -42,28 +42,9 @@ export class UserService {
   }
 
   async findOneLogin(dataToSearch: SearchUserDto): Promise<User> {
-    const populateObject = {
-      path: "user_option_id",
-      options: { strictPopulate: false },
-      populate: [
-        {
-          path: "public_album",
-        },
-        {
-          path: "private_album",
-        },
-      ],
-    };
-    const dataReturn = await this.appUserModel.findOne(dataToSearch).populate(populateObject).exec();
-    if (dataReturn) {
-      const dataReturnObject = dataReturn.toObject();
-      const userOptionObject = dataReturnObject.user_option_id;
-      delete dataReturnObject?.user_option_id;
-      delete userOptionObject?.user_id;
-      return { ...userOptionObject, ...dataReturnObject };
-    } else {
-      return null;
-    }
+
+    const dataReturn = await this.appUserModel.findOne(dataToSearch).exec();
+    return dataReturn;
   }
 
   /**
@@ -76,16 +57,8 @@ export class UserService {
       return null;
     }
     projection = { ...projection, ...{ __v: false } };
-    const dataReturn = await this.appUserModel.findById(id, projection).populate("user_option_id").exec();
-    if (dataReturn) {
-      const dataReturnObject = dataReturn.toObject();
-      const userOptionObject = dataReturnObject.user_option_id;
-      delete dataReturnObject.user_option_id;
-      delete userOptionObject.user_id;
-      return { ...userOptionObject, ...dataReturnObject };
-    } else {
-      return null;
-    }
+    const dataReturn = await this.appUserModel.findById(id, projection).exec();
+    return dataReturn;
   }
 
   /**
@@ -125,10 +98,6 @@ export class UserService {
 
     if (filter.have_sound) {
       condition = Object.assign(condition, { $and: [{ public_sound: { $ne: null } }, { public_sound: { $ne: "" } }] });
-    }
-
-    if (filter.notification_request) {
-      condition = Object.assign(condition, { notification_request: filter.notification_request });
     }
 
     if (filter.user_phone) {
@@ -255,47 +224,13 @@ export class UserService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-
-    let dataPopulate = {
-      path: "user_option_id",
-    };
-    if (filter?.locking_for) {
-      if (filter?.locking_for?.indexOf(",")) {
-        const dataFilterLockingFor = filter?.locking_for?.split(",");
-        dataPopulate = { ...dataPopulate, ...{ match: { locking_for: { $in: dataFilterLockingFor } } } };
-      } else {
-        dataPopulate = { ...dataPopulate, ...{ match: { locking_for: filter?.locking_for } } };
-      }
-    }
-    if (filter?.user_interest) {
-      if (filter?.user_interest?.indexOf(",")) {
-        const dataUserInterest = filter?.user_interest?.split(",");
-        dataPopulate = { ...dataPopulate, ...{ match: { user_interest: { $in: dataUserInterest } } } };
-      } else {
-        dataPopulate = { ...dataPopulate, ...{ match: { user_interest: filter?.user_interest } } };
-      }
-    }
-
     const dataReturn = await this.appUserModel
       .find(condition, projection)
       .sort(sortObject)
-      .populate(dataPopulate)
       .skip(limit * (page - 1))
       .limit(limit)
       .exec()
-      .then((orders) => orders.filter((order) => order.user_option_id != null));
-
-    const dataReturnAfter = [];
-    for (const userItem of dataReturn) {
-      if (userItem?.toObject()?.user_option_id?.toString()) {
-        const dataUserId = userItem?.toObject().user_option_id;
-        const dataToProcess = userItem?.toObject();
-        delete dataToProcess.user_option_id;
-        //delete dataToProcess.loc;
-        dataReturnAfter.push({ ...dataUserId, ...dataToProcess });
-      }
-    }
-    return dataReturnAfter;
+    return dataReturn;
   }
 
   /**

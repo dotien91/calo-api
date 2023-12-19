@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserOptionService } from "../../../modules/user/services/user_option.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { UserService } from "../../user/services/user.service";
 import { CreateContactFormDto } from "../dto/create-contact_form.dto";
@@ -20,9 +19,8 @@ export class ContactFormHelper {
     private appUserService: UserService,
     private contactFormService: ContactFormService,
     private userService: UserService,
-    private userOptionService: UserOptionService,
     private userPermissionService: UserPermissionService
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu

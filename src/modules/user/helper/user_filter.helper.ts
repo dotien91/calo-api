@@ -23,7 +23,6 @@ import { UserDisagreeService } from "../services/user_disagree.service";
 import { UserFollowService } from "../services/user_follow.service";
 import { UserLocationService } from "../services/user_location.service";
 import { UserMoodService } from "../services/user_mood.service";
-import { UserOptionService } from "../services/user_option.service";
 import { UserQuestionService } from "../services/user_question.service";
 import { UserSessionService } from "../services/user_session.service";
 import { UserViewService } from "../services/user_view.service";
@@ -35,8 +34,6 @@ import { UserViewService } from "../services/user_view.service";
 export class UserFilterHelper {
   constructor(
     private appUserService: UserService,
-    private userPermissionService: UserPermissionService,
-    private userOptionService: UserOptionService,
     private userFollowService: UserFollowService,
     private userViewService: UserViewService,
     private orderService: OrderService,
@@ -47,7 +44,7 @@ export class UserFilterHelper {
     private userMoodService: UserMoodService,
     private userQuestionService: UserQuestionService,
     private userLocationService: UserLocationService
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -646,7 +643,7 @@ export class UserFilterHelper {
       if (query?.type === "order") {
         dataReturn = await this.orderService.filterAdmin(query, orderByObject, page, limit);
       } else {
-        dataReturn = await this.userOptionService.filterAdmin(query, orderByObject, page, limit);
+        dataReturn = await this.appUserService.filterAdmin(query, orderByObject, page, limit);
       }
 
       let dataToBrowser = [];
@@ -675,7 +672,7 @@ export class UserFilterHelper {
       throw new NotFoundException(error.message);
     }
   }
-  
+
   async checkProcessData(stringReplace: string) {
     if (
       (stringReplace?.indexOf("/2022/10/") !== -1 && stringReplace?.indexOf("media.whiteg.app") === -1) ||
@@ -726,35 +723,8 @@ export class UserFilterHelper {
 
       let dataReturn: any = [];
       let dataCount = 0;
-      if (query?.type === "order") {
-        dataReturn = await this.orderService.filterAdmin(query, orderByObject, page, limit);
-        dataCount = await this.orderService.countAdmin(query);
-      } else {
-        if (query?.type === "sound") {
-          query = { ...query, ...{ have_sound: "1" } };
-          dataReturn = await this.appUserService.filterAdmin(query, orderByObject, page, limit);
-          dataCount = await this.appUserService.count(query);
-        } else {
-          if (query?.type === "avatar") {
-            query = { ...query, ...{ is_avatar: "1" } };
-            dataReturn = await this.userOptionService.filterAdmin(query, orderByObject, page, limit);
-            dataCount = await this.userOptionService.count(query);
-          } else {
-            dataReturn = await this.userOptionService.filterAdmin(query, orderByObject, page, limit);
-            if (process.env.BRANCH_NAME === "revu") {
-              for (const index in dataReturn) {
-                if (dataReturn[index]?.user_interest?.length) {
-                  const dataUserFilter = { ids: dataReturn[index]?.user_interest };
-                  const dataUserArray = await this.appUserService.filter(dataUserFilter, {}, 1, 1000);
-                  dataReturn[index].user_interest = dataUserArray;
-                }
-              }
-            }
-            dataCount = await this.userOptionService.count(query);
-          }
-        }
-      }
-
+      dataReturn = await this.appUserService.filterAdmin(query, orderByObject, page, limit);
+      dataCount = await this.appUserService.count(query);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -892,62 +862,10 @@ export class UserFilterHelper {
       };
       const userId = userObject._id.toString();
 
-      let dataUser = await this.userOptionService.findById(id, projection);
+      let dataUser = await this.appUserService.findById(id, projection);
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
       }
-      //delete dataUser.loc;
-      dataUser = { ...dataUser, ...{ is_block: false } };
-      dataUser = { ...dataUser, ...{ is_follow: false, follow_id: null } };
-      if (userObject?.block_users && userObject?.block_users?.length) {
-        const dataBlock = [];
-        for (const blockItem of userObject?.block_users) {
-          dataBlock.push(blockItem.toString());
-        }
-        if (dataBlock.indexOf(id) !== -1) {
-          dataUser = { ...dataUser, ...{ is_block: true } };
-        }
-      }
-
-      const publicInstagram = [];
-      if (dataUser?.public_instagram?.length) {
-        for (const instagramItem of dataUser?.public_instagram) {
-          if (instagramItem && instagramItem?.avatar) {
-            publicInstagram.push(instagramItem);
-          }
-        }
-      }
-      dataUser = { ...dataUser, ...{ public_instagram: publicInstagram } };
-
-      const dataToFilter = {
-        user_id: userId,
-        partner_id: id,
-      };
-      const dataMatch = await this.userFollowService.findOne(dataToFilter, false);
-      if (dataMatch) {
-        dataUser = { ...dataUser, ...{ match_status: dataMatch?.match_status, is_follow: true } };
-      } else {
-        dataUser = { ...dataUser, ...{ match_status: false } };
-      }
-
-      const dataVideoReturn: any = [];
-      // if (Number(dataUser?.video_number) > 0) {
-      //   const dataVideoObject: any = await this.shortService.filter(
-      //     { user_id: dataUser?._id.toString() },
-      //     { createdAt: "DESC" },
-      //     1,
-      //     3
-      //   );
-      //   if (dataVideoObject && dataVideoObject.length) {
-      //     for (const dataVideoItem of dataVideoObject) {
-      //       dataVideoReturn.push(dataVideoItem?.toObject());
-      //     }
-      //   }
-      // }
-      dataUser = { ...dataUser, ...{ user_video: dataVideoReturn } };
-
-      delete dataUser?.follow_users;
-      delete dataUser?.user_id;
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -969,26 +887,10 @@ export class UserFilterHelper {
       const userId = dataSession._id.toString();
 
       const projection = {};
-      let dataUser = await this.userOptionService.findById(userId, projection);
+      let dataUser = await this.appUserService.findById(userId, projection);
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
       }
-      //delete dataUser.loc;
-      dataUser = { ...dataUser, ...{ is_block: false } };
-      dataUser = { ...dataUser, ...{ is_follow: false, follow_id: null } };
-
-      const publicInstagram = [];
-      if (dataUser?.public_instagram?.length) {
-        for (const instagramItem of dataUser?.public_instagram) {
-          if (instagramItem && instagramItem?.avatar) {
-            publicInstagram.push(instagramItem);
-          }
-        }
-      }
-      dataUser = { ...dataUser, ...{ public_instagram: publicInstagram } };
-
-      delete dataUser?.follow_users;
-      delete dataUser?.user_id;
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1091,47 +993,6 @@ export class UserFilterHelper {
       }
       delete dataToFilter.order_by;
 
-      //Process Lat Long
-      if (
-        parseFloat(query?.latitude?.toString()) &&
-        parseFloat(query?.longitude?.toString()) &&
-        parseFloat(query?.latitude?.toString()) != -1 &&
-        parseFloat(query?.longitude?.toString()) != -1
-      ) {
-        if (!dataToFilter.city && !dataToFilter?.is_map) {
-          const dataToUpdate = {
-            user_id: userObject?._id?.toString(),
-            loc: {
-              type: "Point",
-              coordinates: [parseFloat(query.longitude.toString()), parseFloat(query.latitude.toString())],
-            },
-          };
-          await this.userOptionService.update(dataToUpdate);
-        }
-      }
-
-      if (
-        (parseFloat(query?.latitude?.toString()) == 0 && parseFloat(query?.longitude?.toString()) == 0) ||
-        (!query.latitude && !query.longitude) ||
-        (parseFloat(query?.latitude?.toString()) == -1 && parseFloat(query?.longitude?.toString()) == -1)
-      ) {
-        //Check
-        const dataOption = await this.userOptionService.findOne({ user_id: userObject._id.toString() });
-        if (
-          dataOption &&
-          dataOption?.loc?.coordinates &&
-          dataOption?.loc?.coordinates[0] &&
-          dataOption?.loc?.coordinates[1]
-        ) {
-          dataToFilter = {
-            ...dataToFilter,
-            ...{
-              longitude: parseFloat(dataOption?.loc?.coordinates[0]?.toString()),
-              latitude: parseFloat(dataOption?.loc?.coordinates[1]?.toString()),
-            },
-          };
-        }
-      }
 
       if (dataToFilter?.city) {
         const dataToFilterAdd = {
@@ -1144,24 +1005,6 @@ export class UserFilterHelper {
       //Process Data Unset
       let dataUnset = [];
       dataUnset = [...dataUnset, ...[userObject?._id]];
-      if (
-        !dataToFilter?.is_map &&
-        userObject?.follow_users &&
-        (!Number(dataToFilter?.user_active) || !dataToFilter?.user_active) &&
-        process.env.BRANCH_NAME != "live_video" &&
-        process.env.BRANCH_NAME !== "ishare"
-      ) {
-        dataUnset = [...dataUnset, ...userObject?.follow_users];
-      }
-      if (
-        !dataToFilter?.is_map &&
-        userObject?.disagree_users &&
-        (!Number(dataToFilter?.user_active) || !dataToFilter?.user_active) &&
-        process.env.BRANCH_NAME != "live_video" &&
-        process.env.BRANCH_NAME !== "ishare"
-      ) {
-        dataUnset = [...dataUnset, ...userObject?.disagree_users];
-      }
 
       if (userObject?.block_users) {
         dataUnset = [...dataUnset, ...userObject?.block_users];
@@ -1170,24 +1013,6 @@ export class UserFilterHelper {
       const checkPage = page;
 
       //If not Map, Not filter by User Active,
-      if (
-        !dataToFilter?.is_map &&
-        dataToFilter.is_match &&
-        Number(page) > 1 &&
-        (!Number(dataToFilter?.user_active) || !dataToFilter?.user_active) &&
-        sessionObject?.unset_ids &&
-        process.env.BRANCH_NAME != "live_video" &&
-        process.env.BRANCH_NAME !== "ishare"
-      ) {
-        dataUnset = [...dataUnset, ...sessionObject.unset_ids];
-        page = 1;
-      }
-
-      if (process.env.BRANCH_NAME == "masked_chat") {
-        dataUnset = [...dataUnset, ...sessionObject.unset_ids];
-        page = 1;
-      }
-
       const dataUnsetNew = [];
 
       if (query?.id_unset) {
@@ -1253,226 +1078,15 @@ export class UserFilterHelper {
         };
       }
 
-      let dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
-      let resultCount = 0;
-      if (Number(query?.is_match) == 1) {
-        resultCount = await this.userOptionService.count(dataToFilter);
-      }
-
-      if (!dataToFilter?.distance && (!dataReturn || (dataReturn.length === 0 && Number(dataToFilter?.limit) != 1))) {
-        dataToFilter = { ...dataToFilter, ...{ distance: 1000 } };
-        dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
-        if (!dataReturn || dataReturn.length === 0) {
-          dataToFilter = { ...dataToFilter, ...{ distance: 3000 } };
-          dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
-          if (!dataReturn || dataReturn.length === 0) {
-            dataToFilter = { ...dataToFilter, ...{ distance: 5000 } };
-            dataReturn = await this.userOptionService.filterFree(dataToFilter, orderByOBject, page, limit);
-          }
-        }
-      }
-
-      //If not have Travel City & Have Data like user, add data into Current data
-      if (
-        dataWithIn &&
-        dataWithIn.length &&
-        process.env.BRANCH_NAME !== "live_video" &&
-        process.env.BRANCH_NAME !== "ishare" &&
-        // !userObject?.travel_city &&
-        !dataToFilter?.is_map
-      ) {
-        const newDataFilter = {
-          user_ids: dataWithIn,
-        };
-        const dataReturnToAdd = await this.userOptionService.filterFree(newDataFilter, orderByOBject, 1, 10);
-        if (dataReturnToAdd && dataReturnToAdd.length) {
-          dataReturn = [...dataReturn, ...dataReturnToAdd];
-          dataReturn = _.sampleSize(dataReturn, dataReturn?.length);
-        }
-      }
-
       let dataFinalReturn = [];
       const dataUpdateSession = [];
-
-      //Update Data Result
-      if (dataReturn && dataReturn.length) {
-        for (const dataPrepareItem of dataReturn) {
-          dataUpdateSession.push(dataPrepareItem._id.toString());
-          let isFollow = false;
-          const followUserObject = [];
-          if (userObject?.follow_users && userObject?.follow_users?.length) {
-            for (const followItem of userObject?.follow_users) {
-              followUserObject.push(followItem.toString());
-            }
-          }
-          if (followUserObject.indexOf(dataPrepareItem._id.toString()) !== -1) {
-            isFollow = true;
-          }
-          const publicInstagram = [];
-          if (dataPrepareItem?.public_instagram?.length) {
-            for (const instagramItem of dataPrepareItem?.public_instagram) {
-              if (instagramItem && instagramItem?.avatar) {
-                publicInstagram.push(instagramItem);
-              }
-            }
-          }
-          const dataVideoReturn: any = [];
-          // if (Number(dataPrepareItem?.video_number) > 0) {
-          //   const dataVideoObject: any = await this.shortService.filter(
-          //     { user_id: dataPrepareItem?._id.toString() },
-          //     { createdAt: "DESC" },
-          //     1,
-          //     3
-          //   );
-          //   if (dataVideoObject && dataVideoObject.length) {
-          //     for (const dataVideoItem of dataVideoObject) {
-          //       dataVideoReturn.push(dataVideoItem?.toObject());
-          //     }
-          //   }
-          // }
-          dataFinalReturn.push({
-            ...dataPrepareItem,
-            ...{ is_follow: isFollow, public_instagram: publicInstagram, user_video: dataVideoReturn },
-          });
-        }
-      }
-
-      if (process.env.BRANCH_NAME === "ishare") {
-        const dataToFilter = {
-          partner_id: userObject?._id?.toString(),
-          user_ids: dataUpdateSession,
-          match_status: 1,
-        };
-        const orderByOBject = {};
-        const dataUserFollow = await this.userFollowService.filterUser(dataToFilter, orderByOBject, 1, limit, false);
-        const dataPartnerFollow = [];
-        for (const dataUserFollowItem of dataUserFollow) {
-          // console.log(dataUserFollowItem, 'dataUserFollowItem')
-          dataPartnerFollow.push(dataUserFollowItem?.user_id?._id?.toString());
-        }
-        for (const dataItemIndex in dataFinalReturn) {
-          const partnerId = dataFinalReturn[dataItemIndex]?._id?.toString();
-          if (dataPartnerFollow.indexOf(partnerId) !== -1) {
-            dataFinalReturn[dataItemIndex] = { ...dataFinalReturn[dataItemIndex], ...{ is_match: "1" } };
-          } else {
-            dataFinalReturn[dataItemIndex] = { ...dataFinalReturn[dataItemIndex], ...{ is_match: "0" } };
-          }
-        }
-      }
-
-      //Update Session
-      if (
-        dataUpdateSession &&
-        dataUpdateSession.length &&
-        process.env.BRANCH_NAME !== "masked_chat" &&
-        process.env.BRANCH_NAME !== "live_video" &&
-        process.env.BRANCH_NAME !== "ishare"
-      ) {
-        let dataToUpdate = [];
-        if (checkPage > 1) {
-          const oldData = [];
-          if (sessionObject?.unset_ids) {
-            for (const dataSessionOld of sessionObject.unset_ids) {
-              oldData.push(dataSessionOld.toString());
-            }
-          }
-          dataToUpdate = [...oldData, ...dataUpdateSession];
-        } else {
-          dataToUpdate = dataUpdateSession;
-        }
-        const afterData: any[] = _.union(dataToUpdate, []);
-        const dataSessionToUpdate = {
-          _id: sessionObject?._id.toString(),
-          unset_ids: afterData,
-        };
-        await this.userSessionService.update(dataSessionToUpdate);
-      }
-
-      // //Update City
-      // if (
-      //   (!userObject?.city || !userObject?.country || !dataToFilter?.distance) &&
-      //   parseFloat(query?.latitude?.toString()) &&
-      //   parseFloat(query?.longitude?.toString()) &&
-      //   parseFloat(query?.latitude?.toString()) != -1 &&
-      //   parseFloat(query?.longitude?.toString()) != -1
-      // ) {
-      //   const randomTimeout = Math.floor(Math.random() * 20);
-      //   setTimeout(async () => {
-      //     //Update User Option
-      //     let cityObject = await this.cityService.findOneWithFilter({
-      //       point: [parseFloat(query.longitude.toString()), parseFloat(query.latitude.toString())],
-      //     });
-
-      //     if (!cityObject) {
-      //       //Find nearby
-      //       const filterCity = await this.cityService.filter(
-      //         { is_nearby: "1", latitude: query.latitude, longitude: query.longitude },
-      //         {},
-      //         1,
-      //         1
-      //       );
-      //       if (filterCity && filterCity[0]) {
-      //         cityObject = filterCity[0];
-      //       }
-      //     }
-
-      //     let cityName = "";
-      //     let countryName = "";
-
-      //     if (cityObject) {
-      //       const oldCity = userObject?.city?.toString();
-      //       if (userObject?.city?.toString() !== cityObject?._id?.toString()) {
-      //         //Update New City
-      //         let dataUpdate = {
-      //           _id: userObject?._id?.toString(),
-      //           old_city: oldCity,
-      //           city: cityObject?._id?.toString(),
-      //           country: cityObject?.country_iso2?.toString(),
-      //         };
-      //         await this.appUserService.update(dataUpdate);
-      //         delete dataUpdate._id;
-      //         dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id.toString() } };
-      //         await this.userOptionService.update(dataUpdate);
-      //         //Update Old City
-      //         await this.cityService.handleUpdateUserInc(cityObject?._id.toString(), true);
-      //         await this.cityService.handleUpdateUserInc(oldCity, false);
-      //       }
-      //       cityName = cityObject?.city_name?.toString();
-      //       countryName = cityObject?.country?.toString();
-      //       this.sendNotificationNew(userObject, req, res, cityName, countryName);
-      //     } else {
-      //       let dataUpdate = {
-      //         _id: userObject?._id?.toString(),
-      //         country: "GLOBAL",
-      //       };
-      //       await this.appUserService.update(dataUpdate);
-      //       delete dataUpdate._id;
-      //       dataUpdate = { ...dataUpdate, ...{ user_id: userObject?._id?.toString() } };
-      //       await this.userOptionService.update(dataUpdate);
-      //       this.sendNotificationNew(userObject, req, res, cityName, countryName);
-      //     }
-      //   }, randomTimeout * 1000);
-      // }
-
-      //Filter user Not have Avatar
-      if (
-        dataFinalReturn &&
-        dataFinalReturn.length &&
-        checkPage == 1 &&
-        process.env.BRANCH_NAME !== "live_video" &&
-        process.env.BRANCH_NAME !== "ishare"
-      ) {
-        dataFinalReturn = dataFinalReturn.filter((dataFilter: any, index: number) => {
-          return Number(dataFilter.is_avatar) === 1;
-        });
-      }
 
       if (dataToFilter?.limit == 1) {
         console.log(dataFinalReturn, "dataFinalReturn");
       }
 
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": resultCount })
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": 0 })
         .status(HttpStatus.OK)
         .json(dataFinalReturn);
     } catch (error) {

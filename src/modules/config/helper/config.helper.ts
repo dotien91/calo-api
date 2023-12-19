@@ -29,7 +29,7 @@ export class ConfigHelper {
     private subscribeService: SubscribeService,
     private handleServiceService: HandleServiceService,
     private userService: UserService
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -122,29 +122,14 @@ export class ConfigHelper {
    */
   async getConfigListByUser(type: string, query: ListConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      // let userObject = req?.user_object;
-      // if (!userObject) {
-      //   throw new ForbiddenException("User is invalid");
-      // }
-      // let userId = userObject._id.toString();
-
       const dataToFilter = { type: type };
       const dataReturnConfig: any = await this.configService.findOne(dataToFilter);
 
-      // //Get Subscribe
-      // let dataToFilterSubscribe = {
-      //   user_id: userId,
-      // };
-
-      // let limit = 1000;
-      // let page = 1;
-      // let configByOBject = {};
       const dataAuth = await this.handleSession(req);
       let userVersion = 0;
       let channelVersion = 0;
       if (dataAuth && dataAuth?._id) {
         const dataUser = await this.userService.findById(dataAuth?._id?.toString(), {});
-        userVersion = Number(dataUser?.user_version) || 0;
       }
 
       let channelId = "";
@@ -183,27 +168,11 @@ export class ConfigHelper {
           }
         }
       }
-      // if (dataReturnConfig?.option_content && dataReturnConfig?.option_content?.length) {
-      //   let allowUserId = ["635ba61263957762b5091dd8", "635ba13a63957762b508e1b7"];
-      //   if (allowUserId.indexOf(userId) !== -1) {
-      //     dataReturnConfig.option_content = [
-      //       ...dataReturnConfig?.option_content,
-      //       ...[{
-      //         key: "is_connect_instagram",
-      //         value: "1",
-      //         _id: "633e54faced405b6edec56e4",
-      //       }]
-      //     ];
-      //   }
-      // }
+
       let dataReturn = {
         config: dataReturnConfig,
         subscribe: [],
         service: dataServiceReturn,
-        chat_count: 0,
-        call_count: 0,
-        map_count: 0,
-        user_version: userVersion,
         channel_version: channelVersion,
       };
 
@@ -251,40 +220,6 @@ export class ConfigHelper {
     }
   }
 
-  // /**
-  //  * @author Tony Vu
-  //  * @param query
-  //  * @param id
-  //  * @param res
-  //  * @param _req
-  //  * @returns
-  //  */
-  // async getDefaultAvatar(type: string, res: Response, _req: ExpressRequestDto) {
-  //   try {
-  //     const dataFilter = {
-  //       function_type: type,
-  //     };
-  //     // const dataCount = await this.chatMediaService.count(dataFilter);
-  //     // const max = dataCount;
-  //     const min = 1;
-  //     const pageRandom = Math.floor(Math.random() * (max - min + 1)) + min;
-  //     const dataReturn = "";
-  //     const dataImage = await this.chatMediaService.filter(dataFilter, {}, pageRandom, 1);
-  //     if (dataImage && dataImage?.length) {
-  //       return res
-  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //         .status(HttpStatus.OK)
-  //         .json(dataImage[0]);
-  //     } else {
-  //       return res
-  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //         .status(HttpStatus.NO_CONTENT)
-  //         .json(dataReturn);
-  //     }
-  //   } catch (error) {
-  //     throw new NotFoundException(error.message);
-  //   }
-  // }
   /**
    * @author Tony Vu
    * @param req

@@ -21,10 +21,8 @@ import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/t
 import { TransactionService } from "../transaction/services/transaction.service";
 import { TransactionBankService } from "../transaction/services/transaction_bank.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
-import { UserOption, UserOptionSchema } from "../user/schemas/user_option.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
-import { UserOptionService } from "../user/services/user_option.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -61,8 +59,7 @@ import { OrderService } from "./services/order.service";
       { name: VnpayLog.name, schema: VnpayLogSchema },
       { name: User.name, schema: UserSchema },
       { name: Notification.name, schema: NotificationSchema },
-      { name: TransactionBank.name, schema: TransactionBankSchema },
-      { name: UserOption.name, schema: UserOptionSchema },
+      { name: TransactionBank.name, schema: TransactionBankSchema }
     ]),
   ],
   controllers: [OrderController],
@@ -83,10 +80,9 @@ import { OrderService } from "./services/order.service";
     NotificationService,
     TransactionHelper,
     TransactionBankService,
-    UserOptionService,
     JwtHelperService,
     OrderHelper,
   ],
   exports: [OrderService],
 })
-export class OrderModule {}
+export class OrderModule { }

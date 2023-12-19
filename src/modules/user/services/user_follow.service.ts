@@ -11,7 +11,7 @@ export class UserFollowService {
   constructor(
     @InjectModel(UserFollow.name)
     private userFollowModel: Model<UserFollowDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -214,8 +214,7 @@ export class UserFollowService {
         path: "partner_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: "user_option_id" },
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -270,16 +269,14 @@ export class UserFollowService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: "user_option_id" },
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       };
 
       dataPopulatePartner = {
         path: "partner_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: "user_option_id" },
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       };
     }
     const dataReturn = await this.userFollowModel
@@ -315,15 +312,7 @@ export class UserFollowService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: [
-          {
-            path: "user_option_id",
-          },
-          {
-            path: "last_user_location",
-          },
-        ],
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       };
     }
     const dataReturn = await this.userFollowModel

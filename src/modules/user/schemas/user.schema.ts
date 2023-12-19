@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Channel } from "diagnostics_channel";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { UserLocationHistory } from "./user_location_history.schema";
-import { UserOption } from "./user_option.schema";
 
 export type UserDocument = User & Document;
 
@@ -46,13 +44,6 @@ export class User {
     default: "",
     nullable: true,
   })
-  public_sound: string;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: true,
-  })
   user_avatar_thumbnail: string;
 
   @Prop({
@@ -60,7 +51,7 @@ export class User {
     default: "",
     nullable: true,
   })
-  user_avatar_square: string;
+  public_sound: string;
 
   @Prop({
     type: String,
@@ -107,12 +98,6 @@ export class User {
   @Prop({
     type: String,
     default: "",
-  })
-  user_referrer: string;
-
-  @Prop({
-    type: String,
-    default: "",
     index: true,
   })
   country: string;
@@ -123,18 +108,6 @@ export class User {
     index: true,
   })
   email_token: string;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  user_balance: number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-  })
-  user_level: number;
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now, index: true })
   last_active: MongooseSchema.Types.Date;
@@ -161,26 +134,11 @@ export class User {
   disagree_users: User[];
 
   @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-    ref: "Event",
-  })
-  follow_event: Event[];
-
-  @Prop({
     type: Number,
     unsigned: true,
     index: true,
   })
   user_status: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    index: true,
-    default: 0,
-  })
-  user_version: number;
 
   @Prop({
     type: String,
@@ -201,89 +159,7 @@ export class User {
     default: false,
     nullable: true,
   })
-  is_validate_phone: boolean;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 0,
-  })
-  call_count: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 0,
-  })
-  chat_count: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 0,
-  })
-  map_count: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 0,
-  })
-  system_message: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 1,
-  })
-  notification_community: number;
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 1,
-  })
-  notification_chat: number;
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 1,
-  })
-  notification_user: number;
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 1,
-  })
-  notification_course: number;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 1,
-  })
-  message_stranger: number;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserOption" })
-  user_option_id: UserOption;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "UserLocationHistory", index: true, default: null })
-  last_user_location: UserLocationHistory;
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-    ref: "Request",
-    index: true,
-  })
-  notification_request: Request[];
-
-  @Prop({
-    type: MongooseSchema.Types.Array,
-    default: [],
-    ref: "Channel",
-    index: true,
-  })
-  channel_permission: Channel[];
+  is_validated_phone: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

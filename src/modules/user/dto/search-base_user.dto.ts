@@ -69,7 +69,7 @@ export class SearchBaseUserDto {
   @IsBooleanString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_validate_phone?: string;
+  is_validated_phone?: string;
 
   @IsString()
   @IsOptional(null)

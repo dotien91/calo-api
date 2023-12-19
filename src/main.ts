@@ -15,11 +15,13 @@ async function bootstrap() {
       req.rawBody = buf.toString(encoding || "utf8");
     }
   };
+
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true, limit: "500mb" }));
   app.use(bodyParser.json({ verify: rawBodyBuffer, limit: "500mb" }));
 
   const configService: ConfigService = app.get(ConfigService);
+  app.setGlobalPrefix(configService.get<string>("APP_PREFIX") ? configService.get<string>("APP_PREFIX") : "api");
   console.log(configService, "configService");
   // Sometime after NestFactory add this to add HTTP Basic Auth
   app.use((req: any, res: any, next: any) => {

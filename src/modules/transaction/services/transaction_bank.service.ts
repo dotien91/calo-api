@@ -13,7 +13,7 @@ export class TransactionBankService {
   constructor(
     @InjectModel(TransactionBank.name)
     private transactionBankModel: Model<TransactionBankDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -109,8 +109,7 @@ export class TransactionBankService {
         .sort(sortObject)
         .skip(limit * (page - 1))
         .limit(limit)
-        .exec()
-        .then((orders) => orders.filter((order) => order.user_id.user_option_id != null));
+        .exec();
       return dataReturn;
     } else {
       const dataReturn = await this.transactionBankModel

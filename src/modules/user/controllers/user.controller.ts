@@ -67,16 +67,46 @@ export class UserController {
    * @returns 
    */
   @Post("login/apple")
-  @ApiOperation({ summary: "Login with Apple" })
   loginWithApple(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.loginWithApple(loginData, res, req);
   }
 
+  /**
+   * @description Login with Facebook
+   * @param loginData 
+   * @param res 
+   * @param req 
+   * @returns 
+   */
   @Post("login/facebook")
-  @ApiOperation({ summary: "Login with Facebook" })
   loginWithFacebook(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.loginWithFacebook(loginData, res, req);
   }
+
+  /**
+   * @description Login with Password
+   * @param loginData 
+   * @param res 
+   * @param req 
+   * @returns 
+   */
+  @Post("login/password")
+  loginWithPassword(@Body() loginData: LoginUserPasswordDto, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.loginWithPassword(loginData, res, req);
+  }
+
+  /**
+   * description Change Pasword
+   * @param dataChangePassword 
+   * @param res 
+   * @param req 
+   * @returns 
+   */
+  @Patch("create-password")
+  handleChangePassword(@Body() dataChangePassword: CreateChangePasswordDto, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.handleChangePassword(dataChangePassword, res, req);
+  }
+
 
   @Post("login/send-phone")
   @ApiOperation({ summary: "Send validate Phone" })
@@ -90,17 +120,7 @@ export class UserController {
     return this.userLoginHelper.validatePhone(dataValidate, req, res);
   }
 
-  @Post("login/password")
-  @ApiOperation({ summary: "Login with username/password" })
-  loginWithPassword(@Body() loginData: LoginUserPasswordDto, @Res() res: Response, @Req() req: Request) {
-    return this.userLoginHelper.loginWithPassword(loginData, res, req);
-  }
 
-  @Post("change-password")
-  @ApiOperation({ summary: "Change password - working only when receive Email forgot password!" })
-  handleChangePassword(@Body() dataChangePassword: CreateChangePasswordDto, @Res() res: Response, @Req() req: Request) {
-    return this.userLoginHelper.handleChangePassword(dataChangePassword, res, req);
-  }
 
   @Post("login/sign-up")
   @ApiOperation({ summary: "Sign up new account with username/password" })
@@ -257,24 +277,9 @@ export class UserController {
     return this.updateUserHelper.processUserUpdate(updateUserDto, req, res);
   }
 
-  @Patch("update/remove-travel-city")
-  updateTravelCity(@Res() res: Response, @Req() req: Request) {
-    return this.updateUserHelper.updateTravelCity(req, res);
-  }
-
   @Patch("update/user-active")
   updateUserActive(@Body() updateUserDto: UpdateUserActiveDto, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processUpdateUserActive(updateUserDto, req, res);
-  }
-
-  @Patch("update/map-count")
-  updateMapCount(@Res() res: Response, @Req() req: Request) {
-    return this.updateUserHelper.processUserUpdateMapCount(req, res);
-  }
-
-  @Patch("update/user-option")
-  updateUserOption(@Body() updateUserDto: UpdateUserOptionDto, @Res() res: Response, @Req() req: Request) {
-    return this.updateUserHelper.processUpdateUserOption(updateUserDto, req, res);
   }
 
   @Post("request/user-location")

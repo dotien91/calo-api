@@ -11,7 +11,7 @@ export class UserMoodService {
   constructor(
     @InjectModel(UserMood.name)
     private userFollowModel: Model<UserMoodDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -226,8 +226,7 @@ export class UserMoodService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: "user_option_id" },
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       })
       .sort(sortObject)
       .skip(limit * (page - 1))

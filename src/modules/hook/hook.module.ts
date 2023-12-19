@@ -12,10 +12,8 @@ import { TransactionBank } from "../transaction/schemas/transaction_bank.schema"
 import { TransactionService } from "../transaction/services/transaction.service";
 import { TransactionBankService } from "../transaction/services/transaction_bank.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
-import { UserOption, UserOptionSchema } from "../user/schemas/user_option.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
-import { UserOptionService } from "../user/services/user_option.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -42,8 +40,7 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Transaction.name, schema: TransactionSchema },
-      { name: TransactionBank.name, schema: TransactionSchema },
-      { name: UserOption.name, schema: UserOptionSchema },
+      { name: TransactionBank.name, schema: TransactionSchema }
     ]),
   ],
   providers: [
@@ -59,9 +56,8 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
     JwtHelperService,
     QueueService,
     TransactionService,
-    TransactionBankService,
-    UserOptionService,
+    TransactionBankService
   ],
   exports: [EventHookNotificationService, EventHookWorkerService, EventHookAdderService],
 })
-export class HookModule {}
+export class HookModule { }

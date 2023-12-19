@@ -13,7 +13,7 @@ export class TransactionService {
   constructor(
     @InjectModel(Transaction.name)
     private transactionsModel: Model<TransactionDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -170,59 +170,25 @@ export class TransactionService {
     }
     const projection = {};
 
-    if (filter.user_birthday_year_from && filter.user_birthday_year_to) {
-      const dataPopulate = {
-        path: "user_id",
-        options: { strictPopulate: false },
-        select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: {
-          path: "user_option_id",
-          match: {
-            user_birthday_year: {
-              $gte: filter?.user_birthday_year_from?.toString(),
-              $lte: filter?.user_birthday_year_to?.toString(),
-            },
-          },
-        },
-      };
-
-      const dataReturn = await this.transactionsModel
-        .find(condition, projection)
-        .populate(dataPopulate)
-        .populate(
-          "from_user",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-        )
-        .populate("transaction_bank")
-        .sort(sortObject)
-        .skip(limit * (page - 1))
-        .limit(limit)
-        .exec()
-        .then((orders) => orders.filter((order) => order.user_id.user_option_id != null));
-      return dataReturn;
-    } else {
-      const dataPopulate = {
-        path: "user_id",
-        options: { strictPopulate: false },
-        select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-        populate: { path: "user_option_id" },
-      };
-      const dataReturn = await this.transactionsModel
-        .find(condition, projection)
-        .populate(dataPopulate)
-        .populate(
-          "from_user",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-        )
-        .populate("transaction_bank")
-        .sort(sortObject)
-        .skip(limit * (page - 1))
-        .limit(limit)
-        .exec();
-      return dataReturn;
-    }
+    const dataPopulate = {
+      path: "user_id",
+      options: { strictPopulate: false },
+      select:
+        "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+    };
+    const dataReturn = await this.transactionsModel
+      .find(condition, projection)
+      .populate(dataPopulate)
+      .populate(
+        "from_user",
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
+      .populate("transaction_bank")
+      .sort(sortObject)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .exec();
+    return dataReturn;
   }
 
   /**

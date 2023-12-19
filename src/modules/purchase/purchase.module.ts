@@ -26,12 +26,10 @@ import { TransactionBankService } from "../transaction/services/transaction_bank
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymous.schema";
 import { UserFollow, UserFollowSchema } from "../user/schemas/user_follow.schema";
-import { UserOption, UserOptionSchema } from "../user/schemas/user_option.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
 import { UserAnonymousService } from "../user/services/user_anonymous.service";
 import { UserFollowService } from "../user/services/user_follow.service";
-import { UserOptionService } from "../user/services/user_option.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -62,7 +60,6 @@ import { PurchaseService } from "./services/purchase.service";
       { name: User.name, schema: UserSchema },
       { name: Notification.name, schema: NotificationSchema },
       { name: Transaction.name, schema: TransactionSchema },
-      { name: UserOption.name, schema: UserOptionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
@@ -79,7 +76,6 @@ import { PurchaseService } from "./services/purchase.service";
     NotificationService,
     NotificationHelper,
     TransactionHelper,
-    UserOptionService,
     UserService,
     JwtHelperService,
     UserSessionService,
@@ -96,4 +92,4 @@ import { PurchaseService } from "./services/purchase.service";
   ],
   exports: [PurchaseHelper, PurchaseService],
 })
-export class PurchaseModule {}
+export class PurchaseModule { }

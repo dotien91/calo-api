@@ -11,7 +11,7 @@ export class ChatMediaService {
   constructor(
     @InjectModel(ChatMedia.name)
     private chatMediaService: Model<ChatMediaDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -151,7 +151,7 @@ export class ChatMediaService {
           path: "createBy",
           options: { strictPopulate: false },
           select:
-            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active",
+            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
         })
         .sort(sortObject)
         .skip(limit * (page - 1))

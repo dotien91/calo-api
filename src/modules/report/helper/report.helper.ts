@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserOptionService } from "../../../modules/user/services/user_option.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { UserService } from "../../user/services/user.service";
 import { CreateContactUsDto } from "../dto/create-contact_us.dto";
@@ -21,9 +20,8 @@ export class ReportHelper {
     private appUserService: UserService,
     private reportService: ReportService,
     private userService: UserService,
-    private userOptionService: UserOptionService,
     private userPermissionService: UserPermissionService
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -50,33 +48,6 @@ export class ReportHelper {
           report_type: "block",
         };
         const dataOld = await this.reportService.findOne(dataToFilter);
-        if (!dataOld) {
-          //Get old Point
-          const dataUserOld = await this.userOptionService.findOne({ user_id: createReportData.partner_id });
-          const circlePoint = Number(dataUserOld.circle_point);
-
-          let pointToUpdate = 4;
-          if (circlePoint < 4) {
-            pointToUpdate = 4 - circlePoint;
-          }
-          if (circlePoint >= 4 && circlePoint < 10) {
-            pointToUpdate = 10 - circlePoint;
-          }
-          if (circlePoint >= 10 && circlePoint < 21) {
-            pointToUpdate = 21 - circlePoint;
-          }
-          if (circlePoint >= 21) {
-            pointToUpdate = 10;
-          }
-          const dataUpdateCount = {
-            circle_point: pointToUpdate,
-            like_point: pointToUpdate,
-          };
-          const dataCount = await this.userOptionService.handleUpdateInc(
-            { user_id: createReportData.partner_id },
-            dataUpdateCount
-          );
-        }
       }
 
       createReportData = { ...createReportData, ...{ user_id: userId } };

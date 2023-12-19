@@ -87,9 +87,5 @@ export class SearchUserDto {
   @ApiPropertyOptional()
   user_interest?: string;
 
-  @IsString()
-  @IsOptional(null)
-  notification_request?: string;
-
   email_token?: string;
 }

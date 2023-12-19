@@ -19,11 +19,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsUrl()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_avatar_square?: string;
-
-  @IsUrl()
-  @IsOptional(null)
-  @ApiPropertyOptional()
   user_avatar_thumbnail?: string;
 
   @IsUrl()
@@ -44,7 +39,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsBooleanString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_validate_phone?: any;
+  is_validated_phone?: any;
 
   @IsString()
   @IsOptional(null)
@@ -74,11 +69,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_referrer?: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
   user_role?: string;
 
   @IsDate()
@@ -96,31 +86,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsIn(["0"])
   @ApiPropertyOptional()
   user_status?: string;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  notification_chat?: number;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  notification_community?: number;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  notification_course?: number;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  notification_user?: number;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  message_stranger?: number;
 
   @IsNumberString()
   @IsOptional(null)

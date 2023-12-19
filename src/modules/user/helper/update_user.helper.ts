@@ -40,7 +40,6 @@ import { UserFollowService } from "../services/user_follow.service";
 import { UserInterestService } from "../services/user_interest.service";
 import { UserLocationService } from "../services/user_location.service";
 import { UserMoodService } from "../services/user_mood.service";
-import { UserOptionService } from "../services/user_option.service";
 import { UserQuestionService } from "../services/user_question.service";
 import { UserSessionService } from "../services/user_session.service";
 import { UserViewService } from "../services/user_view.service";
@@ -52,7 +51,6 @@ import { UserViewService } from "../services/user_view.service";
 export class UpdateUserHelper {
   constructor(
     private appUserService: UserService,
-    private userOptionService: UserOptionService,
     private userFollowService: UserFollowService,
     private userViewService: UserViewService,
     private userDisagreeService: UserDisagreeService,
@@ -68,7 +66,7 @@ export class UpdateUserHelper {
     private configService: ConfigService,
     private userLocationService: UserLocationService,
     private userAnonymousService: UserAnonymousService
-  ) {}
+  ) { }
 
   private readonly logger = new Logger("call");
   /**
@@ -140,16 +138,6 @@ export class UpdateUserHelper {
       }
 
       const dataReturn = await this.appUserService.update(dataUpdate);
-      if (
-        updateData.user_avatar_thumbnail &&
-        updateData.user_avatar_thumbnail.indexOf("lgbtapp.s3.ap-southeast-1.amazonaws.com") !== -1
-      ) {
-        const dataUpdateOption = {
-          user_id: updateData._id,
-          is_avatar: 1,
-        };
-        await this.userOptionService.update(dataUpdateOption);
-      }
 
       if (updateData?.user_role) {
         //Check Admin && Permission
@@ -161,83 +149,6 @@ export class UpdateUserHelper {
         if (!userPermissionObject) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
-      }
-      // if (isUpdateAvatar) {
-      //   //Check Data
-      //   //Update
-      //   //Validate
-      //   const avatarUrl = dataUpdate?.user_avatar;
-      //   const image1Object = await this.chatMediaService.findOne({ media_url: avatarUrl });
-
-      //   let genderPoint = 0;
-      //   if (image1Object && image1Object?.gender) {
-      //     if (image1Object?.gender === "male") {
-      //       genderPoint = -10;
-      //     } else {
-      //       if (image1Object?.gender === "female") {
-      //         genderPoint = 0;
-      //       } else {
-      //         genderPoint = 10;
-      //       }
-      //     }
-      //   } else {
-      //     genderPoint = 10;
-      //   }
-
-      //   const userOptionData = await this.userOptionService.findOne({ user_id: updateData._id?.toString() });
-      //   const oldPoint = userOptionData?.avatar_point;
-
-      //   //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-      //   const pointToPlus =
-      //     parseFloat(userOptionData?.circle_point?.toString()) -
-      //     parseFloat(oldPoint?.toString()) +
-      //     parseFloat(genderPoint?.toString());
-
-      //   //Update Gender Point
-      //   const dataUpdateAfter = {
-      //     user_id: updateData._id?.toString(),
-      //     avatar_point: genderPoint,
-      //     avatar_gender: image1Object?.gender,
-      //     circle_point: pointToPlus,
-      //   };
-
-      //   await this.userOptionService.update(dataUpdateAfter);
-
-      //   const dataValidate = await this.faceDetectionService.findOne({
-      //     user_id: userObject._id.toString(),
-      //     validate_status: 1,
-      //   });
-
-      //   if (dataValidate) {
-      //     const image2Object = await this.chatMediaService.findById(dataValidate.id_compare?.toString());
-      //     if (image1Object && image2Object) {
-      //       const dataIds = [];
-      //       if (dataValidate.media_ids) {
-      //         for (const mediaItem of dataValidate.media_ids) {
-      //           dataIds.push(mediaItem.toString());
-      //         }
-      //       }
-      //       try {
-      //         await this.faceDetectionHelper.handleDetectFromServer(image1Object, image2Object, userObject, dataIds);
-      //       } catch (error) {}
-      //     }
-      //   }
-      // }
-      const user = await this.appUserService.updateCount({ _id: updateData?._id }, { user_version: 1 });
-      if (user.display_name !== "" && user.user_phone !== "") {
-        // await this.channelPermissionService.updateCount(
-        //   { user_id: user?._id?.toString(), channel_id: req?.channel_id.toString() },
-        //   { point: 0, point_month: 0, point_week: 0 },
-        //   req?.auth_code,
-        //   {
-        //     entity_id: new Types.ObjectId(),
-        //     entity_type: "update_profile",
-        //     content: user?.display_name,
-        //     user_id: user?._id,
-        //     point_number: 0,
-        //   },
-        //   "update_profile"
-        // );
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -263,104 +174,6 @@ export class UpdateUserHelper {
     }
   }
 
-  /**
-   * @author Tony Vu
-   * @function processUserUpdate
-   */
-  async updateTravelCity(req: ExpressRequestDto, res: Response) {
-    try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
-      const dataToUpdate = {
-        user_id: userId,
-        travel_city: null,
-      };
-      await this.userOptionService.update(dataToUpdate);
-      const dataUpdateMain = {
-        _id: userId,
-        travel_city: null,
-      };
-      const dataReturn = await this.appUserService.update(dataUpdateMain);
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  /**
-   *
-   * @param countryItem
-   * @param configName
-   * @returns
-   */
-  async handleSendMessageForTime(countryItem: string, configName: string, authCode: string) {
-    const configData = configName;
-    const dataFind = {
-      type: configData,
-    };
-    const dataConfig = await this.configService.findOne(dataFind);
-    if (!dataConfig) {
-      return null;
-    }
-    let userArray = null;
-    if (process.env.BRANCH_NAME === "live_video") {
-      userArray = await this.userOptionService.filterForCron({ country: countryItem, base_role: "man" }, 1, 10000);
-    } else {
-      userArray = await this.userOptionService.filterForCron({ country: countryItem }, 1, 10000);
-    }
-
-    let anonymousArray = null;
-    if (process.env.BRANCH_NAME !== "live_video") {
-      const dataContent = dataConfig?.data_content;
-      if (dataContent) {
-        anonymousArray = await this.userAnonymousService.filter({ user_type: dataContent?.toString() }, {}, 1, 10000);
-      }
-    }
-
-    if (anonymousArray && anonymousArray?.length) {
-      for (const userArrayItem of anonymousArray) {
-        if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-          const arrayMessage = dataConfig?.data_filter;
-          const notificationTitle = "Hey " + userArrayItem?.display_name + "!";
-          let notificationDescription = _.sample(arrayMessage);
-          notificationDescription = notificationDescription.replace("{{display_name}}", userArrayItem?.display_name);
-          await this.sendNotificationToUser(
-            userArrayItem?._id?.toString(),
-            userArrayItem,
-            notificationTitle,
-            notificationDescription,
-            "anonymous",
-            authCode
-          );
-        }
-      }
-    }
-    if (userArray && userArray.length) {
-      for (const userArrayItem of userArray) {
-        if (dataConfig && dataConfig?.data_filter && dataConfig?.data_filter?.length) {
-          const arrayMessage = dataConfig?.data_filter;
-          const notificationTitle = "Hey " + userArrayItem?.display_name + "!";
-          let notificationDescription = _.sample(arrayMessage);
-          notificationDescription = notificationDescription.replace("{{display_name}}", userArrayItem?.display_name);
-          await this.sendNotificationToUser(
-            userArrayItem?._id?.toString(),
-            userArrayItem,
-            notificationTitle,
-            notificationDescription,
-            "user",
-            authCode
-          );
-        }
-      }
-    }
-    return true;
-  }
 
   /**
    * @author Tony Vu
@@ -372,7 +185,7 @@ export class UpdateUserHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const authCode = req?.auth_code;
+
       const currentTime = new Date();
 
       let dataToUpdate = {
@@ -380,135 +193,16 @@ export class UpdateUserHelper {
         user_active: Number(updateData.user_active),
         last_active: currentTime.toUTCString(),
       };
-      //Update System Message
-      if (
-        (!userObject.system_message || Number(userObject.system_message) === 0) &&
-        process.env.BRANCH_NAME === "whiteg"
-      ) {
-        dataToUpdate = {
-          ...dataToUpdate,
-          ...{
-            system_message: 1,
-          },
-        };
-        //Check country && core
-        const dataKey = userObject.country + "_message";
-        const dataFindConfig = {
-          type: dataKey,
-        };
-        const dataReturnConfig: any = await this.configService.findOne(dataFindConfig);
-        // let isMatch = true;
-        // if (dataReturnConfig) {
-        //   if (dataReturnConfig.data_filter) {
-        //     for (let indexItem in dataReturnConfig.data_filter) {
-        //       if (Number(indexItem) === 0) {
 
-        //       }
-        //     }
-        //   }
-        // }
-        if (dataReturnConfig) {
-          // const dataMessage = dataReturnConfig.data_content;
-          //Send Message
-          // this.sendMessage(userObject, req, res, dataMessage);
-        }
-      }
-
-      //Send message to CallU user
-      if (process.env.BRANCH_NAME === "live_video") {
-        const userObjectDetail: any = await this.appUserService.findOneLogin({ _id: userObject?._id?.toString() });
-        if (userObjectDetail?.base_role === "women") {
-          //Get user
-          const dataLoc = userObjectDetail?.loc?.coordinates;
-          const dataToFilterCallU = {
-            latitude: parseFloat(dataLoc[1]?.toString()),
-            longitude: parseFloat(dataLoc[0]?.toString()),
-            distance: 1000,
-            is_match: "1",
-            base_role: "man",
-          };
-          const orderByOBject = {};
-          const page = 1;
-          const limit = 20;
-          console.log(dataToFilterCallU, "dataToFilterCallU");
-          const dataReturn = await this.userOptionService.filterFree(dataToFilterCallU, orderByOBject, page, limit);
-          for (const userItem of dataReturn) {
-            const notificationTitle = userObjectDetail?.display_name;
-            const notificationDescription = userObjectDetail?.display_name + " online now! Let send message to her!";
-            await this.sendNotificationToUser(
-              userItem?._id?.toString(),
-              userObjectDetail,
-              notificationTitle,
-              notificationDescription,
-              "user",
-              authCode
-            );
-          }
-        }
-      }
       const dataBaseUser = await this.appUserService.update(dataToUpdate);
-      dataToUpdate = { ...dataToUpdate, ...{ user_id: userObject._id.toString() } };
-      delete dataToUpdate._id;
 
-      //Update time_point, circle_point
-      const userOptionData = await this.userOptionService.findOne({ user_id: dataToUpdate._id?.toString() });
-      const oldPoint = userOptionData?.time_point ? userOptionData?.time_point : 0;
-
-      //console.log(parseFloat(oldPoint?.toString()) - parseFloat(genderPoint?.toString()), "point Plus");
-      const pointToPlus =
-        parseFloat(userOptionData?.circle_point ? userOptionData.time_point?.toString() : "0") -
-        parseFloat(oldPoint?.toString());
-
-      dataToUpdate = {
-        ...dataToUpdate,
-        ...{
-          circle_point: pointToPlus,
-          time_point: 0,
-        },
-      };
-      if (Number(updateData.user_active) === 0) {
-        dataToUpdate = {
-          ...dataToUpdate,
-          ...{
-            ready_status: 0,
-          },
-        };
-      }
-
-      const dataReturn = await this.userOptionService.update(dataToUpdate);
       //Handle Send Message
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
-        .json(dataReturn);
+        .json(dataBaseUser);
     } catch (error) {
       console.log(error);
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  /**
-   * @author Tony Vu
-   * @function processUserUpdate
-   */
-  async processUserUpdateMapCount(req: ExpressRequestDto, res: Response) {
-    try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const dataUpdate = {
-        map_count: 1,
-      };
-      const dataFilter = {
-        _id: userObject._id.toString(),
-      };
-      const dataReturn = await this.appUserService.updateCount(dataFilter, dataUpdate);
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
-    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
@@ -561,405 +255,6 @@ export class UpdateUserHelper {
     }
   }
 
-  /**
-   * @author Tony Vu
-   * @function processUserUpdate
-   */
-  async processUpdateUserOption(updateData: UpdateUserOptionDto, req: ExpressRequestDto, res: Response) {
-    try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      let isAdmin = false;
-      if (updateData.user_id.toString() !== userObject._id.toString()) {
-        const userPermissionObject = await this.userPermissionService.isHavePermission(
-          userObject._id.toString(),
-          "user/update"
-        );
-        if (!userPermissionObject) {
-          //Check Admin
-          throw new BadRequestException("You haven't permission for this Action!");
-        } else {
-          isAdmin = true;
-        }
-      }
-      if (
-        updateData &&
-        Object.keys(updateData).length === 0 &&
-        Object.getPrototypeOf(updateData) === Object.prototype
-      ) {
-        throw new NotFoundException("Empty update Data!");
-      }
-      let whereToMeet = [];
-      if (updateData.where_to_meet) {
-        whereToMeet = JSON.parse(updateData.where_to_meet);
-      }
-      let lookingFor = [];
-      if (updateData.locking_for) {
-        lookingFor = JSON.parse(updateData.locking_for);
-      }
-      let publicInstagram = [];
-      if (updateData.public_instagram) {
-        publicInstagram = JSON.parse(updateData.public_instagram.toString());
-      }
-
-      let userQuestion = null;
-      if (updateData.user_question) {
-        userQuestion = JSON.parse(updateData.user_question.toString());
-      }
-
-      let userMood = null;
-      if (updateData.user_mood) {
-        userMood = JSON.parse(updateData.user_mood.toString());
-        userMood = { ...userMood, ...{ updateAt: new Date() } };
-        const dataUserMood = await this.userMoodService.findOne({ user_id: updateData.user_id.toString() });
-        if (!dataUserMood || dataUserMood.text.toString() !== userMood?.text) {
-          //Create new User Mood
-          const dataCreateUserMood = {
-            user_id: updateData.user_id.toString(),
-            text: userMood?.text,
-            image: userMood?.image,
-          };
-          await this.userMoodService.create(dataCreateUserMood);
-        }
-      }
-
-      let socialLink = [];
-      if (updateData.social_link) {
-        socialLink = JSON.parse(updateData.social_link);
-      }
-
-      let mediaLink = [];
-      if (updateData.media_link) {
-        mediaLink = JSON.parse(updateData.media_link);
-      }
-
-      let publicAlbum = [];
-      if (updateData.public_album) {
-        const newPublicAlbum = JSON.parse(updateData.public_album);
-        const dataPublicNew = [];
-        if (newPublicAlbum && newPublicAlbum?.length) {
-          for (const itemAlbum of newPublicAlbum) {
-            if (itemAlbum) {
-              dataPublicNew.push(itemAlbum);
-            }
-          }
-          publicAlbum = dataPublicNew;
-        }
-      }
-
-      let userInterest = [];
-      if (updateData.user_interest) {
-        try {
-          userInterest = JSON.parse(updateData.user_interest);
-          await this.userInterestService.updatePriority(userInterest);
-        } catch (error) {}
-      }
-
-      let privateAlbum = [];
-      if (updateData.private_album) {
-        privateAlbum = JSON.parse(updateData.private_album);
-      }
-
-      let safetyPractices = [];
-
-      if (updateData.safety_practices) {
-        safetyPractices = JSON.parse(updateData.safety_practices);
-      }
-
-      let language = [];
-      if (updateData.language) {
-        language = JSON.parse(updateData.language);
-      }
-
-      if (updateData && updateData.sexual_content) {
-        if (!isAdmin && process.env.BRANCH_NAME !== "revu") {
-          delete updateData.sexual_content;
-        }
-      }
-
-      if (updateData && updateData.user_spotlight) {
-        if (!isAdmin && process.env.BRANCH_NAME !== "revu") {
-          delete updateData.user_spotlight;
-        }
-      }
-
-      let dataUpdate: any = updateData;
-
-      if (updateData.user_birthday) {
-        let userBirthdayYear = 0;
-        const birthdayObject = new Date(updateData.user_birthday.toString());
-        if (birthdayObject) {
-          userBirthdayYear = birthdayObject.getFullYear();
-        }
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            user_birthday_year: userBirthdayYear,
-          },
-        };
-      }
-
-      if (userQuestion && userQuestion?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            user_question: userQuestion,
-          },
-        };
-      } else {
-        //delete dataUpdate.user_question;
-        if (updateData.user_question) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              user_question: [],
-            },
-          };
-        } else {
-          delete dataUpdate.user_question;
-        }
-      }
-      if (userMood && userMood?.text) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            user_mood: userMood,
-          },
-        };
-      } else {
-        //delete dataUpdate.user_mood;
-        if (updateData.user_mood) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              user_mood: [],
-            },
-          };
-        } else {
-          delete dataUpdate.user_mood;
-        }
-      }
-
-      if (privateAlbum && privateAlbum?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            private_album: privateAlbum,
-          },
-        };
-      } else {
-        //delete dataUpdate.private_album;
-        if (updateData.private_album) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              private_album: [],
-            },
-          };
-        } else {
-          delete dataUpdate.private_album;
-        }
-      }
-
-      if (userInterest && userInterest?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            user_interest: userInterest,
-          },
-        };
-      } else {
-        //delete dataUpdate.user_interest;
-        if (updateData.user_interest) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              user_interest: [],
-            },
-          };
-        } else {
-          delete dataUpdate.user_interest;
-        }
-      }
-
-      if (language && language?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            language: language,
-          },
-        };
-      } else {
-        //delete dataUpdate.language;
-        if (updateData.language) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              language: [],
-            },
-          };
-        } else {
-          delete dataUpdate.language;
-        }
-      }
-
-      if (safetyPractices && safetyPractices?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            safety_practices: safetyPractices,
-          },
-        };
-      } else {
-        //delete dataUpdate.safety_practices;
-        if (updateData.safety_practices) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              safety_practices: [],
-            },
-          };
-        } else {
-          delete dataUpdate.safety_practices;
-        }
-      }
-
-      if (socialLink && socialLink?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            social_link: socialLink,
-          },
-        };
-      } else {
-        //delete dataUpdate.social_link;
-        if (updateData.social_link) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              social_link: [],
-            },
-          };
-        } else {
-          delete dataUpdate.social_link;
-        }
-      }
-
-      if (mediaLink && mediaLink?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            media_link: mediaLink,
-          },
-        };
-      } else {
-        //delete dataUpdate.social_link;
-        if (updateData.media_link) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              media_link: [],
-            },
-          };
-        } else {
-          delete dataUpdate.media_link;
-        }
-      }
-
-      if (lookingFor && lookingFor?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            locking_for: lookingFor,
-          },
-        };
-      } else {
-        //delete dataUpdate.locking_for;
-        if (updateData.locking_for) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              locking_for: [],
-            },
-          };
-        } else {
-          delete dataUpdate.locking_for;
-        }
-      }
-
-      if (publicAlbum && publicAlbum?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            public_album: publicAlbum,
-          },
-        };
-      } else {
-        if (updateData.public_album) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              public_album: [],
-            },
-          };
-        } else {
-          delete dataUpdate.public_album;
-        }
-      }
-
-      if (whereToMeet && whereToMeet?.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            where_to_meet: whereToMeet,
-          },
-        };
-      } else {
-        //delete dataUpdate.where_to_meet;
-        if (updateData.where_to_meet) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              where_to_meet: [],
-            },
-          };
-        } else {
-          delete dataUpdate.where_to_meet;
-        }
-      }
-      if (publicInstagram && publicInstagram.length) {
-        dataUpdate = {
-          ...dataUpdate,
-          ...{
-            public_instagram: publicInstagram,
-          },
-        };
-      } else {
-        //delete dataUpdate.public_instagram;
-        if (updateData.public_instagram) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{
-              public_instagram: [],
-            },
-          };
-        } else {
-          delete dataUpdate.public_instagram;
-        }
-      }
-
-      const dataReturn = await this.userOptionService.update(dataUpdate);
-      await this.appUserService.updateCount({ _id: dataUpdate?._id }, { user_version: 1 });
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
 
   /**
    * @author Tony Vu
@@ -981,17 +276,11 @@ export class UpdateUserHelper {
           throw new BadRequestException("You haven't permission for this Action!");
         }
       }
-
       const dataUpdate = {
         _id: id,
         user_status: "0",
       };
       const dataReturn = await this.appUserService.update(dataUpdate);
-      const dataOptionUpdate = {
-        user_id: id,
-        user_status: 0,
-      };
-      await this.userOptionService.update(dataOptionUpdate);
       await this.userSessionService.removeByUserId(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1146,26 +435,11 @@ export class UpdateUserHelper {
       //Update Follow User
       //Query 02
       await this.appUserService.update(dataToUpdate);
-      const dataUpdateCount = {
-        circle_point: -2,
-        like_point: -2,
-      };
-      await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
+
       //Query 03
       await this.userDisagreeService.removeOne(dataUpdate);
       let dataReturn = await this.userFollowService.update(dataUpdate);
-      // if (dataReturn.match_status) {
-      //   //Query 04
-      //   const chatRoomObject = await this.chatRoomHelper.handleCreateRoom(
-      //     userObject,
-      //     dataFollow.partner_id,
-      //     "personal"
-      //   );
-      //   //Create Room
-      //   dataReturn = { ...dataReturn, ...{ create_room: chatRoomObject } };
-      // } else {
-      //   dataReturn = { ...dataReturn, ...{ create_room: null } };
-      // }
+
 
       if (isSendNotification) {
         await this.sendNotificationToPartner(dataFollow.partner_id.toString(), userObject, authCode, req);
@@ -1227,12 +501,6 @@ export class UpdateUserHelper {
           match_status: 0,
         };
         await this.userFollowService.update(dataPartnerUpdate);
-
-        const dataUpdateCount = {
-          circle_point: 1,
-          like_point: 1,
-        };
-        await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
 
         if (userObject?.follow_users) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
@@ -1306,18 +574,6 @@ export class UpdateUserHelper {
         return value !== dataFollow.partner_id.toString();
       });
 
-      const dataToUpdate = {
-        _id: userObject._id.toString(),
-        disagree_users: dataFollowUpdate,
-        follow_users: dataFollowToCompare,
-      };
-      //Update Follow User
-      await this.appUserService.update(dataToUpdate);
-      const dataUpdateCount = {
-        circle_point: 1,
-        like_point: 1,
-      };
-      await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
       await this.userFollowService.removeOne(dataUpdate);
       //Update partner Data
       const updatePartner = {
@@ -1361,13 +617,7 @@ export class UpdateUserHelper {
       const dataToCheck = await this.userDisagreeService.findOne(dataFindOne);
 
       if (dataToCheck) {
-        const dataUpdateCount = {
-          circle_point: -2,
-          like_point: -2,
-        };
-        await this.userOptionService.handleUpdateInc({ user_id: dataFollow.partner_id.toString() }, dataUpdateCount);
         const dataReturn = await this.userDisagreeService.remove(dataToCheck._id.toString());
-
         if (userObject?.disagree_users) {
           //dataFollowUpdate = _.union(userObject?.disagree_users, dataFollowUpdate);
           const dataFollowUpdate = userObject?.disagree_users?.filter((value: any, index: number) => {
@@ -1900,16 +1150,6 @@ export class UpdateUserHelper {
 
       const dataCreate = await this.userLocationService.create(dataUpdate);
       //Update user option
-      const dataUpdateUserOption = {
-        user_id: userId,
-        last_user_location: dataCreate?._id?.toString(),
-      };
-      const dataUpdateUser = {
-        _id: userId,
-        last_user_location: dataCreate?._id?.toString(),
-      };
-      await this.userOptionService.update(dataUpdateUserOption);
-      await this.appUserService.update(dataUpdateUser);
       await this.handleUpdateSocket(dataCreate, userObject, authCode);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1970,7 +1210,7 @@ export class UpdateUserHelper {
       }
 
       return true;
-    } catch (error) {}
+    } catch (error) { }
   }
 
   /**
