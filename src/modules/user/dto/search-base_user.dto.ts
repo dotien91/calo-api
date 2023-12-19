@@ -1,14 +1,13 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
-  IsString,
-  IsOptional,
-  IsNumberString,
-  IsNumber,
-  IsIn,
+  IsBooleanString,
   IsDateString,
+  IsIn,
   IsLatitude,
   IsLongitude,
-  IsBooleanString,
+  IsNumberString,
+  IsOptional,
+  IsString,
 } from "class-validator";
 
 export class SearchBaseUserDto {

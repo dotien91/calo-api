@@ -608,7 +608,17 @@ export class UserLoginHelper {
       throw new BadRequestException(error.message);
     }
   }
-  handleUpdateGeoIP(req: Request<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>>, userObject: any) {
+  handleUpdateGeoIP(
+    req: Request<
+      import("express-serve-static-core").ParamsDictionary,
+      any,
+      any,
+      import("qs").ParsedQs,
+      Record<string, any>
+    >,
+    res: Response<any, Record<string, any>>,
+    userObject: any
+  ) {
     throw new Error("Method not implemented.");
   }
 
@@ -1420,98 +1430,98 @@ export class UserLoginHelper {
     }
   }
 
-//   /**
-//    *
-//    * @param userId
-//    * @param cityName
-//    * @param countryName
-//    */
-//   async sendNotificationNew(
-//     partnerObject: User,
-//     req: ExpressRequestDto,
-//     res: Response,
-//     cityName: string,
-//     countryName: string
-//   ) {
-//     if (process.env.BRANCH_NAME === "live_video") {
-//       return true;
-//     }
-//     setTimeout(async () => {
-//       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-//       //Create new
-//       const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
-//         supportAccount,
-//         partnerObject._id.toString(),
-//         "personal",
-//         "",
-//         true
-//       );
+  //   /**
+  //    *
+  //    * @param userId
+  //    * @param cityName
+  //    * @param countryName
+  //    */
+  //   async sendNotificationNew(
+  //     partnerObject: User,
+  //     req: ExpressRequestDto,
+  //     res: Response,
+  //     cityName: string,
+  //     countryName: string
+  //   ) {
+  //     if (process.env.BRANCH_NAME === "live_video") {
+  //       return true;
+  //     }
+  //     setTimeout(async () => {
+  //       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
+  //       //Create new
+  //       const dataCreateReturnRoom = await this.chatRoomHelper.handleCreateRoom(
+  //         supportAccount,
+  //         partnerObject._id.toString(),
+  //         "personal",
+  //         "",
+  //         true
+  //       );
 
-//       if (!dataCreateReturnRoom) {
-//         console.log("Not found");
-//       } else {
-//         //@ts-ignore
-//         const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-//         const currentTime = new Date().getTime();
+  //       if (!dataCreateReturnRoom) {
+  //         console.log("Not found");
+  //       } else {
+  //         //@ts-ignore
+  //         const updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+  //         const currentTime = new Date().getTime();
 
-//         //console.log(currentTime - updatedAt);
-//         const leftTime = currentTime - updatedAt;
-//         //@ts-ignore
-//         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-//           console.log("Not return");
-//           return null;
-//         }
+  //         //console.log(currentTime - updatedAt);
+  //         const leftTime = currentTime - updatedAt;
+  //         //@ts-ignore
+  //         if (leftTime < 2592000000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+  //           console.log("Not return");
+  //           return null;
+  //         }
 
-//         let chatContent = "";
-//         const tokenReturn = this.jwtHelper.generateJwt(
-//           process.env.INFO_USER,
-//           supportAccount?.user_email?.toString(),
-//           process.env.INFO_SESSION,
-//           true
-//         );
-//         let branchName = "WhiteG";
-//         if (process.env.BRANCH_NAME === "honee") {
-//           branchName = "Honee";
-//         }
-//         if (countryName === "Vietnam") {
-//           const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
-//           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
-// 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
-// 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
-// ✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
-// 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
-// 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
-//         } else {
-//           const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
-//           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
-// 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
-// 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
-// ✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
-// 🔔 If you have any problems, contact us directly using the Support feature.
-// 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
-//         }
-//         const createChatHistoryDto = {
-//           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
-//           chat_content: chatContent,
-//         };
+  //         let chatContent = "";
+  //         const tokenReturn = this.jwtHelper.generateJwt(
+  //           process.env.INFO_USER,
+  //           supportAccount?.user_email?.toString(),
+  //           process.env.INFO_SESSION,
+  //           true
+  //         );
+  //         let branchName = "WhiteG";
+  //         if (process.env.BRANCH_NAME === "honee") {
+  //           branchName = "Honee";
+  //         }
+  //         if (countryName === "Vietnam") {
+  //           const localText = cityName ? ` tại ${cityName}, ${countryName}` : ``;
+  //           chatContent = `Chào mừng bạn đã đến với ${branchName}${localText} - nơi kết nối & hẹn hò
+  // 👉 Bạn cần tuân thủ các chính sách của chúng tôi và cùng chúng tôi xây dựng một cộng đồng ${branchName} văn minh, tốt đẹp hơn.
+  // 👉 Hãy thay đổi ảnh đại điện và đăng tải một đoạn ghi âm để đối phương hiểu bạn hơn nhé.
+  // ✅ Lưu ý: bạn chỉ có thể nhắn tin với đối phương khi cả 2 bạn cùng thích nhau. Vì thế hãy quẹt phải cho đối phương biết trước nhé.
+  // 🔔 Nếu gặp bất kì vấn đề nào, hãy liên hệ trực tiếp với chúng tôi bằng tính năng Hỗ trợ.
+  // 🔔 Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hy vọng bạn có những trải nghiệm thú vị cùng ${branchName}.`;
+  //         } else {
+  //           const localText = cityName ? ` at ${cityName}, ${countryName}` : ``;
+  //           chatContent = `Welcome to ${branchName}${localText}. Thanks for your believe
+  // 👉 You have to agree with our privacy policies and join us in creating a civilized ${branchName} community.
+  // 👉 Please change your personal avatar and upload a sound signature to understand thoroughly.
+  // ✅ Note: you only chat with others when you both like each other. So please swipe right to let him know first.
+  // 🔔 If you have any problems, contact us directly using the Support feature.
+  // 🔔 Thank you for using our service. Hope you have stimulating experiences on ${branchName}.`;
+  //         }
+  //         const createChatHistoryDto = {
+  //           chat_room_id: dataCreateReturnRoom?.chat_room_id?._id?.toString(),
+  //           chat_content: chatContent,
+  //         };
 
-//         req.user_id = supportAccount?._id.toString();
-//         req.user_object = supportAccount;
-//         req.session_id = process.env.INFO_SESSION;
-//         req.auth_code = tokenReturn.toString();
+  //         req.user_id = supportAccount?._id.toString();
+  //         req.user_object = supportAccount;
+  //         req.session_id = process.env.INFO_SESSION;
+  //         req.auth_code = tokenReturn.toString();
 
-//         const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-//           req,
-//           res,
-//           createChatHistoryDto,
-//           false,
-//           true
-//         );
-//       }
-//     }, 2000);
+  //         const dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+  //           req,
+  //           res,
+  //           createChatHistoryDto,
+  //           false,
+  //           true
+  //         );
+  //       }
+  //     }, 2000);
 
-//     return true;
-//   }
+  //     return true;
+  //   }
 
   // /**
   //  *

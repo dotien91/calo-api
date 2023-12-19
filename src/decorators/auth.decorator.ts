@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -6,11 +7,10 @@ import {
   SetMetadata,
   UnauthorizedException,
   UseGuards,
-  applyDecorators,
 } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
 import { User } from "../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../modules/user_permission/services/user_permission.service";
-import { Reflector } from "@nestjs/core";
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

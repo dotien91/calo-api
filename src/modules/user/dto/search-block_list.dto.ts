@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumberString, IsOptional, IsString, IsIn } from "class-validator";
+import { IsIn, IsNumberString, IsOptional } from "class-validator";
 
 export class SearchBlockListDto {
   @IsNumberString()

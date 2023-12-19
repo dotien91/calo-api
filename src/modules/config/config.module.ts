@@ -34,7 +34,7 @@ import { ConfigService } from "./services/config.service";
     ConfigHelper,
     UserPermissionService,
     HandleServiceService,
-    UserService
+    UserService,
   ],
   exports: [ConfigHelper],
 })

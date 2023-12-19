@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
@@ -272,7 +266,7 @@ export class OrderHelper {
       const channelId = dataOrder?.channel_id;
       // const channelObject = await this.channelService.findOne({ _id: channelId });
 
-      let dataRedirect = ("https://gamifa.vn") + "/r/orders/detail/" + dataOrder?._id?.toString();
+      let dataRedirect = "https://gamifa.vn" + "/r/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
         dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
       }
@@ -786,9 +780,7 @@ export class OrderHelper {
               const dataToPost = {
                 text: `${orderObject?.user_id.display_name} vừa chuyển khoản thành công thanh toán với số tiền:  (${
                   orderObject.price
-                } VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${
-                  "https://gamifa.vn"
-                }/v/order/admin/${
+                } VND). Vui lòng kiểm tra số dư tài khoản và truy cập vào: ${"https://gamifa.vn"}/v/order/admin/${
                   dataUpdate?._id
                 }?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyOTUxNzIsImRhdGEiOnsiX2lkIjoiNjRkNWRlMmZhYTJmZWQxNzU4NDUxMGQyIiwia2V5IjoiYzViOTk1NmMxN2ZmNzRkMTQyMTUyMmUzNmRjNzQ4ZWUiLCJzaWduYXR1cmUiOiI3NDc3YjFjZDQxNzNjYzUxODUyYTUzODNjNWQ0ZmExMSIsInNlc3Npb24iOiI2NGU1NzQ4NDg0OGE3ZDc3YmVkZDQyZmEifSwiaWF0IjoxNjkyNzU5MTcyfQ.2guMNJ3SAjQYSIpbSAHVSh0tghAy_N0b7fmAJTgx9P8 để cập nhật trạng thái đơn hàng.`,
               };
@@ -906,40 +898,40 @@ export class OrderHelper {
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
-//         if (orderObject?.service_id?.service_type == "mobile") {
-//           const getTotalAdmin = await this.channelPermissionService.filter(
-//             { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
-//             {},
-//             1,
-//             100
-//           );
-//           const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
-//             return channelPermissionItem?.user_id?._id?.toString();
-//           });
-//           const totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
-//           const contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
-// 1: Tiếp nhận thông tin 1-2 ngày)\n2: Trao đổi & Thống nhất về App (2-5 ngày)\n3: Xây dựng App (3 - 4 tuần)\n4: Gửi bản Demo (1 tuần)\n5: Publish lên Store\nBạn có thể trao đổi với đội ngũ kĩ thuật tại đây, chúng tôi sẵn sàng thảo luận và hỗ trợ bạn. Ticket của bạn sẽ nhận được thông báo và Email khi có cập nhật mới!`;
-//           //Create Ticket from trans_id
-//           const dataCreateTicket = {
-//             post_language: "vi",
-//             post_content: contentTicket,
-//             post_title: "Đơn đặt hàng ứng dụng Mobile mới",
-//             post_category: process.env.TICKET_MOBILE_CATEGORY || "",
-//             data_id: orderObject?.trans_id?.toString(),
-//             user_id: totalArray,
-//             channel_id: [orderObject?.channel_id?.toString(), process.env.DEFAULT_CHANNEL?.toString()],
-//           };
-//           const dataTicket = await this.ticketService.create(dataCreateTicket);
-//           //Return
-//           //Update Return
+        //         if (orderObject?.service_id?.service_type == "mobile") {
+        //           const getTotalAdmin = await this.channelPermissionService.filter(
+        //             { channel_id: process.env.DEFAULT_CHANNEL, channel_role: "mentor" },
+        //             {},
+        //             1,
+        //             100
+        //           );
+        //           const userArray = getTotalAdmin?.map((channelPermissionItem: ChannelPermission, index: number) => {
+        //             return channelPermissionItem?.user_id?._id?.toString();
+        //           });
+        //           const totalArray = [...[orderObject?.user_id?._id.toString()], ...userArray];
+        //           const contentTicket = `${orderObject.user_id?.display_name} tạo mới một Ticket đặt hàng ứng dụng Mobile mới! Quy trình tạo Ứng dụng gồm các bước sau: \n
+        // 1: Tiếp nhận thông tin 1-2 ngày)\n2: Trao đổi & Thống nhất về App (2-5 ngày)\n3: Xây dựng App (3 - 4 tuần)\n4: Gửi bản Demo (1 tuần)\n5: Publish lên Store\nBạn có thể trao đổi với đội ngũ kĩ thuật tại đây, chúng tôi sẵn sàng thảo luận và hỗ trợ bạn. Ticket của bạn sẽ nhận được thông báo và Email khi có cập nhật mới!`;
+        //           //Create Ticket from trans_id
+        //           const dataCreateTicket = {
+        //             post_language: "vi",
+        //             post_content: contentTicket,
+        //             post_title: "Đơn đặt hàng ứng dụng Mobile mới",
+        //             post_category: process.env.TICKET_MOBILE_CATEGORY || "",
+        //             data_id: orderObject?.trans_id?.toString(),
+        //             user_id: totalArray,
+        //             channel_id: [orderObject?.channel_id?.toString(), process.env.DEFAULT_CHANNEL?.toString()],
+        //           };
+        //           const dataTicket = await this.ticketService.create(dataCreateTicket);
+        //           //Return
+        //           //Update Return
 
-//           const dataUpdate = {
-//             _id: orderObject?._id?.toString(),
-//             redirect_url: "/r/support/" + dataTicket?._id?.toString(),
-//             product_url: "/r/support/" + dataTicket?._id?.toString(),
-//           };
-//           orderObject = await this.orderService.update(dataUpdate);
-//         }
+        //           const dataUpdate = {
+        //             _id: orderObject?._id?.toString(),
+        //             redirect_url: "/r/support/" + dataTicket?._id?.toString(),
+        //             product_url: "/r/support/" + dataTicket?._id?.toString(),
+        //           };
+        //           orderObject = await this.orderService.update(dataUpdate);
+        //         }
 
         // if (orderObject?.service_id?.service_type == "course") {
         //   await this.handleUpdateCourseAfter(orderObject);

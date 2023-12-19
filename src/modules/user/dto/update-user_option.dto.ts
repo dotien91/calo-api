@@ -1,17 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
-import {
-  IsIn,
-  IsOptional,
-  IsDateString,
-  IsString,
-  IsPhoneNumber,
-  IsUrl,
-  IsNumberString,
-  IsJSON,
-  IsDate,
-  IsNumber,
-} from "class-validator";
-import { Transform } from "class-transformer";
+import { IsJSON, IsNumberString, IsOptional, IsString } from "class-validator";
 import { CreateUserOptionDto } from "./create-user_option.dto";
 
 export class UpdateUserOptionDto extends PartialType(CreateUserOptionDto) {

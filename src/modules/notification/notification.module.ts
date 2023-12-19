@@ -19,7 +19,7 @@ import { NotificationService } from "./services/notification.service";
       { name: Notification.name, schema: NotificationSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: UserSession.name, schema: UserSessionSchema },
-      { name: User.name, schema: UserSchema }
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [NotificationController],

@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService as ConfigServiceNest } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
@@ -34,7 +28,7 @@ export class ConfigHelper {
     private userPermissionService: UserPermissionService,
     private subscribeService: SubscribeService,
     private handleServiceService: HandleServiceService,
-    private userService: UserService,
+    private userService: UserService
   ) {}
 
   /**

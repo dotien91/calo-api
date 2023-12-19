@@ -1,9 +1,9 @@
-import { JwtService } from "@nestjs/jwt";
-import { Injectable, Module } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
 import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { UserSessionService } from "../../user/services/user_session.service";
-import { Request } from "express";
 
 @Injectable()
 export class JwtHelperService {

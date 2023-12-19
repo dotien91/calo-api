@@ -62,7 +62,7 @@ import { OrderService } from "./services/order.service";
       { name: User.name, schema: UserSchema },
       { name: Notification.name, schema: NotificationSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
-      { name: UserOption.name, schema: UserOptionSchema }
+      { name: UserOption.name, schema: UserOptionSchema },
     ]),
   ],
   controllers: [OrderController],
@@ -85,8 +85,8 @@ import { OrderService } from "./services/order.service";
     TransactionBankService,
     UserOptionService,
     JwtHelperService,
-    OrderHelper
+    OrderHelper,
   ],
-  exports: [ OrderService],
+  exports: [OrderService],
 })
 export class OrderModule {}

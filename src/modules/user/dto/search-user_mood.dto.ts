@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString, IsOptional, IsNumberString, IsNumber, IsIn } from "class-validator";
+import { IsIn, IsNumberString, IsOptional } from "class-validator";
 
 export class SearchUserMoodDto {
   @IsNumberString()

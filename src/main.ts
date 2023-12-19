@@ -18,9 +18,9 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true, limit: "500mb" }));
   app.use(bodyParser.json({ verify: rawBodyBuffer, limit: "500mb" }));
-  
+
   const configService: ConfigService = app.get(ConfigService);
-  console.log(configService, 'configService')
+  console.log(configService, "configService");
   // Sometime after NestFactory add this to add HTTP Basic Auth
   app.use((req: any, res: any, next: any) => {
     const origin = req.headers.origin;

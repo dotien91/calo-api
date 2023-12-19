@@ -160,7 +160,6 @@ export class User {
   })
   disagree_users: User[];
 
-
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],

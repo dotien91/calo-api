@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Schema as MongooseSchema, ObjectId } from "mongoose";
+import { Document, ObjectId, Schema as MongooseSchema } from "mongoose";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { TransactionBank } from "./transaction_bank.schema";
 

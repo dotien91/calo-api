@@ -1,15 +1,4 @@
-import {
-  IsDate,
-  IsNumberString,
-  IsEmpty,
-  IsIn,
-  IsDefined,
-  ValidateIf,
-  IsOptional,
-  IsString,
-  IsBooleanString,
-} from "class-validator";
-import { Type } from "class-transformer";
+import { IsBooleanString, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListConfigDto {
   @IsNumberString()

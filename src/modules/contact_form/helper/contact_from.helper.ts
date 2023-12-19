@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserOptionService } from "../../../modules/user/services/user_option.service";
@@ -27,7 +21,7 @@ export class ContactFormHelper {
     private contactFormService: ContactFormService,
     private userService: UserService,
     private userOptionService: UserOptionService,
-    private userPermissionService: UserPermissionService,
+    private userPermissionService: UserPermissionService
   ) {}
 
   /**

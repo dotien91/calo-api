@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString, IsOptional, IsJSON, IsNumberString } from "class-validator";
+import { IsJSON, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class UpdateUserInterestDto {
   @IsString()

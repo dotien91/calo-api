@@ -50,8 +50,7 @@ export class NotiConsumer {
 
 @Processor("challenge")
 export class ChallengeConsumer {
-  constructor(
-  ) {}
+  constructor() {}
   private readonly logger = new Logger("task-challenge-consumer");
 
   @OnQueueActive()

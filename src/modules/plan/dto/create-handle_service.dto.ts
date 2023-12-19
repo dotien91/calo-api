@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsDateString, IsString, IsNumberString, IsJSON, IsBooleanString } from "class-validator";
+import { IsBooleanString, IsJSON, IsOptional, IsString } from "class-validator";
 export class CreateHandleServiceDto {
   @IsString()
   @ApiProperty()

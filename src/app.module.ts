@@ -84,7 +84,7 @@ const dataImport = [
 @Module({
   imports: dataImport,
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -43,7 +43,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: User.name, schema: UserSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: Notification.name, schema: NotificationSchema },
-      { name: UserSession.name, schema: UserSessionSchema }
+      { name: UserSession.name, schema: UserSessionSchema },
     ]),
   ],
   controllers: [TransactionController],
@@ -60,7 +60,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     NotificationHelper,
     JwtHelperService,
     NotificationService,
-    UserSessionService
+    UserSessionService,
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })

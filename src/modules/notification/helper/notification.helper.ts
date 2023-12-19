@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Injectable,
-  Logger,
-  NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import axios from "axios";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -37,7 +31,7 @@ export class NotificationHelper {
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
     private userPermissionService: UserPermissionService,
-    private jwtHelper: JwtHelperService,
+    private jwtHelper: JwtHelperService
   ) {}
   private readonly logger = new Logger("notification");
 

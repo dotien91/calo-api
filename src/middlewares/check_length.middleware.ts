@@ -1,6 +1,6 @@
 // file: ../middlewares/check-document-size.middleware.ts
 import { Injectable, NestMiddleware } from "@nestjs/common";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 @Injectable()
 export class CheckDocumentSizeMiddleware implements NestMiddleware {

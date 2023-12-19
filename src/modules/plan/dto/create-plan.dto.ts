@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn } from "class-validator";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 export class CreatePlanDto {
   @IsString()
   @ApiProperty()
