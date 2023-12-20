@@ -51,12 +51,12 @@ export class PermissionGuard implements CanActivate {
   }
 }
 
-export function Permission(...permissions: string[]) {
+export function Permissions(...permissions: string[]) {
   return applyDecorators(SetMetadata("permissions", permissions), UseGuards(PermissionGuard));
 }
 
-export const UserPermission = (controller: string) => ({
-  ROUTE: `${controller}`,
+export const Permission = (controller: string) => ({
+  ALL: `${controller}`,
   LIST: `${controller}/list`,
   CREATE: `${controller}/create`,
   UPDATE: `${controller}/update`,

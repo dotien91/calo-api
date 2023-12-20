@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { Permission, UserPermission } from "../../../decorators/auth.decorator";
+import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
 import { CreatePodcastDto } from "../dto/create-podcast.dto";
@@ -26,7 +26,7 @@ export class PodcastController {
    * @returns
    */
   @Get("/list")
-  @Permission(UserPermission(Controllers.PODCAST).LIST)
+  @Permissions(Permission(Controllers.PODCAST).LIST)
   async getUserPodcast(@Query() query: ListPodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.getListPodcast(query, res, req);
   }
@@ -39,7 +39,7 @@ export class PodcastController {
    * @returns
    */
   @Post("/create")
-  @Permission(UserPermission(Controllers.PODCAST).CREATE)
+  @Permissions(Permission(Controllers.PODCAST).CREATE)
   async createNewPodcast(
     @Body() createPodcastBody: CreatePodcastDto,
     @Res() res: Response,
@@ -56,7 +56,7 @@ export class PodcastController {
    * @returns
    */
   @Patch("/update")
-  @Permission(UserPermission(Controllers.PODCAST).UPDATE)
+  @Permissions(Permission(Controllers.PODCAST).UPDATE)
   async updateByAdmin(@Body() dataUpdate: UpdatePodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleUpdatePodcastByAdmin(dataUpdate, res, req);
   }
@@ -69,7 +69,7 @@ export class PodcastController {
    * @returns
    */
   @Delete("delete/:id")
-  @Permission(UserPermission(Controllers.PODCAST).DELETE)
+  @Permissions(Permission(Controllers.PODCAST).DELETE)
   async deletePodcast(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleDeletePodcast(id, res, req);
   }

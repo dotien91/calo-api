@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
-import { Permission, UserPermission } from "src/decorators/auth.decorator";
-import { Controllers } from "src/modules/index.i";
+import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Controllers } from "../../../modules/index.i";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { ListConfigDto } from "../dto/list-config.dto";
 import { UpdateConfigDto } from "../dto/update-config.dto";
@@ -39,13 +39,13 @@ export class ConfigController {
   }
 
   @Get("/admin-list")
-  @Permission(UserPermission(Controllers.CONFIG).LIST)
+  @Permissions(Permission(Controllers.CONFIG).LIST)
   async getAdminConfig(@Query() query: ListConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.getConfigListByAdmin(query, res, req);
   }
 
   @Post("/create")
-  @Permission(UserPermission(Controllers.CONFIG).CREATE)
+  @Permissions(Permission(Controllers.CONFIG).CREATE)
   async createNewConfig(
     @Body() createConfigBody: CreateConfigDto,
     @Res() res: Response,
@@ -55,13 +55,13 @@ export class ConfigController {
   }
 
   @Post("/admin-update")
-  @Permission(UserPermission(Controllers.CONFIG).UPDATE)
+  @Permissions(Permission(Controllers.CONFIG).UPDATE)
   async updateByAdmin(@Body() dataUpdate: UpdateConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.handleUpdateConfigByAdmin(dataUpdate, res, req);
   }
 
   @Get("detail-config/:id")
-  @Permission(UserPermission(Controllers.CONFIG).LIST)
+  @Permissions(Permission(Controllers.CONFIG).LIST)
   async getDetailConfig(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.handleGetDetailConfig(id, res, req);
   }
