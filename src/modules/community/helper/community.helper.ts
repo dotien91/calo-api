@@ -457,7 +457,7 @@ export class CommunityHelper {
         };
       }
 
-      createCommunityData = { ...createCommunityData, ...{ popular_number: 10, trending_number: 10 } };
+      createCommunityData = { ...createCommunityData, ...{ popular_number: 10, trending_number: 10,  post_status: "publish" } };
 
       let dataCreate: any = await this.communityService.create(createCommunityData);
       let dataReturn = await this.communityService.findById(dataCreate?._id?.toString());
