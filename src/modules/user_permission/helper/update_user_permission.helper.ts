@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserService } from "../../user/services/user.service";
@@ -39,43 +39,30 @@ export class UserPermissionHelper {
     req: ExpressRequestDto
   ) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
-      if (
-        (await this.userPermissionService.isSuperAdmin(userId)) ||
-        (await this.userPermissionService.isHavePermission(userId, "user_permission/create"))
-      ) {
-        //Check Permission
-        const dataToFind = {
-          user_id: id,
-          permission: createUserPermission.permission,
+      const dataToFind = {
+        user_id: id,
+        permission: createUserPermission.permission,
+      };
+      const permissionCheck = await this.userPermissionService.findOne(dataToFind);
+      if (permissionCheck) {
+        const dataUpdate = {
+          ...{
+            _id: permissionCheck._id.toString(),
+          },
+          ...{ user_id: id },
+          ...createUserPermission,
         };
-        const permissionCheck = await this.userPermissionService.findOne(dataToFind);
-        if (permissionCheck) {
-          const dataUpdate = {
-            ...{
-              _id: permissionCheck._id.toString(),
-            },
-            ...{ user_id: id },
-            ...createUserPermission,
-          };
-          const dataCreate = await this.userPermissionService.update(dataUpdate);
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        } else {
-          const dataCreate = await this.userPermissionService.create({ ...{ user_id: id }, ...createUserPermission });
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        }
+        const dataCreate = await this.userPermissionService.update(dataUpdate);
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataCreate);
       } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        const dataCreate = await this.userPermissionService.create({ ...{ user_id: id }, ...createUserPermission });
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataCreate);
       }
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -91,10 +78,6 @@ export class UserPermissionHelper {
    */
   async getAllUserPermission(query: ListUserPermissionDto, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
@@ -106,21 +89,12 @@ export class UserPermissionHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      const userId = userObject._id.toString();
-      if (
-        (await this.userPermissionService.isSuperAdmin(userId)) ||
-        (await this.userPermissionService.isHavePermission(userId, "user_permission/list"))
-      ) {
-        //Check Permission
-        const dataToFilter = {};
-        const dataReturn = await this.userPermissionService.filter(dataToFilter, orderByOBject, page, limit);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataToFilter = {};
+      const dataReturn = await this.userPermissionService.filter(dataToFilter, orderByOBject, page, limit);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -136,37 +110,24 @@ export class UserPermissionHelper {
    */
   async getUserPermission(query: ListUserPermissionDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
+      const dataToFilter = {
+        user_id: id,
+      };
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
-      const userId = userObject._id.toString();
-      if (
-        (await this.userPermissionService.isSuperAdmin(userId)) ||
-        (await this.userPermissionService.isHavePermission(userId, "user_permission/list"))
-      ) {
-        //Check Permission
-        const dataToFilter = {
-          user_id: id,
-        };
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
 
-        const limit = query.limit ? query.limit : 1000;
-        const page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        const dataReturn = await this.userPermissionService.filter(dataToFilter, orderByOBject, page, limit);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
+      const dataReturn = await this.userPermissionService.filter(dataToFilter, orderByOBject, page, limit);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -181,24 +142,11 @@ export class UserPermissionHelper {
    */
   async removePermission(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
-      if (
-        (await this.userPermissionService.isSuperAdmin(userId)) ||
-        (await this.userPermissionService.isHavePermission(userId, "user_permission/delete"))
-      ) {
-        //Check Permission
-        const dataReturn = await this.userPermissionService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataReturn = await this.userPermissionService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

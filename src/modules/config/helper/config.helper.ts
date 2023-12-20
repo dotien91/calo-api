@@ -29,7 +29,7 @@ export class ConfigHelper {
     private subscribeService: SubscribeService,
     private handleServiceService: HandleServiceService,
     private userService: UserService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -71,32 +71,23 @@ export class ConfigHelper {
    */
   async getConfigListByAdmin(query: ListConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
 
-        const limit = query.limit ? query.limit : 1000;
-        const page = query.page ? query.page : 1;
-        const configByOBject = {};
-        const dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        const dataReturn = await this.configService.filter(dataToFilter, configByOBject, page, limit);
-        const dataCount = await this.configService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const configByOBject = {};
+      const dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      const dataReturn = await this.configService.filter(dataToFilter, configByOBject, page, limit);
+      const dataCount = await this.configService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -429,21 +420,12 @@ export class ConfigHelper {
    */
   async handleGetDetailConfig(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.configService.findById(id.toString());
-      if (await this.userPermissionService.isHavePermission(userId, "config/list")) {
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -458,35 +440,25 @@ export class ConfigHelper {
    */
   async handleUpdateConfigByAdmin(dataUpdate: UpdateConfigDto, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
-      //Check Permission
-      if (await this.userPermissionService.isHavePermission(userId, "config/update")) {
-        if (dataUpdate.option_content) {
-          const dataOptionContent = JSON.parse(dataUpdate.option_content);
-          const dataToUpdateOptionContent: any = [];
-          for (const dataItem of dataOptionContent) {
-            if (dataItem?.key) {
-              dataToUpdateOptionContent.push(dataItem);
-            }
+      if (dataUpdate.option_content) {
+        const dataOptionContent = JSON.parse(dataUpdate.option_content);
+        const dataToUpdateOptionContent: any = [];
+        for (const dataItem of dataOptionContent) {
+          if (dataItem?.key) {
+            dataToUpdateOptionContent.push(dataItem);
           }
+        }
 
-          dataUpdate = { ...dataUpdate, ...{ option_content: dataToUpdateOptionContent } };
-        }
-        if (dataUpdate.data_filter) {
-          dataUpdate = { ...dataUpdate, ...{ data_filter: JSON.parse(dataUpdate.data_filter) } };
-        }
-        const dataReturn = await this.configService.update(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        dataUpdate = { ...dataUpdate, ...{ option_content: dataToUpdateOptionContent } };
       }
+      if (dataUpdate.data_filter) {
+        dataUpdate = { ...dataUpdate, ...{ data_filter: JSON.parse(dataUpdate.data_filter) } };
+      }
+      const dataReturn = await this.configService.update(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
