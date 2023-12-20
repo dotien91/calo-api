@@ -14,7 +14,6 @@ export class SearchPostDto {
   from?: string
   is_pin?: string
   comment_number?: string
-  channel_id?: string
   data_json_type?: string
   ref_id?: string
 }

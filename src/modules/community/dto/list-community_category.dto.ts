@@ -27,9 +27,4 @@ export class ListCommunityCategoryDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   public_status: string
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  channel_id: string
 }
