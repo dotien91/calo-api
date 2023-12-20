@@ -71,7 +71,7 @@ export class UserInterest {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   cover: MongooseSchema.Types.ObjectId;
 
