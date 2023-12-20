@@ -256,7 +256,7 @@ export class PodcastHelper {
    * @param req
    * @returns
    */
-  async handleGetDetailPodcast(id: string, query: ListPodcastDto, res: Response, req: ExpressRequestDto) {
+  async handleGetDetailPodcast(id: string, res: Response, req: ExpressRequestDto) {
     try {
       if (!id) {
         throw new ForbiddenException("Id is not invalid");
@@ -277,25 +277,6 @@ export class PodcastHelper {
 
       let dataReturn: any = await this.podcastService.findOne(dataToFilter);
       dataReturn = { ...dataReturn?.toObject() };
-
-      let dataNotification = [];
-
-      if (query?.auth_id) {
-        let dataAuth = await this.userService.findById(query?.auth_id, {});
-        //@ts-ignore
-        if (dataAuth && dataAuth?.notification_podcast) {
-          //@ts-ignore
-          for (let dataItemNotification of dataAuth?.notification_podcast) {
-            dataNotification.push(dataItemNotification?.toString());
-          }
-        }
-      }
-
-      if (dataNotification?.indexOf(dataReturn?._id?.toString()) !== -1) {
-        dataReturn = { ...dataReturn, ...{ is_notification: true } };
-      } else {
-        dataReturn = { ...dataReturn, ...{ is_notification: false } };
-      }
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -377,10 +358,6 @@ export class PodcastHelper {
    */
   async handleUpdateCategory(dataUpdate: UpdatePodcastCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
       let dataReturn = await this.podcastCategoryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -400,11 +377,6 @@ export class PodcastHelper {
    */
   async handleDeletePodcast(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
-      }
-
       let dataReturn = await this.podcastService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -458,21 +430,11 @@ export class PodcastHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new ForbiddenException("User is invalid");
-      }
-      let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "podcast/delete")) {
-        //Check Permission
-        let dataReturn = await this.podcastCategoryService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      let dataReturn = await this.podcastCategoryService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

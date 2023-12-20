@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { PodcastCategory, PodcastCategoryDocument } from "../schemas/podcast-category.schema";
-import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
 import { CreatePodcastCategoryDto } from "../dto/create-podcast_category.dto";
 import { SearchPodcastCategoryDto } from "../dto/search-podcast_category.dto";
 import { SortByPodcastCategoryDto } from "../dto/sort_by-podcast_category.dto";
+import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
+import { PodcastCategory, PodcastCategoryDocument } from "../schemas/podcast-category.schema";
 
 @Injectable()
 export class PodcastCategoryService {
   constructor(
     @InjectModel(PodcastCategory.name)
     private podcastModel: Model<PodcastCategoryDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -70,7 +70,6 @@ export class PodcastCategoryService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
 
     let dataReturn = await this.podcastModel
       .find(condition)
@@ -181,7 +180,7 @@ export class PodcastCategoryService {
         "user_id",
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
-      .populate("category_avatar")
+      // .populate("category_avatar")
       .exec();
   }
 
@@ -224,18 +223,9 @@ export class PodcastCategoryService {
    */
   async update(dataUpdate: UpdatePodcastCategoryDto) {
     try {
-      if (!dataUpdate._id) {
-        return null;
-      }
       let dataReturn = null;
-      if (dataUpdate._id) {
-        dataReturn = await this.podcastModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
-      }
-      if (dataReturn._id) {
-        return { ...dataReturn.toObject(), ...dataUpdate };
-      } else {
-        return dataReturn;
-      }
+      dataReturn = await this.podcastModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false });
+      return { ...dataReturn.toObject(), ...dataUpdate };
     } catch (e) {
       return e;
     }

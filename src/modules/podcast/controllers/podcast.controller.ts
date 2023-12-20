@@ -82,13 +82,8 @@ export class PodcastController {
    * @returns
    */
   @Get("detail/:id")
-  async getDetailPodcast(
-    @Query() query: ListPodcastDto,
-    @Param("id") id: string,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
-    return await this.podcastHelper.handleGetDetailPodcast(id, query, res, req);
+  async getDetailPodcast(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.podcastHelper.handleGetDetailPodcast(id, res, req);
   }
   /**
    * ######## FOR CATEGORY ######
@@ -158,6 +153,7 @@ export class PodcastController {
    * @returns
    */
   @Delete("delete-category/:id")
+  @Permissions(Permission(Controllers.PODCAST).DELETE)
   async deleteCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleDeleteCategory(id, res, req);
   }

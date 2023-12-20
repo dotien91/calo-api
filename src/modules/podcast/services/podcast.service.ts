@@ -275,9 +275,6 @@ export class PodcastService {
    */
   async update(dataUpdate: UpdatePodcastDto) {
     try {
-      if (!dataUpdate._id) {
-        return null;
-      }
       let dataReturn = null;
 
       if (dataUpdate._id) {
