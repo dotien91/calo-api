@@ -126,14 +126,14 @@ export class HandleService {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   avatar: String;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
-    ref: "ChatMedia",
+    ref: "Media",
   })
   public_album: String[];
 

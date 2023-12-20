@@ -25,6 +25,8 @@ import { UserModule } from "./modules/user/user.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { PodcastModule } from "./modules/podcast/podcast.module";
+import { MediaModule } from "./modules/media/media.module";
+import { ShortModule } from "./modules/short/short.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
 const dataImport = [
@@ -57,8 +59,10 @@ const dataImport = [
   ContactFormModule,
   ScheduleModule.forRoot(),
   HookModule,
+  MediaModule,
   QueueModule,
   PodcastModule,
+  ShortModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

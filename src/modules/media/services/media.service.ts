@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { CreateChatMediaDto } from "../dto/create-chat_media.dto";
-import { FilterChatMediaDto } from "../dto/filter-chat_media.dto";
-import { SortByChatMediaDto } from "../dto/sort_by-chat_media.dto";
-import { ChatMedia, ChatMediaDocument } from "../schemas/chat_media.schema";
+import { CreateMediaDto } from "../dto/create-media.dto";
+import { FilterMediaDto } from "../dto/filter-media.dto";
+import { SortByMediaDto } from "../dto/sort_by-media.dto";
+import { Media, MediaDocument } from "../schemas/media.schema";
 
 @Injectable()
-export class ChatMediaService {
+export class MediaService {
   constructor(
-    @InjectModel(ChatMedia.name)
-    private chatMediaService: Model<ChatMediaDocument>
+    @InjectModel(Media.name)
+    private mediaService: Model<MediaDocument>
   ) { }
 
   /**
@@ -18,7 +18,7 @@ export class ChatMediaService {
    * @param filter
    * @returns
    */
-  async getCondition(filter: FilterChatMediaDto) {
+  async getCondition(filter: FilterMediaDto) {
     let condition: any = {};
     if (filter.user_id) {
       condition = Object.assign(condition, { user_id: filter.user_id });
@@ -67,7 +67,7 @@ export class ChatMediaService {
    * @param sortBy
    * @returns
    */
-  getSort(sortBy: SortByChatMediaDto) {
+  getSort(sortBy: SortByMediaDto) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -85,8 +85,8 @@ export class ChatMediaService {
    * @param createChatRoom
    * @returns
    */
-  async create(createChatRoom: CreateChatMediaDto): Promise<ChatMediaDocument> {
-    const createChatRoomData = new this.chatMediaService(createChatRoom);
+  async create(createChatRoom: CreateMediaDto): Promise<MediaDocument> {
+    const createChatRoomData = new this.mediaService(createChatRoom);
     return await createChatRoomData.save();
   }
 
@@ -94,8 +94,8 @@ export class ChatMediaService {
    *
    * @returns
    */
-  async findAll(dataToSearch?: any): Promise<ChatMediaDocument[]> {
-    return await this.chatMediaService.find(dataToSearch).exec();
+  async findAll(dataToSearch?: any): Promise<MediaDocument[]> {
+    return await this.mediaService.find(dataToSearch).exec();
   }
 
   /**
@@ -103,7 +103,7 @@ export class ChatMediaService {
    * @param dataToSearch
    * @returns
    */
-  async findById(id: string): Promise<ChatMedia> {
+  async findById(id: string): Promise<Media> {
     if (!id) {
       return null;
     }
@@ -111,7 +111,7 @@ export class ChatMediaService {
     if (!objectId) {
       return null;
     }
-    return await this.chatMediaService.findById(objectId).exec();
+    return await this.mediaService.findById(objectId).exec();
   }
 
   /**
@@ -119,8 +119,8 @@ export class ChatMediaService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any): Promise<ChatMedia> {
-    return await this.chatMediaService.findOne(dataToSearch).sort({ _id: -1 }).exec();
+  async findOne(dataToSearch: any): Promise<Media> {
+    return await this.mediaService.findOne(dataToSearch).sort({ _id: -1 }).exec();
   }
 
   /**
@@ -132,8 +132,8 @@ export class ChatMediaService {
    * @returns
    */
   async filter(
-    filter: FilterChatMediaDto,
-    sortBy: SortByChatMediaDto,
+    filter: FilterMediaDto,
+    sortBy: SortByMediaDto,
     page: number,
     limit: number,
     projection: object = {}
@@ -145,7 +145,7 @@ export class ChatMediaService {
     }
 
     if (!filter.is_history) {
-      const dataRoom = await this.chatMediaService
+      const dataRoom = await this.mediaService
         .find(condition, projection)
         .populate({
           path: "createBy",
@@ -159,7 +159,7 @@ export class ChatMediaService {
         .exec();
       return dataRoom;
     } else {
-      const dataRoom = await this.chatMediaService
+      const dataRoom = await this.mediaService
         .find(condition, projection)
         .sort(sortObject)
         .skip(limit * (page - 1))
@@ -174,8 +174,8 @@ export class ChatMediaService {
    * @param dataToSearch
    * @returns
    */
-  async findOneRoom(dataToSearch: FilterChatMediaDto): Promise<ChatMediaDocument> {
-    return (await this.chatMediaService.findOne(dataToSearch).exec()).toObject();
+  async findOneRoom(dataToSearch: FilterMediaDto): Promise<MediaDocument> {
+    return (await this.mediaService.findOne(dataToSearch).exec()).toObject();
   }
 
   /**
@@ -183,13 +183,13 @@ export class ChatMediaService {
    * @param filter
    * @returns
    */
-  public count = async (filter: FilterChatMediaDto) => {
+  public count = async (filter: FilterMediaDto) => {
     try {
       const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.chatMediaService.estimatedDocumentCount();
+        return this.mediaService.estimatedDocumentCount();
       } else {
-        return this.chatMediaService.countDocuments(condition);
+        return this.mediaService.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -198,7 +198,7 @@ export class ChatMediaService {
 
   async update(dataUpdate: any) {
     try {
-      return this.chatMediaService.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
+      return this.mediaService.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
     } catch (e) {
       return null;
     }
