@@ -67,7 +67,7 @@ export class PodcastCategory {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   category_avatar: MongooseSchema.Types.ObjectId;
 

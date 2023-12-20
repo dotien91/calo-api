@@ -80,14 +80,14 @@ export class Podcast {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   post_avatar: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
-    ref: "ChatMedia",
+    ref: "Media",
   })
   attach_files: MongooseSchema.Types.ObjectId[];
 
