@@ -24,11 +24,6 @@ export class ListCommunityDto {
   order_type: any
 
   @IsString()
-  @ApiPropertyOptional()
-  @IsOptional(null)
-  channel_id: any
-
-  @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
   post_type: string;

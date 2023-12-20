@@ -7,6 +7,5 @@ export class SearchCommunityCategoryDto {
   page?: any
   version?: string
   public_status?: string
-  channel_id?: string
   user_id?: string
 }

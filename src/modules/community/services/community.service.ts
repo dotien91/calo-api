@@ -46,10 +46,6 @@ export class CommunityService {
       condition = { ...condition, ...{ post_status: filter.post_status } };
     }
 
-    if (filter.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
-    }
-
     if (filter.ref_id) {
       condition = Object.assign(condition, { ref_id: filter.ref_id });
     }
@@ -414,27 +410,27 @@ export class CommunityService {
     console.log('Make sure you work once community %s', Math.random())
     HookExpress.add_action('community.delete-community-by-channel-permission', async (data: any) => {
       try {
-        await this.deleteMultipleCommunityByChannelPermission(data);
+        // await this.deleteMultipleCommunityByChannelPermission(data);
       } catch (error) {
         this.logger.log(error.message)
       }
     })
   }
 
-  /**
-     * @author SonLH
-     * @param channel_permission
-     * @returns
-     */
-  async deleteMultipleCommunityByChannelPermission(channel_permission: any) {
-    try {
-      await this.communityModel.deleteMany({
-        channel_id: channel_permission?.channel_id,
-        user_id: channel_permission?.user_id
-      })
-    } catch (e) {
-      return null;
-    }
-  }
+  // /**
+  //    * @author SonLH
+  //    * @param channel_permission
+  //    * @returns
+  //    */
+  // async deleteMultipleCommunityByChannelPermission(channel_permission: any) {
+  //   try {
+  //     await this.communityModel.deleteMany({
+  //       channel_id: channel_permission?.channel_id,
+  //       user_id: channel_permission?.user_id
+  //     })
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 
 }

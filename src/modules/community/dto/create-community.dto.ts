@@ -11,10 +11,6 @@ export class CreateCommunityDto {
 
   @IsString()
   @ApiProperty()
-  channel_id?: string;
-
-  @IsString()
-  @ApiProperty()
   post_title?: string;
 
   @IsString()

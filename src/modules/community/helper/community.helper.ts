@@ -532,7 +532,6 @@ export class CommunityHelper {
         let dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
-          channel_id: req?.channel_id,
           title: notificationTitle?.toString(),
           content: notificationContent,
           param: JSON.stringify(dataToSendNotification),

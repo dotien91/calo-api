@@ -8,10 +8,6 @@ export class CreateCommunityCategoryDto {
   category_language?: string | String;
 
   @IsString()
-  @ApiProperty()
-  channel_id?: string;
-
-  @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
   category_content?: string | String;
