@@ -57,8 +57,8 @@ export function Permission(...permissions: string[]) {
 
 export const UserPermission = (controller: string) => ({
   ROUTE: `${controller}`,
-  ROUTE_VIEW: `${controller}_view`,
-  ROUTE_CREATE: `${controller}_create`,
-  ROUTE_UPDATE: `${controller}_update`,
-  ROUTE_DELETE: `${controller}_delete`,
+  LIST: `${controller}/list`,
+  CREATE: `${controller}/create`,
+  UPDATE: `${controller}/update`,
+  DELETE: `${controller}/delete`,
 });
