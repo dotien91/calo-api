@@ -1,19 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCourseDto } from "../dto/create-course.dto";
-import { CourseDocument, Course } from "../schemas/course.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateCourseDto } from "../dto/update-course.dto";
+import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto } from "../dto/search-course.dto";
 import { SortByCourseDto } from "../dto/sort_by-course.dto";
-import { SearchAdminFilterDto } from "src/modules/user/dto/search-admin_filter.dto";
+import { UpdateCourseDto } from "../dto/update-course.dto";
+import { Course, CourseDocument } from "../schemas/course.schema";
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name)
     private courseModel: Model<CourseDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu

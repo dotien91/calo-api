@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { Permission, Permissions } from "src/decorators/auth.decorator";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
-import { Controllers } from "src/modules/index.i";
+import { Permission, Permissions } from "../../../decorators/auth.decorator";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Controllers } from "../../../modules/index.i";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseLikeDto } from "../dto/create-course_like.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";

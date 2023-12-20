@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Media } from "src/modules/media/schemas/media.schema";
-import { HandleService } from "src/modules/plan/schemas/handle_service.schema";
-import { Plan } from "src/modules/plan/schemas/plan.schema";
-import { User } from "src/modules/user/schemas/user.schema";
+import { Media } from "../../../modules/media/schemas/media.schema";
+import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
+import { Plan } from "../../../modules/plan/schemas/plan.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 
 export type CourseDocument = Course & Document;
 

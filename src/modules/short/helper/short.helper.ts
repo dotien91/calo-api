@@ -1,22 +1,13 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  Param,
-  Req,
-  Res,
-} from "@nestjs/common";
-import { Request, Response } from "express";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { Response } from "express";
 import * as _ from "lodash";
 import { Types } from "mongoose";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
-import { MediaService } from "src/modules/media/services/media.service";
-import { User } from "src/modules/user/schemas/user.schema";
-import { UserService } from "src/modules/user/services/user.service";
-import { UserSessionService } from "src/modules/user/services/user_session.service";
-import { UserPermissionService } from "src/modules/user_permission/services/user_permission.service";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { MediaService } from "../../../modules/media/services/media.service";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserSessionService } from "../../../modules/user/services/user_session.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateShortDto } from "../dto/create-short.dto";
 import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { CreateShortViewDto } from "../dto/create-short_view.dto";
@@ -40,7 +31,7 @@ export class ShortHelper {
     private shortViewService: ShortViewService,
     private userService: UserService,
     private userSessionService: UserSessionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -346,15 +337,17 @@ export class ShortHelper {
             video_ids: videoIds,
             user_id: userId,
           };
-          let dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, { video_id: true });
-         
+          let dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, {
+            video_id: true,
+          });
+
           if (dataVideoLike) {
             for (let videoLikeItem of dataVideoLike) {
               dataVideoLikeIds.push(videoLikeItem?.video_id?.toString());
             }
           }
         }
-        
+
         for (let shortItem of dataReturn) {
           if (dataVideoLikeIds.indexOf(shortItem._id.toString()) !== -1) {
             dataReturnFinal.push({ ...shortItem.toObject(), ...{ is_like: true, is_view: false } });

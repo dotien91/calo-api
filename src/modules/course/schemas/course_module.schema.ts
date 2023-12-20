@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Media } from "src/modules/media/schemas/media.schema";
+import { Media } from "../../../modules/media/schemas/media.schema";
 import { User } from "../../user/schemas/user.schema";
 import { Course } from "./course.schema";
 
