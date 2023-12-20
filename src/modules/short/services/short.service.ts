@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateShortDto } from "../dto/create-short.dto";
-import { ShortDocument, Short } from "../schemas/short.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateShortDto } from "../dto/update-short.dto";
+import { SearchAdminFilterDto } from "src/modules/user/dto/search-admin_filter.dto";
+import { CreateShortDto } from "../dto/create-short.dto";
 import { SearchShortDto } from "../dto/search-short.dto";
 import { SortByShortDto } from "../dto/sort_by-short.dto";
-import { SearchAdminFilterDto } from "src/modules/user/dto/search-admin_filter.dto";
+import { UpdateShortDto } from "../dto/update-short.dto";
+import { Short, ShortDocument } from "../schemas/short.schema";
 
 @Injectable()
 export class ShortService {
@@ -33,8 +33,8 @@ export class ShortService {
       condition = Object.assign(condition, { short_status: filter.short_status });
     }
 
-    if (filter.post_category) {
-      condition = Object.assign(condition, { post_category: filter.post_category });
+    if (filter.short_category) {
+      condition = Object.assign(condition, { short_category: filter.short_category });
     }
 
     if (filter.ref_id) {

@@ -1,4 +1,4 @@
-import { IsOptional, IsDateString, IsString, IsNumberString, IsIn, IsObject, IsNumber} from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsNumberString, IsObject, IsOptional, IsString } from 'class-validator';
 export class CreateShortDto {
   @IsString()
   media_id: string
@@ -20,5 +20,5 @@ export class CreateShortDto {
 
   @IsString()
   @IsOptional(null)
-  post_category: string
+  short_category: string
 }

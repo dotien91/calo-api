@@ -316,22 +316,11 @@ export class ShortHelper {
    */
   async getShortList(query: ListShortDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-
-      let sessionObject = null;
-      if (req) {
-        sessionObject = req?.session_data;
-      }
-
-      let userId = userObject._id.toString();
+      let userId = req?.user_id;
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
-
       let limit = query.limit ? query.limit : 1000;
       let page = query.page ? query.page : 1;
       let orderByOBject = {};
@@ -351,28 +340,21 @@ export class ShortHelper {
         for (let shortItem of dataReturn) {
           videoIds.push(shortItem?._id?.toString());
         }
-        let dataFilterLike = {
-          video_ids: videoIds,
-          user_id: userId,
-        };
-
-        if (process.env.BRANCH_NAME === "tik_kid" && query?.is_exclude !== "false") {
-          let sessionArray = [];
-          if (sessionObject && sessionObject?.length) {
-            for (let itemSession of sessionObject) {
-              sessionArray.push(itemSession?.toString());
-            }
-            dataFilterLike = { ...dataFilterLike, ...{ unset: sessionArray } };
-          }
-        }
-        let dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, { video_id: true });
         let dataVideoLikeIds = [];
-        if (dataVideoLike) {
-          for (let videoLikeItem of dataVideoLike) {
-            dataVideoLikeIds.push(videoLikeItem?.video_id?.toString());
+        if (userId) {
+          let dataFilterLike = {
+            video_ids: videoIds,
+            user_id: userId,
+          };
+          let dataVideoLike = await this.shortLikeService.filter(dataFilterLike, {}, 1, query.limit, { video_id: true });
+         
+          if (dataVideoLike) {
+            for (let videoLikeItem of dataVideoLike) {
+              dataVideoLikeIds.push(videoLikeItem?.video_id?.toString());
+            }
           }
         }
-
+        
         for (let shortItem of dataReturn) {
           if (dataVideoLikeIds.indexOf(shortItem._id.toString()) !== -1) {
             dataReturnFinal.push({ ...shortItem.toObject(), ...{ is_like: true, is_view: false } });

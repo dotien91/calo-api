@@ -81,51 +81,11 @@ export class Media {
   media_file_name: string;
 
   @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: "ChatHistory",
-    default: null,
-  })
-  chat_history_id: MongooseSchema.Types.ObjectId;
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: "ChatRoom",
-    default: null,
-  })
-  chat_room_id: MongooseSchema.Types.ObjectId;
-
-  @Prop({
     type: Number,
     unsigned: true,
     default: 0,
   })
   media_status: number;
-
-  @Prop({
-    type: String,
-    default: "",
-  })
-  gender: string;
-
-  @Prop({
-    type: String,
-    default: "",
-    index: true,
-  })
-  function_type: string;
-
-  @Prop({
-    type: Number,
-    unsigned: true,
-    default: 0,
-  })
-  sexual_content: number;
-
-  @Prop({
-    type: String,
-    default: "",
-  })
-  data_ai: string;
 
   @Prop({
     type: [MediaMetaSchema],

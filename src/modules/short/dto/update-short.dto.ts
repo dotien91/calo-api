@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsIn, IsNumberString} from 'class-validator';
+import { IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class UpdateShortDto {
   @IsString()
@@ -18,5 +18,5 @@ export class UpdateShortDto {
 
   @IsString()
   @IsOptional(null)
-  post_category: string
+  short_category: string
 }

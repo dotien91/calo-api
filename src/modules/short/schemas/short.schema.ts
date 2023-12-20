@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { Plan } from "src/modules/plan/schemas/plan.schema";
-import { PostCategory } from "src/modules/short/schemas/post_category.schema";
+import { ShortCategory } from "src/modules/short/schemas/short_category.schema";
 import { User } from "src/modules/user/schemas/user.schema";
 
 export type ShortDocument = Short & Document;
@@ -48,9 +48,9 @@ export class Short {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "PostCategory",
+    ref: "ShortCategory",
   })
-  post_category: PostCategory;
+  short_category: ShortCategory;
 
   @Prop({
     type: String,

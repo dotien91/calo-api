@@ -5,13 +5,13 @@ import { CreateCategoryDto } from "../dto/create-category.dto";
 import { SearchCategoryDto } from "../dto/search-category.dto";
 import { SortByCategoryDto } from "../dto/sort_by-category.dto";
 import { UpdateCategoryDto } from "../dto/update-category.dto";
-import { PostCategory, PostCategoryDocument } from "../schemas/post_category.schema";
+import { ShortCategory, ShortCategoryDocument } from "../schemas/short_category.schema";
 
 @Injectable()
-export class PostCategoryService {
+export class ShortCategoryService {
   constructor(
-    @InjectModel(PostCategory.name)
-    private postCategoryModel: Model<PostCategoryDocument>
+    @InjectModel(ShortCategory.name)
+    private shortCategoryModel: Model<ShortCategoryDocument>
   ) {}
 
   /**
@@ -80,7 +80,7 @@ export class PostCategoryService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.postCategoryModel
+    let dataReturn = await this.shortCategoryModel
       .find(condition)
       .populate(
         "user_id",
@@ -109,7 +109,7 @@ export class PostCategoryService {
       sortObject = this.getSort(sortBy);
     }
     let projection = {};
-    let dataReturn = await this.postCategoryModel
+    let dataReturn = await this.shortCategoryModel
       .find(condition, projection)
       .populate("user_id")
       .populate("plan_id")
@@ -129,9 +129,9 @@ export class PostCategoryService {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.postCategoryModel.estimatedDocumentCount();
+        return this.shortCategoryModel.estimatedDocumentCount();
       } else {
-        return this.postCategoryModel.countDocuments(condition);
+        return this.shortCategoryModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -144,7 +144,7 @@ export class PostCategoryService {
    * @returns
    */
   async create(createUser: CreateCategoryDto) {
-    const createdPost = new this.postCategoryModel(createUser);
+    const createdPost = new this.shortCategoryModel(createUser);
     let dataCreate = await createdPost.save();
     return dataCreate;
   }
@@ -169,8 +169,8 @@ export class PostCategoryService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<PostCategory[]> {
-    return this.postCategoryModel.find().exec();
+  async findAll(): Promise<ShortCategory[]> {
+    return this.shortCategoryModel.find().exec();
   }
 
   /**
@@ -178,8 +178,8 @@ export class PostCategoryService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any): Promise<PostCategory> {
-    return await this.postCategoryModel
+  async findOne(dataToSearch: any): Promise<ShortCategory> {
+    return await this.shortCategoryModel
       .findOne(dataToSearch)
       .sort({ _id: -1 })
       .populate(
@@ -195,7 +195,7 @@ export class PostCategoryService {
    * @param dataToSearch
    * @returns
    */
-  async findById(id: string): Promise<PostCategory> {
+  async findById(id: string): Promise<ShortCategory> {
     if (!id) {
       return null;
     }
@@ -203,7 +203,7 @@ export class PostCategoryService {
     if (!objectId) {
       return null;
     }
-    return await this.postCategoryModel
+    return await this.shortCategoryModel
       .findById(objectId)
       .populate(
         "user_id",
@@ -219,7 +219,7 @@ export class PostCategoryService {
    * @returns
    */
   async remove(id: string) {
-    return await this.postCategoryModel.findByIdAndDelete(id).exec();
+    return await this.shortCategoryModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -232,7 +232,7 @@ export class PostCategoryService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.postCategoryModel.findByIdAndUpdate(
+      let dataReturn = await this.shortCategoryModel.findByIdAndUpdate(
         dataUpdate._id,
         { $set: dataUpdate },
         { new: false }
@@ -254,7 +254,7 @@ export class PostCategoryService {
    */
   async updateCount(dataFilter: any, dataUpdate: any) {
     try {
-      return this.postCategoryModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate });
+      return this.shortCategoryModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate });
     } catch (e) {
       return null;
     }

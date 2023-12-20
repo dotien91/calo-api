@@ -6,5 +6,5 @@ export class SearchShortDto {
   country?: string
   ids?: string
   ref_id?: string
-  post_category?: string
+  short_category?: string
 }

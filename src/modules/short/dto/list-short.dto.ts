@@ -1,5 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
+import { IsDate, IsDefined, IsEmpty, IsIn, IsNumberString, IsOptional, IsString, ValidateIf } from "class-validator";
 
 export class ListShortDto {
   @IsNumberString()
@@ -56,5 +56,5 @@ export class ListShortDto {
 
   @IsString()
   @IsOptional(null)
-  post_category: string
+  short_category: string
 }

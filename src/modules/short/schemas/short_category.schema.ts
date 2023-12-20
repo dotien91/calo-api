@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { User } from "src/modules/user/schemas/user.schema";
 
-export type PostCategoryDocument = PostCategory & Document;
+export type ShortCategoryDocument = ShortCategory & Document;
 
 @Schema({
   timestamps: {
@@ -11,7 +11,7 @@ export type PostCategoryDocument = PostCategory & Document;
     updatedAt: "updatedAt",
   },
 })
-export class PostCategory {
+export class ShortCategory {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     auto: true,
@@ -117,7 +117,7 @@ export class PostCategory {
   seo_keyword: String
 }
 
-export const PostCategorySchema = SchemaFactory.createForClass(PostCategory).index({
+export const ShortCategorySchema = SchemaFactory.createForClass(ShortCategory).index({
   category_title: "text",
   category_content: "text",
 });
