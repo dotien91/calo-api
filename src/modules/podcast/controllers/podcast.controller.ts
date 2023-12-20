@@ -26,6 +26,7 @@ export class PodcastController {
    * @returns
    */
   @Get("/list")
+  @Permission(UserPermission(Controllers.PODCAST).LIST)
   async getUserPodcast(@Query() query: ListPodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.getListPodcast(query, res, req);
   }
