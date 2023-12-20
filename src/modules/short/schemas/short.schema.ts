@@ -34,14 +34,14 @@ export class Short {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   media_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    ref: "ChatMedia",
+    ref: "Media",
   })
   ref_id: MongooseSchema.Types.ObjectId;
 
@@ -90,14 +90,14 @@ export class Short {
   @Prop({
     type:  MongooseSchema.Types.Array,
     default: [],
-    ref: "ChatMedia",
+    ref: "Media",
   })
   music_id: MongooseSchema.Types.ObjectId[];
 
   @Prop({
     type:  MongooseSchema.Types.Array,
     default: [],
-    ref: "ChatMedia",
+    ref: "Media",
   })
   hashtag_id: MongooseSchema.Types.ObjectId[];
 }

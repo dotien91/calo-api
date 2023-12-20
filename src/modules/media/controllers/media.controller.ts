@@ -17,22 +17,22 @@ import {
 } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { CreateChatMediaPresignDto } from "../dto/create-chat_media_presign.dto";
-import { GetChatMediaRoomDto } from "../dto/get-chat_media_room.dto";
-import { UpdateChatMediaDto } from "../dto/update-chat_media.dto";
-import { ChatMediaService } from "../services/chat_media.service";
+import { UserPermissionService } from "../../user_permission/services/user_permission.service";
+import { CreateMediaPresignDto } from "../dto/create-media_presign.dto";
+import { GetMediaRoomDto } from "../dto/get-media_room.dto";
+import { UpdateMediaDto } from "../dto/update-media.dto";
+import { MediaService } from "../services/media.service";
 
-@Controller("chat-media")
-export class ChatMediaController {
+@Controller("media")
+export class MediaController {
   constructor(
-    private readonly chatMediaService: ChatMediaService,
+    private readonly mediaService: MediaService,
     private readonly userPermissionService: UserPermissionService
   ) {}
 
-  private readonly logger = new Logger("chat_media_controller");
+  private readonly logger = new Logger("media_controller");
   @Post("/create")
-  async create(@Body() createChatMediaDto: CreateChatMediaPresignDto, @Req() req) {
+  async create(@Body() createMediaDto: CreateMediaPresignDto, @Req() req) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -40,15 +40,15 @@ export class ChatMediaController {
       }
 
       const mediaTypeAllowed = ["video", "image", "file", "audio", "link", "account", "gif"];
-      if (mediaTypeAllowed.indexOf(createChatMediaDto.media_type) === -1) {
+      if (mediaTypeAllowed.indexOf(createMediaDto.media_type) === -1) {
         throw new NotAcceptableException("Data input not valid!");
       }
 
-      const fileNameObject = createChatMediaDto?.media_file_name.split(".");
+      const fileNameObject = createMediaDto?.media_file_name.split(".");
       let fileExtensions = fileNameObject.pop();
       let fileNameOriginal = fileNameObject.join(".");
 
-      const fileType = createChatMediaDto.media_mime_type;
+      const fileType = createMediaDto.media_mime_type;
 
       if (fileType === "video/mp4") {
         fileNameOriginal = fileNameOriginal + fileExtensions;
@@ -56,41 +56,41 @@ export class ChatMediaController {
       }
       let mediaMeta = [];
       try {
-        if (createChatMediaDto.media_meta) {
-          mediaMeta = JSON.parse(createChatMediaDto.media_meta);
+        if (createMediaDto.media_meta) {
+          mediaMeta = JSON.parse(createMediaDto.media_meta);
         }
       } catch (error) {
         mediaMeta = [];
       }
 
       let dataToCreate = {
-        media_url: createChatMediaDto.media_url,
+        media_url: createMediaDto.media_url,
         createBy: userObject._id.toString(),
-        media_type: createChatMediaDto.media_type,
-        media_square: createChatMediaDto?.media_square,
-        media_mime_type: createChatMediaDto.media_mime_type,
-        media_file_name: createChatMediaDto.media_file_name,
-        media_thumbnail: createChatMediaDto.media_thumbnail,
+        media_type: createMediaDto.media_type,
+        media_square: createMediaDto?.media_square,
+        media_mime_type: createMediaDto.media_mime_type,
+        media_file_name: createMediaDto.media_file_name,
+        media_thumbnail: createMediaDto.media_thumbnail,
         media_meta: mediaMeta,
-        media_content: createChatMediaDto?.media_content,
-        chat_room_id: createChatMediaDto.chat_room_id ? createChatMediaDto.chat_room_id : null,
-        chat_history_id: createChatMediaDto.chat_history_id ? createChatMediaDto.chat_history_id : null,
+        media_content: createMediaDto?.media_content,
+        chat_room_id: createMediaDto.chat_room_id ? createMediaDto.chat_room_id : null,
+        chat_history_id: createMediaDto.chat_history_id ? createMediaDto.chat_history_id : null,
         media_status: 0,
       };
-      if (createChatMediaDto.media_type === "account") {
+      if (createMediaDto.media_type === "account") {
         //Check
         const dataFilter = {
-          media_file_name: createChatMediaDto.media_file_name,
+          media_file_name: createMediaDto.media_file_name,
         };
-        const dataMedia = await this.chatMediaService.findOne(dataFilter);
+        const dataMedia = await this.mediaService.findOne(dataFilter);
         if (dataMedia) {
           dataToCreate = { ...dataToCreate, ...{ _id: dataMedia?._id } };
-          return await this.chatMediaService.update(dataToCreate);
+          return await this.mediaService.update(dataToCreate);
         } else {
-          return await this.chatMediaService.create(dataToCreate);
+          return await this.mediaService.create(dataToCreate);
         }
       }
-      return await this.chatMediaService.create(dataToCreate);
+      return await this.mediaService.create(dataToCreate);
     } catch (error) {
       this.logger.log("create Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
@@ -98,13 +98,13 @@ export class ChatMediaController {
   }
 
   @Patch("/update")
-  async updateMedia(@Body() createChatMediaDto: UpdateChatMediaDto, @Req() req) {
+  async updateMedia(@Body() createMediaDto: UpdateMediaDto, @Req() req) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      return await this.chatMediaService.update(createChatMediaDto);
+      return await this.mediaService.update(createMediaDto);
     } catch (error) {
       this.logger.log("create Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
@@ -114,7 +114,7 @@ export class ChatMediaController {
   @Get("/room/:id")
   async findAll(
     @Req() req: ExpressRequestDto,
-    @Query() query: GetChatMediaRoomDto,
+    @Query() query: GetMediaRoomDto,
     @Res() res: Response,
     @Param("id") id: string
   ) {
@@ -149,8 +149,8 @@ export class ChatMediaController {
         createdAt: orderBy,
       };
 
-      const dataMedia = await this.chatMediaService.filter(dataFilter, dataOrder, page, limit);
-      const countMedia = await this.chatMediaService.count(dataFilter);
+      const dataMedia = await this.mediaService.filter(dataFilter, dataOrder, page, limit);
+      const countMedia = await this.mediaService.count(dataFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countMedia })
         .status(HttpStatus.OK)
@@ -164,7 +164,7 @@ export class ChatMediaController {
   @Get("/list/admin")
   async findAllByAdmin(
     @Req() req: ExpressRequestDto,
-    @Query() query: GetChatMediaRoomDto,
+    @Query() query: GetMediaRoomDto,
     @Res() res: Response,
     @Param("id") id: string
   ) {
@@ -174,7 +174,7 @@ export class ChatMediaController {
         throw new ForbiddenException("User is invalid");
       }
 
-      if (await this.userPermissionService.isHavePermission(userObject._id.toString(), "chat_media/list")) {
+      if (await this.userPermissionService.isHavePermission(userObject._id.toString(), "media/list")) {
         const page = Number(query?.page) || 1;
         const limit = query?.limit || 150;
 
@@ -188,7 +188,7 @@ export class ChatMediaController {
         const dataOrder = {
           createdAt: orderBy,
         };
-        const dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
+        const dataMedia = await this.mediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
         res.status(HttpStatus.OK).json(dataMedia);
       } else {
         throw new ForbiddenException("Not have permission !");
@@ -200,7 +200,7 @@ export class ChatMediaController {
   }
 
   @Get("/list/user")
-  async findByUserId(@Req() req: ExpressRequestDto, @Query() query: GetChatMediaRoomDto, @Res() res: Response) {
+  async findByUserId(@Req() req: ExpressRequestDto, @Query() query: GetMediaRoomDto, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -226,7 +226,7 @@ export class ChatMediaController {
           createBy: userObject?._id?.toString(),
         },
       };
-      const dataMedia = await this.chatMediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
+      const dataMedia = await this.mediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
       res.status(HttpStatus.OK).json(dataMedia);
     } catch (error) {
       this.logger.log("findAll Error: " + JSON.stringify(error));
@@ -238,7 +238,7 @@ export class ChatMediaController {
   async handleGetDetailMedia(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     try {
       //Check Permission
-      const dataReturn = await this.chatMediaService.findById(id);
+      const dataReturn = await this.mediaService.findById(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

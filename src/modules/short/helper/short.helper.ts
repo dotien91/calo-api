@@ -12,7 +12,7 @@ import { Request, Response } from "express";
 import * as _ from "lodash";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "src/dto/express-request.dto";
-import { ChatMediaService } from "src/modules/media/services/chat_media.service";
+import { MediaService } from "src/modules/media/services/media.service";
 import { User } from "src/modules/user/schemas/user.schema";
 import { UserService } from "src/modules/user/services/user.service";
 import { UserSessionService } from "src/modules/user/services/user_session.service";
@@ -35,7 +35,7 @@ export class ShortHelper {
   constructor(
     private shortService: ShortService,
     private userPermissionService: UserPermissionService,
-    private mediaService: ChatMediaService,
+    private mediaService: MediaService,
     private shortLikeService: ShortLikeService,
     private shortViewService: ShortViewService,
     private userService: UserService,

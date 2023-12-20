@@ -1,4 +1,4 @@
-export class FilterChatMediaDto {
+export class FilterMediaDto {
   ids?: string[];
   user_id?: string;
   chat_room_id?: string;

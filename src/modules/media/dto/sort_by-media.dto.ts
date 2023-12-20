@@ -1,4 +1,4 @@
-export class SortByChatMediaDto {
+export class SortByMediaDto {
   createdAt?: "DESC" | "ASC";
   updatedAt?: "DESC" | "ASC";
 }

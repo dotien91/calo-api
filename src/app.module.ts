@@ -24,6 +24,7 @@ import { UserModule } from "./modules/user/user.module";
 // import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { MediaModule } from "./modules/media/media.module";
 import { ShortModule } from "./modules/short/short.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
@@ -57,6 +58,7 @@ const dataImport = [
   ContactFormModule,
   ScheduleModule.forRoot(),
   HookModule,
+  MediaModule,
   QueueModule,
   ShortModule,
   BullModule.forRoot({

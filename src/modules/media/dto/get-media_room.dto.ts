@@ -1,6 +1,6 @@
 import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
-export class GetChatMediaRoomDto {
+export class GetMediaRoomDto {
   @IsNumberString()
   @IsOptional(null)
   page: number;

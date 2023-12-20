@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 
-export type ChatMediaDocument = ChatMedia & Document;
+export type MediaDocument = Media & Document;
 
 @Schema()
 export class MediaMeta extends Document {
@@ -24,7 +24,7 @@ export const MediaMetaSchema = SchemaFactory.createForClass(MediaMeta);
     updatedAt: "updatedAt",
   },
 })
-export class ChatMedia {
+export class Media {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     auto: true,
@@ -137,4 +137,4 @@ export class ChatMedia {
   createBy: MongooseSchema.Types.ObjectId;
 }
 
-export const ChatMediaSchema = SchemaFactory.createForClass(ChatMedia);
+export const MediaSchema = SchemaFactory.createForClass(Media);

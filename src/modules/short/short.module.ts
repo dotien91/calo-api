@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ChatMedia, ChatMediaSchema } from "../media/schemas/chat_media.schema";
-import { ChatMediaService } from "../media/services/chat_media.service";
+import { Media, MediaSchema } from "../media/schemas/media.schema";
+import { MediaService } from "../media/services/media.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
@@ -23,7 +23,7 @@ import { ShortViewService } from "./services/short_view.service";
       { name: User.name, schema: UserSchema},
       { name: Short.name, schema: ShortSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
-      { name: ChatMedia.name, schema: ChatMediaSchema },
+      { name: Media.name, schema: MediaSchema },
       { name: ShortLike.name, schema: ShortLikeSchema },
       { name: ShortView.name, schema: ShortViewSchema },
       { name: UserSession.name, schema: UserSessionSchema },
@@ -38,7 +38,7 @@ import { ShortViewService } from "./services/short_view.service";
     ShortLikeService,
     UserSessionService,
     UserPermissionService,
-    ChatMediaService,
+    MediaService,
   ],
   exports: [ShortHelper],
 })

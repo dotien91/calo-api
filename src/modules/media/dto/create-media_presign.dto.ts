@@ -8,7 +8,7 @@ import { IsIn, IsJSON, IsNumberString, IsOptional, IsString } from "class-valida
     whitelist: false,
   })
 )
-export class CreateChatMediaPresignDto {
+export class CreateMediaPresignDto {
   @IsIn(["image", "video", "audio", "file", "link", "account", "gif"])
   media_type: string;
 
