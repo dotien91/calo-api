@@ -1,16 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, Req } from "@nestjs/common";
-import { ShortHelper } from "../helper/short.helper";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "src/dto/express-request.dto";
+import { CreateCategoryDto } from "../dto/create-category.dto";
 import { CreateShortDto } from "../dto/create-short.dto";
-import { ListShortDto } from "../dto/list-short.dto";
-import { UpdateShortDto } from "../dto/update-short.dto";
-import { CreateShortViewDto } from "../dto/create-short_view.dto";
 import { CreateShortLikeDto } from "../dto/create-short_like.dto";
+import { CreateShortViewDto } from "../dto/create-short_view.dto";
+import { ListCategoryDto } from "../dto/list-category.dto";
+import { ListShortDto } from "../dto/list-short.dto";
+import { UpdateCategoryDto } from "../dto/update-category.dto";
+import { UpdateShortDto } from "../dto/update-short.dto";
+import { ShortHelper } from "../helper/short.helper";
+import { ShortCategoryHelper } from "../helper/short_category.helper";
 
 @Controller("short")
 export class ShortController {
-  constructor(private readonly shortHelper: ShortHelper) {}
+  constructor(private readonly shortHelper: ShortHelper, private readonly categoryHelper: ShortCategoryHelper) {}
 
   @Get("/list")
   async getUserShort(
@@ -112,4 +116,44 @@ export class ShortController {
   async deleteShort(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.handleDeleteShort(id, res, req);
   }
+
+  @Get("/list-category")
+  async getUserCategory(@Query() query: ListCategoryDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.categoryHelper.getCategoryListByUser(query, res, req);
+  }
+
+
+  @Get("/admin-list-category")
+  async getAdminCategory(@Query() query: ListCategoryDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.categoryHelper.getCategoryListByAdmin(query, res, req);
+  }
+
+  @Post("/create-category")
+  async createNewCategory(
+    @Body() createPostBody: CreateCategoryDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.categoryHelper.createNewCategory(createPostBody, res, req);
+  }
+
+  @Patch("/update-category")
+  async updateByAdminCategory(
+    @Body() dataUpdate: UpdateCategoryDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.categoryHelper.handleUpdateCategoryByAdmin(dataUpdate, res, req);
+  }
+
+  @Get("detail-category/:id")
+  async getDetailCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.categoryHelper.handleGetDetailCategory(id, res, req);
+  }
+
+  @Delete("delete-category/:id")
+  async deleteCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.categoryHelper.handleDeleteCategory(id, res, req);
+  }
+
 }
