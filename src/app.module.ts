@@ -24,8 +24,9 @@ import { UserModule } from "./modules/user/user.module";
 // import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { PodcastModule } from "./modules/podcast/podcast.module";
+import { CommunityModule } from "./modules/community/community.module";
 import { MediaModule } from "./modules/media/media.module";
+import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ShortModule } from "./modules/short/short.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
@@ -63,6 +64,7 @@ const dataImport = [
   QueueModule,
   PodcastModule,
   ShortModule,
+  CommunityModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
