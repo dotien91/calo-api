@@ -1,27 +1,27 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsJSON, IsOptional, IsString } from "class-validator";
-export class CreatePodcastDto {
+import { IsDateString, IsIn, IsJSON, IsNumberString, IsObject, IsOptional, IsString } from "class-validator";
+export class CreateCommunityDto {
   @IsString()
   @ApiProperty()
-  podcast_language?: string;
+  post_language?: string;
 
   @IsString()
   @ApiProperty()
-  content?: string;
+  post_content?: string;
 
   @IsString()
   @ApiProperty()
-  title?: string;
+  post_title?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  excerpt?: string;
+  post_excerpt?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  podcast_category?: string;
+  post_category?: string;
 
   @IsString()
   @IsOptional(null)
@@ -31,7 +31,7 @@ export class CreatePodcastDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  podcast_status?: string;
+  post_status?: string;
 
   @IsString()
   @IsOptional(null)
@@ -46,7 +46,7 @@ export class CreatePodcastDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  podcast_type?: string;
+  post_type?: string;
 
   @IsJSON()
   @IsOptional(null)
@@ -62,4 +62,12 @@ export class CreatePodcastDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   post_object?: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  poll_ids?: any
+
+  data_json?: string
+  ref_id?: string
 }

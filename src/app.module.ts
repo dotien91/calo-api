@@ -25,6 +25,7 @@ import { UserModule } from "./modules/user/user.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CourseModule } from "./modules/course/course.module";
+import { CommunityModule } from "./modules/community/community.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ShortModule } from "./modules/short/short.module";
@@ -65,6 +66,7 @@ const dataImport = [
   PodcastModule,
   ShortModule,
   CourseModule,
+  CommunityModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
