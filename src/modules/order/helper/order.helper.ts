@@ -72,7 +72,7 @@ export class OrderHelper {
   //       description: "",
   //       trans_id: "",
   //       deep_link: "",
-  //       price: Number(courseData.coin_value),
+  //       price: Number(courseData.price),
   //     };
   //     let dataCreate: Order = await this.orderService.create(dataToAdd);
   //     dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");

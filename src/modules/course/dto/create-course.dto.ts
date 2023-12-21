@@ -37,12 +37,7 @@ export class CreateCourseDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  level_value: string;
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  coin_value: string;
+  price: string;
 
   @IsString()
   @IsOptional(null)

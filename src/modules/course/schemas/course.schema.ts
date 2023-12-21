@@ -145,17 +145,10 @@ export class Course {
 
   @Prop({
     type: Number,
-    default: 1,
-    nullable: false,
-  })
-  level_value: Number;
-
-  @Prop({
-    type: Number,
     default: 0,
     nullable: false,
   })
-  coin_value: Number;
+  price: Number;
 
   @Prop({
     type: Number,

@@ -79,7 +79,7 @@ export class CourseHelper {
       createCourseData = { ...createCourseData, ...{ user_id: req.user_object._id.toString() } };
       let dataCreate: any = await this.courseService.create(createCourseData);
       let dataReturn: any = await this.courseService.findById(dataCreate?._id?.toString());
-      if (dataReturn?.coin_value) {
+      if (dataReturn?.price) {
         dataReturn = await this.handleUpdateServiceCourse(dataReturn);
       }
 
@@ -110,7 +110,7 @@ export class CourseHelper {
         let dataPlanCreate = {
           service_id: serviceData?._id?.toString(),
           name: courseData?.title?.toString(),
-          price: Number(courseData?.coin_value),
+          price: Number(courseData?.price),
           amount_of_day: 365,
           trial_day: 0,
           amount_of_coin: 365,
@@ -154,7 +154,7 @@ export class CourseHelper {
         _id: courseData?.plan_id?.toString(),
         service_id: courseData?.service_id.toString(),
         name: courseData?.title?.toString(),
-        price: Number(courseData?.coin_value),
+        price: Number(courseData?.price),
         amount_of_day: 365,
         trial_day: 0,
         amount_of_coin: 365,
@@ -226,13 +226,13 @@ export class CourseHelper {
   async updateCourse(dataUpdate: UpdateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
       let dataCreate: any = await this.courseService.update(dataUpdate);
-      if (dataCreate?.coin_value && !dataCreate?.service_id) {
+      if (dataCreate?.price && !dataCreate?.service_id) {
         dataCreate = await this.handleUpdateServiceCourse(dataCreate);
       }
-      if (dataCreate?.coin_value && dataCreate?.service_id) {
+      if (dataCreate?.price && dataCreate?.service_id) {
         await this.handleUpdatePlan(dataCreate);
       }
-      if (!Number(dataCreate?.coin_value) && dataCreate?.service_id) {
+      if (!Number(dataCreate?.price) && dataCreate?.service_id) {
         //Update service
         let dataUpdate = {
           service_id: null,
@@ -385,11 +385,6 @@ export class CourseHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      let sessionObject = null;
-      if (req) {
-        sessionObject = req?.session_data;
-      }
-
       let userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
@@ -439,11 +434,6 @@ export class CourseHelper {
       let userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
-      }
-
-      let sessionObject = null;
-      if (req) {
-        sessionObject = req?.session_data;
       }
 
       let userId = userObject._id.toString();
@@ -841,7 +831,7 @@ export class CourseHelper {
         throw new NotFoundException("Video not found");
       }
       //Check PlanObject
-      if (Number(videoObject?.coin_value) && Number(videoObject?.coin_value) !== 1) {
+      if (Number(videoObject?.price) && Number(videoObject?.price) !== 1) {
         //Can't Join
         throw new NotFoundException("Can't Join manual!");
       }
@@ -872,7 +862,7 @@ export class CourseHelper {
         throw new NotFoundException("Video not found");
       }
       //Check PlanObject
-      if (Number(videoObject?.coin_value) && Number(videoObject?.coin_value) !== 1) {
+      if (Number(videoObject?.price) && Number(videoObject?.price) !== 1) {
         if (dataFollow?.add_type === "payment") {
           dataFollow = { ...{ user_id: userId }, ...dataFollow };
           await this.processAddUserToCoursePayment(dataFollow, videoObject);

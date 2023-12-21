@@ -32,21 +32,13 @@ export class CourseService {
       condition = Object.assign(condition, { course_status: filter.course_status });
     }
 
-    if (filter.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
+    if (filter.price) {
+      condition = Object.assign(condition, { price: { $gte: filter.price } });
     }
 
-    if (filter.level_value) {
-      condition = Object.assign(condition, { level_value: { $gte: filter.level_value } });
-    }
-
-    if (filter.coin_value) {
-      condition = Object.assign(condition, { coin_value: { $gte: filter.coin_value } });
-    }
-
-    if (filter.hasOwnProperty("coin_value")) {
-      if (Number(filter.coin_value) === 0) {
-        condition = Object.assign(condition, { coin_value: 0 });
+    if (filter.hasOwnProperty("price")) {
+      if (Number(filter.price) === 0) {
+        condition = Object.assign(condition, { price: 0 });
       }
     }
 

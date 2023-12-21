@@ -1,6 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCourseDto {
   @IsNumberString()
@@ -36,11 +35,5 @@ export class ListCourseDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  level_value: string
-
-  @IsNumberString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  coin_value: string
-
+  price: string;
 }
