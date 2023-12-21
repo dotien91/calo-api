@@ -1,8 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { SearchAdminFilterDto } from "src/modules/user/dto/search-admin_filter.dto";
-import HookExpress from '../../hook/hook_epress';
+import HookExpress from "../../hook/hook_epress";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { SearchPostDto } from "../dto/search-community.dto";
 import { SortByPostDto } from "../dto/sort_by-community.dto";
@@ -40,7 +39,7 @@ export class CommunityService {
       condition = Object.assign(condition, { post_type: filter.post_type });
     }
 
-    if (!filter.post_status || filter.post_status.trim() === '') {
+    if (!filter.post_status || filter.post_status.trim() === "") {
       condition = { ...condition, ...{ post_status: "publish" } };
     } else {
       condition = { ...condition, ...{ post_status: filter.post_status } };
@@ -61,7 +60,6 @@ export class CommunityService {
       } else {
         condition = Object.assign(condition, { data_json_type: filter.data_json_type });
       }
-
     }
     if (filter.post_parent) {
       condition = Object.assign(condition, { post_parent: filter.post_parent });
@@ -152,7 +150,7 @@ export class CommunityService {
     if (sortBy) {
       if (filter.post_status === "cancel") {
         sortBy = Object.assign(sortBy, { updatedAt: "DESC" });
-        delete sortBy?.createdAt
+        delete sortBy?.createdAt;
         sortObject = this.getSort(sortBy);
       } else {
         sortObject = this.getSort(sortBy);
@@ -407,14 +405,14 @@ export class CommunityService {
   }
 
   initHook() {
-    console.log('Make sure you work once community %s', Math.random())
-    HookExpress.add_action('community.delete-community-by-channel-permission', async (data: any) => {
+    console.log("Make sure you work once community %s", Math.random());
+    HookExpress.add_action("community.delete-community-by-channel-permission", async (data: any) => {
       try {
         // await this.deleteMultipleCommunityByChannelPermission(data);
       } catch (error) {
-        this.logger.log(error.message)
+        this.logger.log(error.message);
       }
-    })
+    });
   }
 
   // /**
@@ -432,5 +430,4 @@ export class CommunityService {
   //     return null;
   //   }
   // }
-
 }

@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Plan } from "src/modules/plan/schemas/plan.schema";
-import { ShortCategory } from "src/modules/short/schemas/short_category.schema";
-import { User } from "src/modules/user/schemas/user.schema";
+import { ShortCategory } from "../../../modules/short/schemas/short_category.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 
 export type ShortDocument = Short & Document;
 
@@ -20,14 +19,14 @@ export class Short {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User",   index: true,})
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   language: String;
 
@@ -64,38 +63,38 @@ export class Short {
     default: 0,
     nullable: false,
   })
-  like_number: Number
+  like_number: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  view_number: Number
+  view_number: Number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  comment_number: Number
+  comment_number: Number;
 
   @Prop({
     type: Number,
     default: 1,
     nullable: false,
   })
-  short_status: Number
+  short_status: Number;
 
   @Prop({
-    type:  MongooseSchema.Types.Array,
+    type: MongooseSchema.Types.Array,
     default: [],
     ref: "Media",
   })
   music_id: MongooseSchema.Types.ObjectId[];
 
   @Prop({
-    type:  MongooseSchema.Types.Array,
+    type: MongooseSchema.Types.Array,
     default: [],
     ref: "Media",
   })

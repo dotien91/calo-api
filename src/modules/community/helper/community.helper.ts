@@ -1,18 +1,12 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { Types } from "mongoose";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
-import { NotificationHelper } from "src/modules/notification/helper/notification.helper";
-import { User } from "src/modules/user/schemas/user.schema";
-import { UserService } from "src/modules/user/services/user.service";
-import { UserFollowService } from "src/modules/user/services/user_follow.service";
-import { UserPermissionService } from "src/modules/user_permission/services/user_permission.service";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserFollowService } from "../../../modules/user/services/user_follow.service";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
@@ -35,7 +29,6 @@ import { CommunityDisLikeService } from "../services/community_dislike.service";
 import { CommunityLikeService } from "../services/community_like.service";
 import { CommunityPollService } from "../services/community_poll.service";
 
-
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -52,7 +45,7 @@ export class CommunityHelper {
     private userService: UserService,
     private notificationHelper: NotificationHelper,
     private communityPollService: CommunityPollService,
-    private userFollowService: UserFollowService,
+    private userFollowService: UserFollowService
   ) {}
 
   /**
@@ -86,7 +79,7 @@ export class CommunityHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn: any = await this.communityLikeService.filterData(dataToFilter, orderByOBject, page, limit);     
+      let dataReturn: any = await this.communityLikeService.filterData(dataToFilter, orderByOBject, page, limit);
 
       if (dataReturn) {
         let dataLikeId = dataReturn?.map((value) => {
@@ -227,7 +220,12 @@ export class CommunityHelper {
 
       if (dataCreate?.poll_id && dataCreate?.community_id) {
         //ReUpdate
-        let dataPollArray = await this.communityPollService.filter({ community_id: dataCreate?.community_id }, {}, 1, 1000);
+        let dataPollArray = await this.communityPollService.filter(
+          { community_id: dataCreate?.community_id },
+          {},
+          1,
+          1000
+        );
         for (let dataItemPool of dataPollArray) {
           if (dataItemPool?.users_choose?.indexOf(userObject?._id) !== -1) {
             //Update
@@ -338,12 +336,12 @@ export class CommunityHelper {
         orderByOBject = { ...orderByOBject, ...{ trending_number: query.order_by } };
       }
 
-      let dataToFilter = { ...query};
+      let dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.communityService.filter(dataToFilter, orderByOBject, page, limit);      
+      let dataReturn = await this.communityService.filter(dataToFilter, orderByOBject, page, limit);
 
       if (dataReturn) {
         let dataIds = [];
@@ -401,7 +399,6 @@ export class CommunityHelper {
     }
   }
 
-  
   /**
    * @author Tony Vu
    * @param id
@@ -457,7 +454,10 @@ export class CommunityHelper {
         };
       }
 
-      createCommunityData = { ...createCommunityData, ...{ popular_number: 10, trending_number: 10,  post_status: "publish" } };
+      createCommunityData = {
+        ...createCommunityData,
+        ...{ popular_number: 10, trending_number: 10, post_status: "publish" },
+      };
 
       let dataCreate: any = await this.communityService.create(createCommunityData);
       let dataReturn = await this.communityService.findById(dataCreate?._id?.toString());
@@ -474,12 +474,10 @@ export class CommunityHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, 'error');
+      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }
-
-  
 
   /**
    * @author Tony Vu
@@ -835,7 +833,10 @@ export class CommunityHelper {
       } else {
         dataUpdateNumber = dataUpdateNumber + 1;
       }
-      await this.communityCommentService.updateCount({ _id: dataCreate?.comment_id }, { vote_number: dataUpdateNumber });
+      await this.communityCommentService.updateCount(
+        { _id: dataCreate?.comment_id },
+        { vote_number: dataUpdateNumber }
+      );
       dataReturn = { ...dataReturn, ...{ is_like: isLike } };
 
       return res
@@ -904,7 +905,10 @@ export class CommunityHelper {
         await this.communityCommentService.updateArray(dataUpdateUpVote, true);
       }
 
-      await this.communityCommentService.updateCount({ _id: dataCreate?.comment_id }, { vote_number: dataUpdateNumber });
+      await this.communityCommentService.updateCount(
+        { _id: dataCreate?.comment_id },
+        { vote_number: dataUpdateNumber }
+      );
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -931,7 +935,10 @@ export class CommunityHelper {
       }
 
       let dataSlug = this.toSlug(createCommunityData.category_title?.toString());
-      createCommunityData = { ...createCommunityData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
+      createCommunityData = {
+        ...createCommunityData,
+        ...{ category_slug: dataSlug, user_id: userObject._id.toString() },
+      };
 
       let dataCreate = await this.communityCategoryService.create(createCommunityData);
       return res
@@ -942,7 +949,6 @@ export class CommunityHelper {
       throw new NotFoundException(error.message);
     }
   }
-
 
   /**
    * @author Tony Vu
@@ -1214,10 +1220,10 @@ export class CommunityHelper {
 
       let userId = userObject._id.toString();
       let communityObject = await this.communityService.findById(dataUpdate?._id?.toString());
-      
+
       let havePermission = false;
       let canPin = false;
-      
+
       if (communityObject?.user_id?._id?.toString() == userId) {
         havePermission = true;
       }
@@ -1244,7 +1250,7 @@ export class CommunityHelper {
       }
 
       let dataReturn = await this.communityService.update(dataUpdate);
-      
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1423,9 +1429,14 @@ export class CommunityHelper {
         }
 
         //check subcomment
-        let subcomments = await this.communityCommentService.filter({
-          parent_id: id
-        }, {}, 1, 999);
+        let subcomments = await this.communityCommentService.filter(
+          {
+            parent_id: id,
+          },
+          {},
+          1,
+          999
+        );
 
         //Update Count
         let dataUpdateCount = {
@@ -1447,9 +1458,11 @@ export class CommunityHelper {
           );
         }
 
-        await this.communityCommentService.deleteManyByIds(subcomments.map((subcomment) => {
-          return subcomment?._id.toString();
-        }))
+        await this.communityCommentService.deleteManyByIds(
+          subcomments.map((subcomment) => {
+            return subcomment?._id.toString();
+          })
+        );
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1509,7 +1522,7 @@ export class CommunityHelper {
     str = str.replace(/([^0-9a-z-\s])/g, "");
     str = str.replace(/(\s+)/g, "-");
     str = str.replace(/^-+/g, "");
-    str = str.replace(/-+$/g, "") + (new Date()).getTime();
+    str = str.replace(/-+$/g, "") + new Date().getTime();
     return str;
   }
 }

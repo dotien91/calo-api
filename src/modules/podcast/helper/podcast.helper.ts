@@ -124,7 +124,7 @@ export class PodcastHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataToFilter = { ...query, ...{ channel_id: req?.channel_id || "" } };
+      let dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;

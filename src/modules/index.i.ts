@@ -3,4 +3,5 @@ export enum Controllers {
   PODCAST = "podcast",
   CONFIG = "config",
   USER_PERMISSION = "user-permission",
+  COURSE = "course",
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { User } from "src/modules/user/schemas/user.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 
 export type ShortCategoryDocument = ShortCategory & Document;
 
@@ -18,14 +18,14 @@ export class ShortCategory {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true})
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
   @Prop({
     type: String,
     default: "en",
     nullable: false,
-    index: true
+    index: true,
   })
   category_language: String;
 
@@ -41,32 +41,32 @@ export class ShortCategory {
     default: "",
     nullable: false,
   })
-  category_excerpt: String
+  category_excerpt: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  category_slug: String
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  category_parent: String
+  category_slug: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  category_status: String
+  category_parent: String;
 
   @Prop({
-    type:  MongooseSchema.Types.ObjectId,
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  category_status: String;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
     default: null,
     ref: "Media",
   })
@@ -77,15 +77,15 @@ export class ShortCategory {
     default: "",
     nullable: false,
   })
-  category_title: String
+  category_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
-  category_type: String
+  category_type: String;
 
   @Prop({
     type: Number,
@@ -93,28 +93,28 @@ export class ShortCategory {
     nullable: false,
     index: true,
   })
-  category_view: Number
+  category_view: Number;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_title: String
+  seo_title: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_description: String
+  seo_description: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  seo_keyword: String
+  seo_keyword: String;
 }
 
 export const ShortCategorySchema = SchemaFactory.createForClass(ShortCategory).index({

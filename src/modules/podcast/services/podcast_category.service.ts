@@ -33,10 +33,6 @@ export class PodcastCategoryService {
       condition = Object.assign(condition, { version: { $gte: parseInt(filter?.version) } });
     }
 
-    if (filter?.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
-    }
-
     if (filter.hasOwnProperty("public_status")) {
       condition = Object.assign(condition, { public_status: filter?.public_status });
     }

@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { Media } from "../../../modules/media/schemas/media.schema";
+import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
+import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { CommunityCategory } from "./community-category.schema";
-import { CommunityPoll } from "./community_poll.schema";
 
-export type CommunityDocument = Community & Document;
+export type CourseDocument = Course & Document;
 
 @Schema({
   timestamps: {
@@ -13,7 +14,7 @@ export type CommunityDocument = Community & Document;
     updatedAt: "updatedAt",
   },
 })
-export class Community {
+export class Course {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     auto: true,
@@ -24,11 +25,66 @@ export class Community {
   user_id: User;
 
   @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  title: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  description: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  long_description: String;
+
+  @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    index: true,
+    ref: "Media",
   })
-  ref_id: MongooseSchema.Types.ObjectId;
+  avatar: Media;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+    ref: "HandleService",
+  })
+  service_id: HandleService;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+    ref: "Plan",
+  })
+  plan_id: Plan;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+    ref: "Media",
+  })
+  media_id: Media;
+
+  @Prop({ type: MongooseSchema.Types.Date, default: null, index: true })
+  start_time: MongooseSchema.Types.Date;
+
+  @Prop({ type: MongooseSchema.Types.Date, default: null })
+  end_time: MongooseSchema.Types.Date;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  slug: String;
 
   @Prop({
     type: String,
@@ -36,48 +92,12 @@ export class Community {
     nullable: false,
     index: true,
   })
-  post_language: String;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "CommunityCategory", index: true })
-  post_category: CommunityCategory;
-
-  @Prop({ type: MongooseSchema.Types.Array, ref: "CommunityPoll", index: true, default: [] })
-  poll_ids: CommunityPoll[];
+  language: String;
 
   @Prop({
     type: String,
-    default: "",
+    default: "VN",
     nullable: false,
-  })
-  post_title: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  post_content: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  post_excerpt: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-    index: true,
-  })
-  post_slug: String;
-
-  @Prop({
-    type: String,
-    default: "US",
-    nullable: false,
-    index: true,
   })
   country: String;
 
@@ -86,134 +106,109 @@ export class Community {
     default: "",
     nullable: false,
   })
-  post_status: String;
-
-  @Prop({
-    type: String,
-    default: "{}",
-    nullable: false,
-  })
-  data_json: String;
+  version: String;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  data_json_type: String;
+  product_id: String;
 
   @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    default: null,
-    ref: "Media",
+    type: String,
+    default: "",
+    nullable: false,
   })
-  post_avatar: MongooseSchema.Types.ObjectId;
+  public_status: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  subscribe: String;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: false,
+  })
+  trash_status: String;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  rating: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  price: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  video_count: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  post_count: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  join_number: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  news_count: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  doc_count: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  module_count: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  module_child_count: Number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
     ref: "Media",
   })
-  attach_files: MongooseSchema.Types.ObjectId[];
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-    index: true,
-  })
-  post_type: String;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  view_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  like_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  share_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  is_pin: Number;
-
-  @Prop({
-    type: Number,
-    default: 1,
-    nullable: false,
-    index: true,
-  })
-  is_comment: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  dislike_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  comment_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  vote_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  trending_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  popular_number: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-    index: true,
-  })
-  points: Number;
+  hashtag_id: Media[];
 }
 
-export const CommunitySchema = SchemaFactory.createForClass(Community).index({
-  post_title: "text",
-  post_content: "text",
+export const CourseSchema = SchemaFactory.createForClass(Course).index({
+  description: "text",
+  long_description: "text",
+  title: "text",
 });

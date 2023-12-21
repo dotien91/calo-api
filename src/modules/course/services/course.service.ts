@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { CreateShortDto } from "../dto/create-short.dto";
-import { SearchShortDto } from "../dto/search-short.dto";
-import { SortByShortDto } from "../dto/sort_by-short.dto";
-import { UpdateShortDto } from "../dto/update-short.dto";
-import { Short, ShortDocument } from "../schemas/short.schema";
+import { CreateCourseDto } from "../dto/create-course.dto";
+import { SearchCourseDto } from "../dto/search-course.dto";
+import { SortByCourseDto } from "../dto/sort_by-course.dto";
+import { UpdateCourseDto } from "../dto/update-course.dto";
+import { Course, CourseDocument } from "../schemas/course.schema";
 
 @Injectable()
-export class ShortService {
+export class CourseService {
   constructor(
-    @InjectModel(Short.name)
-    private shortModel: Model<ShortDocument>
+    @InjectModel(Course.name)
+    private courseModel: Model<CourseDocument>
   ) {}
 
   /**
@@ -19,7 +19,7 @@ export class ShortService {
    * @param filter
    * @returns
    */
-  async getCondition(filter: SearchShortDto) {
+  async getCondition(filter: SearchCourseDto) {
     let condition: any = {};
     if (filter.user_id) {
       condition = Object.assign(condition, { user_id: filter.user_id });
@@ -28,12 +28,22 @@ export class ShortService {
       condition = Object.assign(condition, { language: filter.language });
     }
 
-    if (filter.short_status) {
-      condition = Object.assign(condition, { short_status: filter.short_status });
+    if (filter.course_status) {
+      condition = Object.assign(condition, { course_status: filter.course_status });
     }
 
-    if (filter.short_category) {
-      condition = Object.assign(condition, { short_category: filter.short_category });
+    if (filter.price) {
+      condition = Object.assign(condition, { price: { $gte: filter.price } });
+    }
+
+    if (filter.hasOwnProperty("price")) {
+      if (Number(filter.price) === 0) {
+        condition = Object.assign(condition, { price: 0 });
+      }
+    }
+
+    if (filter.post_category) {
+      condition = Object.assign(condition, { post_category: filter.post_category });
     }
 
     if (filter.ref_id) {
@@ -51,7 +61,9 @@ export class ShortService {
     }
 
     if (filter.search) {
-      condition = Object.assign(condition, { $text: { $search: filter.search } });
+      let dataSearch = `${filter.search}`;
+      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
     }
     return condition;
   }
@@ -61,7 +73,7 @@ export class ShortService {
    * @param sortBy
    * @returns
    */
-  getSort(sortBy: SortByShortDto) {
+  getSort(sortBy: SortByCourseDto) {
     let sort = { priority: -1 };
     if (sortBy.createdAt) {
       sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
@@ -77,7 +89,7 @@ export class ShortService {
    * @param limit
    * @returns
    */
-  async filter(filter: SearchShortDto, sortBy: SortByShortDto, page: number, limit: number): Promise<Short[]> {
+  async filter(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -85,24 +97,19 @@ export class ShortService {
     }
     let projection = {};
 
-    if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
-      page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
-    }
+    // if (filter.search) {
+    //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
+    //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
+    // }
 
-    if (filter.search) {
-      sortObject = { score: { $meta: "textScore" }, ...sortObject };
-      projection = Object.assign(projection, { score: { $meta: "textScore" } });
-    }
-
-    let dataReturn = await this.shortModel
-      .find(condition)
+    let dataReturn = await this.courseModel
+      .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
       .populate("media_id")
-      .populate("ref_id")
+      .populate("avatar")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -118,18 +125,21 @@ export class ShortService {
    * @param limit
    * @returns
    */
-  async filterAdmin(filter: SearchShortDto, sortBy: SortByShortDto, page: number, limit: number): Promise<Short[]> {
+  async filterAdmin(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
     let projection = {};
-    let dataReturn = await this.shortModel
+    let dataReturn = await this.courseModel
       .find(condition, projection)
-      .populate("user_id")
+      .populate(
+        "user_id",
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+      )
       .populate("media_id")
-      .populate("ref_id")
+      .populate("avatar")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -142,13 +152,13 @@ export class ShortService {
    * @param filter
    * @returns
    */
-  public count = async (filter: SearchShortDto) => {
+  public count = async (filter: SearchCourseDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.shortModel.estimatedDocumentCount();
+        return this.courseModel.estimatedDocumentCount();
       } else {
-        return this.shortModel.countDocuments(condition);
+        return this.courseModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -160,9 +170,9 @@ export class ShortService {
    * @param createUser
    * @returns
    */
-  async create(createUser: CreateShortDto) {
-    const createdShort = new this.shortModel(createUser);
-    let dataCreate = await createdShort.save();
+  async create(createUser: CreateCourseDto) {
+    const createdCourse = new this.courseModel(createUser);
+    let dataCreate = await createdCourse.save();
     return dataCreate;
   }
 
@@ -186,8 +196,8 @@ export class ShortService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<Short[]> {
-    return this.shortModel.find().exec();
+  async findAll(): Promise<Course[]> {
+    return this.courseModel.find().exec();
   }
 
   /**
@@ -195,16 +205,16 @@ export class ShortService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any): Promise<Short> {
-    return await this.shortModel
+  async findOne(dataToSearch: any): Promise<Course> {
+    return await this.courseModel
       .findOne(dataToSearch)
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
       .populate("media_id")
-      .populate("ref_id")
+      .populate("avatar")
       .exec();
   }
 
@@ -213,7 +223,7 @@ export class ShortService {
    * @param dataToSearch
    * @returns
    */
-  async findById(id: string): Promise<Short> {
+  async findById(id: string): Promise<Course> {
     if (!id) {
       return null;
     }
@@ -221,14 +231,14 @@ export class ShortService {
     if (!objectId) {
       return null;
     }
-    return await this.shortModel
+    return await this.courseModel
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
       .populate("media_id")
-      .populate("ref_id")
+      .populate("avatar")
       .exec();
   }
 
@@ -238,14 +248,14 @@ export class ShortService {
    * @returns
    */
   async remove(id: string) {
-    return await this.shortModel
+    return await this.courseModel
       .findByIdAndDelete(id)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
       .populate("media_id")
-      .populate("ref_id")
+      .populate("avatar")
       .exec();
   }
 
@@ -254,19 +264,19 @@ export class ShortService {
    * @param dataUpdate
    * @returns
    */
-  async update(dataUpdate: UpdateShortDto) {
+  async update(dataUpdate: UpdateCourseDto) {
     try {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.shortModel
-        .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false })
+      let dataReturn = await this.courseModel
+        .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
         )
         .populate("media_id")
-        .populate("ref_id");
+        .populate("avatar");
       return dataReturn;
     } catch (e) {
       return e;
@@ -280,7 +290,7 @@ export class ShortService {
    */
   async updateCount(dataFilter: any, dataUpdate: any) {
     try {
-      return this.shortModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate });
+      return this.courseModel.findByIdAndUpdate(dataFilter._id, { $inc: dataUpdate });
     } catch (e) {
       return null;
     }

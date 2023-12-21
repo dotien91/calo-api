@@ -34,10 +34,6 @@ export class PodcastService {
       condition = Object.assign(condition, { podcast_status: filter.podcast_status });
     }
 
-    if (filter.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
-    }
-
     if (filter.other_status) {
       condition = Object.assign(condition, { other_status: filter.other_status });
     }

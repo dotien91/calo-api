@@ -1,17 +1,8 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  Param,
-  Req,
-  Res,
-} from "@nestjs/common";
-import { Request, Response } from "express";
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { Response } from "express";
 import { Types } from "mongoose";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
-import { UserPermissionService } from "src/modules/user_permission/services/user_permission.service";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateCategoryDto } from "../dto/create-category.dto";
 import { ListCategoryDto } from "../dto/list-category.dto";
 import { UpdateCategoryDto } from "../dto/update-category.dto";
@@ -23,7 +14,10 @@ import { ShortCategoryService } from "../services/short_category.service";
  */
 @Injectable()
 export class ShortCategoryHelper {
-  constructor(private postCategoryService: ShortCategoryService, private userPermissionService: UserPermissionService) {}
+  constructor(
+    private postCategoryService: ShortCategoryService,
+    private userPermissionService: UserPermissionService
+  ) {}
 
   /**
    * @author Tony Vu
@@ -133,7 +127,7 @@ export class ShortCategoryHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
       if (query?.ids) {
-        dataToFilter = {...dataToFilter, ...{ids: [query?.ids]}}
+        dataToFilter = { ...dataToFilter, ...{ ids: [query?.ids] } };
       }
       let dataReturn = await this.postCategoryService.filter(dataToFilter, orderByOBject, page, limit);
       let dataCount = await this.postCategoryService.count(dataToFilter);
@@ -168,15 +162,15 @@ export class ShortCategoryHelper {
 
       let dataToFilter = {};
       if (objectId) {
-        dataToFilter = {...dataToFilter, ...{_id: objectId}}
+        dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
       } else {
-        dataToFilter = {...dataToFilter, ...{category_slug: id.toString()}}
+        dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
       let dataReturn = await this.postCategoryService.findOne(dataToFilter);
       return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -196,7 +190,7 @@ export class ShortCategoryHelper {
         throw new ForbiddenException("User is invalid");
       }
       if (dataUpdate.category_slug) {
-        let dataToFind = await this.postCategoryService.findOne({category_slug: dataUpdate.category_slug});
+        let dataToFind = await this.postCategoryService.findOne({ category_slug: dataUpdate.category_slug });
         if (dataToFind && dataToFind._id.toString() !== dataUpdate._id.toString()) {
           throw new ForbiddenException("Slug is exist!");
         }

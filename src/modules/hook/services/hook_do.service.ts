@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { CreateCourseLikeDto } from "../../../modules/course/dto/create-course_like.dto";
+import { Course } from "../../../modules/course/schemas/course.schema";
 import { PlusPointChallengeDto } from "../dtos/plus_point_challenge.dto";
 import HookExpress from "../hook_epress";
 
@@ -22,9 +24,9 @@ export class EventHookWorkerService {
     HookExpress.do_action("request.add-category", data);
   }
 
-  // ProcessCourseOrder(dataCourseJoin: CreateCourseLikeDto, courseData: Course) {
-  //   HookExpress.do_action("course.add-payment", dataCourseJoin, courseData);
-  // }
+  ProcessCourseOrder(dataCourseJoin: CreateCourseLikeDto, courseData: Course) {
+    HookExpress.do_action("course.add-payment", dataCourseJoin, courseData);
+  }
 
   ProcessAddLevel(data: any) {
     HookExpress.do_action("request.add-level", data);
