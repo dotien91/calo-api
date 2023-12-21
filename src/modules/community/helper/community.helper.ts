@@ -10,7 +10,7 @@ import { UserPermissionService } from "../../../modules/user_permission/services
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
-import { CreateCommunityLikeDto } from "../dto/create-community_like.dto";
+import { CreateCommunityCommentLikeDto, CreateCommunityLikeDto } from "../dto/create-community_like.dto";
 import { CreateCommunityPollDto } from "../dto/create-community_poll.dto";
 import { FilterListVote } from "../dto/filter-list_vote.dto";
 import { ListCommunityDto } from "../dto/list-community.dto";
@@ -214,9 +214,6 @@ export class CommunityHelper {
   async voteCommunityPoll(dataCreate: CreateCommunityPollDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject: any = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
 
       if (dataCreate?.poll_id && dataCreate?.community_id) {
         //ReUpdate
@@ -772,22 +769,18 @@ export class CommunityHelper {
    * @param res
    * @param req
    */
-  async createLikeComment(dataCreate: CreateCommunityLikeDto, res: Response, req: ExpressRequestDto) {
+  async createLikeComment(dataCreate: CreateCommunityCommentLikeDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
-
       //CheckComment
       let dataComment = await this.communityCommentService.findOne({ _id: dataCreate?.comment_id });
-      let communityId = dataComment?.community_id?.toString();
 
-      let dataCommunityObject = await this.communityService.findById(communityId);
-      if (!dataCommunityObject) {
-        throw new ForbiddenException("Community not exist!");
+      if (!dataComment) {
+        throw new ForbiddenException("Comment does not exist!");
       }
 
       let isLike = false;
@@ -854,7 +847,7 @@ export class CommunityHelper {
    * @param res
    * @param req
    */
-  async createDislikeComment(dataCreate: CreateCommunityLikeDto, res: Response, req: ExpressRequestDto) {
+  async createDislikeComment(dataCreate: CreateCommunityCommentLikeDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject: any = req?.user_object;
       if (!userObject) {
@@ -1079,7 +1072,7 @@ export class CommunityHelper {
    * @param req
    * @returns
    */
-  async handleGetDetailCommunity(id: string, query: ListCommunityDto, res: Response, req: ExpressRequestDto) {
+  async handleGetDetailCommunity(id: string, res: Response, req: ExpressRequestDto) {
     try {
       if (!id) {
         throw new ForbiddenException("Id is not invalid");
@@ -1104,14 +1097,6 @@ export class CommunityHelper {
 
       let getDataLike = null;
       let dataDisLike = null;
-      if (query?.auth_id) {
-        let dataToFilterLike = {
-          user_id: query?.auth_id,
-          community_id: dataReturn?._id?.toString(),
-        };
-        getDataLike = await this.communityLikeService.findOne(dataToFilterLike);
-        dataDisLike = await this.communityDisLikeService.findOne(dataToFilterLike);
-      }
 
       if (getDataLike) {
         dataReturn = { ...dataReturn, ...{ is_like: true } };
@@ -1270,20 +1255,12 @@ export class CommunityHelper {
   async handleUpdateCommunityComment(dataUpdate: UpdateCommunityCommentDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-
-      let userId = userObject._id.toString();
       //Check Comment ID
       let commentObject = await this.communityCommentService.findById(dataUpdate?._id?.toString());
 
       //Check User create
-      if (commentObject?.user_id?.toString() !== userObject?._id?.toString()) {
-        let dataPermission = await this.userPermissionService.isHavePermission(userId, "community/update");
-        if (!dataPermission) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
+      if (commentObject?.user_id?._id.toString() !== userObject?._id?.toString()) {
+        throw new BadRequestException("You haven't permission for this Action!");
       }
 
       let dataReturn = await this.communityCommentService.update(dataUpdate);
@@ -1413,9 +1390,6 @@ export class CommunityHelper {
         havePermission = true;
       }
 
-      if (await this.userPermissionService.isHavePermission(userId, "community/delete")) {
-        havePermission = true;
-      }
       if (havePermission) {
         //Check Permission
         let dataReturn: any = await this.communityCommentService.remove(id);
@@ -1489,17 +1463,11 @@ export class CommunityHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "community/delete")) {
-        //Check Permission
-        let dataReturn = await this.communityCategoryService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      let dataReturn = await this.communityCategoryService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

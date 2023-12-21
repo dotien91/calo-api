@@ -97,7 +97,7 @@ export class CommunityPollService {
    * @param dataToSearch
    * @returns
    */
-  async findOneWithLimit(dataToSearch: any, limit: number, page: number, orderBy: any): Promise<CommunityPoll> {
+  async findOneWithLimit(query: any, limit: number, page: number, orderBy: any): Promise<CommunityPoll> {
     try {
       let sortObject: any;
       if (orderBy) {
@@ -114,7 +114,7 @@ export class CommunityPollService {
           skip: limit * (page - 1),
         },
       };
-      return await this.communityPollModel.findOne(dataToSearch).populate(dataPopulate).exec();
+      return await this.communityPollModel.findById(query.poll_id).populate(dataPopulate).exec();
     } catch (error) {
       return null;
     }

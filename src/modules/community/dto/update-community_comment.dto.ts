@@ -1,12 +1,11 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsJSON, IsNumberString, IsOptional, IsString } from "class-validator";
-import { CreateCommunityDto } from "./create-community.dto";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsDefined, IsString } from "class-validator";
 import { CreateCommunityCommentDto } from "./create-community_comment.dto";
 
 export class UpdateCommunityCommentDto extends PartialType(CreateCommunityCommentDto) {
   @IsString()
-  @IsOptional(null)
+  @IsDefined()
   @ApiPropertyOptional()
-  _id?: String
+  _id: String;
 }
