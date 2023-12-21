@@ -4,15 +4,15 @@ import { IsOptional, IsString } from "class-validator";
 export class CreateCourseLikeDto {
   @IsString()
   @ApiProperty()
-  course_id: string
+  course_id: string;
 
   @IsString()
   @ApiProperty()
   @IsOptional(null)
-  user_id: string
+  user_id: string;
 
   @IsString()
   @ApiProperty()
   @IsOptional(null)
-  add_type: string
+  add_type: string;
 }

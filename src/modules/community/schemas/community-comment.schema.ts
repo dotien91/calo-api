@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { User } from "src/modules/user/schemas/user.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 import { Community } from "./community.schema";
 
 export type CommunityCommentDocument = CommunityComment & Document;
@@ -40,7 +40,7 @@ export class CommunityComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_id: String;
 
@@ -48,7 +48,7 @@ export class CommunityComment {
     type: String,
     default: "",
     nullable: false,
-    index: true
+    index: true,
   })
   ref_parent_id: String;
 
@@ -92,5 +92,5 @@ export class CommunityComment {
 }
 
 export const CommunityCommentSchema = SchemaFactory.createForClass(CommunityComment).index({
-  content: "text"
+  content: "text",
 });

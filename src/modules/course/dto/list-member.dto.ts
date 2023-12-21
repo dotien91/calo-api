@@ -1,6 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListMemberDto {
   @IsNumberString()
@@ -37,5 +36,4 @@ export class ListMemberDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   auth_id: string;
-
 }

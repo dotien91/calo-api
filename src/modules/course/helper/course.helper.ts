@@ -279,35 +279,26 @@ export class CourseHelper {
    */
   async getCourseListByAdmin(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
-      let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "course/list")) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
 
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
-        let orderByObject = {};
-        if (query.order_by) {
-          orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
-        }
-        let dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        let dataReturn = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
-        let dataCount = await this.courseService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      let dataReturn = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+      let dataCount = await this.courseService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -442,8 +433,6 @@ export class CourseHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
@@ -498,13 +487,10 @@ export class CourseHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      // console.log(dataToFilter, "dataToFilter");
-
       //Check Video View
       let dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
 
       let countCourse = await this.courseService.count(dataToFilter);
-      let dataReturnFinal = [];
       let dataCourseIds = dataReturn?.map((value) => {
         return value?._id?.toString();
       });
@@ -704,6 +690,7 @@ export class CourseHelper {
         throw new NotFoundException("Course is not found!");
       }
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException(error.message);
       throw new BadRequestException(error.message);
     }
   }
@@ -753,6 +740,9 @@ export class CourseHelper {
   async handleDeleteCourse(id: string, res: Response, req: ExpressRequestDto) {
     try {
       let dataReturn = await this.courseService.remove(id);
+
+      if (!dataReturn) throw new NotFoundException("Not found course");
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -841,6 +831,7 @@ export class CourseHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException(error.message);
       throw new BadRequestException(error.message);
     }
   }
@@ -945,7 +936,6 @@ export class CourseHelper {
       return dataReturn;
     } catch (error) {
       throw new BadRequestException(error.message);
-      return error;
     }
   }
 
@@ -978,6 +968,7 @@ export class CourseHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
+      if (error.status === 404) throw new NotFoundException("Video not found");
       throw new BadRequestException(error.message);
     }
   }

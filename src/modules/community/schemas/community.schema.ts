@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { User } from "src/modules/user/schemas/user.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 import { CommunityCategory } from "./community-category.schema";
 import { CommunityPoll } from "./community_poll.schema";
 
@@ -26,7 +26,7 @@ export class Community {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
-    index: true
+    index: true,
   })
   ref_id: MongooseSchema.Types.ObjectId;
 

@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsIn, IsJSON, IsNumberString, IsObject, IsOptional, IsString } from "class-validator";
-import { ObjectId } from "mongoose";
-import { Media } from "src/modules/media/schemas/media.schema";
+import { IsNumberString, IsOptional, IsString } from "class-validator";
+import { Media } from "../../../modules/media/schemas/media.schema";
 export class CreateCommunityCategoryDto {
   @IsString()
   @ApiProperty()
@@ -14,7 +13,7 @@ export class CreateCommunityCategoryDto {
 
   @IsString()
   @ApiPropertyOptional()
-  category_title?: string | String
+  category_title?: string | String;
 
   @IsString()
   @IsOptional(null)

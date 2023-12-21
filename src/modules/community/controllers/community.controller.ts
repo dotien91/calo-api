@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
@@ -18,12 +18,10 @@ import { UpdateCommunityCommentDto } from "../dto/update-community_comment.dto";
 import { CommunityHelper } from "../helper/community.helper";
 
 @Controller("community")
-@ApiTags('homepage')
-@ApiBearerAuth('ICEO')
+@ApiTags("homepage")
+@ApiBearerAuth("ICEO")
 export class CommunityController {
-  constructor(
-    private readonly communityHelper: CommunityHelper
-  ) { }
+  constructor(private readonly communityHelper: CommunityHelper) {}
 
   /**
    * ######## FOR REQUEST ######
@@ -63,7 +61,11 @@ export class CommunityController {
    * @returns
    */
   @Post("/create")
-  async createNewCommunity(@Body() createCommunityBody: CreateCommunityDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewCommunity(
+    @Body() createCommunityBody: CreateCommunityDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.createNewCommunity(createCommunityBody, res, req);
   }
 
@@ -92,21 +94,25 @@ export class CommunityController {
   }
 
   /**
-  *
-  * @param id
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
   @Get("detail/:id")
-  async getDetailCommunity(@Query() query: ListCommunityDto, @Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async getDetailCommunity(
+    @Query() query: ListCommunityDto,
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.handleGetDetailCommunity(id, query, res, req);
   }
 
-
   /**
-  * ######## FOR COMMENT ######
-  */
+   * ######## FOR COMMENT ######
+   */
 
   /**
    *
@@ -128,7 +134,11 @@ export class CommunityController {
    * @returns
    */
   @Patch("/update-comment")
-  async updateCommunityComment(@Body() dataUpdate: UpdateCommunityCommentDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async updateCommunityComment(
+    @Body() dataUpdate: UpdateCommunityCommentDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.handleUpdateCommunityComment(dataUpdate, res, req);
   }
 
@@ -164,14 +174,13 @@ export class CommunityController {
     return await this.communityHelper.createLike(createCommunityBody, res, req);
   }
 
-
   /**
-  *
-  * @param createCommunityBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createCommunityBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-dislike")
   async createDislike(
     @Body() createCommunityBody: CreateCommunityLikeDto,
@@ -181,14 +190,13 @@ export class CommunityController {
     return await this.communityHelper.createDislike(createCommunityBody, res, req);
   }
 
-
   /**
-  *
-  * @param createCommunityBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createCommunityBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-like-comment")
   async createLikeComment(
     @Body() createCommunityBody: CreateCommunityLikeDto,
@@ -199,12 +207,12 @@ export class CommunityController {
   }
 
   /**
-  *
-  * @param createCommunityBody
-  * @param res
-  * @param req
-  * @returns
-  */
+   *
+   * @param createCommunityBody
+   * @param res
+   * @param req
+   * @returns
+   */
   @Post("/create-dislike-comment")
   async createDislikeComment(
     @Body() createCommunityBody: CreateCommunityLikeDto,
@@ -238,10 +246,9 @@ export class CommunityController {
     return await this.communityHelper.handleGetDetailComment(id, res, req);
   }
 
-
   /**
-  * ######## FOR CATEGORY ######
-  */
+   * ######## FOR CATEGORY ######
+   */
 
   /**
    *
@@ -287,7 +294,6 @@ export class CommunityController {
     return await this.communityHelper.handleUpdateCategory(dataUpdate, res, req);
   }
 
-
   /**
    *
    * @param id
@@ -299,7 +305,6 @@ export class CommunityController {
   async getDetailCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.communityHelper.handleGetDetailCategory(id, res, req);
   }
-
 
   /**
    *
@@ -314,17 +319,29 @@ export class CommunityController {
   }
 
   @Post("/create-poll")
-  async createNewCommunityPool(@Body() createCommunityBody: CreateCommunityPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async createNewCommunityPool(
+    @Body() createCommunityBody: CreateCommunityPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.createNewCommunityPoll(createCommunityBody, res, req);
   }
 
   @Post("vote-poll")
-  async voteCommunityPool(@Body() createCommunityBody: CreateCommunityPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async voteCommunityPool(
+    @Body() createCommunityBody: CreateCommunityPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.voteCommunityPoll(createCommunityBody, res, req);
   }
 
   @Post("un-vote-poll")
-  async unVoteCommunityPool(@Body() createCommunityBody: CreateCommunityPollDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async unVoteCommunityPool(
+    @Body() createCommunityBody: CreateCommunityPollDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return await this.communityHelper.unVoteCommunityPoll(createCommunityBody, res, req);
   }
 
@@ -332,5 +349,4 @@ export class CommunityController {
   async handleGetListVote(@Query() query: FilterListVote, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.communityHelper.handleGetListVote(query, res, req);
   }
-
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { User } from "src/modules/user/schemas/user.schema";
+import { User } from "../../../modules/user/schemas/user.schema";
 
 export type CommunityCategoryDocument = CommunityCategory & Document;
 
@@ -100,7 +100,7 @@ export class CommunityCategory {
     nullable: false,
     index: true,
   })
-  version: Number
+  version: Number;
 
   @Prop({
     type: Number,
@@ -108,11 +108,10 @@ export class CommunityCategory {
     nullable: false,
     index: true,
   })
-  public_status: Number
+  public_status: Number;
 }
 
 export const CommunityCategorySchema = SchemaFactory.createForClass(CommunityCategory).index({
   category_title: "text",
   category_content: "text",
 });
-

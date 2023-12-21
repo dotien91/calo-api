@@ -27,6 +27,7 @@ export class CourseController {
   }
 
   @Get("/admin-list")
+  @Permissions(Permission(Controllers.COURSE).LIST)
   async getAdminCourse(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseListByAdmin(query, res, req);
   }
