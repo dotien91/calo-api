@@ -1,6 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
-import { ApiOperation, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCourseModuleDto {
   @IsNumberString()
@@ -28,7 +27,6 @@ export class ListCourseModuleDto {
   @ApiPropertyOptional()
   course_id: string;
 
-
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
@@ -37,10 +35,10 @@ export class ListCourseModuleDto {
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_parent: string
+  is_parent: string;
 
   @IsIn(["0", "1"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  is_child: string
+  is_child: string;
 }

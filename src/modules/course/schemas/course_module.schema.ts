@@ -36,6 +36,11 @@ export class CourseModule {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Media", index: true })
   media_id: Media;
 
+  @Prop({
+    type: String,
+  })
+  type: String;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "CourseModule", index: true })
   parent_id: CourseModule;
 }
