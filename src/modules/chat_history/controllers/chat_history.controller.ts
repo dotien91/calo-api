@@ -17,14 +17,16 @@ import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_m
 
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
+import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChatRoomAdminDto } from "../../../modules/chat_room/dto/create-chat_room_admin.dto";
 import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
+import { Controllers } from "../../../modules/index.i";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { ListChatHistoryDto } from "../dto/list-chat_history.dto";
 import { ChatHistoryHelper } from "../helpers/chat_history.helper";
 
-@Controller("chat-history")
+@Controller(Controllers.CHAT_HISTORY)
 export class ChatHistoryController {
   constructor(
     private readonly chatHistoryHelper: ChatHistoryHelper,
@@ -71,6 +73,7 @@ export class ChatHistoryController {
   }
 
   @Post("/chat-system")
+  @Permissions(Permission(Controllers.CHAT_HISTORY).CREATE)
   async createSystem(
     @Req() req: ExpressRequestDto,
     @Body() createChatRoomDto: CreateChatRoomAdminDto,
@@ -84,60 +87,56 @@ export class ChatHistoryController {
       if (createChatRoomDto.partner_id === userObject?._id.toString()) {
         throw new BadRequestException("Can't create new Room!");
       }
-      if (await this.userPermissionService.isHavePermission(userObject?._id.toString(), "chat_history/create")) {
-        let dataToReturnAll: any = [];
-        if (createChatRoomDto.partner_id) {
-          let dataPartner = createChatRoomDto.partner_id.split(",");
-          for (let dataPartnerItem of dataPartner) {
-            let dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
-              userObject,
-              dataPartnerItem,
-              "personal",
-              "",
-              true
-            );
+      let dataToReturnAll: any = [];
+      if (createChatRoomDto.partner_id) {
+        let dataPartner = createChatRoomDto.partner_id.split(",");
+        for (let dataPartnerItem of dataPartner) {
+          let dataCreateReturnRoom: any = await this.chatRoomHelper.handleCreateRoom(
+            userObject,
+            dataPartnerItem,
+            "personal",
+            "",
+            true
+          );
 
-            if (!dataCreateReturnRoom) {
-              continue;
-            }
-
-            let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
-            let currentTime = new Date().getTime();
-
-            let leftTime = currentTime - updatedAt;
-            if (leftTime < 3600000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-              console.log("Not return");
-              continue;
-            }
-
-            let createChatHistoryDto = {
-              chat_room_id: dataCreateReturnRoom.chat_room_id._id.toString(),
-              chat_content: createChatRoomDto?.chat_content,
-              media_data: createChatRoomDto?.media_data,
-            };
-
-            let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
-              req,
-              res,
-              createChatHistoryDto,
-              false,
-              true
-            );
-            if (dataReturnHistory) {
-              dataToReturnAll.push({ chat_history_id: dataReturnHistory?._id.toString(), status: "Done" });
-            } else {
-              dataToReturnAll.push({ chat_history_id: dataReturnHistory?._id.toString(), status: "False" });
-            }
+          if (!dataCreateReturnRoom) {
+            continue;
           }
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization" })
-            .status(HttpStatus.OK)
-            .json(dataToReturnAll);
-        } else {
-          throw new BadRequestException("Not have Data!");
+
+          let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
+          let currentTime = new Date().getTime();
+
+          let leftTime = currentTime - updatedAt;
+          if (leftTime < 3600000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
+            console.log("Not return");
+            continue;
+          }
+
+          let createChatHistoryDto = {
+            chat_room_id: dataCreateReturnRoom.chat_room_id._id.toString(),
+            chat_content: createChatRoomDto?.chat_content,
+            media_data: createChatRoomDto?.media_data,
+          };
+
+          let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+            req,
+            res,
+            createChatHistoryDto,
+            false,
+            true
+          );
+          if (dataReturnHistory) {
+            dataToReturnAll.push({ chat_history_id: dataReturnHistory?._id.toString(), status: "Done" });
+          } else {
+            dataToReturnAll.push({ chat_history_id: dataReturnHistory?._id.toString(), status: "False" });
+          }
         }
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization" })
+          .status(HttpStatus.OK)
+          .json(dataToReturnAll);
       } else {
-        throw new BadRequestException("You not have Permission to this action!");
+        throw new BadRequestException("Not have Data!");
       }
     } catch (error) {
       this.logger.log("create Error: " + JSON.stringify(error));

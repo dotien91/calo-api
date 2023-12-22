@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsNumber, IsString, IsDateString } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsDateString, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class GetChatRoomListDto {
   @IsNumberString()
@@ -20,7 +20,7 @@ export class GetChatRoomListDto {
   @IsIn(["personal", "group", "all", "anonymous"])
   @ApiPropertyOptional()
   @IsOptional(null)
-  room_type: "personal" | "group" | "all" | "anonymous"
+  room_type: "personal" | "group" | "all" | "anonymous";
 
   @IsIn(["read", "unread"])
   @ApiPropertyOptional()
@@ -36,11 +36,6 @@ export class GetChatRoomListDto {
   @ApiPropertyOptional()
   @IsOptional(null)
   is_join: string;
-
-  @IsString()
-  @ApiPropertyOptional()
-  @IsOptional(null)
-  channel_id: string;
 
   @IsString()
   @IsOptional(null)
@@ -60,10 +55,10 @@ export class GetChatRoomListDto {
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  from?: string
+  from?: string;
 
   @IsDateString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  to?: string
+  to?: string;
 }

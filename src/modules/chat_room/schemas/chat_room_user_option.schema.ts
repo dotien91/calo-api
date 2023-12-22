@@ -91,13 +91,6 @@ export class ChatRoomUserOption {
     unsigned: true,
     default: 0,
   })
-  is_payment: number;
-
-  @Prop({
-    type: "Number",
-    unsigned: true,
-    default: 0,
-  })
   is_reply: number;
 
   @Prop({

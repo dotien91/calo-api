@@ -411,7 +411,7 @@ export class ChatRoomUserOptionService {
         { $set: dataUpdate },
         { new: false }
       );
-      if (dataReturn._id) {
+      if (dataReturn?._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
         return dataReturn;

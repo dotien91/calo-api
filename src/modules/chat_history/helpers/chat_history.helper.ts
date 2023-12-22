@@ -48,8 +48,6 @@ export class ChatHistoryHelper {
     }
     let authCode = req?.auth_code;
 
-    let isPayment = 0;
-
     //Validate Chat
     if (createChatHistoryDto.chat_room_id && (createChatHistoryDto.chat_content || createChatHistoryDto.media_data)) {
       let dataPermissionFilter = {
@@ -297,10 +295,6 @@ export class ChatHistoryHelper {
         chat_room_id: dataRoomUpdate.toObject(),
         partner_id: await this.handleGetUserBase(userObject),
       };
-      if (isPayment == 1) {
-        dataOptionSender = { ...dataOptionSender, ...{ is_payment: 1 } };
-        dataOptionPartner = { ...dataOptionPartner, ...{ is_payment: 1 } };
-      }
 
       dataReturn = {
         ...dataReturn,
@@ -733,7 +727,6 @@ export class ChatHistoryHelper {
       let dataNotification = {
         createdBy: fromUser._id.toString(),
         user_id: userIdSend,
-        channel_id: req?.channel_id,
         title: notificationTitle?.toString(),
         content: notificationContent,
         param: JSON.stringify(dataToSendNotification),
