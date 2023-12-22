@@ -4,4 +4,5 @@ export enum Controllers {
   CONFIG = "config",
   USER_PERMISSION = "user-permission",
   COURSE = "course",
+  LIVESTREAM = "livestream",
 }
