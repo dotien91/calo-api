@@ -16,7 +16,7 @@ import { User } from "../../../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
-import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
+import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto, ReactType } from "../dto/create-livestream_like.dto";
 import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { ListLivestreamDto } from "../dto/list-livestream.dto";
 import { ListLivestreamCommentDto } from "../dto/list-livestream_comment.dto";
@@ -85,8 +85,6 @@ export class LivestreamHelper {
           is_view: false,
         },
       };
-      //Update Cloudflare
-      dataCreate = await this.handleCloudflareData(dataCreate);
 
       setTimeout(async () => {
         //Update dataPost
@@ -482,30 +480,26 @@ export class LivestreamHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "livestream/list")) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
-
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        let dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.livestreamService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
+      let dataCount = await this.livestreamService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -727,25 +721,25 @@ export class LivestreamHelper {
       };
 
       //Process Emoij
-      if (dataFollow?.react_type == "haha") {
+      if (dataFollow?.react_type == ReactType.HAHA) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.haha_value": 1 } };
       }
-      if (dataFollow?.react_type == "like") {
+      if (dataFollow?.react_type == ReactType.LIKE) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.like_value": 1 } };
       }
-      if (dataFollow?.react_type == "love") {
+      if (dataFollow?.react_type == ReactType.LOVE) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.love_value": 1 } };
       }
-      if (dataFollow?.react_type == "care") {
+      if (dataFollow?.react_type == ReactType.CARE) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.care_value": 1 } };
       }
-      if (dataFollow?.react_type == "wow") {
+      if (dataFollow?.react_type == ReactType.WOW) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.wow_value": 1 } };
       }
-      if (dataFollow?.react_type == "sad") {
+      if (dataFollow?.react_type == ReactType.SAD) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.sad_value": 1 } };
       }
-      if (dataFollow?.react_type == "angry") {
+      if (dataFollow?.react_type == ReactType.ANGRY) {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.angry_value": 1 } };
       }
       await this.livestreamService.updateCount(dataUpdateFilter, dataUpdateCount);
@@ -799,17 +793,17 @@ export class LivestreamHelper {
         livestream_id: dataFollow.livestream_id.toString(),
         total_time: 0,
       };
-      if (dataView && Number(dataView.total_time) > Number(dataFollow.total_time)) {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time) } };
+      if (dataView && Number(dataView.total_time) > Number(dataFollow.total_time ?? 0)) {
+        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time ?? 0) } };
       } else {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time) } };
+        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time ?? 0) } };
       }
 
       //Update count Video
       let dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
-      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number });
+      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number ?? 0 });
 
       let dataReturn = await this.livestreamViewService.update(dataUpdate);
       //Update when is New
@@ -960,37 +954,6 @@ export class LivestreamHelper {
       }
 
       let userIdArray = [];
-      let emailArray = [];
-
-      //Update Email
-      let dataFirestore = getFirestore();
-
-      for (let emailItem of emailArray) {
-        //Let dataToUpdate
-        let dataToUpdate = {
-          brand_name: "Gamifa",
-          post_name: dataLivestream.title,
-          //@ts-ignore
-          post_image: dataLivestream?.avatar?.media_url || "",
-          email: emailItem?.user_email,
-          fullname: emailItem?.display_name,
-          user_id: fromUser?._id?.toString(),
-          post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
-          event_name: "livestream-create",
-          is_send_email: false,
-        };
-
-        //Update
-        const dataUserStore = dataFirestore.collection("Users");
-        await dataUserStore
-          .add(dataToUpdate)
-          .then(() => {
-            console.log("User added!");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
 
       if (userIdArray && userIdArray?.length) {
         let dataToSendNotification = {
@@ -1029,7 +992,7 @@ export class LivestreamHelper {
    * @param res
    * @returns
    */
-  async processUnFollowUser(dataFollow: CreateLivestreamLikeDto, req: ExpressRequestDto, res: Response) {
+  async processUnFollowUser(dataFollow: CreateLivestreamUnLikeDto, req: ExpressRequestDto, res: Response) {
     try {
       let userObject = req?.user_object;
       if (!userObject) {

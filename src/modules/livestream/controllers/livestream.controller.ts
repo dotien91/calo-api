@@ -19,7 +19,7 @@ import { ListChatHistoryDto } from "../../../modules/chat_history/dto/list-chat_
 import { Controllers } from "../../../modules/index.i";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
-import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
+import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
 import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { ListLivestreamDto } from "../dto/list-livestream.dto";
 import { UpdateLivestreamDto } from "../dto/update-livestream.dto";
@@ -50,6 +50,7 @@ export class LivestreamController {
   }
 
   @Get("/admin-list")
+  @Permissions(Permission(Controllers.LIVESTREAM).LIST)
   async getAdminLivestream(@Query() query: ListLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.getLivestreamListByAdmin(query, res, req);
   }
@@ -81,11 +82,15 @@ export class LivestreamController {
   }
 
   @Post("un-like")
-  handleUnFollowUser(@Body() dataFollow: CreateLivestreamLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  handleUnFollowUser(
+    @Body() dataFollow: CreateLivestreamUnLikeDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
     return this.livestreamHelper.processUnFollowUser(dataFollow, req, res);
   }
 
-  @Patch("/update")
+  @Patch("/admin-update")
   @Permissions(Permission(Controllers.LIVESTREAM).UPDATE)
   async updateByAdmin(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.handleUpdateLivestreamByAdmin(dataUpdate, res, req);
