@@ -87,20 +87,12 @@ export class NotificationService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    const populateObject = {
-      path: "request_id",
-      populate: {
-        path: "user_id",
-        select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
-      },
-    };
+
     const dataReturn = await this.NotificationModel.find(condition, { user_id: false })
       .populate(
         "createdBy",
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
-      .populate(populateObject)
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -209,7 +201,6 @@ export class NotificationService {
         "createdBy",
         "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
       )
-      .populate("request_id")
       .exec();
   }
 
