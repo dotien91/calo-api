@@ -25,10 +25,6 @@ export class CreateNotificationDto {
 
   @IsString()
   @IsOptional(null)
-  request_id?: string;
-
-  @IsString()
-  @IsOptional(null)
   click_action?: string;
 
   @IsString()

@@ -794,7 +794,6 @@ export class NotificationHelper {
       true
     );
     const dataToSendNotification = {
-      request_id: "",
       path: data?.path,
       data_id: "",
     };
@@ -805,7 +804,6 @@ export class NotificationHelper {
       user_id: data?.user_id,
       title: data.title,
       content: notificationContent,
-      request_id: data.request_id || null,
       param: JSON.stringify(dataToSendNotification),
       type_action: "link",
       router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",

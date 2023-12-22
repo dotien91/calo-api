@@ -10,12 +10,9 @@ import {
   Query,
   Req,
   Res,
-  UploadedFiles,
-  UseInterceptors,
 } from "@nestjs/common";
 import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_media.dto";
 
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -35,28 +32,6 @@ export class ChatHistoryController {
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
-
-  @Post("/create-media")
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: "documents", maxCount: 10 },
-      { name: "videos", maxCount: 10 },
-      { name: "images", maxCount: 10 },
-      { name: "voices", maxCount: 10 },
-    ])
-  )
-  async createMedia(
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto,
-    @Body() createChatHistoryDto: any,
-    @UploadedFiles() files: any
-  ) {
-    try {
-      this.chatHistoryHelper.createMedia(res, req, createChatHistoryDto, files);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
 
   @Post("/create")
   async create(
@@ -98,10 +73,6 @@ export class ChatHistoryController {
             "",
             true
           );
-
-          if (!dataCreateReturnRoom) {
-            continue;
-          }
 
           let updatedAt = new Date(dataCreateReturnRoom?.updatedAt).getTime();
           let currentTime = new Date().getTime();
