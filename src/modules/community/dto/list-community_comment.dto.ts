@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsDateString, IsDefined, IsEmpty, IsIn, IsNumberString, IsOptional, IsString, ValidateIf } from "class-validator";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCommunityCommentDto {
   @IsNumberString()
@@ -36,18 +35,17 @@ export class ListCommunityCommentDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  community_id: string
-
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  user_id: string
+  community_id: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  parent_id: string
+  user_id: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  parent_id: string;
 
   @IsString()
   @IsOptional(null)
@@ -62,7 +60,7 @@ export class ListCommunityCommentDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search: string
+  search: string;
 
   @IsString()
   @IsOptional(null)

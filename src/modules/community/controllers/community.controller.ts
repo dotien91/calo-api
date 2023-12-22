@@ -5,7 +5,7 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
-import { CreateCommunityLikeDto } from "../dto/create-community_like.dto";
+import { CreateCommunityCommentLikeDto, CreateCommunityLikeDto } from "../dto/create-community_like.dto";
 import { CreateCommunityPollDto } from "../dto/create-community_poll.dto";
 import { FilterListVote } from "../dto/filter-list_vote.dto";
 import { ListCommunityDto } from "../dto/list-community.dto";
@@ -101,13 +101,8 @@ export class CommunityController {
    * @returns
    */
   @Get("detail/:id")
-  async getDetailCommunity(
-    @Query() query: ListCommunityDto,
-    @Param("id") id: string,
-    @Res() res: Response,
-    @Req() req: ExpressRequestDto
-  ) {
-    return await this.communityHelper.handleGetDetailCommunity(id, query, res, req);
+  async getDetailCommunity(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.communityHelper.handleGetDetailCommunity(id, res, req);
   }
 
   /**
@@ -199,7 +194,7 @@ export class CommunityController {
    */
   @Post("/create-like-comment")
   async createLikeComment(
-    @Body() createCommunityBody: CreateCommunityLikeDto,
+    @Body() createCommunityBody: CreateCommunityCommentLikeDto,
     @Res() res: Response,
     @Req() req: ExpressRequestDto
   ) {
@@ -215,7 +210,7 @@ export class CommunityController {
    */
   @Post("/create-dislike-comment")
   async createDislikeComment(
-    @Body() createCommunityBody: CreateCommunityLikeDto,
+    @Body() createCommunityBody: CreateCommunityCommentLikeDto,
     @Res() res: Response,
     @Req() req: ExpressRequestDto
   ) {

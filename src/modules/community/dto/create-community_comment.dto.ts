@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsIn, IsJSON, IsNumberString, IsObject, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 export class CreateCommunityCommentDto {
   @IsString()
   @ApiProperty()
