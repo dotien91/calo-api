@@ -4,4 +4,6 @@ export enum Controllers {
   CONFIG = "config",
   USER_PERMISSION = "user-permission",
   COURSE = "course",
+  CHAT_ROOM = "chat-room",
+  CHAT_HISTORY = "chat-history",
 }

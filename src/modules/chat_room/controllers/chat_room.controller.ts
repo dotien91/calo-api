@@ -6,7 +6,6 @@ import {
   Get,
   HttpStatus,
   Logger,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -15,11 +14,10 @@ import {
   Res,
   Response,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response as ExpressResponse } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserService } from "../../../modules/user/services/user.service";
+import { Controllers } from "../../../modules/index.i";
 import { CreateChatRoomDto } from "../dto/create-chat_room.dto";
 import { DeleteChatRoomUserRoleDto } from "../dto/delete-chat_room_user_role.dto";
 import { GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
@@ -30,7 +28,7 @@ import { ChatRoomHelper } from "../helpers/chat_room.helper";
 import { ChatRoomService } from "../services/chat_room.service";
 import { ChatRoomUserOptionService } from "../services/chat_room_user_option.service";
 
-@Controller("chat-room")
+@Controller(Controllers.CHAT_ROOM)
 @ApiTags("chat")
 @ApiBearerAuth("ICEO")
 export class ChatRoomController {
@@ -42,53 +40,11 @@ export class ChatRoomController {
    */
   constructor(
     private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
-    private readonly appUserService: UserService,
     private readonly chatRoomHelper: ChatRoomHelper,
     private readonly chatRoomService: ChatRoomService
   ) {}
 
   private readonly logger = new Logger("chat_room_controller");
-
-  /**
-   * @author Tony Vu
-   * @param dataCreateRoom
-   * @param res
-   * @param dataKey
-   * @returns
-   */
-  @Post("/server/:key")
-  async updateByServer(
-    @Body() dataCreateRoom: CreateChatRoomDto,
-    @Response() res: ExpressResponse,
-    @Param("key") dataKey: string
-  ) {
-    let hashPassword = new ConfigService().get<string>("HASH_PASSWORD_CHAT");
-    if (dataKey === hashPassword) {
-      try {
-        let userObject = await this.appUserService.findOne({ _id: dataCreateRoom.user_id });
-        if (!userObject) {
-          throw new BadRequestException("User create Not exist!");
-        }
-        let dataCreateReturn = await this.chatRoomHelper.handleCreateRoom(
-          userObject,
-          dataCreateRoom.partner_id,
-          dataCreateRoom.chat_type,
-          dataCreateRoom?.room_name
-        );
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization" })
-          .status(HttpStatus.OK)
-          .json(dataCreateReturn);
-      } catch (error) {
-        this.logger.log(error.message);
-        this.logger.log("Data update is not Invalid!");
-        throw new BadRequestException("Data update is not Invalid!");
-      }
-    } else {
-      this.logger.log("Data update is not Invalid!");
-      throw new NotFoundException("Data update is not Invalid!");
-    }
-  }
 
   @Post("/create")
   async create(
@@ -111,8 +67,7 @@ export class ChatRoomController {
           createChatRoomDto.chat_type,
           createChatRoomDto?.room_name,
           false,
-          req,
-          createChatRoomDto.is_payment
+          req
         );
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization" })
@@ -220,7 +175,6 @@ export class ChatRoomController {
               call_count: 0,
               chat_history_count: 1,
               mute_status: 0,
-              is_payment: 0,
               last_view: null,
               user_block: "",
             },
