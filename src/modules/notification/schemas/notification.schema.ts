@@ -35,14 +35,6 @@ export class Notification {
   })
   channel_id: MongooseSchema.Types.ObjectId;
 
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    default: null,
-    ref: "Request",
-    nullable: true,
-  })
-  request_id: String;
-
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   createdBy: User;
 

@@ -24,8 +24,10 @@ import { UserModule } from "./modules/user/user.module";
 // import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { CourseModule } from "./modules/course/course.module";
+import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
+import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
+import { CourseModule } from "./modules/course/course.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ShortModule } from "./modules/short/short.module";
@@ -67,6 +69,8 @@ const dataImport = [
   ShortModule,
   CourseModule,
   CommunityModule,
+  ChatRoomModule,
+  ChatHistoryModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
