@@ -8,13 +8,14 @@ import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
-import { CreateForgotPassword } from "../dto/create-forgot-password.dto";
+import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
 import { LoginUserDto } from "../dto/login-user.dto";
 import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
 import { SendPhoneDto } from "../dto/send-phone.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
 import { ValidatePhoneDto } from "../dto/validate-phone.dto";
+import { VerifyCodeDto } from "../dto/verify-code.dto";
 import { User } from "../schemas/user.schema";
 import { UserService } from "../services/user.service";
 import { UserAnonymousSessionService } from "../services/user_anonymous_session.service";
@@ -30,8 +31,8 @@ export class UserLoginHelper {
     private appUserService: UserService,
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
-    private userAnonymousSessionService: UserAnonymousSessionService,
-  ) { }
+    private userAnonymousSessionService: UserAnonymousSessionService
+  ) {}
 
   private readonly logger = new Logger("user_login");
 
@@ -117,11 +118,11 @@ export class UserLoginHelper {
   }
 
   /**
-   * 
-   * @param dataSendPhone 
-   * @param req 
-   * @param res 
-   * @returns 
+   *
+   * @param dataSendPhone
+   * @param req
+   * @param res
+   * @returns
    */
   public sendPhone = async (dataSendPhone: SendPhoneDto, req: ExpressRequestDto, res: Response) => {
     try {
@@ -913,9 +914,9 @@ export class UserLoginHelper {
    * @param res
    * @param req
    */
-  async handleForgotPassword(dataCreate: CreateForgotPassword, res: Response, req: ExpressRequestDto) {
+  async handleForgotPasswordEmail(dataCreate: CreateForgotPasswordEmail, res: Response, req: ExpressRequestDto) {
     try {
-      //Send Email
+      // Validate recaptcha
       const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
       if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
         //Check Recaptcha
@@ -946,14 +947,15 @@ export class UserLoginHelper {
         throw new NotFoundException("User not exist!");
       }
 
-      const dataToken = await this.makeRandom(80);
+      const dataToken = await this.makeRandom(6);
       //Update
       const dataUpdate = {
         _id: userObject?._id?.toString(),
-        email_token: dataToken,
+        verify_code: dataToken,
       };
       await this.appUserService.update(dataUpdate);
-      const dataReferal = req.headers.referer;
+
+      // TODO: implement send code via email
 
       const dataReturn = {
         data_success: "Done!",
@@ -969,9 +971,91 @@ export class UserLoginHelper {
     }
   }
 
+  async handleForgotPasswordPhoneNumber(
+    dataCreate: CreateForgotPasswordPhoneNumber,
+    res: Response,
+    req: ExpressRequestDto
+  ) {
+    try {
+      // Validate recaptcha
+      // const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
+      // if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
+      //   //Check Recaptcha
+      //   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
+      //   const dataAxios = await axios
+      //     .post(url, {})
+      //     .then((response: any) => {
+      //       if (response?.data?.success == true) {
+      //         return true;
+      //       } else {
+      //         return false;
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       return false;
+      //     });
+      //   if (!dataAxios) {
+      //     throw new NotFoundException("Recaptcha not validate!");
+      //   }
+      // }
+
+      //Update & Send E-mail
+      const searchPattern = {
+        user_phone: dataCreate?.phone_number,
+      };
+      const userObject = await this.appUserService.findOne(searchPattern);
+      if (!userObject) {
+        throw new NotFoundException("User not exist!");
+      }
+
+      const dataToken = await this.makeRandom(6);
+      //Update
+      const dataUpdate = {
+        _id: userObject?._id?.toString(),
+        verify_code: dataToken,
+      };
+      await this.appUserService.update(dataUpdate);
+
+      const recaptchaToken = dataCreate?.g_recaptcha;
+      const identityToolkit = google.identitytoolkit({
+        auth: process.env.GOOGLE_FIREBASE_KEY,
+        version: "v3",
+      });
+
+      if (dataCreate?.phone_number && recaptchaToken) {
+        try {
+          await identityToolkit.relyingparty
+            .sendVerificationCode({
+              //@ts-ignore
+              phoneNumber: dataCreate.phone_number,
+              recaptchaToken: recaptchaToken,
+            })
+            .then((response) => {
+              return res
+                .set({ "Access-Control-Expose-Headers": "X-Authorization" })
+                .status(HttpStatus.OK)
+                .json({ data_success: "Done!" });
+            })
+            .catch((error) => {
+              console.log(error);
+              throw new BadRequestException(error.message);
+            });
+        } catch (err) {
+          throw new BadRequestException(err.message);
+        }
+      } else {
+        throw new BadRequestException("Vui lòng nhập đầy đủ thông tin!");
+      }
+      //Send Email
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async makeRandom(length: number) {
     let result = "";
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // old_pattern = ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+    const characters = "0123456789";
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
@@ -989,15 +1073,14 @@ export class UserLoginHelper {
    * @returns
    */
   async handleChangePassword(dataUpdate: CreateChangePasswordDto, res: Response, req: ExpressRequestDto) {
-
     try {
       //Check from TOKEN
-      const userEmailToken = dataUpdate.email_token?.trim();
+      const userEmailToken = dataUpdate.verify_code?.trim();
       if (!userEmailToken || userEmailToken?.length !== 80) {
         throw new NotFoundException("Email token is not valid!");
       }
       const dataFinder = {
-        email_token: userEmailToken?.toString(),
+        verify_code: userEmailToken?.toString(),
       };
       const dataUser = await this.appUserService.findOne(dataFinder);
       if (!dataUser) {
@@ -1007,7 +1090,7 @@ export class UserLoginHelper {
       const dataUpdateAfter = {
         _id: dataUser?._id?.toString(),
         user_password: await this.handleProcessPassword(dataUpdate?.user_password),
-        email_token: "",
+        verify_code: "",
       };
       const dataReturn = await this.appUserService.update(dataUpdateAfter);
       return res
@@ -1050,6 +1133,36 @@ export class UserLoginHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleVerifyCode(dataCreate: VerifyCodeDto, res: Response, req: ExpressRequestDto) {
+    try {
+      const user = await this.appUserService.findOne({
+        $or: [{ user_email: dataCreate.user_email }, { user_phone: dataCreate.phone_number }],
+      });
+
+      if (user && user.verify_code === dataCreate.verify_code) {
+        // Clear verify code
+        const dataUpdate = {
+          _id: user._id.toString(),
+          verify_code: "",
+        };
+        await this.appUserService.update(dataUpdate);
+
+        const dataReturn = {
+          data_success: "Done!",
+        };
+
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataReturn);
+      } else {
+        throw new NotFoundException("Verify code is not valid!");
+      }
     } catch (error) {
       throw new NotFoundException(error.message);
     }

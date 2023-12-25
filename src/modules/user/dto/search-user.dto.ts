@@ -87,5 +87,5 @@ export class SearchUserDto {
   @ApiPropertyOptional()
   user_interest?: string;
 
-  email_token?: string;
+  verify_code?: string;
 }
