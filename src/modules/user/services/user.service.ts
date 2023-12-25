@@ -12,7 +12,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name)
     private appUserModel: Model<UserDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -37,12 +37,11 @@ export class UserService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: SearchUserDto): Promise<User> {
+  async findOne(dataToSearch?: any): Promise<User> {
     return await this.appUserModel.findOne(dataToSearch).exec();
   }
 
   async findOneLogin(dataToSearch: SearchUserDto): Promise<User> {
-
     const dataReturn = await this.appUserModel.findOne(dataToSearch).exec();
     return dataReturn;
   }
@@ -229,7 +228,7 @@ export class UserService {
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
-      .exec()
+      .exec();
     return dataReturn;
   }
 

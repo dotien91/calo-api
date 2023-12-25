@@ -978,26 +978,26 @@ export class UserLoginHelper {
   ) {
     try {
       // Validate recaptcha
-      const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
-      if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
-        //Check Recaptcha
-        const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
-        const dataAxios = await axios
-          .post(url, {})
-          .then((response: any) => {
-            if (response?.data?.success == true) {
-              return true;
-            } else {
-              return false;
-            }
-          })
-          .catch((error) => {
-            return false;
-          });
-        if (!dataAxios) {
-          throw new NotFoundException("Recaptcha not validate!");
-        }
-      }
+      // const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
+      // if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
+      //   //Check Recaptcha
+      //   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
+      //   const dataAxios = await axios
+      //     .post(url, {})
+      //     .then((response: any) => {
+      //       if (response?.data?.success == true) {
+      //         return true;
+      //       } else {
+      //         return false;
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       return false;
+      //     });
+      //   if (!dataAxios) {
+      //     throw new NotFoundException("Recaptcha not validate!");
+      //   }
+      // }
 
       //Update & Send E-mail
       const phoneNumber = {
@@ -1016,16 +1016,38 @@ export class UserLoginHelper {
       };
       await this.appUserService.update(dataUpdate);
 
-      // TODO: implement send code via phone number
+      const recaptchaToken = dataCreate?.g_recaptcha;
+      const identityToolkit = google.identitytoolkit({
+        auth: process.env.GOOGLE_FIREBASE_KEY,
+        version: "v3",
+      });
 
-      const dataReturn = {
-        data_success: "Done!",
-      };
+      if (phoneNumber && recaptchaToken) {
+        try {
+          await identityToolkit.relyingparty
+            .sendVerificationCode({
+              //@ts-ignore
+              phoneNumber,
+              recaptchaToken: recaptchaToken,
+            })
+            .then((response) => {
+              return response;
+            })
+            .catch((error) => {
+              console.log(error);
+              return null;
+            });
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
+          return res
+            .set({ "Access-Control-Expose-Headers": "X-Authorization" })
+            .status(HttpStatus.OK)
+            .json({ data_success: "Done!" });
+        } catch (err) {
+          throw new BadRequestException(err.message);
+        }
+      } else {
+        throw new BadRequestException("Vui lòng nhập đầy đủ thông tin!");
+      }
       //Send Email
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -1120,7 +1142,9 @@ export class UserLoginHelper {
 
   async handleVerifyCode(dataCreate: VerifyCodeDto, res: Response, req: ExpressRequestDto) {
     try {
-      const user = await this.appUserService.findOne({ user_email: dataCreate.user_email });
+      const user = await this.appUserService.findOne({
+        $or: [{ user_email: dataCreate.user_email }, { user_phone: dataCreate.phone_number }],
+      });
 
       if (user && user.verify_code === dataCreate.verify_code) {
         // Clear verify code

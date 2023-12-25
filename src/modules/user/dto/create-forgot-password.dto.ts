@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsPhoneNumber, IsString } from "class-validator";
 
 export class CreateForgotPasswordEmail {
   @IsString()
@@ -12,7 +12,7 @@ export class CreateForgotPasswordEmail {
 }
 
 export class CreateForgotPasswordPhoneNumber {
-  @IsString()
+  @IsPhoneNumber()
   @ApiProperty()
   phone_number: string;
 
