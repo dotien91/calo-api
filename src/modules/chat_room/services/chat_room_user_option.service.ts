@@ -21,6 +21,10 @@ export class ChatRoomUserOptionService {
    */
   async getCondition(filter: FilterChatRoomDto) {
     let condition: any = {};
+
+    // should not get chat room with blocked user
+    condition = Object.assign(condition, { partner_id: { $nin: filter.blocked_user } });
+
     if (!filter.room_type || filter.room_type !== "group") {
       condition = Object.assign(condition, { chat_history_count: { $gt: 0 } });
     }
@@ -31,7 +35,7 @@ export class ChatRoomUserOptionService {
       condition = Object.assign(condition, { partner_id: filter.partner_id });
     }
     if (filter.room_type) {
-      if (filter.room_type === "group" || filter.room_type === "personal" || filter.room_type === "anonymous") {
+      if (["group", "personal", "anonymous"].includes(filter.room_type)) {
         condition = Object.assign(condition, { room_type: filter.room_type });
       }
     } else {

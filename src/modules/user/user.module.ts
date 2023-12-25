@@ -2,6 +2,8 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../../modules/core/services/jwt_helper.service";
+import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
+import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { Config, ConfigSchema } from "../config/schemas/config.schema";
 import { ConfigService } from "../config/services/config.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
@@ -82,6 +84,7 @@ import { UserViewService } from "./services/user_view.service";
       { name: UserAnonymousSession.name, schema: UserAnonymousSessionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: VnpayLog.name, schema: VnpayLogSchema },
+      { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
     ]),
   ],
   controllers: [UserController],
@@ -113,6 +116,7 @@ import { UserViewService } from "./services/user_view.service";
     QueueService,
     EventHookWorkerService,
     EventHookNotificationService,
+    ChatRoomUserOptionService,
   ],
   exports: [
     UserFilterHelper,
@@ -130,4 +134,4 @@ import { UserViewService } from "./services/user_view.service";
     UserService,
   ],
 })
-export class UserModule { }
+export class UserModule {}

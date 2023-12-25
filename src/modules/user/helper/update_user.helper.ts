@@ -12,10 +12,10 @@ import { Response } from "express";
 import * as _ from "lodash";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
-import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -28,7 +28,6 @@ import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
 import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
-import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
 import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
 import { User } from "../schemas/user.schema";
 import { UserLocationHistory } from "../schemas/user_location_history.schema";
@@ -39,7 +38,6 @@ import { UserDisagreeService } from "../services/user_disagree.service";
 import { UserFollowService } from "../services/user_follow.service";
 import { UserInterestService } from "../services/user_interest.service";
 import { UserLocationService } from "../services/user_location.service";
-import { UserMoodService } from "../services/user_mood.service";
 import { UserQuestionService } from "../services/user_question.service";
 import { UserSessionService } from "../services/user_session.service";
 import { UserViewService } from "../services/user_view.service";
@@ -60,13 +58,12 @@ export class UpdateUserHelper {
     private notificationHelper: NotificationHelper,
     private userInterestService: UserInterestService,
     private notificationService: NotificationService,
-    private userMoodService: UserMoodService,
     private userQuestionService: UserQuestionService,
-    private jwtHelper: JwtHelperService,
     private configService: ConfigService,
     private userLocationService: UserLocationService,
-    private userAnonymousService: UserAnonymousService
-  ) { }
+    private userAnonymousService: UserAnonymousService,
+    private readonly chatRoomUserOptionService: ChatRoomUserOptionService
+  ) {}
 
   private readonly logger = new Logger("call");
   /**
@@ -174,7 +171,6 @@ export class UpdateUserHelper {
     }
   }
 
-
   /**
    * @author Tony Vu
    * @function processUserUpdate
@@ -254,7 +250,6 @@ export class UpdateUserHelper {
       throw new BadRequestException(error.message);
     }
   }
-
 
   /**
    * @author Tony Vu
@@ -439,7 +434,6 @@ export class UpdateUserHelper {
       //Query 03
       await this.userDisagreeService.removeOne(dataUpdate);
       let dataReturn = await this.userFollowService.update(dataUpdate);
-
 
       if (isSendNotification) {
         await this.sendNotificationToPartner(dataFollow.partner_id.toString(), userObject, authCode, req);
@@ -685,16 +679,16 @@ export class UpdateUserHelper {
       };
       const dataReturn = await this.userBlockService.update(dataUpdate);
 
-      // const chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
-      // if (chatRoomData) {
-      //   const dataToUpdate = {
-      //     user_block: userObject._id.toString(),
-      //   };
-      //   await this.chatRoomUserOptionService.updateMany(
-      //     { chat_room_id: chatRoomData.chat_room_id._id.toString() },
-      //     dataToUpdate
-      //   );
-      // }
+      const chatRoomData = await this.chatRoomUserOptionService.findOne(dataUpdate);
+      if (chatRoomData) {
+        const dataToUpdate = {
+          user_block: userObject._id.toString(),
+        };
+        await this.chatRoomUserOptionService.updateMany(
+          { chat_room_id: chatRoomData.chat_room_id._id.toString() },
+          dataToUpdate
+        );
+      }
 
       let dataBlockUpdate = [dataBlock.partner_id.toString()];
       if (userObject?.block_users) {
@@ -831,18 +825,18 @@ export class UpdateUserHelper {
       };
       const dataToCheck = await this.userBlockService.findOne(dataFindOne);
       if (dataToCheck) {
-        // const dataReturn = await this.userBlockService.remove(dataToCheck._id.toString());
+        await this.userBlockService.remove(dataToCheck._id.toString());
 
-        // const chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
-        // if (chatRoomData) {
-        //   const dataToUpdate = {
-        //     user_block: "",
-        //   };
-        //   await this.chatRoomUserOptionService.updateMany(
-        //     { chat_room_id: chatRoomData.chat_room_id._id.toString() },
-        //     dataToUpdate
-        //   );
-        // }
+        const chatRoomData = await this.chatRoomUserOptionService.findOne(dataFindOne);
+        if (chatRoomData) {
+          const dataToUpdate = {
+            user_block: "",
+          };
+          await this.chatRoomUserOptionService.updateMany(
+            { chat_room_id: chatRoomData.chat_room_id._id.toString() },
+            dataToUpdate
+          );
+        }
 
         if (userObject?.block_users) {
           //dataFollowUpdate = _.union(userObject?.follow_users, dataFollowUpdate);
@@ -1210,7 +1204,7 @@ export class UpdateUserHelper {
       }
 
       return true;
-    } catch (error) { }
+    } catch (error) {}
   }
 
   /**
