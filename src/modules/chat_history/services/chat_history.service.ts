@@ -21,6 +21,10 @@ export class ChatHistoryService {
    */
   async getCondition(filter: FilterChatHistoryDto) {
     let condition: any = {};
+
+    // should not get blocked user's message
+    condition = Object.assign(condition, { createBy: { $nin: filter.blocked_user } });
+
     if (filter.user_id) {
       condition = Object.assign(condition, { user_id: filter.user_id });
     }

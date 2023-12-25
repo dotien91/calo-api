@@ -440,6 +440,7 @@ export class ChatRoomHelper {
     let dataFilter = {
       ...query,
       ...{ user_id: userObject._id.toString() },
+      ...{ blocked_user: userObject.block_users },
     };
 
     let dataOrder = {

@@ -29,7 +29,6 @@ import { UpdateSessionDto } from "../dto/update-session.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
 import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
-import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
 import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
 import { ValidatePhoneDto } from "../dto/validate-phone.dto";
 import { UpdateUserHelper } from "../helper/update_user.helper";
@@ -41,17 +40,16 @@ export class UserController {
   constructor(
     private readonly userLoginHelper: UserLoginHelper,
     private readonly updateUserHelper: UpdateUserHelper,
-    private readonly userFilterHelper: UserFilterHelper,
-  ) {
-  }
+    private readonly userFilterHelper: UserFilterHelper
+  ) {}
 
   /**
    * @description Login with Google
    * @author Tony Vu
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/google")
   loginWithGoogle(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -61,10 +59,10 @@ export class UserController {
   /**
    * @description Login with Apple
    * @author Tony Vu
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/apple")
   loginWithApple(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -73,10 +71,10 @@ export class UserController {
 
   /**
    * @description Login with Facebook
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/facebook")
   loginWithFacebook(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -85,10 +83,10 @@ export class UserController {
 
   /**
    * @description Login with Password
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/password")
   loginWithPassword(@Body() loginData: LoginUserPasswordDto, @Res() res: Response, @Req() req: Request) {
@@ -97,16 +95,15 @@ export class UserController {
 
   /**
    * description Change Pasword
-   * @param dataChangePassword 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param dataChangePassword
+   * @param res
+   * @param req
+   * @returns
    */
   @Patch("create-password")
   handleChangePassword(@Body() dataChangePassword: CreateChangePasswordDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.handleChangePassword(dataChangePassword, res, req);
   }
-
 
   @Post("login/send-phone")
   @ApiOperation({ summary: "Send validate Phone" })
@@ -119,8 +116,6 @@ export class UserController {
   validatePhone(@Body() dataValidate: ValidatePhoneDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.userLoginHelper.validatePhone(dataValidate, req, res);
   }
-
-
 
   @Post("login/sign-up")
   @ApiOperation({ summary: "Sign up new account with username/password" })
@@ -358,7 +353,18 @@ export class UserController {
 
   @Post("block")
   handleBlockUser(@Body() dataBlock: CreateUserBlockDto, @Res() res: Response, @Req() req: Request) {
-    return this.updateUserHelper.processBlockUser(dataBlock, req, res);
+    Promise.all([
+      this.updateUserHelper.processUnFollowUser({ partner_id: dataBlock.partner_id }, req, res),
+      this.updateUserHelper.processBlockUser(dataBlock, req, res),
+    ])
+      .then((processedData) => {
+        // processedData[0]: unfollow data
+        // processedData[1]: block data
+        return processedData[1];
+      })
+      .catch((e) => {
+        return e;
+      });
   }
 
   @Post("un-block")

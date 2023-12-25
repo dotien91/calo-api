@@ -433,6 +433,7 @@ export class ChatHistoryHelper {
         from_id: query.from_id,
         to_id: query.to_id,
         search: query?.search,
+        blocked_user: userObject.block_users,
       };
       let dataOrder = {
         createdAt: query.order_by,
