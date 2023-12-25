@@ -604,7 +604,7 @@ export class NotificationHelper {
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      const dataToFilter = { ...query, ...{ user_id: userObject?._id?.toString(), channel_id: req?.channel_id } };
+      const dataToFilter = { ...query, ...{ user_id: userObject?._id?.toString() } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -800,7 +800,6 @@ export class NotificationHelper {
     const notificationContent = data?.content();
     const dataNotification = {
       createdBy: data?.send_user_id,
-      channel_id: data?.channel_id || null,
       user_id: data?.user_id,
       title: data.title,
       content: notificationContent,
