@@ -3,7 +3,7 @@ import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
-import { CreateForgotPassword } from "../dto/create-forgot-password.dto";
+import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -29,9 +29,9 @@ import { UpdateSessionDto } from "../dto/update-session.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
 import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
-import { UpdateUserOptionDto } from "../dto/update-user_option.dto";
 import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
 import { ValidatePhoneDto } from "../dto/validate-phone.dto";
+import { VerifyCodeDto } from "../dto/verify-code.dto";
 import { UpdateUserHelper } from "../helper/update_user.helper";
 import { UserFilterHelper } from "../helper/user_filter.helper";
 import { UserLoginHelper } from "../helper/user_login.helper";
@@ -41,17 +41,16 @@ export class UserController {
   constructor(
     private readonly userLoginHelper: UserLoginHelper,
     private readonly updateUserHelper: UpdateUserHelper,
-    private readonly userFilterHelper: UserFilterHelper,
-  ) {
-  }
+    private readonly userFilterHelper: UserFilterHelper
+  ) {}
 
   /**
    * @description Login with Google
    * @author Tony Vu
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/google")
   loginWithGoogle(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -61,10 +60,10 @@ export class UserController {
   /**
    * @description Login with Apple
    * @author Tony Vu
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/apple")
   loginWithApple(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -73,10 +72,10 @@ export class UserController {
 
   /**
    * @description Login with Facebook
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/facebook")
   loginWithFacebook(@Body() loginData: LoginUserDto, @Res() res: Response, @Req() req: Request) {
@@ -85,10 +84,10 @@ export class UserController {
 
   /**
    * @description Login with Password
-   * @param loginData 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param loginData
+   * @param res
+   * @param req
+   * @returns
    */
   @Post("login/password")
   loginWithPassword(@Body() loginData: LoginUserPasswordDto, @Res() res: Response, @Req() req: Request) {
@@ -97,16 +96,15 @@ export class UserController {
 
   /**
    * description Change Pasword
-   * @param dataChangePassword 
-   * @param res 
-   * @param req 
-   * @returns 
+   * @param dataChangePassword
+   * @param res
+   * @param req
+   * @returns
    */
   @Patch("create-password")
   handleChangePassword(@Body() dataChangePassword: CreateChangePasswordDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.handleChangePassword(dataChangePassword, res, req);
   }
-
 
   @Post("login/send-phone")
   @ApiOperation({ summary: "Send validate Phone" })
@@ -119,8 +117,6 @@ export class UserController {
   validatePhone(@Body() dataValidate: ValidatePhoneDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.userLoginHelper.validatePhone(dataValidate, req, res);
   }
-
-
 
   @Post("login/sign-up")
   @ApiOperation({ summary: "Sign up new account with username/password" })
@@ -203,14 +199,24 @@ export class UserController {
   //   return await this.userFilterHelper.handleProcessUser(query, req, res);
   // }
 
-  @Post("forgot-password")
+  @Post("forgot-password/email")
   @ApiOperation({ summary: "Forgot password - will send email" })
-  async handleForgotPassword(
-    @Body() dataForgot: CreateForgotPassword,
+  async handleForgotPasswordEmail(
+    @Body() dataForgot: CreateForgotPasswordEmail,
     @Req() req: ExpressRequestDto,
     @Res() res: Response
   ) {
-    return await this.userLoginHelper.handleForgotPassword(dataForgot, res, req);
+    return await this.userLoginHelper.handleForgotPasswordEmail(dataForgot, res, req);
+  }
+
+  @Post("forgot-password/phone-number")
+  @ApiOperation({ summary: "Forgot password - will send via phone" })
+  async handleForgotPasswordPhoneNumber(
+    @Body() dataForgot: CreateForgotPasswordPhoneNumber,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userLoginHelper.handleForgotPasswordPhoneNumber(dataForgot, res, req);
   }
 
   // @Get("process-face")
@@ -410,5 +416,10 @@ export class UserController {
     @Res() res: Response
   ) {
     return await this.updateUserHelper.updateUserInterestByAdmin(bodyUpdate, res, req);
+  }
+
+  @Post("verify-code")
+  async handleVerifyCode(@Body() dataForgot: VerifyCodeDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
+    return await this.userLoginHelper.handleVerifyCode(dataForgot, res, req);
   }
 }

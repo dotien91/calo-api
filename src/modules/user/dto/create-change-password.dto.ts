@@ -4,7 +4,7 @@ import { IsString, MaxLength, MinLength } from "class-validator";
 export class CreateChangePasswordDto {
   @IsString()
   @ApiProperty()
-  email_token: string;
+  verify_code: string;
 
   @IsString()
   @MinLength(4)

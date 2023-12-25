@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Channel } from "diagnostics_channel";
 import { Document, Schema as MongooseSchema } from "mongoose";
 
 export type UserDocument = User & Document;
@@ -107,7 +106,7 @@ export class User {
     default: "",
     index: true,
   })
-  email_token: string;
+  verify_code: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now, index: true })
   last_active: MongooseSchema.Types.Date;
