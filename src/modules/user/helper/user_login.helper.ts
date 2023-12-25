@@ -1000,10 +1000,10 @@ export class UserLoginHelper {
       // }
 
       //Update & Send E-mail
-      const phoneNumber = {
+      const searchPattern = {
         user_phone: dataCreate?.phone_number,
       };
-      const userObject = await this.appUserService.findOne(phoneNumber);
+      const userObject = await this.appUserService.findOne(searchPattern);
       if (!userObject) {
         throw new NotFoundException("User not exist!");
       }
@@ -1022,26 +1022,24 @@ export class UserLoginHelper {
         version: "v3",
       });
 
-      if (phoneNumber && recaptchaToken) {
+      if (dataCreate?.phone_number && recaptchaToken) {
         try {
           await identityToolkit.relyingparty
             .sendVerificationCode({
               //@ts-ignore
-              phoneNumber,
+              phoneNumber: dataCreate.phone_number,
               recaptchaToken: recaptchaToken,
             })
             .then((response) => {
-              return response;
+              return res
+                .set({ "Access-Control-Expose-Headers": "X-Authorization" })
+                .status(HttpStatus.OK)
+                .json({ data_success: "Done!" });
             })
             .catch((error) => {
               console.log(error);
-              return null;
+              throw new BadRequestException(error.message);
             });
-
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization" })
-            .status(HttpStatus.OK)
-            .json({ data_success: "Done!" });
         } catch (err) {
           throw new BadRequestException(err.message);
         }
