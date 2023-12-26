@@ -311,8 +311,10 @@ export class CommunityHelper {
       }
 
       // should get only posts by people who followed
-      const followUsers = req.user_object.follow_users;
-      query = Object.assign(query, { user_id: { $in: followUsers } });
+      if (query.is_following_list === "true") {
+        const followUsers = req.user_object.follow_users;
+        query = Object.assign(query, { user_id: { $in: followUsers } });
+      }
 
       let limit = query.limit ? query.limit : 1000;
       let page = query.page ? query.page : 1;
