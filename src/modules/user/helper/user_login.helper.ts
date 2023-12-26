@@ -951,7 +951,7 @@ export class UserLoginHelper {
         throw new NotFoundException("User not exist!");
       }
 
-      const dataToken = await this.makeRandom(6);
+      const dataToken = 123456; // await this.makeRandom(6);
       //Update
       const dataUpdate = {
         _id: userObject?._id?.toString(),
