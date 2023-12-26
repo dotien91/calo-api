@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MaxLength, MinLength } from "class-validator";
+import { IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class CreateChangePasswordDto {
   @IsString()
@@ -20,5 +20,6 @@ export class CreateChangePasswordDto {
 
   @IsString()
   @ApiProperty()
-  g_recaptcha: string;
+  @IsOptional()
+  g_recaptcha?: string;
 }

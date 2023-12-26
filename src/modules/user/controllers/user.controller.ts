@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
-import { Permission, Permissions } from "src/decorators/auth.decorator";
-import { Controllers } from "src/modules/index.i";
+import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Controllers } from "../../../modules/index.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";

@@ -1078,17 +1078,16 @@ export class UserLoginHelper {
    */
   async handleChangePassword(dataUpdate: CreateChangePasswordDto, res: Response, req: ExpressRequestDto) {
     try {
-      //Check from TOKEN
-      const userEmailToken = dataUpdate.verify_code?.trim();
-      if (!userEmailToken || userEmailToken?.length !== 80) {
-        throw new NotFoundException("Email token is not valid!");
+      if (dataUpdate.user_password !== dataUpdate.re_password) {
+        throw new BadRequestException("User password and repassword is not match!");
       }
+
       const dataFinder = {
-        verify_code: userEmailToken?.toString(),
+        verify_code: dataUpdate?.verify_code,
       };
       const dataUser = await this.appUserService.findOne(dataFinder);
       if (!dataUser) {
-        throw new NotFoundException("Email token is not valid!");
+        throw new NotFoundException("Verify code is not valid!");
       }
       //Else is Correct
       const dataUpdateAfter = {
