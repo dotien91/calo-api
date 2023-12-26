@@ -144,7 +144,7 @@ export class User {
     default: "",
     index: true,
   })
-  user_phone: string;
+  phone_number: string;
 
   @Prop({
     type: String,

@@ -99,11 +99,11 @@ export class UserService {
       condition = Object.assign(condition, { $and: [{ public_sound: { $ne: null } }, { public_sound: { $ne: "" } }] });
     }
 
-    if (filter.user_phone) {
-      const dataPhoneToFilter = filter.user_phone;
+    if (filter.phone_number) {
+      const dataPhoneToFilter = filter.phone_number;
       const dataPhoneArray = parsePhoneNumber(dataPhoneToFilter.trim());
       const nationalNumber = dataPhoneArray.nationalNumber;
-      condition = Object.assign(condition, { user_phone: { $regex: nationalNumber, $options: "i" } });
+      condition = Object.assign(condition, { phone_number: { $regex: nationalNumber, $options: "i" } });
     }
 
     if (filter.from && filter.to) {

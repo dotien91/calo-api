@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { CourseLike, CourseLikeDocument } from "../schemas/course_like.schema";
-import { CreateCourseLikeDto } from "../dto/create-course_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateCourseLikeDto } from "../dto/update-course_like.dto";
+import { CreateCourseLikeDto } from "../dto/create-course_like.dto";
 import { FilterLikeCourseDto } from "../dto/filter-like_course.dto";
+import { UpdateCourseLikeDto } from "../dto/update-course_like.dto";
+import { CourseLike, CourseLikeDocument } from "../schemas/course_like.schema";
 
 @Injectable()
 export class CourseLikeService {
   constructor(
     @InjectModel(CourseLike.name)
     private courseLikeModel: Model<CourseLikeDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -251,14 +251,14 @@ export class CourseLikeService {
         },
         {
           path: "avatar",
-        }
+        },
       ],
     };
     let dataReturn: any = await this.courseLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active _id user_phone user_email"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active _id phone_number user_email"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -270,7 +270,11 @@ export class CourseLikeService {
       for (let dataItem of dataReturn) {
         delete dataItem.course_id?.user_id;
         if (dataItem.course_id?._id) {
-          let dataItemToReturn = { ...dataItem.course_id?.toObject(), ...dataItem?.toObject(), ...{ _id: dataItem.course_id?._id?.toString() } };
+          let dataItemToReturn = {
+            ...dataItem.course_id?.toObject(),
+            ...dataItem?.toObject(),
+            ...{ _id: dataItem.course_id?._id?.toString() },
+          };
           delete dataItemToReturn.course_id;
           dataFinalToReturn.push(dataItemToReturn);
         }

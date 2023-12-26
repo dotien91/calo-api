@@ -76,16 +76,7 @@ export class UpdateUserHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      if (updateData._id.toString() !== userObject._id.toString()) {
-        const userPermissionObject = await this.userPermissionService.isHavePermission(
-          userObject._id.toString(),
-          "user/update"
-        );
-        if (!userPermissionObject) {
-          //Check Admin
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
-      }
+
       if (
         updateData &&
         Object.keys(updateData).length === 0 &&
