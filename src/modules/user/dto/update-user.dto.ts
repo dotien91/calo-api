@@ -54,7 +54,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_phone?: string;
+  phone_number?: string;
 
   @IsString()
   @IsOptional(null)

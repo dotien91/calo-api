@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { Permission, Permissions } from "src/decorators/auth.decorator";
+import { Controllers } from "src/modules/index.i";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
@@ -36,7 +38,7 @@ import { UpdateUserHelper } from "../helper/update_user.helper";
 import { UserFilterHelper } from "../helper/user_filter.helper";
 import { UserLoginHelper } from "../helper/user_login.helper";
 
-@Controller("user")
+@Controller(Controllers.USER)
 export class UserController {
   constructor(
     private readonly userLoginHelper: UserLoginHelper,
@@ -279,6 +281,7 @@ export class UserController {
   }
 
   @Patch("update/user")
+  @Permissions(Permission(Controllers.USER).UPDATE)
   update(@Body() updateUserDto: UpdateUserDto, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processUserUpdate(updateUserDto, req, res);
   }

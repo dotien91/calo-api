@@ -7,4 +7,5 @@ export enum Controllers {
   LIVESTREAM = "livestream",
   CHAT_ROOM = "chat-room",
   CHAT_HISTORY = "chat-history",
+  USER = "user",
 }

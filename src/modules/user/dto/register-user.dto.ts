@@ -34,7 +34,7 @@ export class RegisterUserDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_phone?: string;
+  phone_number?: string;
 
   @IsString()
   @IsOptional(null)

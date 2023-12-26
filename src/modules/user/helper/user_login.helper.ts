@@ -136,7 +136,7 @@ export class UserLoginHelper {
 
       if (phoneNumber && recaptchaToken) {
         // phoneNumber = "+84" + phoneNumber;
-        const userObject = await this.appUserService.findOne({ user_phone: phoneNumber });
+        const userObject = await this.appUserService.findOne({ phone_number: phoneNumber });
         if (!userObject) {
           throw new BadRequestException("Số điện thoại này không tồn tại");
         }
@@ -199,7 +199,7 @@ export class UserLoginHelper {
 
       if (phoneNumber && verificationCode) {
         // phoneNumber = "+84" + phoneNumber;
-        const userObject = await this.appUserService.findOne({ user_phone: phoneNumber, _id: userId });
+        const userObject = await this.appUserService.findOne({ phone_number: phoneNumber, _id: userId });
         if (!userObject) {
           throw new BadRequestException("Số điện thoại này không tồn tại");
         }
@@ -429,6 +429,10 @@ export class UserLoginHelper {
         throw new BadRequestException("This user has exist! Please Login!");
       }
 
+      if (!(dataLogin.phone_number || dataLogin.user_email)) {
+        throw new BadRequestException("Missing user's phone/email");
+      }
+
       if (!userObject || (userObject && !userObject._id)) {
         const dataUrl = await this.handleGetUserAvatarRandom();
 
@@ -441,7 +445,7 @@ export class UserLoginHelper {
           user_password: await this.handleProcessPassword(dataLogin.user_password),
           display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
           user_status: 1,
-          user_phone: dataLogin?.user_phone ? dataLogin?.user_phone : "",
+          phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
         };
         userObject = await this.appUserService.create(dataToCreate);
       }
@@ -1001,7 +1005,7 @@ export class UserLoginHelper {
 
       //Update & Send E-mail
       const searchPattern = {
-        user_phone: dataCreate?.phone_number,
+        phone_number: dataCreate?.phone_number,
       };
       const userObject = await this.appUserService.findOne(searchPattern);
       if (!userObject) {
@@ -1141,7 +1145,7 @@ export class UserLoginHelper {
   async handleVerifyCode(dataCreate: VerifyCodeDto, res: Response, req: ExpressRequestDto) {
     try {
       const user = await this.appUserService.findOne({
-        $or: [{ user_email: dataCreate.user_email }, { user_phone: dataCreate.phone_number }],
+        $or: [{ user_email: dataCreate.user_email }, { phone_number: dataCreate.phone_number }],
       });
 
       if (user && user.verify_code === dataCreate.verify_code) {
