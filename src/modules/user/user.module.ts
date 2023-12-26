@@ -1,6 +1,8 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { HttpClientService } from "../../base/http-client/http.base";
+import { HttpConfig } from "../../base/http-config/http.config";
 import { JwtHelperService } from "../../modules/core/services/jwt_helper.service";
 import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
@@ -117,6 +119,8 @@ import { UserViewService } from "./services/user_view.service";
     EventHookWorkerService,
     EventHookNotificationService,
     ChatRoomUserOptionService,
+    HttpClientService,
+    HttpConfig,
   ],
   exports: [
     UserFilterHelper,

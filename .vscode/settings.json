@@ -5,6 +5,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.sortImports": true
-  }
+  },
+  "editor.indentSize": 2,
+  "editor.tabSize": 2
 }
 
