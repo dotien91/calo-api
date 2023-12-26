@@ -1149,13 +1149,6 @@ export class UserLoginHelper {
       });
 
       if (user && user.verify_code === dataCreate.verify_code) {
-        // Clear verify code
-        const dataUpdate = {
-          _id: user._id.toString(),
-          verify_code: "",
-        };
-        await this.appUserService.update(dataUpdate);
-
         const dataReturn = {
           data_success: "Done!",
         };
