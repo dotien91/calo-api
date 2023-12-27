@@ -19,13 +19,6 @@ export class SearchUserFollowDto {
 
   @IsString()
   @ApiProperty()
+  @IsOptional(null)
   user_id?: string;
-
-  @IsString()
-  @ApiProperty()
-  channel_id?: string;
-
-  @IsString()
-  @ApiProperty()
-  auth_id?: string;
 }
