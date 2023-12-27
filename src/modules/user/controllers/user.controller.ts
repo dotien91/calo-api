@@ -160,7 +160,7 @@ export class UserController {
     return await this.userFilterHelper.getListUserLocation(query, req, res);
   }
 
-  @Get("list/match")
+  @Get("list/friend")
   @ApiOperation({ summary: "Get list user follow together" })
   async getListMatch(@Query() query: SearchUserFollowDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getListMatch(query, req, res);
