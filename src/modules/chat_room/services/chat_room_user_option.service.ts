@@ -34,25 +34,18 @@ export class ChatRoomUserOptionService {
     if (filter.partner_id) {
       condition = Object.assign(condition, { partner_id: filter.partner_id });
     }
-    if (filter.room_type) {
-      if (["group", "personal", "anonymous"].includes(filter.room_type)) {
-        condition = Object.assign(condition, { room_type: filter.room_type });
-      }
-    } else {
-      condition = Object.assign(condition, { room_type: { $ne: "group" } });
+    if (["group", "personal", "anonymous"].includes(filter.room_type)) {
+      condition = Object.assign(condition, { room_type: filter.room_type });
     }
     if (filter.chat_room_id) {
       condition = Object.assign(condition, { chat_room_id: filter.chat_room_id });
     }
-
     if (filter.is_reply) {
       condition = Object.assign(condition, { is_reply: filter.is_reply });
     }
-
     if (filter.ref_user) {
       condition = Object.assign(condition, { ref_user: filter.ref_user });
     }
-
     if (filter.room_private) {
       condition = Object.assign(condition, { "chat_room_id.room_private": filter.room_private });
     }

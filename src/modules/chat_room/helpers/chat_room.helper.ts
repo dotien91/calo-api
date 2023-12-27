@@ -442,83 +442,26 @@ export class ChatRoomHelper {
       ...{ user_id: userObject._id.toString() },
       ...{ blocked_user: userObject.block_users },
     };
-
     let dataOrder = {
       updatedAt: orderBy,
     };
-    let dataChat = null;
+
     let partnerIds = [];
     let dataToReturn = [];
     let dataCount = 0;
-    if (!query?.is_join || query?.is_join === "true") {
-      dataChat = await this.chatRoomUserOptionService.filter(dataFilter, dataOrder, page, limit);
-      if (dataChat && dataChat.length) {
-        for (let dataChatItem of dataChat) {
-          let dataToPush = dataChatItem.toObject();
-          dataToReturn.push(dataToPush);
-          partnerIds.push(dataChatItem?.partner_id?._id?.toString());
-        }
-      }
-      dataCount = await this.chatRoomUserOptionService.count(dataFilter);
-    }
 
-    if (query?.is_join && query?.is_join === "false") {
-      //Add Chat List
-      let dataFilter: any = {
-        room_private: 0,
-        room_type: "group",
-        unset: userObject?._id?.toString(),
-      };
-      let dataSort: any = {
-        numberMember: "DESC",
-      };
-      let dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, page, limit);
-      for (let dataRoomItem of dataRoomToAdd) {
-        let dataToAddNew = {
-          chat_room_id: dataRoomItem.toObject(),
-          user_permission: "read",
-          room_title: "",
-          room_type: "group",
-          room_image: "",
-          query_from: "",
-        };
-        dataToReturn.push(dataToAddNew);
+    const dataChat = await this.chatRoomUserOptionService.filter(dataFilter, dataOrder, page, limit);
+    if (dataChat && dataChat.length) {
+      for (let dataChatItem of dataChat) {
+        let dataToPush = dataChatItem.toObject();
+        dataToReturn.push(dataToPush);
+        partnerIds.push(dataChatItem?.partner_id?._id?.toString());
       }
     }
+    dataCount = await this.chatRoomUserOptionService.count(dataFilter);
 
-    if (!query.is_join) {
-      if ((dataChat?.length ? dataChat.length : 0) < Number(limit) && query.room_type === "group") {
-        let lastPage = page - Math.floor(dataCount / limit);
-        if (lastPage >= 1) {
-          //Add Chat List
-          let dataFilter: any = {
-            room_private: 0,
-            room_type: "group",
-            unset: userObject?._id?.toString(),
-          };
-          let dataSort: any = {
-            numberMember: "DESC",
-          };
-          let dataRoomToAdd = await this.chatRoomService.filter(dataFilter, dataSort, lastPage, limit);
-          for (let dataRoomItem of dataRoomToAdd) {
-            let dataToAddNew = {
-              chat_room_id: dataRoomItem.toObject(),
-              user_permission: "read",
-              room_title: "",
-              room_type: "group",
-              room_image: "",
-              query_from: "",
-            };
-            dataToReturn.push(dataToAddNew);
-          }
-        }
-      }
-    }
-
-    let userId = userObject._id.toString();
-    //Check Permission
     let dataToFilter = {
-      partner_id: userId,
+      partner_id: userObject._id.toString(),
       user_ids: partnerIds,
       match_status: 1,
     };
