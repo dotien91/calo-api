@@ -159,7 +159,6 @@ export class UserFilterHelper {
       }
 
       const userId = query?.user_id;
-      const authId = query?.auth_id;
 
       //Check Permission
       const dataToFilter = {
@@ -193,7 +192,7 @@ export class UserFilterHelper {
 
         const dataToFilterFollow = {
           partner_ids: dataIds,
-          user_id: query?.auth_id,
+          user_id: query?.user_id,
         };
         const orderByOBject = {};
         const dataUserFollow = await this.userFollowService.filterUser(
@@ -279,7 +278,6 @@ export class UserFilterHelper {
       }
 
       const userId = query?.user_id;
-      const authId = query?.auth_id;
 
       //Check Permission
       const dataToFilter = {
@@ -313,7 +311,7 @@ export class UserFilterHelper {
 
         const dataToFilterFollow = {
           partner_ids: dataIds,
-          user_id: query?.auth_id,
+          user_id: query?.user_id,
         };
         const orderByOBject = {};
         const dataUserFollow = await this.userFollowService.filterUser(
