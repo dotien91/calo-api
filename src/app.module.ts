@@ -22,6 +22,8 @@ import { TransactionModule } from "./modules/transaction/transaction.module";
 // import { UserService } from "./modules/user/services/user.service";
 import { UserModule } from "./modules/user/user.module";
 // import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
@@ -36,6 +38,7 @@ import { UserPermissionModule } from "./modules/user_permission/user_permission.
 
 const dataImport = [
   ConfigModule.forRoot(),
+  
   MongooseModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
@@ -93,6 +96,10 @@ const dataImport = [
       name: "challenge",
     }
   ),
+  ServeStaticModule.forRoot({
+    serveRoot: '/api/animals',
+    rootPath: join(__dirname, '..', 'animals'),
+  }),
 ];
 /**
  * Module import
