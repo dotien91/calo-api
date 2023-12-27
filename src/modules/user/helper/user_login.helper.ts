@@ -1,10 +1,19 @@
-import { BadRequestException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 import { createHash } from "crypto";
 import { Request, Response } from "express";
 import { google } from "googleapis";
 import * as url from "url";
+import { HttpClientService } from "../../../base/http-client/http.base";
+import { HttpConfig } from "../../../base/http-config/http.config";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
@@ -31,7 +40,9 @@ export class UserLoginHelper {
     private appUserService: UserService,
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
-    private userAnonymousSessionService: UserAnonymousSessionService
+    private userAnonymousSessionService: UserAnonymousSessionService,
+    private httpClient: HttpClientService,
+    private httpConfig: HttpConfig
   ) {}
 
   private readonly logger = new Logger("user_login");
@@ -951,7 +962,7 @@ export class UserLoginHelper {
         throw new NotFoundException("User not exist!");
       }
 
-      const dataToken = 123456; // await this.makeRandom(6);
+      const dataToken = await this.makeRandom(6);
       //Update
       const dataUpdate = {
         _id: userObject?._id?.toString(),
@@ -959,17 +970,26 @@ export class UserLoginHelper {
       };
       await this.appUserService.update(dataUpdate);
 
-      // TODO: implement send code via email
+      const response = await this.httpClient.post$(`${this.httpConfig.emailConfig}/api/email/add`, {
+        eventName: "verify_code",
+        email: dataCreate?.user_email,
+        replacePattern: {
+          verify_code: dataToken,
+        },
+      });
 
-      const dataReturn = {
-        data_success: "Done!",
-      };
+      if (response.status === HttpStatus.OK) {
+        const dataReturn = {
+          data_success: "Done!",
+        };
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
-      //Send Email
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataReturn);
+      } else {
+        throw new InternalServerErrorException();
+      }
     } catch (error) {
       throw new NotFoundException(error.message);
     }
