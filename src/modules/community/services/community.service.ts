@@ -166,7 +166,7 @@ export class CommunityService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("post_category")
@@ -198,7 +198,7 @@ export class CommunityService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("post_category")
@@ -281,7 +281,7 @@ export class CommunityService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("post_category")
@@ -307,7 +307,7 @@ export class CommunityService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("post_category")
@@ -338,7 +338,7 @@ export class CommunityService {
         {
           path: "users_choose",
           select:
-            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
           options: {
             limit: limit,
             sort: dataSort,
@@ -366,7 +366,7 @@ export class CommunityService {
           .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
           .populate(
             "user_id",
-            "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+            "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
           )
           .populate("post_avatar")
           .populate("post_category")

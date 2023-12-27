@@ -14,7 +14,7 @@ export class CommunityCommentService {
   constructor(
     @InjectModel(CommunityComment.name)
     private communityModel: Model<CommunityCommentDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -110,14 +110,14 @@ export class CommunityCommentService {
       populate: {
         path: "user_id",
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       },
     };
     let dataReturn = await this.communityModel
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulateChild)
       .sort(sortObject)
@@ -153,14 +153,14 @@ export class CommunityCommentService {
       populate: {
         path: "user_id",
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       },
     };
     let dataReturn = await this.communityModel
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulateChild)
       .sort(sortObject)
@@ -234,7 +234,7 @@ export class CommunityCommentService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .exec();
   }
@@ -256,7 +256,7 @@ export class CommunityCommentService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .exec();
   }
@@ -278,7 +278,7 @@ export class CommunityCommentService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("community_id")
       .exec();
@@ -293,13 +293,14 @@ export class CommunityCommentService {
     return await this.communityModel.findByIdAndDelete(id).exec();
   }
 
-
   async deleteManyByIds(ids: string[]) {
-    return await this.communityModel.deleteMany({
-      _id: {
-        $in: ids
-      }
-    }).exec();
+    return await this.communityModel
+      .deleteMany({
+        _id: {
+          $in: ids,
+        },
+      })
+      .exec();
   }
 
   /**

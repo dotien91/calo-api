@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ShortLike, ShortLikeDocument } from "../schemas/short_like.schema";
-import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateShortLikeDto } from "../dto/update-short_like.dto";
+import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { FilterLikeShortDto } from "../dto/filter-like_short.dto";
+import { UpdateShortLikeDto } from "../dto/update-short_like.dto";
+import { ShortLike, ShortLikeDocument } from "../schemas/short_like.schema";
 
 @Injectable()
 export class ShortLikeService {
@@ -258,7 +258,7 @@ export class ShortLikeService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -318,7 +318,7 @@ export class ShortLikeService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
-import { SearchChatRoom } from "../dto/search-chat_room.dto";
-import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { ChatRoom as ChatRoomMongoose, ChatRoomDocument } from "../schemas/chat_room.schema";
+import { Model } from "mongoose";
+import { CreateChatRoomUserOptionDto } from "../dto/create-chat_room_user_option.dto";
+import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
+import { SearchChatRoom } from "../dto/search-chat_room.dto";
+import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
 import { UpdateChatRoomDto } from "../dto/update-chat_room.dto";
 import { UpdateChatRoomUserDto } from "../dto/update-chat_room_user.dto";
-import { FilterChatRoomDto } from "../dto/filter-chat_room.dto";
-import { SortByChatRoomDto } from "../dto/sort_by-chat_room.dto";
+import { ChatRoom as ChatRoomMongoose, ChatRoomDocument } from "../schemas/chat_room.schema";
 
 @Injectable()
 export class ChatRoomService {
@@ -42,7 +42,7 @@ export class ChatRoomService {
           {
             path: "group_partners",
             select:
-              "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+              "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
             options: {
               limit: 2,
             },
@@ -51,7 +51,9 @@ export class ChatRoomService {
             path: "room_image",
           },
         ];
-        return this.chatRoomModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true }).populate(populateObject);
+        return this.chatRoomModel
+          .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
+          .populate(populateObject);
       }
     } catch (e) {
       return null;
@@ -94,7 +96,7 @@ export class ChatRoomService {
       condition = Object.assign(condition, { room_type: filter.room_type });
     }
     if (filter.group_partners) {
-      condition = Object.assign(condition, { group_partners: {$in: filter.group_partners} });
+      condition = Object.assign(condition, { group_partners: { $in: filter.group_partners } });
     }
     if (Number(filter.room_private) === 0 || Number(filter.room_private) === 1) {
       condition = Object.assign(condition, { room_private: filter.room_private });
@@ -160,7 +162,7 @@ export class ChatRoomService {
       {
         path: "group_partners",
         select:
-          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         options: {
           limit: 2,
         },
@@ -170,7 +172,7 @@ export class ChatRoomService {
       },
     ];
     let dataRoom = await this.chatRoomModel
-      .find(condition, { })
+      .find(condition, {})
       .populate(populateObject)
       .sort(sortObject)
       .skip(limit * (page - 1))

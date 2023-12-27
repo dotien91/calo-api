@@ -84,7 +84,7 @@ export class ShortCategoryService {
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .sort(sortObject)
@@ -184,7 +184,7 @@ export class ShortCategoryService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .exec();
@@ -207,7 +207,7 @@ export class ShortCategoryService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("plan_id")
       .exec();

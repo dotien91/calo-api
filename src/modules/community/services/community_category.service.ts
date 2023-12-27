@@ -72,7 +72,7 @@ export class CommunityCategoryService {
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .sort(sortObject)
@@ -90,7 +90,12 @@ export class CommunityCategoryService {
    * @param limit
    * @returns
    */
-  async filterAdmin(filter: SearchCommunityCategoryDto, sortBy: SortByCommunityCommentDto, page: number, limit: number) {
+  async filterAdmin(
+    filter: SearchCommunityCategoryDto,
+    sortBy: SortByCommunityCommentDto,
+    page: number,
+    limit: number
+  ) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -101,7 +106,7 @@ export class CommunityCategoryService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .sort(sortObject)
@@ -175,7 +180,7 @@ export class CommunityCategoryService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .exec();
@@ -198,7 +203,7 @@ export class CommunityCategoryService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("category_avatar")
       .exec();

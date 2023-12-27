@@ -91,7 +91,7 @@ export class NotificationService {
     const dataReturn = await this.NotificationModel.find(condition, { user_id: false })
       .populate(
         "createdBy",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -158,7 +158,7 @@ export class NotificationService {
         { upsert: true, new: true, setDefaultsOnInsert: true }
       ).populate(
         "createdBy",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       );
       return dataReturn;
     } catch (e) {
@@ -199,7 +199,7 @@ export class NotificationService {
     return await this.NotificationModel.findById(objectId)
       .populate(
         "createdBy",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .exec();
   }

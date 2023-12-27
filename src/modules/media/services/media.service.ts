@@ -11,7 +11,7 @@ export class MediaService {
   constructor(
     @InjectModel(Media.name)
     private mediaService: Model<MediaDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -131,13 +131,7 @@ export class MediaService {
    * @param limit
    * @returns
    */
-  async filter(
-    filter: FilterMediaDto,
-    sortBy: SortByMediaDto,
-    page: number,
-    limit: number,
-    projection: object = {}
-  ) {
+  async filter(filter: FilterMediaDto, sortBy: SortByMediaDto, page: number, limit: number, projection: object = {}) {
     const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -151,7 +145,7 @@ export class MediaService {
           path: "createBy",
           options: { strictPopulate: false },
           select:
-            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+            "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         })
         .sort(sortObject)
         .skip(limit * (page - 1))

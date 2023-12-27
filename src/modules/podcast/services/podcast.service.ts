@@ -109,7 +109,7 @@ export class PodcastService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("podcast_category")
@@ -140,7 +140,7 @@ export class PodcastService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("podcast_category")
@@ -222,7 +222,7 @@ export class PodcastService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("podcast_category")
@@ -247,7 +247,7 @@ export class PodcastService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("post_avatar")
       .populate("podcast_category")
@@ -278,7 +278,7 @@ export class PodcastService {
           .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
           .populate(
             "user_id",
-            "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+            "user_login display_name user_level user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
           )
           .populate("post_avatar")
           .populate("podcast_category")

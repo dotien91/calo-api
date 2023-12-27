@@ -115,7 +115,7 @@ export class ChatHistoryService {
         path: "createBy",
         options: { strictPopulate: false },
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
       })
       .populate({
         path: "media_ids",
