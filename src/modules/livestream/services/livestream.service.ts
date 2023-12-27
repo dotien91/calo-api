@@ -97,7 +97,7 @@ export class LivestreamService {
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("ref_id")
@@ -206,7 +206,7 @@ export class LivestreamService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("ref_id")
@@ -231,7 +231,7 @@ export class LivestreamService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("ref_id")
@@ -249,7 +249,7 @@ export class LivestreamService {
       .findByIdAndDelete(id)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("ref_id")
@@ -271,7 +271,7 @@ export class LivestreamService {
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id")
         .populate("ref_id")

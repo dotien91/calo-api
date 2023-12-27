@@ -11,7 +11,7 @@ export class UserMoodService {
   constructor(
     @InjectModel(UserMood.name)
     private userFollowModel: Model<UserMoodDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -177,7 +177,7 @@ export class UserMoodService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -226,7 +226,7 @@ export class UserMoodService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       })
       .sort(sortObject)
       .skip(limit * (page - 1))

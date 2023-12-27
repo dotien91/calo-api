@@ -94,7 +94,7 @@ export class SubscribeService {
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(populateObject)
       .populate(populateObjectService)
@@ -176,7 +176,7 @@ export class SubscribeService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar_thumbnail user_avatar last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar_thumbnail user_avatar last_active user_active official_status"
       )
       .populate(populateObject)
       .exec();

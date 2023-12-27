@@ -258,7 +258,7 @@ export class CourseLikeService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active _id phone_number user_email"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active _id phone_number user_email official_status"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -325,7 +325,7 @@ export class CourseLikeService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

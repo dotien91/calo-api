@@ -13,7 +13,7 @@ export class TransactionService {
   constructor(
     @InjectModel(Transaction.name)
     private transactionsModel: Model<TransactionDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -121,11 +121,11 @@ export class TransactionService {
       .find(condition)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(
         "from_user",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")
       .sort(sortObject)
@@ -174,14 +174,14 @@ export class TransactionService {
       path: "user_id",
       options: { strictPopulate: false },
       select:
-        "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
     };
     const dataReturn = await this.transactionsModel
       .find(condition, projection)
       .populate(dataPopulate)
       .populate(
         "from_user",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")
       .sort(sortObject)
@@ -288,11 +288,11 @@ export class TransactionService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(
         "from_user",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")
       .exec();

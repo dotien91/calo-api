@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { LivestreamView, LivestreamViewDocument } from "../schemas/livestream_view.schema";
-import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateLivestreamViewDto } from "../dto/update-livestream_view.dto";
+import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { FilterViewLivestreamDto } from "../dto/filter-view_livestream.dto";
+import { UpdateLivestreamViewDto } from "../dto/update-livestream_view.dto";
+import { LivestreamView, LivestreamViewDocument } from "../schemas/livestream_view.schema";
 
 @Injectable()
 export class LivestreamViewService {
@@ -88,7 +88,7 @@ export class LivestreamViewService {
         .populate("livestream_id")
         .populate(
           "user_id",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .exec();
     } else {
@@ -134,7 +134,7 @@ export class LivestreamViewService {
         .populate("livestream_id")
         .populate(
           "user_id",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         );
       return dataReturn;
     } catch (e) {
@@ -218,7 +218,7 @@ export class LivestreamViewService {
       .populate("livestream_id")
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -244,7 +244,7 @@ export class LivestreamViewService {
       .populate("livestream_id")
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .skip(limit * (page - 1))
       .limit(limit)
@@ -272,7 +272,7 @@ export class LivestreamViewService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .populate("livestream_id")

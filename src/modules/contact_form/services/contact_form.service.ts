@@ -12,7 +12,7 @@ export class ContactFormService {
   constructor(
     @InjectModel(ContactForm.name)
     private contactFormModel: Model<ContactFormDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -80,11 +80,11 @@ export class ContactFormService {
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(
         "partner_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(populateObject)
       .sort(sortObject)
@@ -139,7 +139,7 @@ export class ContactFormService {
     const populateObject = {
       path: "user_id",
       select:
-        "bio user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "bio user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
     };
 
     return await this.contactFormModel
@@ -147,7 +147,7 @@ export class ContactFormService {
       .populate(populateObject)
       .populate(
         "partner_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("entity_id")
       .exec();

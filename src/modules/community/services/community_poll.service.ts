@@ -107,7 +107,7 @@ export class CommunityPollService {
       let dataPopulate = {
         path: "users_choose",
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         options: {
           limit: limit,
           sort: sortObject,
@@ -286,7 +286,7 @@ export class CommunityPollService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -346,7 +346,7 @@ export class CommunityPollService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

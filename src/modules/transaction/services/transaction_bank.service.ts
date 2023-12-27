@@ -13,7 +13,7 @@ export class TransactionBankService {
   constructor(
     @InjectModel(TransactionBank.name)
     private transactionBankModel: Model<TransactionBankDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -70,7 +70,7 @@ export class TransactionBankService {
       .find(condition)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -100,7 +100,7 @@ export class TransactionBankService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       };
 
       const dataReturn = await this.transactionBankModel
@@ -116,7 +116,7 @@ export class TransactionBankService {
         .find(condition, projection)
         .populate(
           "user_id",
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .sort(sortObject)
         .skip(limit * (page - 1))
@@ -223,7 +223,7 @@ export class TransactionBankService {
       .findById(objectId)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .exec();
   }

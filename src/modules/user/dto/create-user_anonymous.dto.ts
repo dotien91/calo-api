@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 
 export class CreateUserAnonymousDto {
   @IsString()
@@ -48,4 +48,9 @@ export class CreateUserAnonymousDto {
 
   _id?: string;
   is_ab_testing?: boolean;
+
+  @IsBoolean()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  official_status?: boolean;
 }

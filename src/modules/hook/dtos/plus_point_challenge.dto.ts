@@ -5,4 +5,5 @@ export class PlusPointChallengeDto {
   point_value?: number;
   display_name?: string;
   type_action?: string;
+  official_status?: boolean;
 }

@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ShortView, ShortViewDocument } from "../schemas/short_view.schema";
-import { CreateShortViewDto } from "../dto/create-short_view.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateShortViewDto } from "../dto/update-short_view.dto";
+import { CreateShortViewDto } from "../dto/create-short_view.dto";
 import { FilterViewShortDto } from "../dto/filter-view_short.dto";
+import { UpdateShortViewDto } from "../dto/update-short_view.dto";
+import { ShortView, ShortViewDocument } from "../schemas/short_view.schema";
 
 @Injectable()
 export class ShortViewService {
@@ -210,7 +210,7 @@ export class ShortViewService {
         path: "partner_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)
@@ -256,7 +256,7 @@ export class ShortViewService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -316,7 +316,7 @@ export class ShortViewService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

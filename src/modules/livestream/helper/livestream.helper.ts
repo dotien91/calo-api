@@ -682,6 +682,7 @@ export class LivestreamHelper {
       user_avatar: userObject.user_avatar,
       display_name: userObject.display_name,
       user_avatar_thumbnail: userObject.user_avatar_thumbnail,
+      official_status: userObject.official_status,
     };
   }
 

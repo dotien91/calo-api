@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { CourseModule, CourseModuleDocument } from "../schemas/course_module.schema";
-import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { FilterModuleCourseDto } from "../dto/filter-module_course.dto";
+import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { CourseModule, CourseModuleDocument } from "../schemas/course_module.schema";
 
 @Injectable()
 export class CourseModuleService {
   constructor(
     @InjectModel(CourseModule.name)
     private courseLikeModel: Model<CourseModuleDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -80,8 +80,9 @@ export class CourseModuleService {
       .findById(id, projection)
       .populate(
         "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      ).populate("course_id")
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+      )
+      .populate("course_id");
     return dataReturn;
   }
 
@@ -100,8 +101,8 @@ export class CourseModuleService {
       .populate("course_id")
       .populate(
         "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
-      )
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+      );
     return dataReturn;
   }
 
@@ -124,7 +125,7 @@ export class CourseModuleService {
         .findOne(dataToSearch)
         .populate(
           "user_id",
-          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id")
         .exec();
@@ -133,7 +134,7 @@ export class CourseModuleService {
         .findOne(dataToSearch)
         .populate(
           "user_id",
-          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id")
         .exec();
@@ -177,7 +178,7 @@ export class CourseModuleService {
         )
         .populate(
           "user_id",
-          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id");
       if (dataReturn._id) {
@@ -268,7 +269,7 @@ export class CourseModuleService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .sort(sortObject)
@@ -314,7 +315,7 @@ export class CourseModuleService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate(dataPopulate)
       .sort(sortObject)
@@ -374,7 +375,7 @@ export class CourseModuleService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { LivestreamLike, LivestreamLikeDocument } from "../schemas/livestream_like.schema";
-import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UpdateLivestreamLikeDto } from "../dto/update-livestream_like.dto";
+import { CreateLivestreamLikeDto } from "../dto/create-livestream_like.dto";
 import { FilterLikeLivestreamDto } from "../dto/filter-like_livestream.dto";
+import { UpdateLivestreamLikeDto } from "../dto/update-livestream_like.dto";
+import { LivestreamLike, LivestreamLikeDocument } from "../schemas/livestream_like.schema";
 
 @Injectable()
 export class LivestreamLikeService {
@@ -69,7 +69,7 @@ export class LivestreamLikeService {
       .populate("livestream_id")
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       );
     return dataReturn;
   }
@@ -261,7 +261,7 @@ export class LivestreamLikeService {
         path: "user_id",
         options: { strictPopulate: false },
         select:
-          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active",
+          "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
         populate: { path: "user_option_id" },
       })
       .sort(sortObject)

@@ -106,7 +106,7 @@ export class CourseService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
@@ -136,7 +136,7 @@ export class CourseService {
       .find(condition, projection)
       .populate(
         "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
@@ -211,7 +211,7 @@ export class CourseService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
@@ -235,7 +235,7 @@ export class CourseService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
@@ -252,7 +252,7 @@ export class CourseService {
       .findByIdAndDelete(id)
       .populate(
         "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
@@ -273,7 +273,7 @@ export class CourseService {
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",
-          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id")
         .populate("avatar");

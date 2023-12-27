@@ -159,6 +159,13 @@ export class User {
     nullable: true,
   })
   is_validated_phone: boolean;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+    nullable: false,
+  })
+  official_status: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

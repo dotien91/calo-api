@@ -113,7 +113,7 @@ export class ChatRoomUserOptionService {
         {
           path: "group_partners",
           select:
-            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active",
+            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
           options: {
             limit: 2,
           },
@@ -134,7 +134,7 @@ export class ChatRoomUserOptionService {
         path: "partner_id",
         options: { strictPopulate: false },
         select:
-          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active",
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
       })
       .exec();
   }
@@ -172,7 +172,7 @@ export class ChatRoomUserOptionService {
         {
           path: "group_partners",
           select:
-            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active",
+            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
           options: {
             limit: 2,
           },
@@ -190,7 +190,7 @@ export class ChatRoomUserOptionService {
       .find(condition, { _id: false })
       .populate(
         "partner_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status"
       )
       .populate(populateObject)
       .sort(sortObject)
@@ -221,7 +221,7 @@ export class ChatRoomUserOptionService {
       .find(filter)
       .populate(
         "partner_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status"
       )
       .populate(populateObject)
       .sort(sortObject)
@@ -249,7 +249,7 @@ export class ChatRoomUserOptionService {
       .find(filter)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status"
       )
       .populate(populateObject)
       .sort(sortObject)
@@ -274,7 +274,7 @@ export class ChatRoomUserOptionService {
       .find(filter, { _id: false })
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status"
       )
       .sort(sortObject)
       .skip(limit * (page - 1))

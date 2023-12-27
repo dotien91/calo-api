@@ -16,7 +16,7 @@ export class OrderService {
     private orderModel: Model<OrderDocument>,
     @InjectModel(VnpayLog.name)
     private vnpayModel: Model<VnpayLogDocument>
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -124,7 +124,7 @@ export class OrderService {
       .find(condition)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("plan_id")
       .populate("media_id")
@@ -155,7 +155,7 @@ export class OrderService {
       path: "user_id",
       options: { strictPopulate: false },
       select:
-        "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id bio description user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
     };
     const dataReturn = await this.orderModel
       .find(condition, projection)
@@ -167,7 +167,6 @@ export class OrderService {
       .limit(limit)
       .exec();
     return dataReturn;
-
   }
 
   /**
@@ -291,7 +290,7 @@ export class OrderService {
       .findById(objectId)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("plan_id")
       .populate("media_id")
@@ -336,7 +335,7 @@ export class OrderService {
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",
-          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active"
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("plan_id")
         .populate("media_id")

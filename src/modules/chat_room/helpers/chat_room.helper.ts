@@ -133,6 +133,7 @@ export class ChatRoomHelper {
             user_avatar_thumbnail: dataPartner.user_avatar_thumbnail,
             display_name: dataPartner.display_name,
             last_active: dataPartner.last_active,
+            official_status: dataPartner.official_status,
           };
           let dataReturnOptionObject = dataReturnOption.toObject();
           let dataToReturn = {
@@ -341,6 +342,7 @@ export class ChatRoomHelper {
       user_avatar_thumbnail: dataPartner?.user_avatar_thumbnail,
       display_name: dataPartner?.display_name,
       last_active: dataPartner?.last_active,
+      official_status: dataPartner?.official_status,
     };
   }
 
