@@ -23,7 +23,7 @@ export class ChatRoomUserOptionService {
     let condition: any = {};
 
     // should not get chat room with blocked user
-    condition = Object.assign(condition, { partner_id: { $nin: filter.blocked_user } });
+    condition = Object.assign(condition, { partner_id: { $nin: filter.blocked_user || [] } });
 
     if (!filter.room_type || filter.room_type !== "group") {
       condition = Object.assign(condition, { chat_history_count: { $gt: 0 } });
@@ -168,7 +168,6 @@ export class ChatRoomUserOptionService {
 
     let populateObject = {
       path: "chat_room_id",
-      match: { room_name: { $regex: filter.search || "", $options: "i" } },
       populate: [
         {
           path: "group_partners",
