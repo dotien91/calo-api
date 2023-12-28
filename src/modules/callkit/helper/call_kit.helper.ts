@@ -1,0 +1,960 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
+import axios from "axios";
+import { Response } from "express";
+import { Types } from "mongoose";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
+import { ChatHistoryService } from "../../../modules/chat_history/services/chat_history.service";
+import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
+import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
+import { MediaService } from "../../../modules/media/services/media.service";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { UserBlockService } from "../../../modules/user/services/user_block.service";
+import { GetCallkitDto } from "../dto/get-callkit.dto";
+import { PostMakeRoomDto } from "../dto/post.make_room.dto";
+import { SearchMapDto } from "../dto/search.map.dto";
+import { SendVoipDto } from "../dto/send-voip.dto";
+import { UpdateCallkitDto } from "../dto/update-callkit.dto";
+import { Callkit } from "../schemas/callkit.schema";
+import { CallkitService } from "../services/callkit.service";
+const AccessToken = require("twilio").jwt.AccessToken;
+const VideoGrant = AccessToken.VideoGrant;
+
+/**
+ * @author Tony Vu
+ * @class MapHelper
+ */
+@Injectable()
+export class CallKitHelper {
+  constructor(
+    private readonly userService: UserService,
+    private readonly chatRoomUserOption: ChatRoomUserOptionService,
+    private readonly chatRoomHelper: ChatRoomHelper,
+    private readonly notificationHelper: NotificationHelper,
+    private readonly callkitService: CallkitService,
+    private readonly userBlockService: UserBlockService,
+    private readonly mediaService: MediaService,
+    private readonly chatHistoryService: ChatHistoryService,
+    private readonly chatHistoryHelper: ChatHistoryHelper,
+    private readonly transactionHelper: TransactionHelper
+  ) {}
+  private readonly logger = new Logger("call");
+  async handleCall(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
+    try {
+      let dataToken = query;
+      this.logger.log("Data Call: " + JSON.stringify(query));
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataToken);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+    return null;
+  }
+
+  /**
+   *
+   * @param query
+   * @param req
+   * @param res
+   * @returns
+   */
+  async handleEndCall(
+    query: PostMakeRoomDto,
+    req: ExpressRequestDto,
+    res: Response,
+    isAuto: Boolean = false,
+    isExpired: number = 0
+  ) {
+    try {
+      let userObject = req?.user_object;
+      if (!userObject) {
+        throw new NotFoundException("User is invalid");
+      }
+      let authCode = req?.auth_code;
+      let objectId = new Types.ObjectId(query.partner_id);
+      if (!objectId) {
+        throw new NotFoundException("Partner is invalid (Not is an ObjectID)");
+      }
+
+      if (!query?.partner_id) {
+        throw new NotFoundException("Partner is invalid");
+      }
+      let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+
+      let callkitObject = await this.callkitService.findOne({ room_name: roomName });
+      let dataFromUser = null;
+      let dataUser = null;
+      let dataPartner = null;
+      if (callkitObject) {
+        try {
+          let partnerObject = await this.userService.findById(query.partner_id.toString(), {});
+          let fromUserId = callkitObject.user_id.toString();
+          dataFromUser = await this.userService.findById(fromUserId, {});
+          dataUser = {
+            _id: dataFromUser._id.toString(),
+            user_login: dataFromUser.user_login,
+            user_avatar: dataFromUser.user_avatar,
+            display_name: dataFromUser.display_name,
+            user_active: dataFromUser.user_active,
+            last_active: dataFromUser.last_active,
+          };
+          dataPartner = {
+            _id: partnerObject._id.toString(),
+            user_login: partnerObject.user_login,
+            user_avatar: partnerObject.user_avatar,
+            display_name: partnerObject.display_name,
+            user_active: partnerObject.user_active,
+            last_active: partnerObject.last_active,
+          };
+
+          // Serialize the token to a JWT and return it to the client side
+          await this.handleEndCallSocket(
+            dataFromUser,
+            dataPartner,
+            query.call_type,
+            roomName,
+            query.call_time,
+            query.chat_room_id,
+            authCode,
+            isExpired
+          );
+
+          if (process.env.BRANCH_NAME !== "live_video" && Number(query?.version) !== 2) {
+            //End call in Twilio
+            const twilioClient = require("twilio")(process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, {
+              accountSid: process.env.TWILIO_ACCOUNT_SID,
+            });
+
+            let roomName =
+              "user_" + query.call_type + "_" + query.call_time + "_" + callkitObject?.partner_id?.toString();
+            await twilioClient.video.rooms(callkitObject.room_name).update({ status: "completed" });
+          }
+        } catch (error) {}
+
+        let currentTime = new Date();
+
+        let dataToUpdate = {
+          _id: callkitObject._id.toString(),
+          end_time: currentTime.toUTCString(),
+        };
+        if (callkitObject.start_time) {
+          let startTimeObject = new Date(callkitObject.start_time.toString());
+          let totalSecond = Math.round((currentTime.getTime() - startTimeObject.getTime()) / 1000);
+          dataToUpdate = {
+            ...dataToUpdate,
+            ...{
+              call_time: totalSecond,
+            },
+          };
+          let userIdToUpdate = callkitObject.user_id.toString();
+
+          await this.chatRoomUserOption.incCountVideo(
+            { user_id: userIdToUpdate, chat_room_id: query.chat_room_id },
+            totalSecond
+          );
+        }
+        let dataCallkitToHistory = await this.callkitService.update(dataToUpdate);
+
+        if (!callkitObject?.end_time) {
+          await this.handleCreateHistory(req, res, query, dataCallkitToHistory, false);
+        }
+
+        let dataToSend = {
+          from_user: dataUser,
+          to_user: dataPartner,
+          call_type: query.call_type,
+          room_id: roomName,
+          chat_room_id: query.chat_room_id,
+          call_time: query.call_time,
+        };
+        let dataNotification = {
+          createdBy: dataFromUser?._id.toString(),
+          user_id: query.partner_id,
+          title: dataFromUser?.display_name.toString(),
+          content: dataFromUser?.display_name + " has end call",
+          param: JSON.stringify(dataToSend),
+          type_action: "end_" + query.call_type,
+          click_action: "",
+          image: dataFromUser?.user_avatar
+            ? dataFromUser?.user_avatar.toString()
+            : "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/08/23/62e8a1df34a5b011e5d174e5-default_avatar.png",
+          channel: "user",
+        };
+        if ((!query.notification || Number(query.notification) == 1) && dataFromUser) {
+          await this.notificationHelper.handleSendNotification(dataNotification, authCode);
+        }
+        if (!isAuto) {
+          res.json(dataToSend);
+        }
+      } else {
+        throw new NotFoundException("Call is not invalid");
+      }
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundException(error.message);
+    }
+    return null;
+  }
+
+  /**
+   *
+   * @param dataUpdate
+   * @param req
+   * @param res
+   */
+  async handleUpdateCall(dataUpdate: UpdateCallkitDto, req: ExpressRequestDto, res: Response) {
+    try {
+      let userObject = req?.user_object;
+      let auth = req?.auth_code;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      let userId = userObject._id.toString();
+      //Check Permission
+
+      let callKitObject = await this.callkitService.findOne({ room_name: dataUpdate.room_id });
+      if (!callKitObject) {
+        throw new ForbiddenException("Call is not invalid");
+      } else {
+        //Update Room
+        let dataAnswerCandidates = callKitObject?.answer_candidates ? callKitObject?.answer_candidates : [];
+        let dataOfferCandidates = callKitObject?.offer_candidates ? callKitObject?.offer_candidates : [];
+
+        let dataToUpdate = {
+          user_id: callKitObject?.user_id?.toString(),
+          partner_id: callKitObject?.partner_id?.toString(),
+          room_id: dataUpdate.room_id,
+        };
+
+        if (dataUpdate?.answer_candidates) {
+          dataAnswerCandidates.push(dataUpdate?.answer_candidates);
+          dataToUpdate = { ...dataToUpdate, ...{ answer_candidates: dataUpdate?.answer_candidates?.toString() } };
+        }
+        if (dataUpdate?.offer_candidates) {
+          dataOfferCandidates.push(dataUpdate?.offer_candidates);
+          dataToUpdate = { ...dataToUpdate, ...{ offer_candidates: dataUpdate?.offer_candidates?.toString() } };
+        }
+        let dataUpdateToDB = {
+          _id: callKitObject?._id?.toString(),
+          offer_candidates: dataOfferCandidates,
+          answer_candidates: dataAnswerCandidates,
+        };
+        if (dataUpdate?.offer) {
+          dataUpdateToDB = { ...dataUpdateToDB, ...{ offer: dataUpdate?.offer } };
+          dataToUpdate = { ...dataToUpdate, ...{ offer: dataUpdate?.offer?.toString() } };
+        }
+        if (dataUpdate?.answer) {
+          dataUpdateToDB = { ...dataUpdateToDB, ...{ answer: dataUpdate?.answer } };
+          dataToUpdate = { ...dataToUpdate, ...{ answer: dataUpdate?.answer?.toString() } };
+        }
+
+        if (dataUpdate?.is_mic) {
+          dataToUpdate = { ...dataToUpdate, ...{ is_mic: dataUpdate?.is_mic } };
+        }
+
+        if (dataUpdate?.is_camera) {
+          dataToUpdate = { ...dataToUpdate, ...{ is_camera: dataUpdate?.is_camera } };
+        }
+
+        if (dataUpdate?.camera_position) {
+          dataToUpdate = { ...dataToUpdate, ...{ camera_position: dataUpdate?.camera_position } };
+        }
+
+        let dataUpdateReturn = await this.callkitService.update(dataUpdateToDB);
+        //Send Socket
+
+        const params = new URLSearchParams(dataToUpdate);
+        const config = {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Authorization": auth,
+          },
+          timeout: 10000,
+        };
+        const urlLogin = process.env.SOCKET_API;
+        let dataNotification = await axios
+          .post(urlLogin + "/update-call", params, config)
+          .then((response) => {
+            if (response?.data) {
+              this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .catch((error) => {
+            this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
+            return false;
+          });
+        res.json(dataUpdateReturn);
+      }
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param query
+   * @param req
+   * @param res
+   * @returns
+   */
+  async handleMakeCall(query: PostMakeRoomDto, req: ExpressRequestDto, res: Response) {
+    try {
+      let isHasCall = false;
+      let authCode = req?.auth_code;
+      let userObject = req?.user_object;
+      if (!userObject || !query?.partner_id?.toString()) {
+        throw new NotFoundException("User is invalid");
+      }
+      let partnerObject: any = await this.userService.findOneLogin({ _id: query.partner_id.toString() });
+      if (!partnerObject) {
+        throw new BadRequestException("Partner is invalid");
+      }
+      let userId = userObject._id.toString();
+
+      if (query.partner_id) {
+        let blockFilter = {
+          partner_id: userObject._id.toString(),
+          user_id: query.partner_id,
+        };
+        let dataBlock = await this.userBlockService.findOne(blockFilter);
+        if (dataBlock) {
+          throw new BadRequestException("Can't call to this user!");
+        }
+      }
+
+      if (userObject?.block_users && query.partner_id) {
+        let blockUserObject = [];
+        for (let blockItem of userObject?.block_users) {
+          blockUserObject.push(blockItem.toString());
+        }
+        if (blockUserObject?.indexOf(query.partner_id) !== -1) {
+          throw new BadRequestException("Can't call to this user!");
+        }
+      }
+
+      //Check Callkit
+      if (partnerObject._id?.toString() !== userObject._id.toString()) {
+        //Check Callkit of Partner
+        // let currentTime = new Date().getTime();
+        // let lastTime = currentTime - 1000 * 60;
+        // //Total Time in day!
+        // let newTime = new Date(lastTime);
+        // let dataFilter = {
+        //   from_id: partnerObject?._id?.toString(),
+        //   from_time: newTime.toUTCString(),
+        //   start_time: { $ne: null },
+        //   call_time: 0
+        // };
+        // let dataPartnerBefore = await this.callkitService.filter(dataFilter, {}, 1, 1);
+        // if (dataPartnerBefore && dataPartnerBefore?.length) {
+        //   throw new BadRequestException("User is calling someone else, please try again later!");
+        // }
+      }
+
+      //Check First Call
+      //Check Send Message
+      // let dataHistoryFilter = {
+      //   createBy: query.partner_id,
+      //   chat_room_id: query.chat_room_id,
+      // };
+      // let dataHistoryFirst = await this.chatHistoryService.findOneRoom(dataHistoryFilter);
+      // if (!dataHistoryFirst) {
+      //   throw new BadRequestException(`You must have a conversation with ${partnerObject.display_name} before call!`);
+      // }
+
+      this.logger.log("Data Call: " + JSON.stringify(query));
+      let dataToken = "";
+      let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+
+      if (process.env.BRANCH_NAME !== "live_video" && Number(query?.version) !== 2) {
+        const twilioClient = require("twilio")(process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, {
+          accountSid: process.env.TWILIO_ACCOUNT_SID,
+        });
+        const roomList = await twilioClient.video.rooms.list({
+          uniqueName: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
+          status: "in-progress",
+        });
+        let room: any;
+
+        if (!roomList.length) {
+          // Call the Twilio video API to create the new Go room
+          room = await twilioClient.video.rooms.create({
+            uniqueName: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
+            type: "go",
+          });
+        } else {
+          room = roomList[0];
+        }
+
+        // Create a video grant for this specific room
+        const videoGrant = new VideoGrant({
+          room: room.uniqueName,
+        });
+
+        // Create an access token
+        const token = new AccessToken(
+          process.env.TWILIO_ACCOUNT_SID,
+          process.env.TWILIO_API_KEY_SID,
+          process.env.TWILIO_API_KEY_SECRET
+        );
+
+        // Add the video grant and the user's identity to the token
+        token.addGrant(videoGrant);
+        token.identity = userId;
+
+        dataToken = token.toJwt();
+      }
+
+      let dataUser = {
+        _id: userObject._id.toString(),
+        user_login: userObject.user_login,
+        user_avatar: userObject.user_avatar,
+        display_name: userObject.display_name,
+        user_active: userObject.user_active,
+        last_active: userObject.last_active,
+      };
+      let dataPartner = {
+        _id: partnerObject._id.toString(),
+        user_login: partnerObject.user_login,
+        user_avatar: partnerObject.user_avatar,
+        display_name: partnerObject.display_name,
+        user_active: partnerObject.user_active,
+        last_active: partnerObject.last_active,
+      };
+
+      let answerCandidatesSocket = query?.answer_candidates;
+      let offerCandidatesSocket = query?.offer_candidates;
+
+      //Check user Call
+      // let dataUserTo = null;
+      let dataUserFrom: any = userObject;
+
+      let dataToSend = {
+        from_user: dataUser,
+        to_user: dataPartner,
+        token: dataToken,
+        chat_room_id: query.chat_room_id,
+        room_id: roomName,
+        call_type: query.call_type,
+        call_time: query.call_time,
+      };
+
+      let callkitObject = await this.callkitService.findOne({ room_name: roomName });
+      if (callkitObject) {
+        if (callkitObject?.end_time) {
+          //isHasCall = true;
+        }
+        //If callkit difference
+        if (Number(callkitObject?.version) != Number(query?.version)) {
+          //Set false
+          await this.handleSendNewVersion(userObject, query?.chat_room_id, req, res);
+          throw new BadRequestException(
+            "This user is using a new version of the app, please update your app to reach them!"
+          );
+        }
+        dataUserFrom = await this.userService.findOneLogin({ _id: callkitObject?.user_id?.toString() });
+        let currentTime = new Date();
+        let dataToUpdate = {
+          _id: callkitObject._id.toString(),
+          start_time: currentTime.toUTCString(),
+          partner_token: dataToken,
+        };
+        if (query?.answer && Number(query?.version) == 2) {
+          dataToUpdate = { ...dataToUpdate, ...{ answer: query?.answer } };
+        }
+
+        if (query?.offer && Number(query?.version) == 2) {
+          dataToUpdate = { ...dataToUpdate, ...{ offer: query?.offer } };
+        }
+
+        if (query?.answer_candidates && Number(query?.version) == 2) {
+          dataToUpdate = { ...dataToUpdate, ...{ answer_candidates: JSON.parse(query?.answer_candidates) } };
+        }
+        if (query?.offer_candidates && Number(query?.version) == 2) {
+          dataToUpdate = { ...dataToUpdate, ...{ offer_candidates: JSON.parse(query?.offer_candidates) } };
+        }
+        let dataUpdate = await this.callkitService.update(dataToUpdate);
+        answerCandidatesSocket = JSON.stringify(dataUpdate?.answer_candidates);
+        offerCandidatesSocket = JSON.stringify(dataUpdate?.offer_candidates);
+        dataToSend = {
+          ...dataToSend,
+          ...{
+            answer_candidates: dataUpdate?.answer_candidates,
+            offer_candidates: dataUpdate?.offer_candidates,
+            answer: dataUpdate?.answer,
+            offer: dataUpdate?.offer,
+          },
+        };
+
+        //FOR CALL_U
+        if (partnerObject._id?.toString() !== userObject._id.toString()) {
+          // Serialize the token to a JWT and return it to the client side
+        } else {
+          if (process.env.BRANCH_NAME === "live_video") {
+            // dataUserTo = await this.userService.findOneLogin({ _id: userObject._id.toString() });
+
+            //Check coin of User Men
+            let totalCoin = 10;
+            if (dataUserFrom && Number(dataUserFrom?.current_coin)) {
+              totalCoin = Number(dataUserFrom?.current_coin);
+            }
+            if (Number(query?.notification) != 1) {
+              //Set Timeout to End call
+              setTimeout(async () => {
+                let dataCall = await this.callkitService.findOne({
+                  room_name: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
+                });
+                if (Number(callkitObject.call_time) == 0) {
+                  //Handle End Call
+                  this.handleEndCall(query, req, res, true, 1);
+                }
+              }, totalCoin * 1000);
+            }
+          }
+        }
+      } else {
+        let currentTime = new Date();
+        let dataCallkitCreate = {
+          user_id: userObject._id.toString(),
+          partner_id: query.partner_id,
+          room_name: roomName,
+          type_server: "go",
+          call_type: query.call_type,
+          first_ring: currentTime.toUTCString(),
+          token: dataToken,
+          offer: query?.offer,
+          answer: query?.answer,
+        };
+        if (query?.answer_candidates && Number(query?.version) == 2) {
+          dataCallkitCreate = { ...dataCallkitCreate, ...{ answer_candidates: JSON.parse(query?.answer_candidates) } };
+        }
+        if (query?.offer_candidates && Number(query?.version) == 2) {
+          dataCallkitCreate = { ...dataCallkitCreate, ...{ offer_candidates: JSON.parse(query?.offer_candidates) } };
+        }
+        if (query?.version) {
+          dataCallkitCreate = { ...dataCallkitCreate, ...{ version: query?.version } };
+        }
+        let dataCreate = await this.callkitService.create(dataCallkitCreate);
+        dataToSend = {
+          ...dataToSend,
+          ...{
+            answer_candidates: dataCreate?.answer_candidates,
+            offer_candidates: dataCreate?.offer_candidates,
+            answer: dataCreate?.answer,
+            offer: dataCreate?.offer,
+          },
+        };
+        // setTimeout(async () => {
+        //   let callkitObject = await this.callkitService.findOne({ room_name: room.uniqueName });
+        //   if (callkitObject && !callkitObject.start_time) {
+        //     let dataToUpdate = {
+        //       _id: callkitObject._id.toString(),
+        //       call_type: "miss_call_" + callkitObject.call_type,
+        //     };
+        //     await this.callkitService.update(dataToUpdate);
+        //     // Serialize the token to a JWT and return it to the client side
+        //     this.chatSocketService.handleEndCall(
+        //       dataUser,
+        //       dataPartner,
+        //       query.call_type,
+        //       query.call_time,
+        //       room.uniqueName,
+        //       query.chat_room_id
+        //     );
+        //     //Send notification
+        //     await this.handleCreateHistory(query, callkitObject, true);
+
+        //     let dataNotification = {
+        //       createdBy: userObject._id.toString(),
+        //       user_id: query.partner_id,
+        //       title: userObject.display_name.toString(),
+        //       content: userObject.display_name + " has end call",
+        //       param: JSON.stringify(dataToSend),
+        //       type_action: "end_" + query.call_type,
+        //       click_action: "",
+        //       image: userObject.user_avatar
+        //         ? userObject.user_avatar.toString()
+        //         : "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/08/23/62e8a1df34a5b011e5d174e5-default_avatar.png",
+        //       channel: "user",
+        //     };
+        //     await this.notificationHelper.handleSendNotification(dataNotification);
+        //   }
+        // }, 40000);
+      }
+
+      //Send Notification
+      if (query.partner_id !== userObject._id.toString()) {
+        await this.handleMakeCallSocket(
+          dataToken,
+          dataUser,
+          dataPartner,
+          query.call_type,
+          roomName,
+          query.call_time,
+          query.chat_room_id,
+          authCode,
+          query?.answer,
+          query?.offer,
+          answerCandidatesSocket,
+          offerCandidatesSocket
+        );
+
+        if (!query.notification || Number(query.notification) == 1) {
+          console.log("That to Call");
+          let dataToSendNotification = JSON.parse(JSON.stringify(dataToSend));
+          delete dataToSendNotification.offer;
+          delete dataToSendNotification.answer;
+          delete dataToSendNotification.offer_candidates;
+          delete dataToSendNotification.answer_candidates;
+          let dataNotification = {
+            createdBy: userObject._id.toString(),
+            user_id: query.partner_id,
+            title: userObject.display_name.toString(),
+            content: userObject.display_name + " call to you",
+            param: JSON.stringify(dataToSendNotification),
+            type_action: query.call_type,
+            click_action: "",
+            image: userObject.user_avatar
+              ? userObject.user_avatar.toString()
+              : "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/08/23/62e8a1df34a5b011e5d174e5-default_avatar.png",
+            channel: "user",
+          };
+          await this.notificationHelper.handleSendNotification(dataNotification, authCode);
+        }
+      } else if (Number(query?.version) === 2) {
+        await this.handleMakeCallSocket(
+          dataToken,
+          dataUserFrom,
+          dataPartner,
+          query.call_type,
+          roomName,
+          query.call_time,
+          query.chat_room_id,
+          authCode,
+          query?.answer,
+          query?.offer,
+          answerCandidatesSocket,
+          offerCandidatesSocket
+        );
+      }
+      dataToSend = { ...dataToSend, ...{ is_has_call: isHasCall } };
+
+      res.json(dataToSend);
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundException(error.message);
+    }
+    return null;
+  }
+
+  /**
+   *
+   * @param userObject
+   * @param chatRoomId
+   */
+  async handleSendNewVersion(userObject: User, chatRoomId: string, req: any, res: any) {
+    let newMessage = `Hi ${userObject?.display_name} please update your app so you can call your friend. Currently your friend using the new app version!`;
+    let roomName = "New call";
+    await this.chatRoomHelper.setSystemMessage(newMessage, userObject, chatRoomId, roomName, req, res);
+  }
+
+  /**
+   * @author Tony Vu
+   * @param query
+   * @param req
+   * @param res
+   * @returns
+   */
+  async handleSendVoIP(data: SendVoipDto, req: ExpressRequestDto, res: Response) {
+    try {
+      let dataParam = {};
+      if (data.param) {
+        dataParam = JSON.parse(data.param);
+      }
+      let dataReturn = await this.notificationHelper.handleSendNotificationApple(
+        [data.token],
+        "Call to you!",
+        dataParam
+      );
+      res.json(dataReturn);
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleCreateHistory(
+    req: ExpressRequestDto,
+    res: Response,
+    query: PostMakeRoomDto,
+    callkitObject: Callkit,
+    isMissCall: boolean
+  ) {
+    let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
+    let currentTime = new Date();
+
+    let objectId = new Types.ObjectId(query?.chat_room_id);
+    if (!objectId) {
+      return null;
+    }
+    let isHaveMinute = false;
+
+    if (callkitObject.start_time) {
+      isHaveMinute = true;
+    }
+
+    //Update to Media & Chat
+    let mediaMeta = [
+      {
+        key: "start_time",
+        value: callkitObject.start_time,
+      },
+      {
+        key: "end_time",
+        value: callkitObject.end_time,
+      },
+      {
+        key: "call_time",
+        value: callkitObject.call_time.toString(),
+      },
+      {
+        key: "partner_id",
+        value: callkitObject.partner_id.toString(),
+      },
+      {
+        key: "first_ring",
+        value: callkitObject.first_ring,
+      },
+      {
+        key: "call_type",
+        value: !isHaveMinute ? "miss_call_" + query.call_type : query.call_type,
+      },
+    ];
+    let dataToCreate = {
+      media_url: roomName,
+      createBy: callkitObject.user_id.toString(),
+      media_type: query.call_type,
+      media_mime_type: query.call_type,
+      media_file_name: query.call_type,
+      media_thumbnail: query.call_type,
+      media_meta: mediaMeta,
+      chat_room_id: query.chat_room_id,
+      chat_history_id: null,
+      media_status: 1,
+    };
+    let dataMedia = await this.mediaService.create(dataToCreate);
+    if (dataMedia) {
+      // let dataCreate = {
+      //   user_type: "customer",
+      //   parent_id: null,
+      //   chat_room_id: query.chat_room_id,
+      //   chat_content: "",
+      //   chat_type: "",
+      //   chat_status: "send",
+      //   local_id: null,
+      //   createBy: callkitObject.user_id.toString(),
+      //   send_at: currentTime.toUTCString(),
+      //   read_at: currentTime.toUTCString(),
+      //   media_ids: [dataMedia._id.toString()],
+      // };
+      //await this.chatHistoryService.create(dataCreate);
+      //Send Notification
+
+      let createChatHistoryDto = {
+        chat_room_id: query.chat_room_id,
+        chat_content: "",
+        media_data: JSON.stringify([dataMedia._id.toString()]),
+      };
+
+      let dataReturnHistory: any = await this.chatHistoryHelper.createNewHistory(
+        req,
+        res,
+        createChatHistoryDto,
+        false,
+        false
+      );
+    }
+    return true;
+  }
+
+  /**
+   * @author Tony Vu
+   * @param token
+   * @param userObject
+   * @param partnerObject
+   * @param callType
+   */
+  async handleMakeCallSocket(
+    token: string,
+    userObject: any,
+    partnerObject: any,
+    callType: string,
+    roomId: string,
+    callTime: string,
+    chatRoomId: string,
+    auth: string,
+    answer: string = "",
+    offer: string = "",
+    answer_candidates: string = "",
+    offer_candidates: string = ""
+  ) {
+    try {
+      let partnerId = partnerObject._id.toString();
+      this.logger.log("Send a Call to room: " + partnerId);
+      let dataToUpdate = {
+        userObject: JSON.stringify(userObject),
+        partnerObject: JSON.stringify(partnerObject),
+        token: token,
+        callType: callType,
+        callTime: callTime,
+        roomId: roomId,
+        chatRoomId: chatRoomId,
+        answer: answer,
+        offer: offer,
+        answerCandidates: answer_candidates,
+        offerCandidates: offer_candidates,
+      };
+      const params = new URLSearchParams(dataToUpdate);
+      const config = {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": auth,
+        },
+        timeout: 10000,
+      };
+      const urlLogin = process.env.SOCKET_API;
+      let dataNotification = await axios
+        .post(urlLogin + "/make-call", params, config)
+        .then((response) => {
+          if (response?.data) {
+            this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch((error) => {
+          this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
+          return false;
+        });
+      return dataNotification;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param query
+   * @param id
+   * @param res
+   * @param req
+   * @returns
+   */
+  async getListCall(query: GetCallkitDto, res: Response, req: ExpressRequestDto) {
+    try {
+      let userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      let userId = userObject._id.toString();
+
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query, ...{ from_id: userId } };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      let dataReturn = await this.callkitService.filter(dataToFilter, orderByOBject, page, limit);
+      let dataCount = await this.callkitService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param userObject
+   * @param partnerObject
+   * @param callType
+   */
+  async handleEndCallSocket(
+    userObject: any,
+    partnerObject: any,
+    callType: string,
+    roomId: string,
+    callTime: string,
+    chatRoomId: string,
+    auth: string,
+    isExpired: number
+  ) {
+    try {
+      let partnerId = partnerObject._id.toString();
+      this.logger.log("Send a Call to room partner: " + partnerId);
+      this.logger.log("Send a Call to room user: " + userObject?._id?.toString());
+      let dataToUpdate = {
+        userObject: JSON.stringify(userObject),
+        partnerObject: JSON.stringify(partnerObject),
+        token: "",
+        callType: callType,
+        callTime: callTime,
+        roomId: roomId,
+        chatRoomId: chatRoomId,
+        isExpired: isExpired ? "1" : "0",
+      };
+      const params = new URLSearchParams(dataToUpdate);
+      const config = {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": auth,
+        },
+      };
+      const urlLogin = process.env.SOCKET_API;
+      let dataNotification = await axios
+        .post(urlLogin + "/end-call", params, config)
+        .then((response) => {
+          if (response?.data) {
+            this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch((error) => {
+          this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
+          return false;
+        });
+      return dataNotification;
+    } catch (error) {
+      return null;
+    }
+  }
+}
