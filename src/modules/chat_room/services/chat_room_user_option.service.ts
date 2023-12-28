@@ -168,7 +168,7 @@ export class ChatRoomUserOptionService {
 
     let populateObject = {
       path: "chat_room_id",
-      match: { room_name: { $regex: filter.search, $options: "i" } },
+      match: { room_name: { $regex: filter.search || "", $options: "i" } },
       populate: [
         {
           path: "group_partners",
