@@ -450,7 +450,6 @@ export class ChatRoomHelper {
 
     let partnerIds = [];
     let dataToReturn = [];
-    let dataCount = 0;
 
     const dataChat = await this.chatRoomUserOptionService.filter(dataFilter, dataOrder, page, limit);
     if (dataChat && dataChat.length) {
@@ -460,7 +459,6 @@ export class ChatRoomHelper {
         partnerIds.push(dataChatItem?.partner_id?._id?.toString());
       }
     }
-    dataCount = await this.chatRoomUserOptionService.count(dataFilter);
 
     let dataToFilter = {
       partner_id: userObject._id.toString(),
@@ -478,6 +476,11 @@ export class ChatRoomHelper {
     for (let dataItemProcess of dataToReturn) {
       let partnerId = dataItemProcess?.partner_id?._id?.toString();
 
+      // should display name of personal chat room to partner's name
+      if (dataItemProcess.room_type === "personal") {
+        dataItemProcess.chat_room_id.room_name = dataItemProcess.partner_id?.display_name || "";
+      }
+
       if (dataPartnerFollow.indexOf(partnerId) !== -1) {
         dataReturnFinal.push({ ...dataItemProcess, ...{ is_match: "1" } });
       } else {
@@ -485,8 +488,18 @@ export class ChatRoomHelper {
       }
     }
 
+    // filter by room name
+    if (query.search) {
+      dataReturnFinal = dataReturnFinal.filter((room) => {
+        return room.chat_room_id.room_name.toLowerCase().search(query.search.toLowerCase()) >= 0;
+      });
+    }
+
     return res
-      .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+      .set({
+        "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        "X-Total-Count": dataReturnFinal.length,
+      })
       .status(HttpStatus.OK)
       .json(dataReturnFinal);
   }
