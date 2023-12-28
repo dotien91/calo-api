@@ -14,4 +14,5 @@ export class FilterChatRoomDto {
   is_reply?: number;
   ref_user?: string;
   blocked_user?: ObjectId[];
+  search?: string;
 }
