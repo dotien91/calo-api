@@ -23,12 +23,7 @@ export class CallKitController {
   }
 
   @Post("make-call")
-  async handleMakeCall(@Body() body: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return this.callKitHelper.handleMakeCall({ ...body, ...{ version: "1" } }, req, res);
-  }
-
-  @Post("make-call-v2")
-  async handleMakeCallVersion2(@Body() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
+  async handleMakeCall(@Body() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return this.callKitHelper.handleMakeCall({ ...query, ...{ version: "2" } }, req, res);
   }
 
@@ -43,14 +38,10 @@ export class CallKitController {
   }
 
   @Post("end-call")
-  async endCall(@Query() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return this.callKitHelper.handleEndCall(query, req, res);
-  }
-
-  @Post("end-call-v2")
-  async endCallVersion2(@Body() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
+  async endCall(@Body() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return this.callKitHelper.handleEndCall({ ...query, ...{ version: "2" } }, req, res);
   }
+
   @Post("send-voip")
   async handleSendVoIP(@Body() dataSendVoip: SendVoipDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return this.callKitHelper.handleSendVoIP(dataSendVoip, req, res);
