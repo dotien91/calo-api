@@ -11,18 +11,15 @@ import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ChatHistoryHelper } from "../../../modules/chat_history/helpers/chat_history.helper";
-import { ChatHistoryService } from "../../../modules/chat_history/services/chat_history.service";
 import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
-import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserBlockService } from "../../../modules/user/services/user_block.service";
 import { GetCallkitDto } from "../dto/get-callkit.dto";
 import { PostMakeRoomDto } from "../dto/post.make_room.dto";
-import { SearchMapDto } from "../dto/search.map.dto";
 import { SendVoipDto } from "../dto/send-voip.dto";
 import { UpdateCallkitDto } from "../dto/update-callkit.dto";
 import { Callkit } from "../schemas/callkit.schema";
@@ -42,23 +39,9 @@ export class CallKitHelper {
     private readonly callkitService: CallkitService,
     private readonly userBlockService: UserBlockService,
     private readonly mediaService: MediaService,
-    private readonly chatHistoryService: ChatHistoryService,
-    private readonly chatHistoryHelper: ChatHistoryHelper,
-    private readonly transactionHelper: TransactionHelper
+    private readonly chatHistoryHelper: ChatHistoryHelper
   ) {}
   private readonly logger = new Logger("call");
-  async handleCall(query: SearchMapDto, req: ExpressRequestDto, res: Response) {
-    try {
-      let dataToken = query;
-      this.logger.log("Data Call: " + JSON.stringify(query));
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(dataToken);
-    } catch (error) {
-      throw new NotFoundException(error.message);
-    }
-  }
 
   /**
    *

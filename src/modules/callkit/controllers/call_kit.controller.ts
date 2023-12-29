@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query, Req, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../index.i";
@@ -11,16 +11,6 @@ import { CallKitHelper } from "../helper/call_kit.helper";
 @Controller(Controllers.CALLKIT)
 export class CallKitController {
   constructor(private readonly callKitHelper: CallKitHelper) {}
-  @UsePipes(
-    new ValidationPipe({
-      forbidNonWhitelisted: false,
-      whitelist: true,
-    })
-  )
-  @Get("call")
-  async handleCall(@Query() query: any, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return this.callKitHelper.handleCall(query, req, res);
-  }
 
   @Post("make-call")
   async handleMakeCall(@Body() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {

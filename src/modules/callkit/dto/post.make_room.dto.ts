@@ -21,30 +21,30 @@ export class PostMakeRoomDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiProperty()
-  notification: number;
+  notification?: number;
 
   @IsJSON()
   @IsOptional(null)
   @ApiProperty()
-  offer_candidates: string;
+  offer_candidates?: string;
 
   @IsJSON()
   @IsOptional(null)
   @ApiProperty()
-  answer_candidates: string;
+  answer_candidates?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  offer: string;
+  offer?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  answer: string;
+  answer?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiProperty()
-  version: string;
+  version?: string;
 }
