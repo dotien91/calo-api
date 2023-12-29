@@ -248,20 +248,6 @@ export class UpdateUserHelper {
    */
   async processDeleteUser(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      if (id.toString() !== userObject._id.toString()) {
-        const userPermissionObject = await this.userPermissionService.isHavePermission(
-          userObject._id.toString(),
-          "user/delete"
-        );
-        if (!userPermissionObject) {
-          //Check Admin
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
-      }
       const dataUpdate = {
         _id: id,
         user_status: "0",

@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Patch, Post, Query, Req, Res, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Controllers } from "../../index.i";
 import { GetCallkitDto } from "../dto/get-callkit.dto";
 import { PostMakeRoomDto } from "../dto/post.make_room.dto";
 import { SendVoipDto } from "../dto/send-voip.dto";
 import { UpdateCallkitDto } from "../dto/update-callkit.dto";
 import { CallKitHelper } from "../helper/call_kit.helper";
 
-@Controller("callkit")
+@Controller(Controllers.CALLKIT)
 export class CallKitController {
   constructor(private readonly callKitHelper: CallKitHelper) {}
   @UsePipes(
@@ -20,20 +21,10 @@ export class CallKitController {
   async handleCall(@Query() query: any, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return this.callKitHelper.handleCall(query, req, res);
   }
-  @UsePipes(
-    new ValidationPipe({
-      forbidNonWhitelisted: true,
-      whitelist: true,
-    })
-  )
-  @Post("call")
-  async handleCallPost(@Query() query: any, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return this.callKitHelper.handleCall(query, req, res);
-  }
 
   @Post("make-call")
-  async handleMakeCall(@Query() query: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return this.callKitHelper.handleMakeCall({ ...query, ...{ version: "1" } }, req, res);
+  async handleMakeCall(@Body() body: PostMakeRoomDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
+    return this.callKitHelper.handleMakeCall({ ...body, ...{ version: "1" } }, req, res);
   }
 
   @Post("make-call-v2")

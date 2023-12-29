@@ -5,7 +5,7 @@ import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
-import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
+import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -24,7 +24,6 @@ import { SearchFollowCountDto } from "../dto/search-follow_count.dto";
 import { SearchUserDto } from "../dto/search-user.dto";
 import { SearchUserFollowDto } from "../dto/search-user_follow.dto";
 import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
-import { SearchUserLocationDto } from "../dto/search-user_location.dto";
 import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
 import { SendPhoneDto } from "../dto/send-phone.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
@@ -150,15 +149,15 @@ export class UserController {
     return await this.userFilterHelper.getListFollower(query, req, res);
   }
 
-  @Get("list/user-location")
-  @ApiOperation({ summary: "Get list user by location" })
-  async getListUserLocation(
-    @Query() query: SearchUserLocationDto,
-    @Req() req: ExpressRequestDto,
-    @Res() res: Response
-  ) {
-    return await this.userFilterHelper.getListUserLocation(query, req, res);
-  }
+  // @Get("list/user-location")
+  // @ApiOperation({ summary: "Get list user by location" })
+  // async getListUserLocation(
+  //   @Query() query: SearchUserLocationDto,
+  //   @Req() req: ExpressRequestDto,
+  //   @Res() res: Response
+  // ) {
+  //   return await this.userFilterHelper.getListUserLocation(query, req, res);
+  // }
 
   @Get("list/friend")
   @ApiOperation({ summary: "Get list user follow together" })
@@ -166,11 +165,11 @@ export class UserController {
     return await this.userFilterHelper.getListMatch(query, req, res);
   }
 
-  @Get("list/match-location")
-  @ApiOperation({ summary: "Get list user follow together by Location" })
-  async getListMatchLocation(@Query() query: SearchUserFollowDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
-    return await this.userFilterHelper.getListMatchLocation(query, req, res);
-  }
+  // @Get("list/match-location")
+  // @ApiOperation({ summary: "Get list user follow together by Location" })
+  // async getListMatchLocation(@Query() query: SearchUserFollowDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
+  //   return await this.userFilterHelper.getListMatchLocation(query, req, res);
+  // }
 
   @Get("list/disagree")
   @ApiOperation({ summary: "Get list user un-like" })
@@ -211,15 +210,15 @@ export class UserController {
     return await this.userLoginHelper.handleForgotPasswordEmail(dataForgot, res, req);
   }
 
-  @Post("forgot-password/phone-number")
-  @ApiOperation({ summary: "Forgot password - will send via phone" })
-  async handleForgotPasswordPhoneNumber(
-    @Body() dataForgot: CreateForgotPasswordPhoneNumber,
-    @Req() req: ExpressRequestDto,
-    @Res() res: Response
-  ) {
-    return await this.userLoginHelper.handleForgotPasswordPhoneNumber(dataForgot, res, req);
-  }
+  // @Post("forgot-password/phone-number")
+  // @ApiOperation({ summary: "Forgot password - will send via phone" })
+  // async handleForgotPasswordPhoneNumber(
+  //   @Body() dataForgot: CreateForgotPasswordPhoneNumber,
+  //   @Req() req: ExpressRequestDto,
+  //   @Res() res: Response
+  // ) {
+  //   return await this.userLoginHelper.handleForgotPasswordPhoneNumber(dataForgot, res, req);
+  // }
 
   // @Get("process-face")
   // async handleProcessFace(@Query() query: SearchAdminFilterDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
@@ -231,11 +230,13 @@ export class UserController {
   async getUserMoodList(@Query() query: SearchUserMoodDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getUserMoodList(query, req, res);
   }
+
   @Get("list/user-question")
   @ApiOperation({ summary: "Get list question of user" })
   async getUserQuestionList(@Query() query: SearchUserMoodDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getUserQuestionList(query, req, res);
   }
+
   @Get("detail/:id")
   @ApiOperation({ summary: "Get detail of user" })
   async getUserDetail(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: Response) {
@@ -326,6 +327,7 @@ export class UserController {
   }
 
   @Delete("delete/:id")
+  @Permissions(Permission(Controllers.USER).DELETE)
   remove(@Param("id") id: string, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processDeleteUser(id, req, res);
   }

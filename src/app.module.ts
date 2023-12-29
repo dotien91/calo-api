@@ -22,10 +22,11 @@ import { TransactionModule } from "./modules/transaction/transaction.module";
 // import { UserService } from "./modules/user/services/user.service";
 import { UserModule } from "./modules/user/user.module";
 // import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { CallKitModule } from "./modules/callkit/call_kit";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
@@ -38,7 +39,7 @@ import { UserPermissionModule } from "./modules/user_permission/user_permission.
 
 const dataImport = [
   ConfigModule.forRoot(),
-  
+
   MongooseModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
@@ -76,6 +77,7 @@ const dataImport = [
   ChatRoomModule,
   ChatHistoryModule,
   LivestreamModule,
+  CallKitModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
@@ -97,8 +99,8 @@ const dataImport = [
     }
   ),
   ServeStaticModule.forRoot({
-    serveRoot: '/api/animals',
-    rootPath: join(__dirname, '..', 'animals'),
+    serveRoot: "/api/animals",
+    rootPath: join(__dirname, "..", "animals"),
   }),
 ];
 /**

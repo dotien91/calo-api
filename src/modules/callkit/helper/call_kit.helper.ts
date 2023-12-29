@@ -27,8 +27,6 @@ import { SendVoipDto } from "../dto/send-voip.dto";
 import { UpdateCallkitDto } from "../dto/update-callkit.dto";
 import { Callkit } from "../schemas/callkit.schema";
 import { CallkitService } from "../services/callkit.service";
-const AccessToken = require("twilio").jwt.AccessToken;
-const VideoGrant = AccessToken.VideoGrant;
 
 /**
  * @author Tony Vu
@@ -60,7 +58,6 @@ export class CallKitHelper {
     } catch (error) {
       throw new NotFoundException(error.message);
     }
-    return null;
   }
 
   /**
@@ -130,17 +127,6 @@ export class CallKitHelper {
             authCode,
             isExpired
           );
-
-          if (process.env.BRANCH_NAME !== "live_video" && Number(query?.version) !== 2) {
-            //End call in Twilio
-            const twilioClient = require("twilio")(process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, {
-              accountSid: process.env.TWILIO_ACCOUNT_SID,
-            });
-
-            let roomName =
-              "user_" + query.call_type + "_" + query.call_time + "_" + callkitObject?.partner_id?.toString();
-            await twilioClient.video.rooms(callkitObject.room_name).update({ status: "completed" });
-          }
         } catch (error) {}
 
         let currentTime = new Date();
@@ -381,45 +367,6 @@ export class CallKitHelper {
       this.logger.log("Data Call: " + JSON.stringify(query));
       let dataToken = "";
       let roomName = "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id;
-
-      if (process.env.BRANCH_NAME !== "live_video" && Number(query?.version) !== 2) {
-        const twilioClient = require("twilio")(process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, {
-          accountSid: process.env.TWILIO_ACCOUNT_SID,
-        });
-        const roomList = await twilioClient.video.rooms.list({
-          uniqueName: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
-          status: "in-progress",
-        });
-        let room: any;
-
-        if (!roomList.length) {
-          // Call the Twilio video API to create the new Go room
-          room = await twilioClient.video.rooms.create({
-            uniqueName: "user_" + query.call_type + "_" + query.call_time + "_" + query.partner_id,
-            type: "go",
-          });
-        } else {
-          room = roomList[0];
-        }
-
-        // Create a video grant for this specific room
-        const videoGrant = new VideoGrant({
-          room: room.uniqueName,
-        });
-
-        // Create an access token
-        const token = new AccessToken(
-          process.env.TWILIO_ACCOUNT_SID,
-          process.env.TWILIO_API_KEY_SID,
-          process.env.TWILIO_API_KEY_SECRET
-        );
-
-        // Add the video grant and the user's identity to the token
-        token.addGrant(videoGrant);
-        token.identity = userId;
-
-        dataToken = token.toJwt();
-      }
 
       let dataUser = {
         _id: userObject._id.toString(),
