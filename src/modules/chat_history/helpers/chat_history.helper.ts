@@ -541,10 +541,10 @@ export class ChatHistoryHelper {
     let dataIds = [];
     for (let mediaItem of dataMediaArray) {
       let mediaId = mediaItem.id;
-      dataIds.push(Number(mediaId));
+      dataIds.push(mediaId);
     }
     let dataFilter = {
-      ids: dataMediaArray,
+      ids: dataIds,
       is_history: true,
     };
     let isCall: boolean = false;
