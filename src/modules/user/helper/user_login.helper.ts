@@ -17,7 +17,7 @@ import { HttpConfig } from "../../../base/http-config/http.config";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
-import { CreateForgotPasswordEmail, CreateForgotPasswordPhoneNumber } from "../dto/create-forgot-password.dto";
+import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
 import { LoginUserDto } from "../dto/login-user.dto";
 import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
@@ -995,86 +995,86 @@ export class UserLoginHelper {
     }
   }
 
-  async handleForgotPasswordPhoneNumber(
-    dataCreate: CreateForgotPasswordPhoneNumber,
-    res: Response,
-    req: ExpressRequestDto
-  ) {
-    try {
-      // Validate recaptcha
-      // const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
-      // if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
-      //   //Check Recaptcha
-      //   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
-      //   const dataAxios = await axios
-      //     .post(url, {})
-      //     .then((response: any) => {
-      //       if (response?.data?.success == true) {
-      //         return true;
-      //       } else {
-      //         return false;
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       return false;
-      //     });
-      //   if (!dataAxios) {
-      //     throw new NotFoundException("Recaptcha not validate!");
-      //   }
-      // }
+  // async handleForgotPasswordPhoneNumber(
+  //   dataCreate: CreateForgotPasswordPhoneNumber,
+  //   res: Response,
+  //   req: ExpressRequestDto
+  // ) {
+  //   try {
+  //     // Validate recaptcha
+  //     // const googleRecaptchaKey = process.env.GOOGLE_RECAPTCHA_KEY;
+  //     // if (dataCreate.g_recaptcha !== process.env.RECAPTCHA_DEFAULT) {
+  //     //   //Check Recaptcha
+  //     //   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${googleRecaptchaKey}&response=${dataCreate.g_recaptcha}`;
+  //     //   const dataAxios = await axios
+  //     //     .post(url, {})
+  //     //     .then((response: any) => {
+  //     //       if (response?.data?.success == true) {
+  //     //         return true;
+  //     //       } else {
+  //     //         return false;
+  //     //       }
+  //     //     })
+  //     //     .catch((error) => {
+  //     //       return false;
+  //     //     });
+  //     //   if (!dataAxios) {
+  //     //     throw new NotFoundException("Recaptcha not validate!");
+  //     //   }
+  //     // }
 
-      //Update & Send E-mail
-      const searchPattern = {
-        phone_number: dataCreate?.phone_number,
-      };
-      const userObject = await this.appUserService.findOne(searchPattern);
-      if (!userObject) {
-        throw new NotFoundException("User not exist!");
-      }
+  //     //Update & Send E-mail
+  //     const searchPattern = {
+  //       phone_number: dataCreate?.phone_number,
+  //     };
+  //     const userObject = await this.appUserService.findOne(searchPattern);
+  //     if (!userObject) {
+  //       throw new NotFoundException("User not exist!");
+  //     }
 
-      const dataToken = await this.makeRandom(6);
-      //Update
-      const dataUpdate = {
-        _id: userObject?._id?.toString(),
-        verify_code: dataToken,
-      };
-      await this.appUserService.update(dataUpdate);
+  //     const dataToken = await this.makeRandom(6);
+  //     //Update
+  //     const dataUpdate = {
+  //       _id: userObject?._id?.toString(),
+  //       verify_code: dataToken,
+  //     };
+  //     await this.appUserService.update(dataUpdate);
 
-      const recaptchaToken = dataCreate?.g_recaptcha;
-      const identityToolkit = google.identitytoolkit({
-        auth: process.env.GOOGLE_FIREBASE_KEY,
-        version: "v3",
-      });
+  //     const recaptchaToken = dataCreate?.g_recaptcha;
+  //     const identityToolkit = google.identitytoolkit({
+  //       auth: process.env.GOOGLE_FIREBASE_KEY,
+  //       version: "v3",
+  //     });
 
-      if (dataCreate?.phone_number && recaptchaToken) {
-        try {
-          await identityToolkit.relyingparty
-            .sendVerificationCode({
-              //@ts-ignore
-              phoneNumber: dataCreate.phone_number,
-              recaptchaToken: recaptchaToken,
-            })
-            .then((response) => {
-              return res
-                .set({ "Access-Control-Expose-Headers": "X-Authorization" })
-                .status(HttpStatus.OK)
-                .json({ data_success: "Done!" });
-            })
-            .catch((error) => {
-              console.log(error);
-              throw new BadRequestException(error.message);
-            });
-        } catch (err) {
-          throw new BadRequestException(err.message);
-        }
-      } else {
-        throw new BadRequestException("Vui lòng nhập đầy đủ thông tin!");
-      }
-      //Send Email
-    } catch (error) {
-      throw new NotFoundException(error.message);
-    }
-  }
+  //     if (dataCreate?.phone_number && recaptchaToken) {
+  //       try {
+  //         await identityToolkit.relyingparty
+  //           .sendVerificationCode({
+  //             //@ts-ignore
+  //             phoneNumber: dataCreate.phone_number,
+  //             recaptchaToken: recaptchaToken,
+  //           })
+  //           .then((response) => {
+  //             return res
+  //               .set({ "Access-Control-Expose-Headers": "X-Authorization" })
+  //               .status(HttpStatus.OK)
+  //               .json({ data_success: "Done!" });
+  //           })
+  //           .catch((error) => {
+  //             console.log(error);
+  //             throw new BadRequestException(error.message);
+  //           });
+  //       } catch (err) {
+  //         throw new BadRequestException(err.message);
+  //       }
+  //     } else {
+  //       throw new BadRequestException("Vui lòng nhập đầy đủ thông tin!");
+  //     }
+  //     //Send Email
+  //   } catch (error) {
+  //     throw new NotFoundException(error.message);
+  //   }
+  // }
 
   async makeRandom(length: number) {
     let result = "";

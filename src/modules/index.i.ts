@@ -8,4 +8,5 @@ export enum Controllers {
   CHAT_ROOM = "chat-room",
   CHAT_HISTORY = "chat-history",
   USER = "user",
+  CALLKIT = "callkit",
 }
