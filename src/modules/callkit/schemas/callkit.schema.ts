@@ -106,6 +106,27 @@ export class Callkit {
     default: 1,
   })
   version: Number;
+
+  @Prop({
+    type: Boolean,
+    nullable: true,
+    default: true,
+  })
+  is_mic: Boolean;
+
+  @Prop({
+    type: Boolean,
+    nullable: true,
+    default: true,
+  })
+  is_camera: Boolean;
+
+  @Prop({
+    type: String,
+    nullable: true,
+    default: "front",
+  })
+  camera_position: Boolean;
 }
 
 export const CallkitSchema = SchemaFactory.createForClass(Callkit);
