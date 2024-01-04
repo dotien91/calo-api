@@ -31,6 +31,7 @@ import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
 import { CourseModule } from "./modules/course/course.module";
+import { EmailModule } from "./modules/email/email.module";
 import { LivestreamModule } from "./modules/livestream/livestream.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
@@ -78,6 +79,7 @@ const dataImport = [
   ChatHistoryModule,
   LivestreamModule,
   CallKitModule,
+  EmailModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

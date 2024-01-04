@@ -10,13 +10,15 @@ import axios from "axios";
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { EmailService } from "../../../modules/email/services/email.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { EmailPattern } from "../../email/services/email.service.i";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
-import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto, ReactType } from "../dto/create-livestream_like.dto";
+import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
 import { CreateLivestreamViewDto } from "../dto/create-livestream_view.dto";
 import { ListLivestreamDto } from "../dto/list-livestream.dto";
 import { ListLivestreamCommentDto } from "../dto/list-livestream_comment.dto";
@@ -26,7 +28,6 @@ import { LivestreamService } from "../services/livestream.service";
 import { LivestreamCommentService } from "../services/livestream_comment.service";
 import { LivestreamLikeService } from "../services/livestream_like.service";
 import { LivestreamViewService } from "../services/livestream_view.service";
-const { getFirestore } = require("firebase-admin/firestore");
 
 /**
  * @author Tony Vu
@@ -41,7 +42,8 @@ export class LivestreamHelper {
     private livestreamLikeService: LivestreamLikeService,
     private livestreamViewService: LivestreamViewService,
     private livestreamCommentService: LivestreamCommentService,
-    private notificationHelper: NotificationHelper
+    private notificationHelper: NotificationHelper,
+    private emailService: EmailService
   ) {}
 
   /**
@@ -56,13 +58,11 @@ export class LivestreamHelper {
     try {
       let userObject = req?.user_object;
       let authString = req?.auth_code;
-      let channelId = req?.channel_id;
       let userId = req?.user_id;
 
-      console.log(createLivestreamData, "createLivestreamData");
       createLivestreamData = {
         ...createLivestreamData,
-        ...{ user_id: userId, country: userObject?.country, channel_id: channelId },
+        ...{ user_id: userId, country: userObject?.country },
       };
 
       if (createLivestreamData?.livestream_data) {
@@ -86,28 +86,10 @@ export class LivestreamHelper {
         },
       };
 
-      setTimeout(async () => {
-        //Update dataPost
-        //let dataTitle = userObject?.display_name + ' thêm một livestream mới!';
-        //let dataSlug = this.toSlug(dataTitle);
+      //Update livestream data
+      dataCreate = await this.handleLiveStreamData(dataCreate);
 
-        // let dataCreatePost = {
-        //   post_language: "vi",
-        //   post_content: "",
-        //   post_slug: dataSlug,
-        //   post_title: dataTitle,
-        //   channel_id: channelId,
-        //   post_expert: dataTitle,
-        //   post_status: "publish",
-        //   ref_id: dataCreate?._id,
-        //   user_id: userObject?._id?.toString(),
-        //   country: "VN",
-        //   data_json_type: "livestream",
-        //   data_json: JSON.stringify(dataCreate),
-        //   post_avatar: dataCreate?.avatar?.toString()
-        // }
-        // await this.requestService.create(dataCreatePost)
-        // let eventObject = await this.eventService.findOne({ livestream_id: dataCreate?._id?.toString() });
+      setTimeout(async () => {
         await this.handleSendNotificationToAllCreate(userObject, dataCreate, authString, req);
       }, 500);
 
@@ -149,7 +131,6 @@ export class LivestreamHelper {
     try {
       let userObject = req?.user_object;
       let authString = req?.auth_code;
-      let channelId = req?.channel_id;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -162,11 +143,10 @@ export class LivestreamHelper {
       }
 
       let dataCreate: any = await this.livestreamService.update(dataUpdate);
-      channelId = dataCreate?.channel_id?.toString();
       if (dataUpdate.livestream_status === "end") {
         //Update to Socket
         await this.handleUpdateEndLivestream(dataCreate, authString);
-        // await this.handleUpdateCloudflareData(dataCreate, 'automatic');
+        // await this.old_handleUpdateCloudflareData(dataCreate, 'automatic');
       }
 
       if (dataUpdate.livestream_status === "live") {
@@ -175,57 +155,14 @@ export class LivestreamHelper {
         //Check first status
         if (firstData?.livestream_status !== "live") {
           setTimeout(async () => {
-            //Update dataPost
-            let dataTitle = userObject?.display_name + " đang livestream!";
-            let dataSlug = this.toSlug(dataTitle);
-
-            let dataCreatePost = {
-              post_language: "vi",
-              post_content: "",
-              post_slug: dataSlug,
-              post_title: dataTitle,
-              channel_id: channelId,
-              post_expert: dataTitle,
-              ref_id: dataCreate?._id?.toString(),
-              post_status: "publish",
-              user_id: userObject?._id?.toString(),
-              country: "VN",
-              data_json_type: "livestream",
-              data_json: JSON.stringify(dataCreate),
-              post_avatar: dataCreate?.avatar?.toString(),
-            };
             await this.handleSendNotificationToAllNow(userObject, dataCreate, authString, req);
           }, 500);
         }
-        // await this.handleUpdateCloudflareData(dataCreate, 'automatic');
+        // await this.old_handleUpdateCloudflareData(dataCreate, 'automatic');
       }
-      if (firstData?.input_type != "outside") {
-        await this.handleCheckLivestream(dataCreate, authString);
-      }
-
-      // if (Number(dataUpdate.livestream_status) === 2 && process.env.BRANCH_NAME === "tiktok") {
-      //   //Update
-      //   let dataUser = await this.mediaService.findById(dataCreate?.ref_id?._id);
-      //   let userTiktokId = dataUser?.media_file_name;
-      //   let urlEndRoom = `${process.env.LIVESTREAM_URL}/end_room?tiktok_username=${userTiktokId}`;
-      //   const config = {
-      //     headers: {
-      //       "Content-Type": "application/x-www-form-urlencoded",
-      //       "x-authentication": "Y2hhb2NhY2Jhbg==",
-      //     },
-      //   };
-      //   await axios
-      //     .get(urlEndRoom, config)
-      //     .then((response) => {
-      //       if (response?.data) {
-      //         return true;
-      //       } else {
-      //         return false;
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       return false;
-      //     });
+      // NOTE: still not develop yet
+      // if (firstData?.input_type != "outside") {
+      //   await this.old_handleCheckLivestream(dataCreate, authString);
       // }
 
       dataCreate = dataCreate.toObject();
@@ -251,7 +188,7 @@ export class LivestreamHelper {
   /**
    * @author Tony Vu
    */
-  async handleCheckLivestream(dataPrepare: Livestream, authString: string) {
+  async old_handleCheckLivestream(dataPrepare: Livestream, authString: string) {
     try {
       //Check if dataCreate.input_type == outside
       if (dataPrepare?.input_type == "outside") {
@@ -355,7 +292,7 @@ export class LivestreamHelper {
     }
   }
 
-  async handleCloudflareData(dataLivestream: Livestream) {
+  async old_handleCloudflareData(dataLivestream: Livestream) {
     try {
       let urlCloudFlare =
         "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs";
@@ -419,12 +356,31 @@ export class LivestreamHelper {
     }
   }
 
+  async handleLiveStreamData(dataLivestream: Livestream) {
+    const streamKey = this.makeRandom(20);
+    try {
+      let dataUpdate = {
+        livestream_data: {
+          rtmp_url: process.env.RTMP_URL || "",
+          m3u8_url: process.env.M3U8_URL.replace("[code]", streamKey) || "",
+          ingest_endpoint: "",
+          stream_key: streamKey || "",
+        },
+        _id: dataLivestream?._id?.toString(),
+      };
+      return await this.livestreamService.update(dataUpdate);
+    } catch (error) {
+      console.log(error);
+      return dataLivestream;
+    }
+  }
+
   /**
    *
    * @param dataLivestream
    * @returns
    */
-  async handleUpdateCloudflareData(dataLivestream: Livestream, dataRecord: string) {
+  async old_handleUpdateCloudflareData(dataLivestream: Livestream, dataRecord: string) {
     try {
       if (!dataLivestream?.cloudflare_stream_id) {
         return dataLivestream;
@@ -480,26 +436,30 @@ export class LivestreamHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
-      }
+      if (await this.userPermissionService.isHavePermission(userId, "livestream/list")) {
+        if (Number(query.limit) > 1000) {
+          query.limit = 1000;
+        }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByOBject = {};
-      if (query.order_by) {
-        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+        let limit = query.limit ? query.limit : 1000;
+        let page = query.page ? query.page : 1;
+        let orderByOBject = {};
+        if (query.order_by) {
+          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+        }
+        let dataToFilter = { ...query };
+        delete dataToFilter.page;
+        delete dataToFilter.limit;
+        delete dataToFilter.order_by;
+        let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
+        let dataCount = await this.livestreamService.count(dataToFilter);
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+          .status(HttpStatus.OK)
+          .json(dataReturn);
+      } else {
+        throw new BadRequestException("You haven't permission for this Action!");
       }
-      let dataToFilter = { ...query };
-      delete dataToFilter.page;
-      delete dataToFilter.limit;
-      delete dataToFilter.order_by;
-      let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.livestreamService.count(dataToFilter);
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-        .status(HttpStatus.OK)
-        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -518,7 +478,6 @@ export class LivestreamHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
@@ -598,7 +557,6 @@ export class LivestreamHelper {
 
         if (dataReturn) {
           dataReturn = dataReturn?.toObject();
-
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -624,9 +582,15 @@ export class LivestreamHelper {
   async handleUpdateLivestreamByAdmin(dataUpdate: UpdateLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
       let userObject = req?.user_object;
-
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      let userId = userObject._id.toString();
       let dataLivestream = await this.livestreamService.findById(dataUpdate._id.toString());
-      if (dataLivestream?.user_id?._id.toString() === userObject._id.toString()) {
+      if (
+        dataLivestream?.user_id?._id.toString() === userObject._id.toString() ||
+        (await this.userPermissionService.isHavePermission(userId, "livestream/update"))
+      ) {
         let dataReturn = await this.livestreamService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -649,10 +613,14 @@ export class LivestreamHelper {
    */
   async handleDeleteLivestream(id: string, res: Response, req: ExpressRequestDto) {
     try {
+      let userObject = req?.user_object;
       let userId = req?.user_id;
 
       let dataLivestream = await this.livestreamService.findById(id.toString());
-      if (dataLivestream?.user_id?._id.toString() === userId.toString()) {
+      if (
+        dataLivestream?.user_id?._id.toString() === userObject?._id.toString() ||
+        (await this.userPermissionService.isHavePermission(userId, "livestream/delete"))
+      ) {
         let dataReturn = await this.livestreamService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -682,7 +650,6 @@ export class LivestreamHelper {
       user_avatar: userObject.user_avatar,
       display_name: userObject.display_name,
       user_avatar_thumbnail: userObject.user_avatar_thumbnail,
-      official_status: userObject.official_status,
     };
   }
 
@@ -722,32 +689,32 @@ export class LivestreamHelper {
       };
 
       //Process Emoij
-      if (dataFollow?.react_type == ReactType.HAHA) {
+      if (dataFollow?.react_type == "haha") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.haha_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.LIKE) {
+      if (dataFollow?.react_type == "like") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.like_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.LOVE) {
+      if (dataFollow?.react_type == "love") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.love_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.CARE) {
+      if (dataFollow?.react_type == "care") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.care_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.WOW) {
+      if (dataFollow?.react_type == "wow") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.wow_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.SAD) {
+      if (dataFollow?.react_type == "sad") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.sad_value": 1 } };
       }
-      if (dataFollow?.react_type == ReactType.ANGRY) {
+      if (dataFollow?.react_type == "angry") {
         dataUpdateCount = { ...dataUpdateCount, ...{ "react_value.angry_value": 1 } };
       }
       await this.livestreamService.updateCount(dataUpdateFilter, dataUpdateCount);
 
       let dataReturnFinal = await this.livestreamLikeService.findById(dataReturn?._id?.toString(), {});
       //Send to Socket
-      await this.handleSendEmoij(dataReturnFinal, authCode);
+      await this.handleSendEmoji(dataReturnFinal, authCode);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -794,17 +761,17 @@ export class LivestreamHelper {
         livestream_id: dataFollow.livestream_id.toString(),
         total_time: 0,
       };
-      if (dataView && Number(dataView.total_time) > Number(dataFollow.total_time ?? 0)) {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time ?? 0) } };
+      if (dataView && Number(dataView.total_time) > Number(dataFollow.total_time)) {
+        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time) } };
       } else {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time ?? 0) } };
+        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time) } };
       }
 
       //Update count Video
       let dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
-      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number ?? 0 });
+      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number });
 
       let dataReturn = await this.livestreamViewService.update(dataUpdate);
       //Update when is New
@@ -873,34 +840,25 @@ export class LivestreamHelper {
       let userIdArray = [];
       let emailArray = [];
 
-      //Update Email
-      let dataFirestore = getFirestore();
-
+      // Send email
       for (let emailItem of emailArray) {
-        //Let dataToUpdate
-        let dataToUpdate = {
-          brand_name: "Gamifa",
-          post_name: dataLivestream.title,
-          channel_id: req?.channel_id,
-          //@ts-ignore
-          post_image: dataLivestream?.avatar?.media_url || "",
-          email: emailItem?.user_email,
-          fullname: emailItem.display_name,
-          user_id: fromUser?._id?.toString(),
-          post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
-          event_name: "livestream-now",
-          is_send_email: false,
-        };
-
-        //Update
-        const dataUserStore = dataFirestore.collection("Users");
-        await dataUserStore
-          .add(dataToUpdate)
-          .then(() => {
-            console.log("User added!");
+        await this.emailService
+          .send({
+            eventName: EmailPattern.LIVESTREAM_NOW,
+            email: emailItem?.user_email,
+            replacePattern: {
+              brand_name: "Exam24h.com",
+              post_name: dataLivestream.title,
+              fullname: emailItem.display_name,
+              user_id: fromUser?._id?.toString(),
+              post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
+              is_send_email: false,
+              //@ts-ignore
+              post_image: dataLivestream?.avatar?.media_url || "",
+            },
           })
-          .catch((error) => {
-            console.log(error);
+          .catch((e) => {
+            console.log("Send email failed: ", e.message);
           });
       }
 
@@ -955,6 +913,29 @@ export class LivestreamHelper {
       }
 
       let userIdArray = [];
+      let emailArray = [];
+
+      for (let emailItem of emailArray) {
+        await this.emailService
+          .send({
+            eventName: EmailPattern.LIVESTREAM_CREATE,
+            email: emailItem?.user_email,
+            replacePattern: {
+              brand_name: "Gamifa",
+              post_name: dataLivestream.title,
+
+              fullname: emailItem?.display_name,
+              user_id: fromUser?._id?.toString(),
+              post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
+              is_send_email: false,
+              //@ts-ignore
+              post_image: dataLivestream?.avatar?.media_url || "",
+            },
+          })
+          .catch((e) => {
+            console.log("Send email failed: ", e.message);
+          });
+      }
 
       if (userIdArray && userIdArray?.length) {
         let dataToSendNotification = {
@@ -966,7 +947,6 @@ export class LivestreamHelper {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           title: titleNotification,
-          channel_id: req?.channel_id,
           content: descriptionNotification,
           param: JSON.stringify(dataToSendNotification),
           request_id: dataLivestream?._id?.toString(),
@@ -1135,7 +1115,7 @@ export class LivestreamHelper {
     return dataNotification;
   }
 
-  async handleSendEmoij(dataJson: any, auth: string) {
+  async handleSendEmoji(dataJson: any, auth: string) {
     let dataToUpdate = {
       emoji: JSON.stringify(dataJson),
     };
@@ -1195,7 +1175,7 @@ export class LivestreamHelper {
     return dataNotification;
   }
 
-  async handleUpdateEndLivestream(message: Livestream, auth: string) {
+  async old_handleUpdateEndLivestream(message: Livestream, auth: string) {
     let dataToUpdate = {
       message: JSON.stringify(message),
     };
@@ -1256,6 +1236,37 @@ export class LivestreamHelper {
       })
       .catch((error) => {
         //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
+        return false;
+      });
+    return dataNotification;
+  }
+
+  async handleUpdateEndLivestream(message: Livestream, auth: string) {
+    let dataToUpdate = {
+      message: JSON.stringify(message),
+    };
+
+    const params = new URLSearchParams(dataToUpdate);
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": auth,
+      },
+    };
+    const urlLogin = process.env.SOCKET_API;
+
+    let dataNotification = await axios
+      .post(urlLogin + "/livestream-end", params, config)
+      .then((response) => {
+        if (response?.data) {
+          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch((error) => {
+        // this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1419,5 +1430,17 @@ export class LivestreamHelper {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  makeRandom(length: number) {
+    let result = "";
+    const pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const patternLength = pattern.length;
+    let counter = 0;
+    while (counter < length) {
+      result += pattern.charAt(Math.floor(Math.random() * patternLength));
+      counter += 1;
+    }
+    return result;
   }
 }

@@ -15,7 +15,6 @@ import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
-const { getFirestore } = require("firebase-admin/firestore");
 const apn = require("apn");
 
 /**

@@ -36,6 +36,4 @@ export class CreateNotificationDto {
 
   @IsIn(["0", "1", "2"])
   manual_mode?: number;
-
-  channel_id?: string;
 }

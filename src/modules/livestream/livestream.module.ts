@@ -9,6 +9,7 @@ import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schem
 import { ChatRoomService } from "../chat_room/services/chat_room.service";
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
@@ -68,6 +69,7 @@ import { LivestreamViewService } from "./services/livestream_view.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
+    EmailModule,
   ],
   controllers: [LivestreamController],
   providers: [
