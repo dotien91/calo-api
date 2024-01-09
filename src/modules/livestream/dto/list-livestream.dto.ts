@@ -1,6 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListLivestreamDto {
   @IsNumberString()
@@ -48,7 +47,7 @@ export class ListLivestreamDto {
   @ApiPropertyOptional()
   user_id: string;
 
-  @IsNumberString()
+  @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
   livestream_status: string;
