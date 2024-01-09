@@ -8,7 +8,6 @@ import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { OrderService } from "../../../modules/order/services/order.service";
-import { UserPermissionService } from "../../user_permission/services/user_permission.service";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SearchBlockListDto } from "../dto/search-block_list.dto";
@@ -44,7 +43,7 @@ export class UserFilterHelper {
     private userMoodService: UserMoodService,
     private userQuestionService: UserQuestionService,
     private userLocationService: UserLocationService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -484,12 +483,15 @@ export class UserFilterHelper {
         match_status: 1,
       };
       const dataReturn = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
-      const dataToAdd = [];
+      let dataToAdd = [];
       if (dataReturn) {
         for (const dataItem of dataReturn) {
           dataToAdd.push({ ...dataItem.toObject(), ...{ partner_id: dataItem.user_id, user_id: userId } });
         }
       }
+      dataToAdd = dataToAdd.filter((user) =>
+        user?.partner_id?.display_name?.toLowerCase().match(query.search.toLowerCase())
+      );
 
       const dataToFilterUnMatch = {
         partner_id: userId,
@@ -990,7 +992,6 @@ export class UserFilterHelper {
         }
       }
       delete dataToFilter.order_by;
-
 
       if (dataToFilter?.city) {
         const dataToFilterAdd = {

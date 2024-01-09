@@ -4,4 +4,5 @@ export class FilterFollowDto {
   user_ids?: string[];
   partner_ids?: string[];
   match_status?: number;
+  search?: string;
 }

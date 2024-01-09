@@ -21,4 +21,9 @@ export class SearchUserFollowDto {
   @ApiProperty()
   @IsOptional(null)
   user_id?: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  search?: string;
 }
