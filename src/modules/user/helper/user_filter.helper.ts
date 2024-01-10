@@ -489,9 +489,12 @@ export class UserFilterHelper {
           dataToAdd.push({ ...dataItem.toObject(), ...{ partner_id: dataItem.user_id, user_id: userId } });
         }
       }
-      dataToAdd = dataToAdd.filter((user) =>
-        user?.partner_id?.display_name?.toLowerCase().match(query.search.toLowerCase())
-      );
+
+      if (query.search) {
+        dataToAdd = dataToAdd.filter((user) =>
+          user?.partner_id?.display_name?.toLowerCase().match(query.search?.toLowerCase())
+        );
+      }
 
       const dataToFilterUnMatch = {
         partner_id: userId,
