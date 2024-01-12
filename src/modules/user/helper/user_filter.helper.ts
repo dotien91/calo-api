@@ -856,14 +856,9 @@ export class UserFilterHelper {
    */
   async handleGetUserDetail(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new NotFoundException("User is invalid");
-      }
       const projection = {
         user_email: false,
       };
-      const userId = userObject._id.toString();
 
       let dataUser = await this.appUserService.findById(id, projection);
       if (!Number(dataUser?.user_status)) {
