@@ -173,9 +173,9 @@ export class ChatRoomUserOptionService {
           path: "group_partners",
           select:
             "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
-          options: {
-            limit: 2,
-          },
+          // options: {
+          //   limit: 3,
+          // },
         },
         {
           path: "room_image",
