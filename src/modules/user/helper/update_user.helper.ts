@@ -73,8 +73,8 @@ export class UpdateUserHelper {
   async processUserUpdate(updateData: UpdateUserDto, req: ExpressRequestDto, res: Response) {
     try {
       const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
+      if (userObject._id.toString() !== updateData._id) {
+        throw new ForbiddenException("You can not update other profile");
       }
 
       if (
