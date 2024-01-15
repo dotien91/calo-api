@@ -14,6 +14,7 @@ import { Types } from "mongoose";
 import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { UserService } from "../../../modules/user/services/user.service";
+import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
 const apn = require("apn");
 
@@ -135,10 +136,7 @@ export class NotificationHelper {
       const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.notificationService.findById(id.toString());
-      if (
-        (await this.userPermissionService.isHavePermission(userId, "notification/list")) ||
-        dataReturn.createdBy.toString() === userId
-      ) {
+      if (dataReturn.createdBy.toString() === userId) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -165,32 +163,28 @@ export class NotificationHelper {
       }
       const userId = userObject._id.toString();
       //Check Permission
-      if (await this.userPermissionService.isHavePermission(userId, "notification/update")) {
-        dataUpdate = { ...dataUpdate, ...{ createdBy: userId } };
-        if (dataUpdate.user_id && dataUpdate.user_id.indexOf(",") !== -1) {
-          const dataUserId = [];
-          const dataUserArray = dataUpdate?.user_id?.toString().split(",");
-          for (const userItemObject of dataUserArray) {
-            try {
-              const objectId = new Types.ObjectId(userItemObject);
-              if (!objectId) {
-                continue;
-              } else {
-                dataUserId.push(userItemObject);
-              }
-            } catch (error) {}
-          }
-          dataUpdate = { ...dataUpdate, ...{ user_id: dataUserId } };
+      dataUpdate = { ...dataUpdate, ...{ createdBy: userId } };
+      if (dataUpdate.user_id && dataUpdate.user_id.indexOf(",") !== -1) {
+        const dataUserId = [];
+        const dataUserArray = dataUpdate?.user_id?.toString().split(",");
+        for (const userItemObject of dataUserArray) {
+          try {
+            const objectId = new Types.ObjectId(userItemObject);
+            if (!objectId) {
+              continue;
+            } else {
+              dataUserId.push(userItemObject);
+            }
+          } catch (error) {}
         }
-
-        const dataReturn = await this.notificationService.update(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        dataUpdate = { ...dataUpdate, ...{ user_id: dataUserId } };
       }
+
+      const dataReturn = await this.notificationService.update(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -239,35 +233,31 @@ export class NotificationHelper {
       }
       const userId = userObject._id.toString();
 
-      if (await this.userPermissionService.isHavePermission(userId, "notification/create")) {
-        dataCreate = { ...dataCreate, ...{ createdBy: userId } };
-        if (dataCreate.user_id && dataCreate.user_id.indexOf(",") !== -1) {
-          const dataUserId = [];
-          const dataUserArray = dataCreate?.user_id?.toString().split(",");
-          for (const userItemObject of dataUserArray) {
-            try {
-              const objectId = new Types.ObjectId(userItemObject);
-              if (!objectId) {
-                continue;
-              } else {
-                dataUserId.push(userItemObject);
-              }
-            } catch (error) {}
-          }
-          dataCreate = { ...dataCreate, ...{ user_id: dataUserId } };
+      dataCreate = { ...dataCreate, ...{ createdBy: userId } };
+      if (dataCreate.user_id && dataCreate.user_id.indexOf(",") !== -1) {
+        const dataUserId = [];
+        const dataUserArray = dataCreate?.user_id?.toString().split(",");
+        for (const userItemObject of dataUserArray) {
+          try {
+            const objectId = new Types.ObjectId(userItemObject);
+            if (!objectId) {
+              continue;
+            } else {
+              dataUserId.push(userItemObject);
+            }
+          } catch (error) {}
         }
-        const dataReturn = await this.notificationService.create(dataCreate);
-
-        if (dataReturn && Number(dataReturn.manual_mode) === 2) {
-          await this.handleSendNotificationToSession(dataReturn);
-        }
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        dataCreate = { ...dataCreate, ...{ user_id: dataUserId } };
       }
+      const dataReturn = await this.notificationService.create(dataCreate);
+
+      if (dataReturn && Number(dataReturn.manual_mode) === 2) {
+        await this.handleSendNotificationToSession(dataReturn);
+      }
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       this.logger.log("handleSendNotification Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
@@ -548,30 +538,26 @@ export class NotificationHelper {
       }
       const userId = userObject._id.toString();
 
-      if (await this.userPermissionService.isHavePermission(userId, "notification/list")) {
-        if (Number(query.limit) > 1000 || !query.limit) {
-          query.limit = 1000;
-        }
-
-        const limit = query.limit ? query.limit : 1000;
-        const page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        const dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        const dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
-        const dataCount = await this.notificationService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (Number(query.limit) > 1000 || !query.limit) {
+        query.limit = 1000;
       }
+
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+      }
+      const dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      const dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.notificationService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -810,5 +796,20 @@ export class NotificationHelper {
       channel: "user",
     };
     await this.handleSendNotification(dataNotification, tokenReturn.toString());
+  }
+
+  async deleteNotification({ notification_id, user_id }: DeleteNotificationDto) {
+    //Check User
+    try {
+      if (notification_id && !user_id) {
+        const pattern = {
+          _id: notification_id,
+        };
+        await this.notificationService.remove(pattern);
+      } else if (user_id && !notification_id) return true;
+    } catch (error) {
+      this.logger.log("handleSendNotification Error: " + JSON.stringify(error));
+      throw new BadRequestException(error.message);
+    }
   }
 }
