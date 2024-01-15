@@ -166,6 +166,13 @@ export class User {
     nullable: false,
   })
   official_status: boolean;
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+    nullable: false,
+  })
+  links: Array<Object>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

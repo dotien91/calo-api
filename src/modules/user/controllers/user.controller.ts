@@ -231,11 +231,13 @@ export class UserController {
   async getUserMoodList(@Query() query: SearchUserMoodDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getUserMoodList(query, req, res);
   }
+
   @Get("list/user-question")
   @ApiOperation({ summary: "Get list question of user" })
   async getUserQuestionList(@Query() query: SearchUserMoodDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getUserQuestionList(query, req, res);
   }
+
   @Get("detail/:id")
   @ApiOperation({ summary: "Get detail of user" })
   async getUserDetail(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: Response) {

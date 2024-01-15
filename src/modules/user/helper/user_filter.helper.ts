@@ -8,7 +8,6 @@ import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { OrderService } from "../../../modules/order/services/order.service";
-import { UserPermissionService } from "../../user_permission/services/user_permission.service";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SearchBlockListDto } from "../dto/search-block_list.dto";
@@ -44,7 +43,7 @@ export class UserFilterHelper {
     private userMoodService: UserMoodService,
     private userQuestionService: UserQuestionService,
     private userLocationService: UserLocationService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -851,14 +850,9 @@ export class UserFilterHelper {
    */
   async handleGetUserDetail(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject || !id) {
-        throw new NotFoundException("User is invalid");
-      }
       const projection = {
         user_email: false,
       };
-      const userId = userObject._id.toString();
 
       let dataUser = await this.appUserService.findById(id, projection);
       if (!Number(dataUser?.user_status)) {
@@ -990,7 +984,6 @@ export class UserFilterHelper {
         }
       }
       delete dataToFilter.order_by;
-
 
       if (dataToFilter?.city) {
         const dataToFilterAdd = {
