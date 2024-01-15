@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { CronExpression } from "@nestjs/schedule";
 import { Response } from "express";
 import { schedule } from "node-cron";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateNotificationDto } from "../dto/create-notifcation.dto";
+import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { ListNotificationDto } from "../dto/list-notification.dto";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
 import { NotificationHelper } from "../helper/notification.helper";
@@ -69,5 +70,14 @@ export class NotificationController {
   @Get("detail-notification/:id")
   async getDetailOrder(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.notificationHelper.handleGetDetailAdmin(id, res, req);
+  }
+
+  @Delete("/:id")
+  async deleteNotification(
+    @Body() dataDelete: DeleteNotificationDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.notificationHelper.deleteNotification(dataDelete);
   }
 }
