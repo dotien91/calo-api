@@ -209,8 +209,8 @@ export class NotificationService {
    * @param id
    * @returns
    */
-  async remove(id: string) {
-    return await this.NotificationModel.findByIdAndDelete(id).exec();
+  async remove(pattern: any) {
+    return await this.NotificationModel.deleteMany(pattern).exec();
   }
 
   /**
