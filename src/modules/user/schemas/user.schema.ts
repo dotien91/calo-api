@@ -34,6 +34,12 @@ export class User {
   @Prop({
     type: String,
     default: "",
+  })
+  user_address?: string;
+
+  @Prop({
+    type: String,
+    default: "",
     nullable: true,
   })
   user_avatar: string;
