@@ -139,6 +139,39 @@ export class ChatRoomUserOptionService {
       .exec();
   }
 
+  async findAllChatRoom(dataToSearch: any) {
+    let populateObject = {
+      path: "chat_room_id",
+      populate: [
+        {
+          path: "group_partners",
+          select:
+            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+          options: {
+            limit: 2,
+          },
+        },
+        {
+          path: "room_image",
+        },
+        {
+          path: "first_history",
+          select: "createBy",
+        },
+      ],
+    };
+    return await this.chatRoomUserOptionModel
+      .find(dataToSearch, {})
+      .populate(populateObject)
+      .populate({
+        path: "partner_id",
+        options: { strictPopulate: false },
+        select:
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+      })
+      .exec();
+  }
+
   /**
    * @author Tony Vu
    * @param dataToSearch

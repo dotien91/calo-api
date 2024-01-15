@@ -539,66 +539,62 @@ export class ChatRoomHelper {
     try {
       let userObject = req?.user_object;
 
-      if (!userObject) {
-        throw new BadRequestException("User is not found!");
-      }
+      let partnerArray = updateChatRoomDto.user_id.split(",");
+      let chatroomContainer = updateChatRoomDto.chat_room_id.split(",");
 
       //Get Room Option
       let dataToFilter = {
         user_id: userObject._id.toString(),
-        chat_room_id: updateChatRoomDto.chat_room_id,
+        chat_room_id: {
+          $in: chatroomContainer,
+        },
       };
-      let dataUserOption = await this.chatRoomUserOptionService.findOne(dataToFilter);
-      if (!dataUserOption) {
-        throw new BadRequestException("You not in Room!");
-      }
-      if (updateChatRoomDto.role === "admin" && dataUserOption && dataUserOption.user_role !== "admin") {
-        throw new BadRequestException("You not have permission for this action!");
-      }
-      if (dataUserOption.chat_room_id.room_type !== "group") {
-        throw new BadRequestException("Room is not Group type!");
-      }
-
-      let partnerArray = [];
-      let userId = updateChatRoomDto.user_id;
-      if (userId.indexOf(",") !== -1) {
-        partnerArray = userId.split(",");
-      } else {
-        partnerArray.push(updateChatRoomDto.user_id);
-      }
-      let oldPartner = dataUserOption.chat_room_id?.group_partners;
-
-      for (let partnerItem of partnerArray) {
-        if (oldPartner.indexOf(partnerItem) !== -1) {
-          throw new BadRequestException("User " + partnerItem + " is Exist in Room!");
-        }
-      }
-      //Create New Room
-      let dataFilterPartner = {
-        ids: partnerArray,
-      };
-      let dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
+      let dataUserOption = await this.chatRoomUserOptionService.findAllChatRoom(dataToFilter);
       let dataReturn = [];
 
-      if (dataPartner && dataPartner.length) {
-        for (let partnerItem of dataPartner) {
-          dataReturn.push(await this.handleGetUserBase(partnerItem));
+      for (const datum of dataUserOption) {
+        const chatRoomId = datum.chat_room_id._id.toString();
+        if (!datum) {
+          throw new BadRequestException("You not in Room! " + chatRoomId);
         }
-        let userRole = updateChatRoomDto.role;
-        await this.handleUpdateUserRole(
-          dataPartner,
-          updateChatRoomDto.chat_room_id,
-          userRole,
-          updateChatRoomDto.user_permission,
-          dataUserOption.chat_room_id
-        );
-        let dataToReturn = {
-          group_partners: dataReturn,
+        if (updateChatRoomDto.role === "admin" && datum && datum.user_role !== "admin") {
+          throw new BadRequestException("You not have permission for this action! " + chatRoomId);
+        }
+        if (datum.chat_room_id.room_type !== "group") {
+          throw new BadRequestException("Room is not Group type! " + chatRoomId);
+        }
+
+        let oldPartnerIds = datum.chat_room_id?.group_partners.map((partner) => partner._id.toString());
+
+        for (let partnerItem of partnerArray) {
+          if (oldPartnerIds.indexOf(partnerItem) !== -1) {
+            throw new BadRequestException("User " + partnerItem + " is Exist in Room! " + chatRoomId);
+          }
+        }
+        //Create New Room
+        let dataFilterPartner = {
+          ids: partnerArray,
         };
-        return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(dataToReturn);
-      } else {
-        throw new BadRequestException("Not found partner!");
+        let dataPartner = await this.appUserService.filter(dataFilterPartner, {}, 1, 10000);
+
+        if (dataPartner && dataPartner.length) {
+          for (let partnerItem of dataPartner) {
+            dataReturn.push({ ...(await this.handleGetUserBase(partnerItem)), chat_room_id: chatRoomId });
+          }
+          let userRole = updateChatRoomDto.role;
+          await this.handleUpdateUserRole(
+            dataPartner,
+            chatRoomId,
+            userRole,
+            updateChatRoomDto.user_permission,
+            // @ts-ignore
+            datum.chat_room_id
+          );
+        } else {
+          throw new BadRequestException(`Failed to add user to room ${datum._id}`);
+        }
       }
+      return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(dataReturn);
     } catch (error) {
       this.logger.log("addUserRole Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
@@ -623,7 +619,7 @@ export class ChatRoomHelper {
   ) {
     let dataPartnerToAdd = [];
     for (let userItem of dataPartner) {
-      dataPartnerToAdd.push(userItem._id.toString());
+      dataPartnerToAdd.push(userItem._id);
     }
     for (let partnerItem of dataPartner) {
       //Get Room Option
@@ -633,7 +629,7 @@ export class ChatRoomHelper {
       };
       let roomUserObject = await this.chatRoomUserOptionService.findOne(dataToFilter);
       if (roomUserObject) {
-        throw new BadRequestException("User role have exist in this Room!");
+        throw new BadRequestException(`User role have exist in this Room! ${roomId}`);
       } else {
         //Process Save User & Advisor To Option
         let dataOptionUser = {
