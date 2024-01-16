@@ -72,12 +72,12 @@ export class NotificationController {
     return await this.notificationHelper.handleGetDetailAdmin(id, res, req);
   }
 
-  @Delete("/:id")
+  @Delete("delete")
   async deleteNotification(
     @Body() dataDelete: DeleteNotificationDto,
     @Res() res: Response,
     @Req() req: ExpressRequestDto
   ) {
-    return await this.notificationHelper.deleteNotification(dataDelete);
+    return await this.notificationHelper.deleteNotification(dataDelete, req, res);
   }
 }

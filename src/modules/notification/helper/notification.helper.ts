@@ -1,4 +1,11 @@
-import { BadRequestException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import axios from "axios";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -136,7 +143,8 @@ export class NotificationHelper {
       const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.notificationService.findById(id.toString());
-      if (dataReturn.createdBy.toString() === userId) {
+      if (!dataReturn) throw new BadRequestException("NotificationID not found");
+      if (dataReturn.user_id.includes(userId)) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -200,13 +208,10 @@ export class NotificationHelper {
   async updateNotification(dataUpdate: UpdateNotificationDto, res: Response, req: ExpressRequestDto) {
     try {
       const userObject = req?.user_object;
-      if (!userObject) {
-        throw new BadRequestException("User is invalid");
-      }
       //Get data To check
       const dataNotification = await this.notificationService.findOne({ _id: dataUpdate?._id });
 
-      if (dataNotification?.user_id?.indexOf(userObject?._id) == -1) {
+      if (dataNotification?.user_id?.indexOf(userObject?._id.toString()) == -1) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
       const dataReturn = await this.notificationService.update(dataUpdate);
@@ -798,15 +803,23 @@ export class NotificationHelper {
     await this.handleSendNotification(dataNotification, tokenReturn.toString());
   }
 
-  async deleteNotification({ notification_id, user_id }: DeleteNotificationDto) {
+  async deleteNotification({ notification_id, user_id }: DeleteNotificationDto, req: ExpressRequestDto, res: Response) {
     //Check User
     try {
-      if (notification_id && !user_id) {
-        const pattern = {
-          _id: notification_id,
-        };
-        await this.notificationService.remove(pattern);
-      } else if (user_id && !notification_id) return true;
+      if (req.user_id !== user_id) throw new ForbiddenException("You don't have permission");
+      const findPattern = {};
+      findPattern["user_id"] = { $in: [user_id] };
+      if (notification_id) findPattern["_id"] = notification_id;
+
+      const updatePattern = {
+        $pull: { user_id },
+      };
+
+      await this.notificationService.updateByPattern(findPattern, updatePattern);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json();
     } catch (error) {
       this.logger.log("handleSendNotification Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
