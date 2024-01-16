@@ -43,9 +43,9 @@ export class ChatRoomService {
             path: "group_partners",
             select:
               "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
-            options: {
-              limit: 2,
-            },
+            // options: {
+            //   limit: 2,
+            // },
           },
           {
             path: "room_image",
@@ -163,9 +163,9 @@ export class ChatRoomService {
         path: "group_partners",
         select:
           "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
-        options: {
-          limit: 2,
-        },
+        // options: {
+        //   limit: 2,
+        // },
       },
       {
         path: "room_image",
