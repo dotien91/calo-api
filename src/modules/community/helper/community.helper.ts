@@ -512,18 +512,26 @@ export class CommunityHelper {
         notificationTitle = notificationTitle + '"';
       }
 
-      let userIdArray = [];
+      const userIdArray = [];
 
       let communityComments = await this.communityCommentService.findAll({
         community_id: dataCommunity?._id?.toString(),
       });
+
+      // add commented user
       for (let item of communityComments) {
         if (item?.user_id?.toString() !== fromUser?._id?.toString()) {
           userIdArray.push(item.user_id.toString());
         }
       }
 
-      if (userIdArray && userIdArray?.length) {
+      // add author user
+      userIdArray.push(dataCommunity.user_id.toString());
+
+      // filter duplicate
+      const finalUserIdArray = Array.from(new Set(userIdArray));
+
+      if (finalUserIdArray && finalUserIdArray?.length) {
         let dataToSendNotification = {
           community_id: dataCommunity?._id?.toString(),
           path: "/v/post/",
@@ -532,7 +540,7 @@ export class CommunityHelper {
         let notificationContent = chatContentToSend;
         let dataNotification = {
           createdBy: fromUser._id.toString(),
-          user_id: userIdArray,
+          user_id: finalUserIdArray,
           title: notificationTitle?.toString(),
           content: notificationContent,
           param: JSON.stringify(dataToSendNotification),
