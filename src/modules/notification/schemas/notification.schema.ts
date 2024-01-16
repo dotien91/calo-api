@@ -24,7 +24,7 @@ export class Notification {
     ref: "User",
     index: true,
   })
-  user_id: MongooseSchema.Types.ObjectId[];
+  user_id: string[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   createdBy: User;

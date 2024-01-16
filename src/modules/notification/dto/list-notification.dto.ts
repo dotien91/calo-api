@@ -15,22 +15,6 @@ export class ListNotificationDto {
 
   @IsString()
   @IsOptional(null)
-  plan_id: string;
-
-  @IsString()
-  @IsOptional(null)
-  service_id: string;
-
-  @IsString()
-  @IsOptional(null)
-  payment_method: string;
-
-  @IsString()
-  @IsOptional(null)
-  status: string;
-
-  @IsString()
-  @IsOptional(null)
   read_status: string;
 
   @IsString()

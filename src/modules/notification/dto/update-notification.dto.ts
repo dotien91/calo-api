@@ -6,7 +6,7 @@ import { CreateNotificationDto } from "./create-notifcation.dto";
 export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   @IsString()
   @ApiProperty()
-  _id?: string;
+  _id: string;
 
   @IsString()
   @ApiPropertyOptional()

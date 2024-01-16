@@ -29,7 +29,7 @@ export class NotificationService {
   async getCondition(filter: SearchNotificationDto) {
     let condition: any = {};
     if (filter.user_id) {
-      condition = Object.assign(condition, { user_id: filter.user_id });
+      condition = Object.assign(condition, { user_id: { $in: [filter.user_id] } });
     }
     if (filter.channel) {
       condition = Object.assign(condition, { payment_method: filter.channel });
@@ -233,6 +233,14 @@ export class NotificationService {
       } else {
         return dataReturn;
       }
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async updateByPattern(findPattern?: any, updatePattern?: any) {
+    try {
+      await this.NotificationModel.updateMany(findPattern, updatePattern);
     } catch (e) {
       return e;
     }

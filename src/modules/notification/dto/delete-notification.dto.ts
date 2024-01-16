@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsDefined, IsOptional, IsString } from "class-validator";
 
 export class DeleteNotificationDto {
   @IsString()
@@ -6,7 +6,7 @@ export class DeleteNotificationDto {
   notification_id?: string;
 
   @IsString()
-  @IsOptional(null)
-  user_id?: string;
+  @IsDefined(null)
+  user_id: string;
 }
 
