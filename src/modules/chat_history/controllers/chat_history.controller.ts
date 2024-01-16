@@ -14,7 +14,6 @@ import {
 import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_media.dto";
 
 import { Response } from "express";
-import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChatRoomAdminDto } from "../../../modules/chat_room/dto/create-chat_room_admin.dto";
 import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
@@ -48,7 +47,6 @@ export class ChatHistoryController {
   }
 
   @Post("/chat-system")
-  @Permissions(Permission(Controllers.CHAT_HISTORY).CREATE)
   async createSystem(
     @Req() req: ExpressRequestDto,
     @Body() createChatRoomDto: CreateChatRoomAdminDto,

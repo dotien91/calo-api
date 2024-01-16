@@ -56,7 +56,6 @@ export class LivestreamController {
   }
 
   @Post("/create")
-  @Permissions(Permission(Controllers.LIVESTREAM).CREATE)
   async createNewLivestream(
     @Body() createLivestreamBody: CreateLivestreamDto,
     @Res() res: Response,
@@ -66,7 +65,6 @@ export class LivestreamController {
   }
 
   @Patch("/update")
-  @Permissions(Permission(Controllers.LIVESTREAM).UPDATE)
   async updateLivestream(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.updateLivestream(dataUpdate, res, req);
   }
@@ -102,7 +100,6 @@ export class LivestreamController {
   }
 
   @Delete("delete/:id")
-  @Permissions(Permission(Controllers.LIVESTREAM).DELETE)
   async deleteLivestream(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.handleDeleteLivestream(id, res, req);
   }

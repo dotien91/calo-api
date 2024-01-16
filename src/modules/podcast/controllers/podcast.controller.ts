@@ -26,7 +26,6 @@ export class PodcastController {
    * @returns
    */
   @Get("/list")
-  @Permissions(Permission(Controllers.PODCAST).LIST)
   async getUserPodcast(@Query() query: ListPodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.getListPodcast(query, res, req);
   }
@@ -39,7 +38,6 @@ export class PodcastController {
    * @returns
    */
   @Post("/create")
-  @Permissions(Permission(Controllers.PODCAST).CREATE)
   async createNewPodcast(
     @Body() createPodcastBody: CreatePodcastDto,
     @Res() res: Response,
@@ -56,7 +54,6 @@ export class PodcastController {
    * @returns
    */
   @Patch("/update")
-  @Permissions(Permission(Controllers.PODCAST).UPDATE)
   async updateByAdmin(@Body() dataUpdate: UpdatePodcastDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleUpdatePodcastByAdmin(dataUpdate, res, req);
   }
