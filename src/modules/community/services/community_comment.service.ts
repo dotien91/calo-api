@@ -79,7 +79,7 @@ export class CommunityCommentService {
    * @param limit
    * @returns
    */
-  async filter(filter: SearchCommunityCommentDto, sortBy: SortByCommunityCommentDto, page: number, limit: number) {
+  async filter(filter: SearchCommunityCommentDto, sortBy?: SortByCommunityCommentDto, page?: number, limit?: number) {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -219,8 +219,8 @@ export class CommunityCommentService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CommunityComment[]> {
-    return this.communityModel.find().exec();
+  async findAll(pattern: any): Promise<CommunityComment[]> {
+    return this.communityModel.find(pattern).exec();
   }
 
   /**
