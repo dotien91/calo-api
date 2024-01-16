@@ -513,14 +513,13 @@ export class CommunityHelper {
       }
 
       let userIdArray = [];
-      let emailArray = [];
 
-      // let dataUser = await this.userService.filter({ notification_community: dataCommunity?._id?.toString() }, {}, 1, 1000);
-      let dataUser = [];
-      for (let userItem of dataUser) {
-        if (userItem?._id?.toString() !== fromUser?._id?.toString()) {
-          userIdArray.push(userItem._id.toString());
-          emailArray.push(userItem);
+      let communityComments = await this.communityCommentService.findAll({
+        community_id: dataCommunity?._id?.toString(),
+      });
+      for (let item of communityComments) {
+        if (item?.user_id?.toString() !== fromUser?._id?.toString()) {
+          userIdArray.push(item.user_id.toString());
         }
       }
 
