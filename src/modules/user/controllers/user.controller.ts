@@ -282,7 +282,6 @@ export class UserController {
   }
 
   @Patch("update/user")
-  @Permissions(Permission(Controllers.USER).UPDATE)
   update(@Body() updateUserDto: UpdateUserDto, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processUserUpdate(updateUserDto, req, res);
   }

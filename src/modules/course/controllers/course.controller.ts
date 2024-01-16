@@ -70,7 +70,6 @@ export class CourseController {
   }
 
   @Get("list-member")
-  @Permissions(Permission(Controllers.COURSE).LIST)
   handleGetListMember(@Query() query: ListMemberDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.handleGetListMember(query, res, req);
   }
@@ -81,7 +80,7 @@ export class CourseController {
   }
 
   @Post("un-join")
-  @Permissions(Permission(Controllers.COURSE).LIST)
+  @Permissions(Permission(Controllers.COURSE).UPDATE)
   handleUnFollowUser(@Body() dataFollow: CreateCourseLikeDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processUnFollowUser(dataFollow, req, res);
   }
