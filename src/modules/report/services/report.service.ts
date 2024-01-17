@@ -121,7 +121,7 @@ export class ReportService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any): Promise<Report> {
+  async findOne(dataToSearch: any): Promise<any> {
     return await this.reportModel
       .findOne(dataToSearch)
       .populate(

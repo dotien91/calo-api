@@ -21,7 +21,7 @@ export class ReportHelper {
     private reportService: ReportService,
     private userService: UserService,
     private userPermissionService: UserPermissionService
-  ) { }
+  ) {}
 
   /**
    * @author Tony Vu
@@ -40,14 +40,6 @@ export class ReportHelper {
       const partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
       if (!partnerObject) {
         throw new NotFoundException("Partner is not exist!");
-      }
-      if (createReportData.report_type === "block") {
-        const dataToFilter = {
-          user_id: userObject._id.toString(),
-          partner_id: createReportData.partner_id,
-          report_type: "block",
-        };
-        const dataOld = await this.reportService.findOne(dataToFilter);
       }
 
       createReportData = { ...createReportData, ...{ user_id: userId } };
@@ -146,11 +138,8 @@ export class ReportHelper {
       }
       //Check Permission
       const reportData = await this.reportService.findOne({ _id: updateReportData._id.toString() });
-      if (reportData && reportData.user_id.toString()) {
-        if (
-          reportData.user_id.toString() !== userId &&
-          !(await this.userPermissionService.isHavePermission(userId, "report/update"))
-        ) {
+      if (reportData && reportData.user_id?._id.toString()) {
+        if (reportData.user_id?._id.toString() !== userId) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
         // updateReportData = { ...updateReportData, ...{ user_id: userId } };
@@ -191,20 +180,16 @@ export class ReportHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "report/list")) {
-        //Check Permission
-        const dataToFilter = query;
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        const dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataToFilter = query;
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      const dataReturn = await this.reportService.filter(dataToFilter, orderByOBject, page, limit);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -272,17 +257,12 @@ export class ReportHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "report/delete")) {
-        //Check Permission
-        const dataReturn = await this.reportService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataReturn = await this.reportService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -302,19 +282,15 @@ export class ReportHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "report/list")) {
-        const dataFilter = {
-          _id: id,
-        };
-        //Check Permission
-        const dataReturn = await this.reportService.findOne(dataFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataFilter = {
+        _id: id,
+      };
+      //Check Permission
+      const dataReturn = await this.reportService.findOne(dataFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

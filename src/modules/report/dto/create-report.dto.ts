@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsDefined, IsOptional, IsString } from "class-validator";
 export class CreateReportDto {
+  @IsDefined()
   @IsString()
   report_type: string;
 
