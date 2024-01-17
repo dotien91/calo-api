@@ -761,17 +761,18 @@ export class LivestreamHelper {
         livestream_id: dataFollow.livestream_id.toString(),
         total_time: 0,
       };
-      if (dataView && Number(dataView.total_time) > Number(dataFollow.total_time)) {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time) } };
+      const dataFollowTotalTime = Number(dataFollow.total_time || 0);
+      if (dataView && Number(dataView.total_time) > dataFollowTotalTime) {
+        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataView.total_time || 0) } };
       } else {
-        dataUpdate = { ...dataUpdate, ...{ total_time: Number(dataFollow.total_time) } };
+        dataUpdate = { ...dataUpdate, ...{ total_time: dataFollowTotalTime } };
       }
 
       //Update count Video
       let dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
-      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number });
+      await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number || 0 });
 
       let dataReturn = await this.livestreamViewService.update(dataUpdate);
       //Update when is New
