@@ -1226,9 +1226,6 @@ export class CommunityHelper {
       if (communityObject?.user_id?._id?.toString() == userId) {
         havePermission = true;
       }
-      if (await this.userPermissionService.isHavePermission(userId, "community/update")) {
-        havePermission = true;
-      }
 
       if (!canPin) {
         delete dataUpdate?.is_pin;
@@ -1328,9 +1325,6 @@ export class CommunityHelper {
       let communityObject = await this.communityService.findById(id);
       let havePermission = false;
       if (communityObject?.user_id?._id?.toString() == userId) {
-        havePermission = true;
-      }
-      if (await this.userPermissionService.isHavePermission(userId, "community/delete")) {
         havePermission = true;
       }
 
