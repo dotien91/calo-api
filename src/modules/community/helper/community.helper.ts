@@ -525,11 +525,16 @@ export class CommunityHelper {
         }
       }
 
-      // add author user
-      userIdArray.push(dataCommunity.user_id.toString());
-
       // filter duplicate
-      const finalUserIdArray = Array.from(new Set(userIdArray));
+      var finalUserIdArray = Array.from(new Set(userIdArray));
+
+      // add author user
+      if (fromUser?._id?.toString() !== dataCommunity.user_id.toString()) {
+        if (!finalUserIdArray.find((e) => e === dataCommunity.user_id.toString()))
+          finalUserIdArray.push(dataCommunity.user_id.toString());
+      } else {
+        finalUserIdArray = finalUserIdArray.filter((e) => e !== dataCommunity.user_id.toString());
+      }
 
       if (finalUserIdArray && finalUserIdArray?.length) {
         let dataToSendNotification = {
