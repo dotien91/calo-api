@@ -225,6 +225,7 @@ export class Livestream {
     type: String,
     default: "wait",
     nullable: false,
+    enum: ["wait", "pending", "live", "end"],
   })
   livestream_status: string;
 
@@ -232,7 +233,6 @@ export class Livestream {
     type: String,
     default: "",
     nullable: false,
-    enum: ["pending", "live", "end"],
   })
   ready_status: string;
 
