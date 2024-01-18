@@ -47,12 +47,12 @@ export class LivestreamHistoryPlayback extends Document {
   @Prop({
     type: String,
   })
-  hls: String;
+  hls: string;
 
   @Prop({
     type: String,
   })
-  dash: String;
+  dash: string;
 }
 export const LivestreamHistoryPlaybackSchema = SchemaFactory.createForClass(LivestreamHistoryPlayback);
 
@@ -61,22 +61,22 @@ export class LivestreamHistory extends Document {
   @Prop({
     type: String,
   })
-  uid: String;
+  uid: string;
 
   @Prop({
     type: String,
   })
-  thumbnail: String;
+  thumbnail: string;
 
   @Prop({
     type: String,
   })
-  created: String;
+  created: string;
 
   @Prop({
     type: String,
   })
-  modified: String;
+  modified: string;
 
   @Prop({
     type: LivestreamHistoryPlaybackSchema,
@@ -96,22 +96,22 @@ export class LivstreamData extends Document {
   @Prop({
     type: String,
   })
-  rtmp_url: String;
+  rtmp_url: string;
 
   @Prop({
     type: String,
   })
-  m3u8_url: String;
+  m3u8_url: string;
 
   @Prop({
     type: String,
   })
-  ingest_endpoint: String;
+  ingest_endpoint: string;
 
   @Prop({
     type: String,
   })
-  stream_key: String;
+  stream_key: string;
 }
 export const LivstreamDataSchema = SchemaFactory.createForClass(LivstreamData);
 
@@ -138,7 +138,7 @@ export class Livestream {
     nullable: false,
     index: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -159,7 +159,7 @@ export class Livestream {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({ type: MongooseSchema.Types.Date })
   start_time: MongooseSchema.Types.Date;
@@ -169,14 +169,14 @@ export class Livestream {
     default: "",
     nullable: false,
   })
-  caption: String;
+  caption: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  cookies: String;
+  cookies: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -198,7 +198,7 @@ export class Livestream {
     nullable: false,
     index: true,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: Number,
@@ -226,12 +226,13 @@ export class Livestream {
     default: "wait",
     nullable: false,
   })
-  livestream_status: String;
+  livestream_status: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
+    enum: ["pending", "live", "end"],
   })
   ready_status: string;
 
@@ -240,35 +241,35 @@ export class Livestream {
     default: "",
     nullable: false,
   })
-  input_type: String;
+  input_type: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  livestream_source: String;
+  livestream_source: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  whip_data: String;
+  whip_data: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  whep_data: String;
+  whep_data: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  cloudflare_stream_id: String;
+  cloudflare_stream_id: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
