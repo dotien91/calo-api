@@ -21,15 +21,15 @@ import { CourseHelper } from "../helper/course.helper";
 export class CourseController {
   constructor(private readonly courseHelper: CourseHelper) {}
 
-  @Get("/list")
-  async getUserCourse(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.courseHelper.getCourseList(query, res, req);
+  @Post("/list")
+  async getUserCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseList(body, res, req);
   }
 
-  @Get("/admin-list")
+  @Post("/admin-list")
   @Permissions(Permission(Controllers.COURSE).LIST)
-  async getAdminCourse(@Query() query: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.courseHelper.getCourseListByAdmin(query, res, req);
+  async getAdminCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseListByAdmin(body, res, req);
   }
 
   @Post("/create")

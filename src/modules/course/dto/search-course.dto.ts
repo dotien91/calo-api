@@ -6,6 +6,9 @@ export class SearchCourseDto {
   country?: string;
   ids?: string;
   ref_id?: string;
-  post_category?: string;
-  price?: string;
+  min_price?: string;
+  max_price?: string;
+  levels?: string[];
+  skills?: string[];
+  types?: string[];
 }

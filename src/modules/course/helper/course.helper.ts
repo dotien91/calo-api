@@ -271,25 +271,25 @@ export class CourseHelper {
 
   /**
    * @author Tony Vu
-   * @param query
+   * @param body
    * @param id
    * @param res
    * @param req
    * @returns
    */
-  async getCourseListByAdmin(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
+  async getCourseListByAdmin(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
       let orderByObject = {};
-      if (query.order_by) {
-        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      if (body.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: body.order_by } };
       }
-      let dataToFilter = { ...query };
+      let dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -464,25 +464,25 @@ export class CourseHelper {
 
   /**
    * @author Tony Vu
-   * @param query
+   * @param body
    * @param id
    * @param res
    * @param req
    * @returns
    */
-  async getCourseList(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
+  async getCourseList(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
       let orderByObject = {};
-      if (query.order_by) {
-        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      if (body.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: body.order_by } };
       }
-      let dataToFilter = { ...query };
+      let dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -499,17 +499,17 @@ export class CourseHelper {
         dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
       }
 
-      if (query?.auth_id) {
+      if (body?.auth_id) {
         //Process total View
         let dataFilterView = {
           course_ids: dataCourseIds,
-          user_id: query?.auth_id,
+          user_id: body?.auth_id,
         };
         let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
 
         let dataFilterJoin = {
           course_ids: dataCourseIds,
-          user_id: query?.auth_id,
+          user_id: body?.auth_id,
         };
         let dataJoin: CourseLike[] = await this.courseLikeService.filter(dataFilterJoin, {}, 1, 1000);
 

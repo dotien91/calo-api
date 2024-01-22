@@ -32,18 +32,13 @@ export class CourseService {
       condition = Object.assign(condition, { course_status: filter.course_status });
     }
 
-    if (filter.price) {
-      condition = Object.assign(condition, { price: { $gte: filter.price } });
-    }
-
-    if (filter.hasOwnProperty("price")) {
-      if (Number(filter.price) === 0) {
-        condition = Object.assign(condition, { price: 0 });
-      }
-    }
-
-    if (filter.post_category) {
-      condition = Object.assign(condition, { post_category: filter.post_category });
+    if (filter.max_price) {
+      condition = Object.assign(condition, {
+        price: {
+          $lte: filter.max_price || Number.POSITIVE_INFINITY,
+          $gte: filter.min_price || Number.NEGATIVE_INFINITY,
+        },
+      });
     }
 
     if (filter.ref_id) {
@@ -65,6 +60,22 @@ export class CourseService {
       let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
     }
+
+    if (filter.levels) {
+      let levels = filter.levels;
+      condition = Object.assign(condition, { level: { $in: levels } });
+    }
+
+    if (filter.skills) {
+      let skills = filter.skills;
+      condition = Object.assign(condition, { skills: { $in: skills } });
+    }
+
+    if (filter.types) {
+      let types = filter.types;
+      condition = Object.assign(condition, { type: { $in: types } });
+    }
+
     return condition;
   }
 
