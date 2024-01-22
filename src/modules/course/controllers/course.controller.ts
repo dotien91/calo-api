@@ -36,6 +36,11 @@ export class CourseController {
     return await this.courseHelper.getCourseListByAdmin(body, res, req);
   }
 
+  @Get("filter-items")
+  async getFilterItems(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getFilterItems(req, res);
+  }
+
   @Post("/create")
   @Permissions(Permission(Controllers.COURSE).CREATE)
   async createNewCourse(
