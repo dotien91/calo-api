@@ -20,6 +20,7 @@ import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
+import { CourseLevel, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course } from "../schemas/course.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
@@ -1100,6 +1101,38 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(courseReview);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getFilterItems(req: ExpressRequestDto, res: Response) {
+    try {
+      const dataReturn = {
+        levels: [
+          CourseLevel.FOUR_PLUS,
+          CourseLevel.FIVE_PLUS,
+          CourseLevel.SIX_PLUS,
+          CourseLevel.SEVEN_PLUS,
+          CourseLevel.EIGHT_PLUS,
+          CourseLevel.NINE,
+        ],
+        skills: [
+          CourseSkill.ALL_SKILLS,
+          CourseSkill.LISTENING,
+          CourseSkill.READING,
+          CourseSkill.WRITING,
+          CourseSkill.SPEAKING,
+        ],
+        types: [CourseType.ALL_FORMS, CourseType.CALL_ONE_ONE, CourseType.SELF_LEARNING, CourseType.CALL_GROUP],
+        price: "slider",
+        onlyEnglishNativeSpeakers: "checkbox",
+      };
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
