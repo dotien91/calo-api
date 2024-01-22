@@ -10,18 +10,22 @@ import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
+import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
+import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { Course } from "../schemas/course.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
 import { CourseModuleService } from "../services/course_module.service";
+import { CourseReviewService } from "../services/course_review.service";
 import { CourseUserService } from "../services/course_user.service";
 import { CourseViewService } from "../services/course_view.service";
 
@@ -36,6 +40,7 @@ export class CourseHelper {
     private courseModuleService: CourseModuleService,
     private courseUserService: CourseUserService,
     private courseViewService: CourseViewService,
+    private courseReviewService: CourseReviewService,
     private handleServiceService: HandleServiceService,
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
@@ -247,6 +252,7 @@ export class CourseHelper {
       throw new NotFoundException(error.message);
     }
   }
+
   /**
    * @author Tony Vu
    * @param id
@@ -1007,6 +1013,93 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getCourseReviewList(query: ListCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseReviewService.filter(dataToFilter, orderByObject, page, limit);
+      let countCourse = await this.courseReviewService.count(dataToFilter);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async createNewReview(dataFollow: CreateCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      // check if user is in course
+      const user = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (!user) throw new Error("User don't have permission to leave review in this course");
+
+      const isReviewed = await this.courseReviewService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (isReviewed) throw new Error("You're already leave review for this course");
+
+      const courseReview = await this.courseReviewService.create(dataFollow);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async updateReview(dataFollow: UpdateCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseReview = await this.courseReviewService.update(dataFollow);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async deleteReview(id: string, req: ExpressRequestDto, res: Response) {
+    try {
+      const user = req?.user_object;
+      const courseReview = await this.courseReviewService.findOne({
+        _id: id,
+        user_id: user?._id,
+      });
+      if (!courseReview) throw new Error("You don't have permission to do this action");
+
+      await this.courseReviewService.remove({ _id: id });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

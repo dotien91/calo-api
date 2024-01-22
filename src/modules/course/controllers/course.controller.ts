@@ -6,13 +6,16 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
+import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
+import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { CourseHelper } from "../helper/course.helper";
 
 @Controller(Controllers.COURSE)
@@ -140,5 +143,34 @@ export class CourseController {
   @Permissions(Permission(Controllers.COURSE).DELETE)
   async deleteCourseModule(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.handleDeleteCourseModule(id, res, req);
+  }
+
+  // course review api
+  @Get("list-review")
+  async getCourseReview(@Query() query: ListCourseReviewDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseReviewList(query, req, res);
+  }
+
+  @Post("create-review")
+  async createNewReview(
+    @Body() createReviewBody: CreateCourseReviewDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.createNewReview(createReviewBody, req, res);
+  }
+
+  @Patch("update-review")
+  async updateReview(
+    @Body() updateReviewBody: UpdateCourseReviewDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.updateReview(updateReviewBody, req, res);
+  }
+
+  @Delete("delete-review/:id")
+  async deleteReview(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.deleteReview(id, req, res);
   }
 }
