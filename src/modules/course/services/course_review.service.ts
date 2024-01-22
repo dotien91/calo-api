@@ -112,10 +112,6 @@ export class CourseReviewService {
   getCondition(filter: FilterReviewCourseDto) {
     let condition: any = {};
 
-    if (filter.user_id) {
-      condition = Object.assign(condition, { user_id: filter.user_id });
-    }
-
     if (filter.course_id) {
       condition = Object.assign(condition, { course_id: filter.course_id });
     }
