@@ -10,7 +10,7 @@ import { CourseModule, CourseModuleDocument } from "../schemas/course_module.sch
 export class CourseModuleService {
   constructor(
     @InjectModel(CourseModule.name)
-    private courseLikeModel: Model<CourseModuleDocument>
+    private courseModuleModel: Model<CourseModuleDocument>
   ) {}
 
   /**
@@ -19,7 +19,7 @@ export class CourseModuleService {
    * @returns
    */
   async create(createUser: CreateCourseModuleDto): Promise<CourseModule> {
-    const createdUser = new this.courseLikeModel(createUser);
+    const createdUser = new this.courseModuleModel(createUser);
     return createdUser.save();
   }
 
@@ -63,7 +63,7 @@ export class CourseModuleService {
    * @returns
    */
   async removeOne(dataToSearch: any): Promise<CourseModule> {
-    return await this.courseLikeModel.findOneAndRemove(dataToSearch).exec();
+    return await this.courseModuleModel.findOneAndRemove(dataToSearch).exec();
   }
 
   /**
@@ -76,7 +76,7 @@ export class CourseModuleService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseModuleModel
       .findById(id, projection)
       .populate(
         "user_id",
@@ -96,7 +96,7 @@ export class CourseModuleService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseModuleModel
       .findById(id, projection)
       .populate("course_id")
       .populate(
@@ -111,7 +111,7 @@ export class CourseModuleService {
    * @returns
    */
   async findAll(): Promise<CourseModule[]> {
-    return this.courseLikeModel.find().exec();
+    return this.courseModuleModel.find().exec();
   }
 
   /**
@@ -121,7 +121,7 @@ export class CourseModuleService {
    */
   async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseModule> {
     if (isWithUser) {
-      return await this.courseLikeModel
+      return await this.courseModuleModel
         .findOne(dataToSearch)
         .populate(
           "user_id",
@@ -130,7 +130,7 @@ export class CourseModuleService {
         .populate("media_id")
         .exec();
     } else {
-      return await this.courseLikeModel
+      return await this.courseModuleModel
         .findOne(dataToSearch)
         .populate(
           "user_id",
@@ -148,7 +148,7 @@ export class CourseModuleService {
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CourseModule[]> {
     let condition = { user_id: userId, partner_id: { $in: userPartners } };
-    return await this.courseLikeModel.find(condition, {}).exec();
+    return await this.courseModuleModel.find(condition, {}).exec();
   }
 
   /**
@@ -157,7 +157,7 @@ export class CourseModuleService {
    * @returns
    */
   async remove(id: string) {
-    return await this.courseLikeModel.findByIdAndDelete(id).exec();
+    return await this.courseModuleModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -170,7 +170,7 @@ export class CourseModuleService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel
+      let dataReturn = await this.courseModuleModel
         .findOneAndUpdate(
           { _id: dataUpdate._id },
           { $set: dataUpdate },
@@ -201,7 +201,7 @@ export class CourseModuleService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
+      let dataReturn = await this.courseModuleModel.findOneAndUpdate({ _id: dataUpdate._id }, { $set: dataUpdate });
       if (dataReturn._id) {
         return { ...dataReturn.toObject(), ...dataUpdate };
       } else {
@@ -221,9 +221,9 @@ export class CourseModuleService {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.courseLikeModel.estimatedDocumentCount();
+        return this.courseModuleModel.estimatedDocumentCount();
       } else {
-        return this.courseLikeModel.countDocuments(condition);
+        return this.courseModuleModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -265,7 +265,7 @@ export class CourseModuleService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseModuleModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -311,7 +311,7 @@ export class CourseModuleService {
         },
       ],
     };
-    let dataReturn: any = await this.courseLikeModel
+    let dataReturn: any = await this.courseModuleModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -346,7 +346,7 @@ export class CourseModuleService {
   async filterWithId(filter: FilterModuleCourseDto, page: number, limit: number): Promise<CourseModule[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any = { _id: -1 };
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseModuleModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -369,7 +369,7 @@ export class CourseModuleService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseModuleModel
       .find(condition)
       .populate({
         path: "user_id",

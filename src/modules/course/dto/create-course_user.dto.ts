@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 
-export class CreateCourseLikeDto {
+export class CreateCourseUserDto {
   @IsString()
   @ApiProperty()
   course_id: string;

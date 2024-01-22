@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CreateCourseLikeDto } from "../dto/create-course_like.dto";
+import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { FilterLikeCourseDto } from "../dto/filter-like_course.dto";
-import { UpdateCourseLikeDto } from "../dto/update-course_like.dto";
-import { CourseLike, CourseLikeDocument } from "../schemas/course_like.schema";
+import { UpdateCourseUserDto } from "../dto/update-course_user.dto";
+import { CourseUser, CourseUserDocument } from "../schemas/course_user.schema";
 
 @Injectable()
-export class CourseLikeService {
+export class CourseUserService {
   constructor(
-    @InjectModel(CourseLike.name)
-    private courseLikeModel: Model<CourseLikeDocument>
+    @InjectModel(CourseUser.name)
+    private courseUserModel: Model<CourseUserDocument>
   ) {}
 
   /**
@@ -18,8 +18,8 @@ export class CourseLikeService {
    * @param createUser
    * @returns
    */
-  async create(createUser: CreateCourseLikeDto): Promise<CourseLike> {
-    const createdUser = new this.courseLikeModel(createUser);
+  async create(createUser: CreateCourseUserDto): Promise<CourseUser> {
+    const createdUser = new this.courseUserModel(createUser);
     return createdUser.save();
   }
 
@@ -53,8 +53,8 @@ export class CourseLikeService {
    * @param dataToSearch
    * @returns
    */
-  async removeOne(dataToSearch: any): Promise<CourseLike> {
-    return await this.courseLikeModel.findOneAndRemove(dataToSearch).exec();
+  async removeOne(dataToSearch: any): Promise<CourseUser> {
+    return await this.courseUserModel.findOneAndRemove(dataToSearch).exec();
   }
 
   /**
@@ -63,11 +63,11 @@ export class CourseLikeService {
    * @param projection
    * @returns
    */
-  async findById(id: string, projection: any): Promise<CourseLike> {
+  async findById(id: string, projection: any): Promise<CourseUser> {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseLikeModel.findById(id, projection);
+    let dataReturn = await this.courseUserModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -75,8 +75,8 @@ export class CourseLikeService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseLike[]> {
-    return this.courseLikeModel.find().exec();
+  async findAll(): Promise<CourseUser[]> {
+    return this.courseUserModel.find().exec();
   }
 
   /**
@@ -84,11 +84,11 @@ export class CourseLikeService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseLike> {
+  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseUser> {
     if (isWithUser) {
-      return await this.courseLikeModel.findOne(dataToSearch).populate("user_id").exec();
+      return await this.courseUserModel.findOne(dataToSearch).populate("user_id").exec();
     } else {
-      return await this.courseLikeModel.findOne(dataToSearch).exec();
+      return await this.courseUserModel.findOne(dataToSearch).exec();
     }
   }
 
@@ -97,9 +97,9 @@ export class CourseLikeService {
    * @param dataToSearch
    * @returns
    */
-  async filterByUserId(userId: string, userPartners: string[]): Promise<CourseLike[]> {
+  async filterByUserId(userId: string, userPartners: string[]): Promise<CourseUser[]> {
     let condition = { user_id: userId, partner_id: { $in: userPartners } };
-    return await this.courseLikeModel.find(condition, {}).exec();
+    return await this.courseUserModel.find(condition, {}).exec();
   }
 
   /**
@@ -108,7 +108,7 @@ export class CourseLikeService {
    * @returns
    */
   async remove(id: string) {
-    return await this.courseLikeModel.findByIdAndDelete(id).exec();
+    return await this.courseUserModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -116,12 +116,12 @@ export class CourseLikeService {
    * @param dataUpdate
    * @returns
    */
-  async update(dataUpdate: UpdateCourseLikeDto) {
+  async update(dataUpdate: UpdateCourseUserDto) {
     try {
       if (!dataUpdate.user_id && !dataUpdate.course_id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel.findOneAndUpdate(
+      let dataReturn = await this.courseUserModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, course_id: dataUpdate.course_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -141,12 +141,12 @@ export class CourseLikeService {
    * @param dataUpdate
    * @returns
    */
-  async updateWithoutCreate(dataUpdate: UpdateCourseLikeDto) {
+  async updateWithoutCreate(dataUpdate: UpdateCourseUserDto) {
     try {
       if (!dataUpdate.user_id && !dataUpdate.course_id) {
         return null;
       }
-      let dataReturn = await this.courseLikeModel.findOneAndUpdate(
+      let dataReturn = await this.courseUserModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, course_id: dataUpdate.course_id },
         { $set: dataUpdate }
       );
@@ -169,9 +169,9 @@ export class CourseLikeService {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.courseLikeModel.estimatedDocumentCount();
+        return this.courseUserModel.estimatedDocumentCount();
       } else {
-        return this.courseLikeModel.countDocuments(condition);
+        return this.courseUserModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -207,13 +207,13 @@ export class CourseLikeService {
     page: number,
     limit: number,
     projection: any = {}
-  ): Promise<CourseLike[]> {
+  ): Promise<CourseUser[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseUserModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -236,7 +236,7 @@ export class CourseLikeService {
     page: number,
     limit: number,
     projection: any = {}
-  ): Promise<CourseLike[]> {
+  ): Promise<CourseUser[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -254,7 +254,7 @@ export class CourseLikeService {
         },
       ],
     };
-    let dataReturn: any = await this.courseLikeModel
+    let dataReturn: any = await this.courseUserModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -293,10 +293,10 @@ export class CourseLikeService {
    * @param limit
    * @returns
    */
-  async filterWithId(filter: FilterLikeCourseDto, page: number, limit: number): Promise<CourseLike[]> {
+  async filterWithId(filter: FilterLikeCourseDto, page: number, limit: number): Promise<CourseUser[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any = { _id: -1 };
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseUserModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -319,7 +319,7 @@ export class CourseLikeService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseLikeModel
+    let dataReturn = await this.courseUserModel
       .find(condition)
       .populate({
         path: "user_id",
