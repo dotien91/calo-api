@@ -1,18 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
-export class CreateCourseLikeDto {
+export class CreateCourseReviewDto {
   @IsString()
   @ApiProperty()
   course_id: string;
 
   @IsString()
   @ApiProperty()
-  @IsOptional(null)
   user_id: string;
 
   @IsString()
   @ApiProperty()
-  @IsOptional(null)
-  add_type: string;
+  review: string;
+
+  @IsNumber()
+  @ApiProperty()
+  rating: number;
 }

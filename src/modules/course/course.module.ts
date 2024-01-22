@@ -26,12 +26,14 @@ import { UserPermissionService } from "../user_permission/services/user_permissi
 import { CourseController } from "./controllers/course.controller";
 import { CourseHelper } from "./helper/course.helper";
 import { Course, CourseSchema } from "./schemas/course.schema";
-import { CourseLike, CourseLikeSchema } from "./schemas/course_like.schema";
 import { CourseModuleSchema } from "./schemas/course_module.schema";
+import { CourseReview, CourseReviewSchema } from "./schemas/course_review.schema";
+import { CourseUser, CourseUserSchema } from "./schemas/course_user.schema";
 import { CourseView, CourseViewSchema } from "./schemas/course_view.schema";
 import { CourseService } from "./services/course.service";
-import { CourseLikeService } from "./services/course_like.service";
 import { CourseModuleService } from "./services/course_module.service";
+import { CourseReviewService } from "./services/course_review.service";
+import { CourseUserService } from "./services/course_user.service";
 import { CourseViewService } from "./services/course_view.service";
 
 @Module({
@@ -50,8 +52,9 @@ import { CourseViewService } from "./services/course_view.service";
     MongooseModule.forFeature([
       { name: Course.name, schema: CourseSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
-      { name: CourseLike.name, schema: CourseLikeSchema },
+      { name: CourseUser.name, schema: CourseUserSchema },
       { name: CourseView.name, schema: CourseViewSchema },
+      { name: CourseReview.name, schema: CourseReviewSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: CourseModule.name, schema: CourseModuleSchema },
       { name: HandleService.name, schema: HandleServiceSchema },
@@ -69,7 +72,8 @@ import { CourseViewService } from "./services/course_view.service";
     CourseService,
     CourseHelper,
     CourseViewService,
-    CourseLikeService,
+    CourseUserService,
+    CourseReviewService,
     UserSessionService,
     UserPermissionService,
     CourseModuleService,
@@ -84,6 +88,6 @@ import { CourseViewService } from "./services/course_view.service";
     TransactionService,
     TransactionBankService,
   ],
-  exports: [CourseHelper, CourseLikeService, CourseViewService, CourseService],
+  exports: [CourseHelper, CourseUserService, CourseViewService, CourseService, CourseReviewService],
 })
 export class CourseModule {}

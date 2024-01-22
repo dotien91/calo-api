@@ -4,6 +4,7 @@ import { Media } from "../../../modules/media/schemas/media.schema";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
+import { CourseLabel, CourseLevel, CoursePublicStatus, CourseSkill, CourseType } from "../interfaces/course.interface";
 
 export type CourseDocument = Course & Document;
 
@@ -117,24 +118,9 @@ export class Course {
 
   @Prop({
     type: String,
-    default: "",
-    nullable: false,
+    enum: [CoursePublicStatus],
   })
   public_status: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  subscribe: String;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: false,
-  })
-  trash_status: String;
 
   @Prop({
     type: Number,
@@ -155,21 +141,14 @@ export class Course {
     default: 0,
     nullable: false,
   })
-  video_count: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-  })
-  post_count: Number;
-
-  @Prop({
-    type: Number,
-    default: 0,
-    nullable: false,
-  })
   join_number: Number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
+  video_count: Number;
 
   @Prop({
     type: Number,
@@ -200,11 +179,37 @@ export class Course {
   module_child_count: Number;
 
   @Prop({
-    type: MongooseSchema.Types.Array,
+    type: Array,
+    enum: [CourseLabel],
     default: [],
-    ref: "Media",
   })
-  hashtag_id: Media[];
+  labels: CourseLabel[];
+
+  @Prop({
+    type: String,
+    enum: [CourseLevel],
+  })
+  level: CourseLevel;
+
+  @Prop({
+    type: Array,
+    enum: [CourseSkill],
+    default: [],
+  })
+  skills: CourseSkill[];
+
+  @Prop({
+    type: String,
+    enum: CourseType,
+  })
+  type: CourseType;
+
+  // percentage
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  promotion: number;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course).index({

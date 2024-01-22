@@ -8,22 +8,25 @@ import { HandleServiceService } from "../../../modules/plan/services/handle_serv
 import { PlanService } from "../../../modules/plan/services/plan.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateCourseDto } from "../dto/create-course.dto";
-import { CreateCourseLikeDto } from "../dto/create-course_like.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
+import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
+import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
+import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
+import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { Course } from "../schemas/course.schema";
-import { CourseLike } from "../schemas/course_like.schema";
+import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
-import { CourseLikeService } from "../services/course_like.service";
 import { CourseModuleService } from "../services/course_module.service";
+import { CourseReviewService } from "../services/course_review.service";
+import { CourseUserService } from "../services/course_user.service";
 import { CourseViewService } from "../services/course_view.service";
 
 /**
@@ -35,9 +38,9 @@ export class CourseHelper {
   constructor(
     private courseService: CourseService,
     private courseModuleService: CourseModuleService,
-    private userPermissionService: UserPermissionService,
-    private courseLikeService: CourseLikeService,
+    private courseUserService: CourseUserService,
     private courseViewService: CourseViewService,
+    private courseReviewService: CourseReviewService,
     private handleServiceService: HandleServiceService,
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
@@ -249,6 +252,7 @@ export class CourseHelper {
       throw new NotFoundException(error.message);
     }
   }
+
   /**
    * @author Tony Vu
    * @param id
@@ -271,25 +275,25 @@ export class CourseHelper {
 
   /**
    * @author Tony Vu
-   * @param query
+   * @param body
    * @param id
    * @param res
    * @param req
    * @returns
    */
-  async getCourseListByAdmin(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
+  async getCourseListByAdmin(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
       let orderByObject = {};
-      if (query.order_by) {
-        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      if (body.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: body.order_by } };
       }
-      let dataToFilter = { ...query };
+      let dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -347,10 +351,10 @@ export class CourseHelper {
         }
       }
 
-      let dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
+      let dataReturn: any = await this.courseUserService.filterCourse(dataToFilter, orderByObject, page, limit, {
         course_id: true,
       });
-      let countData = await this.courseLikeService.count(dataToFilter);
+      let countData = await this.courseUserService.count(dataToFilter);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countData })
@@ -393,7 +397,7 @@ export class CourseHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn: any = await this.courseLikeService.filterCourse(dataToFilter, orderByObject, page, limit, {
+      let dataReturn: any = await this.courseUserService.filterCourse(dataToFilter, orderByObject, page, limit, {
         course_id: true,
       });
 
@@ -403,7 +407,7 @@ export class CourseHelper {
           dataReturnFinal.push({ ...courseItem, ...{ is_like: true, is_view: false } });
         }
       }
-      let countData = await this.courseLikeService.count(dataToFilter);
+      let countData = await this.courseUserService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countData })
         .status(HttpStatus.OK)
@@ -464,25 +468,25 @@ export class CourseHelper {
 
   /**
    * @author Tony Vu
-   * @param query
+   * @param body
    * @param id
    * @param res
    * @param req
    * @returns
    */
-  async getCourseList(query: ListCourseDto, res: Response, req: ExpressRequestDto) {
+  async getCourseList(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
       let orderByObject = {};
-      if (query.order_by) {
-        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      if (body.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: body.order_by } };
       }
-      let dataToFilter = { ...query };
+      let dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -499,19 +503,19 @@ export class CourseHelper {
         dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
       }
 
-      if (query?.auth_id) {
+      if (body?.auth_id) {
         //Process total View
         let dataFilterView = {
           course_ids: dataCourseIds,
-          user_id: query?.auth_id,
+          user_id: body?.auth_id,
         };
         let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
 
         let dataFilterJoin = {
           course_ids: dataCourseIds,
-          user_id: query?.auth_id,
+          user_id: body?.auth_id,
         };
-        let dataJoin: CourseLike[] = await this.courseLikeService.filter(dataFilterJoin, {}, 1, 1000);
+        let dataJoin: CourseUser[] = await this.courseUserService.filter(dataFilterJoin, {}, 1, 1000);
 
         for (let dataIndexCourse in dataReturn) {
           let dataObjectByCourse = dataView?.filter((value) => {
@@ -662,7 +666,7 @@ export class CourseHelper {
             course_id: dataReturn?._id?.toString(),
             user_id: query?.auth_id,
           };
-          let dataLike: CourseLike[] = await this.courseLikeService.filter(dataFilterView, {}, 1, 1000);
+          let dataLike: CourseUser[] = await this.courseUserService.filter(dataFilterView, {}, 1, 1000);
 
           if (dataView && dataView[0]) {
             let dataObjectByCourse = dataView?.map((value) => {
@@ -810,7 +814,7 @@ export class CourseHelper {
    * @param res
    * @returns
    */
-  async processFollowUser(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
+  async processFollowUser(dataFollow: CreateCourseUserDto, req: ExpressRequestDto, res: Response) {
     try {
       let userObject = req?.user_object;
       if (!userObject) {
@@ -844,7 +848,7 @@ export class CourseHelper {
    * @param res
    * @returns
    */
-  async handleAddUserToCourse(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
+  async handleAddUserToCourse(dataFollow: CreateCourseUserDto, req: ExpressRequestDto, res: Response) {
     try {
       let userObject = req?.user_object;
       let userId = userObject._id;
@@ -881,7 +885,7 @@ export class CourseHelper {
     }
   }
 
-  async processAddUserToCoursePayment(dataFollow: CreateCourseLikeDto, dataCourse: Course) {
+  async processAddUserToCoursePayment(dataFollow: CreateCourseUserDto, dataCourse: Course) {
     try {
       //Setup Category & Level
       setTimeout(async () => {
@@ -902,7 +906,7 @@ export class CourseHelper {
    */
   async processAddUserToCourse(
     userObject: User,
-    dataFollow: CreateCourseLikeDto,
+    dataFollow: CreateCourseUserDto,
     videoObject: Course,
     req: ExpressRequestDto
   ) {
@@ -912,7 +916,7 @@ export class CourseHelper {
         user_id: userIdToAdd,
         course_id: dataFollow.course_id.toString(),
       };
-      let dataReturn = await this.courseLikeService.update(dataUpdate);
+      let dataReturn = await this.courseUserService.update(dataUpdate);
 
       //Update count Video
       let dataUpdateFilter = {
@@ -981,7 +985,7 @@ export class CourseHelper {
    * @param res
    * @returns
    */
-  async processUnFollowUser(dataFollow: CreateCourseLikeDto, req: ExpressRequestDto, res: Response) {
+  async processUnFollowUser(dataFollow: CreateCourseUserDto, req: ExpressRequestDto, res: Response) {
     try {
       let videoObject = await this.courseService.findById(dataFollow.course_id);
       if (!videoObject) {
@@ -996,7 +1000,7 @@ export class CourseHelper {
           course_id: dataFollow.course_id.toString(),
         };
 
-        let dataToAdd = await this.courseLikeService.removeOne(dataUpdate);
+        let dataToAdd = await this.courseUserService.removeOne(dataUpdate);
         dataReturn.push(dataToAdd);
         //Update count Video
         let dataUpdateFilter = {
@@ -1009,6 +1013,93 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getCourseReviewList(query: ListCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseReviewService.filter(dataToFilter, orderByObject, page, limit);
+      let countCourse = await this.courseReviewService.count(dataToFilter);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async createNewReview(dataFollow: CreateCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      // check if user is in course
+      const user = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (!user) throw new Error("User don't have permission to leave review in this course");
+
+      const isReviewed = await this.courseReviewService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (isReviewed) throw new Error("You're already leave review for this course");
+
+      const courseReview = await this.courseReviewService.create(dataFollow);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async updateReview(dataFollow: UpdateCourseReviewDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseReview = await this.courseReviewService.update(dataFollow);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async deleteReview(id: string, req: ExpressRequestDto, res: Response) {
+    try {
+      const user = req?.user_object;
+      const courseReview = await this.courseReviewService.findOne({
+        _id: id,
+        user_id: user?._id,
+      });
+      if (!courseReview) throw new Error("You don't have permission to do this action");
+
+      await this.courseReviewService.remove({ _id: id });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseReview);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

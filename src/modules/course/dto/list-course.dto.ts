@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { CourseLevel, CourseSkill, CourseType } from "../interfaces/course.interface";
 
 export class ListCourseDto {
   @IsNumberString()
@@ -35,5 +36,28 @@ export class ListCourseDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  price: string;
+  min_price: string;
+
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  max_price: string;
+
+  @IsArray()
+  @IsEnum(CourseLevel, { each: true })
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  levels: CourseLevel[];
+
+  @IsArray()
+  @IsEnum(CourseSkill, { each: true })
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  skills: CourseSkill[];
+
+  @IsArray()
+  @IsEnum(CourseType, { each: true })
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  types: CourseType[];
 }
