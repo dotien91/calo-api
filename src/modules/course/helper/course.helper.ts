@@ -11,6 +11,7 @@ import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
+import { CreateCourseCalendarTeacherDto } from "../dto/create-course_calendar_teacher.dto";
 import {
   AddMemberCourseClassDto,
   CreateCourseClassDto,
@@ -21,11 +22,13 @@ import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
+import { ListCourseCalendarTeacherDto } from "../dto/list-course_calendar_teacher.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
+import { UpdateCourseCalendarTeacherDto } from "../dto/update-course_calendar_teacher.dto";
 import { UpdateCourseClassDto } from "../dto/update-course_class.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
@@ -35,6 +38,7 @@ import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
 import { CourseCalendarService } from "../services/course_calendar.service";
+import { CourseCalendarTeacherService } from "../services/course_calendar_teacher.service";
 import { CourseClassService } from "../services/course_class.service";
 import { CourseModuleService } from "../services/course_module.service";
 import { CourseReviewService } from "../services/course_review.service";
@@ -55,6 +59,7 @@ export class CourseHelper {
     private courseReviewService: CourseReviewService,
     private courseCalendarService: CourseCalendarService,
     private courseClassService: CourseClassService,
+    private courseCalendarTeacherService: CourseCalendarTeacherService,
     private handleServiceService: HandleServiceService,
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
@@ -1398,5 +1403,111 @@ export class CourseHelper {
     }
 
     return false; // No conflicts
+  }
+
+  // helper for course calendar teacher
+  async getCourseCalendarTeacherList(query: ListCourseCalendarTeacherDto, req: ExpressRequestDto, res: Response) {
+    try {
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseCalendarTeacherService.filter(dataToFilter, orderByObject, page, limit);
+      let countCourse = await this.courseCalendarTeacherService.count(dataToFilter);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async createCourseCalendarTeacher(dataFollow: CreateCourseCalendarTeacherDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const calendarIds = [];
+      for (const calendar of dataFollow.time_available) {
+        const params: any = {
+          day: calendar.day,
+          time_start: calendar.time_start,
+          time_end: calendar.time_end,
+          course_type: CourseClassType.ONE_ONE,
+        };
+        const newCalendar = await this.courseCalendarService.create(params);
+        calendarIds.push(newCalendar._id);
+      }
+
+      // create new class
+      const createParams = {
+        course_id: dataFollow.course_id,
+        user_id: dataFollow.user_id,
+        time_available: calendarIds,
+      };
+      const courseCalendarTeacher = await this.courseCalendarTeacherService.create(createParams);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseCalendarTeacher);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async updateCourseCalendarTeacher(dataFollow: UpdateCourseCalendarTeacherDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const oldClass = await this.courseCalendarTeacherService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+
+      // should drop old class calendar
+      if (dataFollow.time_available.length) {
+        this.courseCalendarService.remove({
+          _id: {
+            $in: oldClass.time_available,
+          },
+        });
+      }
+
+      // create course calendar
+      const calendarIds = [];
+      for (const calendar of dataFollow.time_available) {
+        const params: any = {
+          day: calendar.day,
+          time_start: calendar.time_start,
+          time_end: calendar.time_end,
+          course_type: CourseClassType.ONE_ONE,
+        };
+        const newCalendar = await this.courseCalendarService.create(params);
+        calendarIds.push(newCalendar._id);
+      }
+
+      const updateParams = {
+        _id: oldClass._id.toString(),
+        time_available: calendarIds,
+      };
+      const courseCalendarTeacher = await this.courseCalendarTeacherService.update(updateParams);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseCalendarTeacher);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }
