@@ -25,6 +25,7 @@ import { Course } from "../schemas/course.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
+import { CourseCalendarService } from "../services/course_calendar.service";
 import { CourseModuleService } from "../services/course_module.service";
 import { CourseReviewService } from "../services/course_review.service";
 import { CourseUserService } from "../services/course_user.service";
@@ -42,6 +43,7 @@ export class CourseHelper {
     private courseUserService: CourseUserService,
     private courseViewService: CourseViewService,
     private courseReviewService: CourseReviewService,
+    private courseCalendarService: CourseCalendarService,
     private handleServiceService: HandleServiceService,
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
@@ -1019,6 +1021,7 @@ export class CourseHelper {
     }
   }
 
+  // helper for course review
   async getCourseReviewList(query: ListCourseReviewDto, req: ExpressRequestDto, res: Response) {
     try {
       if (Number(query.limit) > 1000) {
