@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
-import { Types } from "mongoose";
+import * as moment from "moment";
+import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
@@ -9,23 +10,32 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { CreateCourseDto } from "../dto/create-course.dto";
+import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
+import {
+  AddMemberCourseClassDto,
+  CreateCourseClassDto,
+  RemoveMemberCourseClassDto,
+} from "../dto/create-course_class.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
+import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
+import { UpdateCourseClassDto } from "../dto/update-course_class.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
-import { CourseLevel, CourseSkill, CourseType } from "../interfaces/course.interface";
+import { CourseClassType, CourseLevel, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course } from "../schemas/course.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
 import { CourseCalendarService } from "../services/course_calendar.service";
+import { CourseClassService } from "../services/course_class.service";
 import { CourseModuleService } from "../services/course_module.service";
 import { CourseReviewService } from "../services/course_review.service";
 import { CourseUserService } from "../services/course_user.service";
@@ -44,6 +54,7 @@ export class CourseHelper {
     private courseViewService: CourseViewService,
     private courseReviewService: CourseReviewService,
     private courseCalendarService: CourseCalendarService,
+    private courseClassService: CourseClassService,
     private handleServiceService: HandleServiceService,
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
@@ -1139,5 +1150,253 @@ export class CourseHelper {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  // helper for course class
+  async getCourseClassList(query: ListCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseClassService.filter(dataToFilter, orderByObject, page, limit);
+      let countCourse = await this.courseClassService.count(dataToFilter);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async createNewClass(dataFollow: CreateCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      // check if user is in course
+      const userObject = req.user_object;
+      if (!userObject) throw new Error("User is invalid");
+
+      const course = await this.courseService.findOne({
+        user_id: userObject._id.toString(),
+        _id: dataFollow.course_id,
+      });
+      if (!course) throw new Error("User don't have permission to create new class in this course");
+
+      const courseClasses = await this.courseClassService.getAllAssignedTimeInCourse(dataFollow.course_id);
+      for (const courseClass of courseClasses) {
+        const signedTimes = courseClass.course_calendar_ids.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        const incomingTimes = dataFollow.course_calendars.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: this.addDurationToTime(courseCalendar.time_start, courseCalendar.time_duration),
+        }));
+
+        if (this.hasTimeAndDayConflict(incomingTimes, signedTimes))
+          throw new Error("There is already class that assigned the same time");
+      }
+
+      // create course calendar
+      const calendarIds = [];
+      for (const calendar of dataFollow.course_calendars) {
+        const endTime = this.addDurationToTime(calendar.time_start, calendar.time_duration);
+        const params: CreateCourseCalendarDto = {
+          day: calendar.day,
+          time_start: calendar.time_start,
+          time_end: endTime,
+          time_duration: calendar.time_duration,
+          course_type: CourseClassType.CLASS,
+        };
+        const newCalendar = await this.courseCalendarService.create(params);
+        calendarIds.push(newCalendar._id);
+      }
+
+      // create new class
+      const createParams = {
+        course_id: dataFollow.course_id,
+        course_calendar_ids: calendarIds,
+        name: dataFollow.name,
+        start_time: dataFollow.start_time,
+        end_time: dataFollow.end_time,
+        limit_member: dataFollow.limit_member,
+      };
+      const courseClass = await this.courseClassService.create(createParams);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseClass);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async updateClass(dataFollow: UpdateCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const oldClass = await this.courseClassService.findOne({
+        _id: dataFollow._id,
+      });
+
+      // should drop old class calendar
+      if (dataFollow.course_calendars.length) {
+        this.courseCalendarService.remove({
+          _id: {
+            $in: oldClass.course_calendar_ids,
+          },
+        });
+      }
+
+      // create course calendar
+      const calendarIds = [];
+      for (const calendar of dataFollow.course_calendars) {
+        const endTime = this.addDurationToTime(calendar.time_start, calendar.time_duration);
+        const params: CreateCourseCalendarDto = {
+          day: calendar.day,
+          time_start: calendar.time_start,
+          time_end: endTime,
+          time_duration: calendar.time_duration,
+          course_type: CourseClassType.CLASS,
+        };
+        const newCalendar = await this.courseCalendarService.create(params);
+        calendarIds.push(newCalendar._id);
+      }
+
+      const updateParams = {
+        _id: dataFollow._id,
+        course_calendar_ids: calendarIds,
+        name: dataFollow.name,
+        start_time: dataFollow.start_time,
+        end_time: dataFollow.end_time,
+        limit_member: dataFollow.limit_member,
+      };
+      const courseClass = await this.courseClassService.update(updateParams);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseClass);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async deleteClass(id: string, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseClass = await this.courseClassService.remove({ _id: id });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(courseClass);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async addMemberToClass(dataFollow: AddMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseClass = await this.courseClassService.findOne({
+        _id: dataFollow.class_id,
+      });
+      if (!courseClass) throw new Error("Not found your class");
+
+      const isUserBoughtCourse = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: courseClass.course_id,
+      });
+      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
+
+      if (courseClass.limit_member === courseClass.members.length)
+        throw new Error("The class has been full of members");
+
+      await this.courseClassService.update({
+        _id: courseClass._id,
+        members: [...courseClass.members, new mongoose.Types.ObjectId(dataFollow.user_id)],
+      });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .send();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async removeMemberFromClass(dataFollow: RemoveMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseClass = await this.courseClassService.findOne({
+        _id: dataFollow.class_id,
+      });
+      if (!courseClass) throw new Error("Not found your class");
+
+      const newMembers = courseClass.members.filter((member) => {
+        return member.toString() !== dataFollow.user_id;
+      });
+
+      await this.courseClassService.update({
+        _id: courseClass._id,
+        members: newMembers,
+      });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .send();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  addDurationToTime(time: string, duration: number) {
+    // Parse the input time using Moment.js
+    const parsedTime = moment(time, "HH:mm");
+
+    // Add the duration in hours
+    const resultTime = parsedTime.add(duration, "hours");
+
+    // Format the result in the desired format
+    const formattedResult = resultTime.format("HH:mm");
+
+    return formattedResult;
+  }
+
+  hasTimeAndDayConflict(array1, array2) {
+    for (const item1 of array1) {
+      for (const item2 of array2) {
+        if (item1.day === item2.day) {
+          const start1 = new Date(`2022-01-01 ${item1.time_start}`);
+          const end1 = new Date(`2022-01-01 ${item1.time_end}`);
+          const start2 = new Date(`2022-01-01 ${item2.time_start}`);
+          const end2 = new Date(`2022-01-01 ${item2.time_end}`);
+
+          // Check for no time overlap
+          if (end1 <= start2 || end2 <= start1) {
+            continue; // No conflict, continue checking other pairs
+          } else {
+            return true; // Conflict found
+          }
+        }
+      }
+    }
+
+    return false; // No conflicts
   }
 }

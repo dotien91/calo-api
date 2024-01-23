@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { CourseClassType } from "../interfaces/course.interface";
 
 export type CourseCalendarDocument = CourseCalendar & Document;
 
@@ -19,7 +20,6 @@ export class CourseCalendar {
 
   @Prop({
     type: Number,
-    nullable: false,
   })
   time_duration: number;
 
@@ -31,21 +31,21 @@ export class CourseCalendar {
   // 0 - 6 === Sun - Mon
 
   @Prop({
-    type: Number,
-    nullable: false,
+    type: String,
   })
-  time_start: Date;
+  time_start: string;
 
   @Prop({
-    type: Date,
+    type: String,
   })
-  time_end: number;
+  time_end: string;
 
   @Prop({
     type: String,
     nullable: false,
+    enum: CourseClassType,
   })
-  course_type: string;
+  course_type: CourseClassType;
 }
 
 export const CourseCalendarSchema = SchemaFactory.createForClass(CourseCalendar);

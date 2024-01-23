@@ -1,16 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
-import { FilterCalendarCourseDto } from "../dto/filter-calendar_course.dto";
-import { UpdateCourseCalendarDto } from "../dto/update-course_calendar.dto";
-import { CourseCalendar, CourseCalendarDocument } from "../schemas/course_calendar.schema";
+import { FilterClassCourseDto } from "../dto/filter-class_course.dto";
+import { CourseClass, CourseClassDocument } from "../schemas/course_class.schema";
 
 @Injectable()
-export class CourseCalendarService {
+export class CourseClassService {
   constructor(
-    @InjectModel(CourseCalendar.name)
-    private courseCalendarModel: Model<CourseCalendarDocument>
+    @InjectModel(CourseClass.name)
+    private courseClassModel: Model<CourseClassDocument>
   ) {}
 
   /**
@@ -18,8 +16,8 @@ export class CourseCalendarService {
    * @param createUser
    * @returns
    */
-  async create(createUser: CreateCourseCalendarDto): Promise<CourseCalendar> {
-    const createdUser = new this.courseCalendarModel(createUser);
+  async create(createUser): Promise<CourseClass> {
+    const createdUser = new this.courseClassModel(createUser);
     return createdUser.save();
   }
 
@@ -28,16 +26,16 @@ export class CourseCalendarService {
    * @param dataToSearch
    * @returns
    */
-  async remove(dataToSearch: any): Promise<any> {
-    await this.courseCalendarModel.deleteMany(dataToSearch);
+  async remove(dataToSearch: any): Promise<CourseClass> {
+    return await this.courseClassModel.findOneAndRemove(dataToSearch).exec();
   }
 
   /**
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseCalendar[]> {
-    return this.courseCalendarModel.find().exec();
+  async findAll(): Promise<CourseClass[]> {
+    return this.courseClassModel.find().exec();
   }
 
   /**
@@ -45,11 +43,11 @@ export class CourseCalendarService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseCalendar> {
+  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseClass> {
     if (isWithUser) {
-      return await this.courseCalendarModel.findOne(dataToSearch).populate("user_id").exec();
+      return await this.courseClassModel.findOne(dataToSearch).populate("user_id").exec();
     } else {
-      return await this.courseCalendarModel.findOne(dataToSearch).exec();
+      return await this.courseClassModel.findOne(dataToSearch).exec();
     }
   }
 
@@ -58,9 +56,9 @@ export class CourseCalendarService {
    * @param dataUpdate
    * @returns
    */
-  async update(dataUpdate: UpdateCourseCalendarDto) {
+  async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.courseCalendarModel.findOneAndUpdate(
+      let dataReturn = await this.courseClassModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -80,13 +78,13 @@ export class CourseCalendarService {
    * @param filter
    * @returns
    */
-  public count = async (filter: FilterCalendarCourseDto) => {
+  public count = async (filter: FilterClassCourseDto) => {
     try {
       let condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.courseCalendarModel.estimatedDocumentCount();
+        return this.courseClassModel.estimatedDocumentCount();
       } else {
-        return this.courseCalendarModel.countDocuments(condition);
+        return this.courseClassModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -109,30 +107,51 @@ export class CourseCalendarService {
     return sort;
   }
 
-  getCondition(filter: FilterCalendarCourseDto) {
+  getCondition(filter: FilterClassCourseDto) {
     let condition: any = {};
 
     return condition;
   }
 
   async filter(
-    filter: FilterCalendarCourseDto,
+    filter: FilterClassCourseDto,
     sortBy: any,
     page: number,
     limit: number,
     projection: any = {}
-  ): Promise<CourseCalendar[]> {
+  ): Promise<CourseClass[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseCalendarModel
+    let dataReturn = await this.courseClassModel
       .find(condition, projection)
+      .populate({
+        path: "course_calendar_ids",
+      })
+      .populate({
+        path: "members",
+        select:
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+      })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
       .exec();
+    return dataReturn;
+  }
+
+  async getAllAssignedTimeInCourse(courseId: string): Promise<any[]> {
+    let condition = {
+      course_id: courseId,
+    };
+
+    let dataReturn = await this.courseClassModel.find(condition).populate({
+      path: "course_calendar_ids",
+      options: { strictPopulate: false },
+      select: "day time_start time_end",
+    });
     return dataReturn;
   }
 }

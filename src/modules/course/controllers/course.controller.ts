@@ -5,15 +5,22 @@ import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
 import { CreateCourseDto } from "../dto/create-course.dto";
+import {
+  AddMemberCourseClassDto,
+  CreateCourseClassDto,
+  RemoveMemberCourseClassDto,
+} from "../dto/create-course_class.dto";
 import { CreateCourseModuleDto } from "../dto/create-course_module.dto";
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
+import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
+import { UpdateCourseClassDto } from "../dto/update-course_class.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { CourseHelper } from "../helper/course.helper";
@@ -177,5 +184,52 @@ export class CourseController {
   @Delete("delete-review/:id")
   async deleteReview(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.deleteReview(id, req, res);
+  }
+
+  // course review api
+  @Get("class/list")
+  async getCourseClass(@Query() query: ListCourseClassDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseClassList(query, req, res);
+  }
+
+  @Post("class/create")
+  async createNewClass(
+    @Body() createClassBody: CreateCourseClassDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.createNewClass(createClassBody, req, res);
+  }
+
+  @Post("class/add-member")
+  async addMemberToClass(
+    @Body() addMemberClassBody: AddMemberCourseClassDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.addMemberToClass(addMemberClassBody, req, res);
+  }
+
+  @Post("class/remove-member")
+  async removeMemberFromClass(
+    @Body() removeMemberClassBody: RemoveMemberCourseClassDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.removeMemberFromClass(removeMemberClassBody, req, res);
+  }
+
+  @Patch("class/update")
+  async updateClass(
+    @Body() updateClassBody: UpdateCourseClassDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.updateClass(updateClassBody, req, res);
+  }
+
+  @Delete("class/delete/:id")
+  async deleteClass(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.deleteClass(id, req, res);
   }
 }

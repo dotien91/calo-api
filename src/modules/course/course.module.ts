@@ -27,12 +27,14 @@ import { CourseController } from "./controllers/course.controller";
 import { CourseHelper } from "./helper/course.helper";
 import { Course, CourseSchema } from "./schemas/course.schema";
 import { CourseCalendar, CourseCalendarSchema } from "./schemas/course_calendar.schema";
+import { CourseClass, CourseClassSchema } from "./schemas/course_class.schema";
 import { CourseModuleSchema } from "./schemas/course_module.schema";
 import { CourseReview, CourseReviewSchema } from "./schemas/course_review.schema";
 import { CourseUser, CourseUserSchema } from "./schemas/course_user.schema";
 import { CourseView, CourseViewSchema } from "./schemas/course_view.schema";
 import { CourseService } from "./services/course.service";
 import { CourseCalendarService } from "./services/course_calendar.service";
+import { CourseClassService } from "./services/course_class.service";
 import { CourseModuleService } from "./services/course_module.service";
 import { CourseReviewService } from "./services/course_review.service";
 import { CourseUserService } from "./services/course_user.service";
@@ -58,6 +60,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: CourseView.name, schema: CourseViewSchema },
       { name: CourseReview.name, schema: CourseReviewSchema },
       { name: CourseCalendar.name, schema: CourseCalendarSchema },
+      { name: CourseClass.name, schema: CourseClassSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: CourseModule.name, schema: CourseModuleSchema },
       { name: HandleService.name, schema: HandleServiceSchema },
@@ -78,6 +81,7 @@ import { CourseViewService } from "./services/course_view.service";
     CourseUserService,
     CourseReviewService,
     CourseCalendarService,
+    CourseClassService,
     UserSessionService,
     UserPermissionService,
     CourseModuleService,
@@ -99,6 +103,7 @@ import { CourseViewService } from "./services/course_view.service";
     CourseService,
     CourseReviewService,
     CourseCalendarService,
+    CourseClassService,
   ],
 })
 export class CourseModule {}

@@ -10,15 +10,15 @@ export class UpdateCourseCalendarDto {
   @ApiPropertyOptional()
   day?: number;
 
-  @IsString()
+  @IsNumber()
   @ApiPropertyOptional()
-  timeDuration?: string;
+  time_duration?: number;
 
   @IsString()
   @ApiPropertyOptional()
-  timeStart?: string;
+  time_start?: string;
 
   @IsString()
   @ApiPropertyOptional()
-  courseType?: string;
+  course_type?: string;
 }

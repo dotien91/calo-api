@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 
 export class CreateCourseCalendarDto {
-  @IsString()
+  @IsNumber()
   @ApiProperty()
-  timeDuration: string;
+  time_duration: number;
 
   @IsNumber()
   @ApiProperty()
@@ -12,13 +12,13 @@ export class CreateCourseCalendarDto {
 
   @IsString()
   @ApiProperty()
-  timeStart: string;
+  time_start: string;
 
   @IsString()
   @ApiPropertyOptional()
-  timeEnd?: string;
+  time_end?: string;
 
   @IsString()
   @ApiProperty()
-  courseType: string;
+  course_type: string;
 }
