@@ -5,6 +5,7 @@ import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto } from "../dto/search-course.dto";
 import { SortByCourseDto } from "../dto/sort_by-course.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
+import { CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
 
 @Injectable()
@@ -61,18 +62,26 @@ export class CourseService {
       condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
     }
 
-    if (filter.levels) {
+    if (filter.levels && filter.levels.length) {
       let levels = filter.levels;
       condition = Object.assign(condition, { level: { $in: levels } });
     }
 
-    if (filter.skills) {
+    if (filter.skills && filter.skills.length) {
       let skills = filter.skills;
+
+      if (skills.includes(CourseSkill.ALL_SKILLS))
+        skills = [CourseSkill.LISTENING, CourseSkill.READING, CourseSkill.SPEAKING, CourseSkill.WRITING];
+
       condition = Object.assign(condition, { skills: { $in: skills } });
     }
 
-    if (filter.types) {
+    if (filter.types && filter.types.length) {
       let types = filter.types;
+
+      if (types.includes(CourseType.ALL_FORMS))
+        types = [CourseType.CALL_GROUP, CourseType.CALL_ONE_ONE, CourseType.SELF_LEARNING];
+
       condition = Object.assign(condition, { type: { $in: types } });
     }
 
