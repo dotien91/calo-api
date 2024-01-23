@@ -19,17 +19,20 @@ export class CourseCalendar {
 
   @Prop({
     type: Number,
+    nullable: false,
   })
   time_duration: number;
 
   @Prop({
     type: Number,
+    nullable: false,
   })
   day: number;
   // 0 - 6 === Sun - Mon
 
   @Prop({
     type: Number,
+    nullable: false,
   })
   time_start: Date;
 
@@ -37,6 +40,12 @@ export class CourseCalendar {
     type: Date,
   })
   time_end: number;
+
+  @Prop({
+    type: String,
+    nullable: false,
+  })
+  course_type: string;
 }
 
 export const CourseCalendarSchema = SchemaFactory.createForClass(CourseCalendar);

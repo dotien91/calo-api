@@ -17,4 +17,8 @@ export class UpdateCourseCalendarDto {
   @IsString()
   @ApiPropertyOptional()
   timeStart?: string;
+
+  @IsString()
+  @ApiPropertyOptional()
+  courseType?: string;
 }

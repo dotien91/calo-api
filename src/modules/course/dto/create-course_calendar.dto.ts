@@ -17,4 +17,8 @@ export class CreateCourseCalendarDto {
   @IsString()
   @ApiPropertyOptional()
   timeEnd?: string;
+
+  @IsString()
+  @ApiProperty()
+  courseType: string;
 }
