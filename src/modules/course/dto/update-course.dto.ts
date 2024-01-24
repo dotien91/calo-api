@@ -110,4 +110,9 @@ export class UpdateCourseDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   promotion?: number;
+
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  rating?: number;
 }

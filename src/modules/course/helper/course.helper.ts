@@ -1132,6 +1132,14 @@ export class CourseHelper {
       if (isReviewed) throw new Error("You're already leave review for this course");
 
       const courseReview = await this.courseReviewService.create(dataFollow);
+
+      // update course id
+      const newRating = await this.calculateRating(dataFollow.course_id);
+      await this.courseService.update({
+        _id: dataFollow.course_id,
+        rating: newRating,
+      });
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1860,5 +1868,15 @@ export class CourseHelper {
       reviewCounter: reviews.length,
       memberCounter: members.length,
     };
+  }
+
+  async calculateRating(courseId: string): Promise<number> {
+    const reviews = await this.courseReviewService.findAll({ course_id: courseId });
+    if (reviews.length === 0) return 0;
+
+    const totalRating = reviews.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.rating;
+    }, 0);
+    return totalRating / reviews.length;
   }
 }
