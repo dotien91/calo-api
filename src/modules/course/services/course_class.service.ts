@@ -147,7 +147,7 @@ export class CourseClassService {
     return dataReturn;
   }
 
-  async getAllAssignedTimeInCourse(courseId: string): Promise<any[]> {
+  async getAllAssignedTimeInCourse(courseId: string, oldAssignedTime?: any[]): Promise<any[]> {
     let condition = {
       course_id: courseId,
     };
@@ -156,7 +156,7 @@ export class CourseClassService {
       path: "course_calendar_ids",
       options: { strictPopulate: false },
       select: "day time_start time_end",
-      match: { course_type: CourseClassType.CLASS },
+      match: { course_type: CourseClassType.CLASS, _id: { $nin: oldAssignedTime } },
     });
     return dataReturn;
   }

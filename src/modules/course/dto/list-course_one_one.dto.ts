@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
-export class ListCourseCalendarTeacherDto {
+export class ListCourseOneOneDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
@@ -22,7 +22,8 @@ export class ListCourseCalendarTeacherDto {
   course_id: string;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   user_id: string;
 }
 

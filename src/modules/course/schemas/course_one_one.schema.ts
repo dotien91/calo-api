@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { User } from "../../user/schemas/user.schema";
+import { CourseOneOneRole } from "../interfaces/course.interface";
 import { Course } from "./course.schema";
 
-export type CourseCalendarTeacherDocument = CourseCalendarTeacher & Document;
+export type CourseOneOneDocument = CourseOneOne & Document;
 
 // this schema use to store teacher time available in 1-1 room
 @Schema({
@@ -13,7 +14,7 @@ export type CourseCalendarTeacherDocument = CourseCalendarTeacher & Document;
     updatedAt: "updatedAt",
   },
 })
-export class CourseCalendarTeacher {
+export class CourseOneOne {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     auto: true,
@@ -27,12 +28,25 @@ export class CourseCalendarTeacher {
   user_id: User;
 
   @Prop({
+    type: String,
+    enum: CourseOneOneRole,
+  })
+  role: CourseOneOneRole;
+
+  @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
-    ref: "CourseCalendarTeacher",
+    ref: "CourseCalendar",
   })
   time_available: MongooseSchema.Types.ObjectId[];
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+    ref: "CourseCalendar",
+  })
+  time_pick: MongooseSchema.Types.ObjectId[];
 }
 
-export const CourseCalendarTeacherSchema = SchemaFactory.createForClass(CourseCalendarTeacher);
+export const CourseOneOneSchema = SchemaFactory.createForClass(CourseOneOne);
 

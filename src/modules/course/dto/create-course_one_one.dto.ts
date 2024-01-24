@@ -7,7 +7,7 @@ export interface CourseCalendar {
   time_end: string;
 }
 
-export class CreateCourseCalendarTeacherDto {
+export class CreateCourseOneOneTeacherDto {
   @IsString()
   @ApiProperty()
   user_id: string;
@@ -19,4 +19,18 @@ export class CreateCourseCalendarTeacherDto {
   @IsArray()
   @ApiProperty()
   time_available: CourseCalendar[];
+}
+
+export class CreateCourseOneOneStudentDto {
+  @IsString()
+  @ApiProperty()
+  user_id: string;
+
+  @IsString()
+  @ApiProperty()
+  course_id: string;
+
+  @IsArray()
+  @ApiProperty()
+  time_pick: CourseCalendar[];
 }
