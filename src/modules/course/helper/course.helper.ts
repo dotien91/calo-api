@@ -594,7 +594,7 @@ export class CourseHelper {
       }
 
       let limit = body.limit ? body.limit : 1000;
-      let page = body.page ? body.page : 0;
+      let page = body.page ? body.page : 1;
 
       let orderByObject = {};
       if (body.order_by && body.sort_by) orderByObject[body.sort_by] = body.order_by;

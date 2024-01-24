@@ -239,7 +239,7 @@ export class CourseService {
     }
 
     return {
-      data: users.slice(page * limit, page * limit + limit),
+      data: users.slice((page - 1) * limit, (page - 1) * limit + limit),
       count: users.length,
     };
   }
