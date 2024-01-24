@@ -107,9 +107,6 @@ export class UserFilterHelper {
         orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
       }
 
-      const userId = userObject._id.toString();
-      // if (await this.userPermissionService.isHavePermission(userId, "user/list")) {
-      //Check Permission
       let dataToFilter = {
         ...query,
         ...{ search: query?.search ? query.search : null },
@@ -129,9 +126,6 @@ export class UserFilterHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
         .json(dataReturn);
-      // } else {
-      //   throw new BadRequestException("You haven't permission for this Action!");
-      // }
     } catch (error) {
       throw new NotFoundException(error.message);
     }

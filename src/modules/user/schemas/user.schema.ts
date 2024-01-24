@@ -179,6 +179,30 @@ export class User {
     nullable: false,
   })
   links: Array<Object>;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  is_native: boolean;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  is_verified: boolean;
+
+  @Prop({
+    type: Array,
+    default: [],
+  })
+  certificates: Array<Object>;
+
+  @Prop({
+    type: Array,
+    default: [],
+  })
+  educations: Array<Object>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

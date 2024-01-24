@@ -127,17 +127,6 @@ export class UpdateUserHelper {
 
       const dataReturn = await this.appUserService.update(dataUpdate);
 
-      if (updateData?.user_role) {
-        //Check Admin && Permission
-        const userPermissionObject = await this.userPermissionService.isHavePermission(
-          userObject._id.toString(),
-          "user/update"
-        );
-
-        if (!userPermissionObject) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
-      }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -982,21 +971,17 @@ export class UpdateUserHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
-        if (createUserInterest?.name_object) {
-          createUserInterest = {
-            ...createUserInterest,
-            ...{ name_object: JSON.parse(createUserInterest?.name_object) },
-          };
-        }
-        const dataCreate = await this.userInterestService.create(createUserInterest);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (createUserInterest?.name_object) {
+        createUserInterest = {
+          ...createUserInterest,
+          ...{ name_object: JSON.parse(createUserInterest?.name_object) },
+        };
       }
+      const dataCreate = await this.userInterestService.create(createUserInterest);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1043,21 +1028,17 @@ export class UpdateUserHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
-        if (dataUpdate?.question) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{ question: JSON.parse(dataUpdate?.question) },
-          };
-        }
-        const dataCreate = await this.userQuestionService.update(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (dataUpdate?.question) {
+        dataUpdate = {
+          ...dataUpdate,
+          ...{ question: JSON.parse(dataUpdate?.question) },
+        };
       }
+      const dataCreate = await this.userQuestionService.update(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1078,21 +1059,17 @@ export class UpdateUserHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "user/create")) {
-        if (dataUpdate?.question) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{ question: JSON.parse(dataUpdate?.question), user_id: userId },
-          };
-        }
-        const dataCreate = await this.userQuestionService.create(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (dataUpdate?.question) {
+        dataUpdate = {
+          ...dataUpdate,
+          ...{ question: JSON.parse(dataUpdate?.question), user_id: userId },
+        };
       }
+      const dataCreate = await this.userQuestionService.create(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1289,28 +1266,24 @@ export class UpdateUserHelper {
       }
       const userId = userObject._id.toString();
       //Check Permission
-      if (await this.userPermissionService.isHavePermission(userId, "user/update")) {
-        if (dataUpdate?.name_object) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{ name_object: JSON.parse(dataUpdate?.name_object) },
-          };
-        }
-
-        if (dataUpdate?.description_object) {
-          dataUpdate = {
-            ...dataUpdate,
-            ...{ description_object: JSON.parse(dataUpdate?.description_object) },
-          };
-        }
-        const dataReturn = await this.userInterestService.update(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (dataUpdate?.name_object) {
+        dataUpdate = {
+          ...dataUpdate,
+          ...{ name_object: JSON.parse(dataUpdate?.name_object) },
+        };
       }
+
+      if (dataUpdate?.description_object) {
+        dataUpdate = {
+          ...dataUpdate,
+          ...{ description_object: JSON.parse(dataUpdate?.description_object) },
+        };
+      }
+      const dataReturn = await this.userInterestService.update(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1330,16 +1303,12 @@ export class UpdateUserHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "plan/delete")) {
-        //Check Permission
-        const dataReturn = await this.userInterestService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataReturn = await this.userInterestService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1358,17 +1327,12 @@ export class UpdateUserHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "user/delete")) {
-        //Check Permission
-        const dataReturn = await this.userQuestionService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+
+      const dataReturn = await this.userQuestionService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

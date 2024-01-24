@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
 import {
+  IsArray,
   IsBoolean,
   IsBooleanString,
   IsDate,
   IsIn,
   IsNumberString,
-  IsObject,
   IsOptional,
   IsString,
   IsUrl,
@@ -102,6 +102,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional()
   is_avatar?: number;
 
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   phone_session?: string;
 
   @IsBoolean()
@@ -109,8 +112,41 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional()
   official_status?: boolean;
 
-  @IsObject()
+  @IsArray()
   @IsOptional()
   @ApiPropertyOptional()
-  links?: object;
+  links?: Array<Object>;
+
+  @IsArray()
+  @IsOptional()
+  @ApiPropertyOptional()
+  certificates?: Array<UserCertificate>;
+
+  @IsArray()
+  @IsOptional()
+  @ApiPropertyOptional()
+  educations?: Array<UserEducation>;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiPropertyOptional()
+  is_native?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiPropertyOptional()
+  is_verified?: boolean;
+}
+
+export interface UserCertificate {
+  name: string;
+  placeOfIssue: string;
+  dateOfIssue: string;
+  isValidated: boolean;
+}
+
+export interface UserEducation {
+  name: string;
+  start_time: string;
+  end_time: string;
 }

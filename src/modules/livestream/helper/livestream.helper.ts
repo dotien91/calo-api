@@ -436,30 +436,26 @@ export class LivestreamHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "livestream/list")) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
-
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        let dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.livestreamService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
+      let dataCount = await this.livestreamService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -587,10 +583,7 @@ export class LivestreamHelper {
       }
       let userId = userObject._id.toString();
       let dataLivestream = await this.livestreamService.findById(dataUpdate._id.toString());
-      if (
-        dataLivestream?.user_id?._id.toString() === userObject._id.toString() ||
-        (await this.userPermissionService.isHavePermission(userId, "livestream/update"))
-      ) {
+      if (dataLivestream?.user_id?._id.toString() === userObject._id.toString()) {
         let dataReturn = await this.livestreamService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -617,10 +610,7 @@ export class LivestreamHelper {
       let userId = req?.user_id;
 
       let dataLivestream = await this.livestreamService.findById(id.toString());
-      if (
-        dataLivestream?.user_id?._id.toString() === userObject?._id.toString() ||
-        (await this.userPermissionService.isHavePermission(userId, "livestream/delete"))
-      ) {
+      if (dataLivestream?.user_id?._id.toString() === userObject?._id.toString()) {
         let dataReturn = await this.livestreamService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
