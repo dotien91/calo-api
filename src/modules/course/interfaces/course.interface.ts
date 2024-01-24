@@ -43,3 +43,9 @@ export enum CourseOneOneRole {
   TEACHER = "teacher",
   STUDENT = "student",
 }
+
+export enum CourseSortBy {
+  CREATED_AT = "createdAt",
+  PRICE = "price",
+  RATING = "rating",
+}

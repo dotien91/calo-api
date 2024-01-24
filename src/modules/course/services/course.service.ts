@@ -3,7 +3,6 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto } from "../dto/search-course.dto";
-import { SortByCourseDto } from "../dto/sort_by-course.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
@@ -90,31 +89,14 @@ export class CourseService {
 
   /**
    * @author Tony Vu
-   * @param sortBy
-   * @returns
-   */
-  getSort(sortBy: SortByCourseDto) {
-    let sort = { priority: -1 };
-    if (sortBy.createdAt) {
-      sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
-    }
-    return sort;
-  }
-
-  /**
-   * @author Tony Vu
    * @param filter
    * @param sortBy
    * @param page
    * @param limit
    * @returns
    */
-  async filter(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
+  async filter(filter: SearchCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
     let condition = await this.getCondition(filter);
-    let sortObject: any;
-    if (sortBy) {
-      sortObject = this.getSort(sortBy);
-    }
     let projection = {};
 
     // if (filter.search) {
@@ -145,12 +127,8 @@ export class CourseService {
    * @param limit
    * @returns
    */
-  async filterAdmin(filter: SearchCourseDto, sortBy: SortByCourseDto, page: number, limit: number): Promise<Course[]> {
+  async filterAdmin(filter: SearchCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
     let condition = await this.getCondition(filter);
-    let sortObject: any;
-    if (sortBy) {
-      sortObject = this.getSort(sortBy);
-    }
     let projection = {};
     let dataReturn = await this.courseModel
       .find(condition, projection)

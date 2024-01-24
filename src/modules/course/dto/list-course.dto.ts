@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsArray, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
-import { CourseLevel, CourseSkill, CourseType } from "../interfaces/course.interface";
+import { CourseLevel, CourseSkill, CourseSortBy, CourseType } from "../interfaces/course.interface";
 
 export class ListCourseDto {
   @IsNumberString()
@@ -17,6 +17,11 @@ export class ListCourseDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   order_by: "DESC" | "ASC";
+
+  @IsEnum(CourseSortBy)
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  sort_by: CourseSortBy;
 
   @IsString()
   @IsOptional(null)
