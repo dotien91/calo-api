@@ -99,24 +99,58 @@ export class CourseService {
     let condition = await this.getCondition(filter);
     let projection = {};
 
-    // if (filter.search) {
-    //   sortObject = { score: { $meta: "textScore" }, ...sortObject };
-    //   projection = Object.assign(projection, { score: { $meta: "textScore" } });
-    // }
+    if (filter.search) {
+      sortObject = { score: { $meta: "textScore" }, ...sortObject };
+      projection = Object.assign(projection, { score: { $meta: "textScore" } });
+    }
+
+    const matchObject = {};
+    if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
 
     let dataReturn = await this.courseModel
       .find(condition, projection)
-      .populate(
-        "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
-      )
+      .populate({
+        path: "user_id",
+        select:
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+        match: matchObject,
+      })
       .populate("media_id")
       .populate("avatar")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
       .exec();
+
+    dataReturn = dataReturn.filter((data) => data.user_id !== null);
     return dataReturn;
+  }
+
+  async getAllFilter(filter: SearchCourseDto): Promise<number> {
+    let condition = await this.getCondition(filter);
+    let projection = {};
+
+    if (filter.search) {
+      projection = Object.assign(projection, { score: { $meta: "textScore" } });
+    }
+
+    const matchObject = {};
+    if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
+
+    let dataReturn = await this.courseModel
+      .find(condition, projection)
+      .populate({
+        path: "user_id",
+        select:
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+        match: matchObject,
+      })
+      .populate("media_id")
+      .populate("avatar")
+      .exec();
+
+    dataReturn = dataReturn.filter((data) => data.user_id !== null);
+    return dataReturn.length;
   }
 
   /**

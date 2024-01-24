@@ -519,8 +519,8 @@ export class CourseHelper {
 
       //Check Video View
       let dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+      let countCourse: any = await this.courseService.getAllFilter(dataToFilter);
 
-      let countCourse = await this.courseService.count(dataToFilter);
       let dataCourseIds = dataReturn?.map((value) => {
         return value?._id?.toString();
       });

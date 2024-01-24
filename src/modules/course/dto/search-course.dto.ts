@@ -11,4 +11,5 @@ export class SearchCourseDto {
   levels?: string[];
   skills?: string[];
   types?: string[];
+  onlyEnglishNativeSpeakers?: boolean;
 }
