@@ -27,6 +27,7 @@ import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
+import { ListTutorDto } from "../dto/list-tutor.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseClassDto } from "../dto/update-course_class.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
@@ -38,6 +39,8 @@ import {
   CourseOneOneRole,
   CourseSkill,
   CourseType,
+  TutorLevel,
+  TutorTimeAvailAble,
 } from "../interfaces/course.interface";
 import { Course } from "../schemas/course.schema";
 import { CourseUser } from "../schemas/course_user.schema";
@@ -579,6 +582,35 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getTutors(body: ListTutorDto, req: ExpressRequestDto, res: Response) {
+    try {
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
+      }
+
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
+
+      let orderByObject = {};
+      if (body.order_by && body.sort_by) orderByObject[body.sort_by] = body.order_by;
+
+      let dataToFilter = { ...body };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      delete dataToFilter.sort_by;
+
+      const dataReturn = await this.courseService.filterTutor(dataToFilter, orderByObject, page, limit);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataReturn.count })
+        .status(HttpStatus.OK)
+        .json(dataReturn.data);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1162,6 +1194,42 @@ export class CourseHelper {
         types: [CourseType.ALL_FORMS, CourseType.CALL_ONE_ONE, CourseType.SELF_LEARNING, CourseType.CALL_GROUP],
         price: "slider",
         onlyEnglishNativeSpeakers: "checkbox",
+      };
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getFilterTutors(req: ExpressRequestDto, res: Response) {
+    try {
+      const dataReturn = {
+        types: [CourseType.ALL_FORMS, CourseType.CALL_ONE_ONE, CourseType.SELF_LEARNING, CourseType.CALL_GROUP],
+        skills: [
+          CourseSkill.ALL_SKILLS,
+          CourseSkill.LISTENING,
+          CourseSkill.READING,
+          CourseSkill.WRITING,
+          CourseSkill.SPEAKING,
+        ],
+        timeAvailable: {
+          dayTime: [
+            TutorTimeAvailAble.NINE_TWELVE,
+            TutorTimeAvailAble.TWELVE_FIFTEEN,
+            TutorTimeAvailAble.FIFTEEN_EIGHTEEN,
+          ],
+          nightTime: [
+            TutorTimeAvailAble.EIGHTEEN_TWENTY_ONE,
+            TutorTimeAvailAble.TWENTY_ONE_ZERO,
+            TutorTimeAvailAble.ZERO_THREE,
+          ],
+        },
+        onlyEnglishNativeSpeakers: "checkbox",
+        levelOfTutor: [TutorLevel.EIGHT, TutorLevel.EIGHT_POINT_FIVE, TutorLevel.NINE],
       };
 
       return res

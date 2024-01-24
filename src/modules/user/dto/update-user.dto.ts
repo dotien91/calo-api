@@ -136,6 +136,16 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @ApiPropertyOptional()
   is_verified?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  tutor_level?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  badge?: string;
 }
 
 export interface UserCertificate {

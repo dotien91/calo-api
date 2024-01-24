@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCourseOneOneDto {
@@ -18,12 +18,13 @@ export class ListCourseOneOneDto {
   order_by: "DESC" | "ASC";
 
   @IsString()
-  @ApiProperty()
-  course_id: string;
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  course_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id: string;
+  user_id?: string;
 }
 

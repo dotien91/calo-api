@@ -13,3 +13,14 @@ export class SearchCourseDto {
   types?: string[];
   onlyEnglishNativeSpeakers?: boolean;
 }
+
+export class SearchTutorDto {
+  skills?: string[];
+  types?: string[];
+  onlyEnglishNativeSpeakers?: boolean;
+  timeAvailable?: Array<{
+    time_start: string;
+    time_end: string;
+  }>;
+  levelOfTutor?: string[];
+}

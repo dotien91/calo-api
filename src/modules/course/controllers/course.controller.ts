@@ -21,6 +21,7 @@ import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
+import { ListTutorDto } from "../dto/list-tutor.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { UpdateCourseClassDto } from "../dto/update-course_class.dto";
 import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
@@ -40,6 +41,11 @@ export class CourseController {
     return await this.courseHelper.getCourseList(body, res, req);
   }
 
+  @Post("/list-tutor")
+  async getTutors(@Body() body: ListTutorDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getTutors(body, req, res);
+  }
+
   @Post("/admin-list")
   @Permissions(Permission(Controllers.COURSE).LIST)
   async getAdminCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -49,6 +55,11 @@ export class CourseController {
   @Get("filter-items")
   async getFilterItems(@Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getFilterItems(req, res);
+  }
+
+  @Get("filter-tutors")
+  async getFilterTutors(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getFilterTutors(req, res);
   }
 
   @Post("/create")

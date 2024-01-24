@@ -1,17 +1,26 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { UserRoles } from "../../user/interfaces/user.interface";
+import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
-import { SearchCourseDto } from "../dto/search-course.dto";
+import { SearchCourseDto, SearchTutorDto } from "../dto/search-course.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
-import { CourseSkill, CourseType } from "../interfaces/course.interface";
+import { CourseOneOneRole, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
+import { CourseOneOne, CourseOneOneDocument } from "../schemas/course_one_one.schema";
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name)
-    private courseModel: Model<CourseDocument>
+    private courseModel: Model<CourseDocument>,
+
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
+    @InjectModel(CourseOneOne.name)
+    private courseOneOne: Model<CourseOneOneDocument>
   ) {}
 
   /**
@@ -56,9 +65,7 @@ export class CourseService {
     }
 
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
-      condition = Object.assign(condition, { $or: [{ title: dataRegex }, { description: dataRegex }] });
+      condition = Object.assign(condition, { $text: { $search: filter.search } });
     }
 
     if (filter.levels && filter.levels.length) {
@@ -99,11 +106,6 @@ export class CourseService {
     let condition = await this.getCondition(filter);
     let projection = {};
 
-    if (filter.search) {
-      sortObject = { score: { $meta: "textScore" }, ...sortObject };
-      projection = Object.assign(projection, { score: { $meta: "textScore" } });
-    }
-
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
 
@@ -126,13 +128,125 @@ export class CourseService {
     return dataReturn;
   }
 
+  async filterTutor(filter: SearchTutorDto, sortObject: any, page: number, limit: number): Promise<any> {
+    const matchObject = {};
+    matchObject["user_role"] = UserRoles.TEACHER;
+    if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
+    if (filter.levelOfTutor?.length)
+      matchObject["tutor_level"] = {
+        $in: filter.levelOfTutor,
+      };
+
+    const matchCourseObject = {};
+    if (filter.types)
+      matchCourseObject["courses.type"] = {
+        $in: filter.types,
+      };
+    if (filter.skills)
+      matchCourseObject["courses.skills"] = {
+        $in: filter.skills,
+      };
+
+    var users = await this.userModel.aggregate([
+      {
+        $match: matchObject,
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "courses",
+        },
+      },
+      { $unwind: "$courses" },
+      {
+        $match: matchCourseObject,
+      },
+      {
+        $group: {
+          _id: "$_id",
+          user_avatar_thumbnail: {
+            $first: "$user_avatar_thumbnail",
+          },
+          display_name: {
+            $first: "$display_name",
+          },
+          bio: {
+            $first: "$bio",
+          },
+          description: {
+            $first: "$description",
+          },
+          country: {
+            $first: "$country",
+          },
+          educations: {
+            $first: "$educations",
+          },
+          certificates: {
+            $first: "$certificates",
+          },
+        },
+      },
+    ]);
+
+    if (filter.timeAvailable?.length) {
+      const validUserIds = [];
+
+      const userIds = users.map((user) => user._id);
+      const timeAvailable = await this.courseOneOne.aggregate([
+        {
+          $match: { role: CourseOneOneRole.TEACHER, user_id: { $in: userIds } },
+        },
+        { $unwind: "$time_available" },
+        {
+          $lookup: {
+            from: "coursecalendars",
+            localField: "time_available",
+            foreignField: "_id",
+            as: "time",
+          },
+        },
+      ]);
+
+      for (const data of timeAvailable) {
+        const user_id = data.user_id;
+        const teacher_time = data.time[0]; // this always return 1 element
+
+        for (const checkTime of filter.timeAvailable) {
+          const array1 = [
+            {
+              day: 0,
+              time_start: teacher_time.time_start,
+              time_end: teacher_time.time_end,
+            },
+          ];
+          const array2 = [
+            {
+              day: 0,
+              time_start: checkTime.time_start,
+              time_end: checkTime.time_end,
+            },
+          ];
+
+          if (this.areAllInRanges(array1, array2)) validUserIds.push(user_id.toString());
+        }
+      }
+
+      const finalUserIds = Array.from(new Set(validUserIds));
+      users = users.filter((user) => finalUserIds.includes(user._id.toString()));
+    }
+
+    return {
+      data: users.slice(page * limit, page * limit + limit),
+      count: users.length,
+    };
+  }
+
   async getAllFilter(filter: SearchCourseDto): Promise<number> {
     let condition = await this.getCondition(filter);
     let projection = {};
-
-    if (filter.search) {
-      projection = Object.assign(projection, { score: { $meta: "textScore" } });
-    }
 
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
@@ -326,5 +440,33 @@ export class CourseService {
     } catch (e) {
       return null;
     }
+  }
+
+  areAllInRanges(array1, array2) {
+    for (const item1 of array1) {
+      let isInRange = false;
+
+      for (const item2 of array2) {
+        if (item1.day === item2.day) {
+          const start1 = new Date(`2022-01-01 ${item1.time_start}`);
+          const end1 = new Date(`2022-01-01 ${item1.time_end}`);
+          const start2 = new Date(`2022-01-01 ${item2.time_start}`);
+          const end2 = new Date(`2022-01-01 ${item2.time_end}`);
+
+          // Check if item1 is within the range of item2
+          if (start1 >= start2 && end1 <= end2) {
+            isInRange = true;
+            break;
+          }
+        }
+      }
+
+      // If any item from array1 is not in range, return false
+      if (!isInRange) {
+        return false;
+      }
+    }
+
+    return true; // All items from array1 are in range
   }
 }

@@ -49,3 +49,18 @@ export enum CourseSortBy {
   PRICE = "price",
   RATING = "rating",
 }
+
+export enum TutorTimeAvailAble {
+  NINE_TWELVE = "9-12",
+  TWELVE_FIFTEEN = "12-15",
+  FIFTEEN_EIGHTEEN = "15-18",
+  EIGHTEEN_TWENTY_ONE = "18-21",
+  TWENTY_ONE_ZERO = "21-0",
+  ZERO_THREE = "0-3",
+}
+
+export enum TutorLevel {
+  EIGHT = "8",
+  EIGHT_POINT_FIVE = "8.5",
+  NINE = "9",
+}

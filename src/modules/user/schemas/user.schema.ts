@@ -203,6 +203,16 @@ export class User {
     default: [],
   })
   educations: Array<Object>;
+
+  @Prop({
+    type: Number,
+  })
+  tutor_level: number;
+
+  @Prop({
+    type: String,
+  })
+  badge: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({
