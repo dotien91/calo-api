@@ -75,8 +75,8 @@ export class CourseUserService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseUser[]> {
-    return this.courseUserModel.find().exec();
+  async findAll(pattern?: any): Promise<CourseUser[]> {
+    return this.courseUserModel.find(pattern).exec();
   }
 
   /**

@@ -36,8 +36,8 @@ export class CourseReviewService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseReview[]> {
-    return this.courseReviewModel.find().exec();
+  async findAll(pattern?: any): Promise<CourseReview[]> {
+    return this.courseReviewModel.find(pattern).exec();
   }
 
   /**

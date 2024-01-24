@@ -670,13 +670,22 @@ export class CourseHelper {
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
         let dataReturn: any = await this.courseService.findOne(dataToFilter);
-        // console.log(dataReturn, 'dataReturn')
+
         if (!dataReturn) {
           throw new NotFoundException("Course not found!");
         }
 
+        let counter = await this.countValue(dataReturn.user_id._id.toString());
+
+        dataReturn = dataReturn.toObject();
         dataReturn = {
-          ...dataReturn.toObject(),
+          ...dataReturn,
+          user_id: {
+            ...dataReturn.user_id,
+            course_count: counter.courseCounter,
+            member_count: counter.memberCounter,
+            rating_count: counter.reviewCounter,
+          },
           ...{ is_join: false },
         };
 
@@ -692,7 +701,7 @@ export class CourseHelper {
             course_id: dataReturn?._id?.toString(),
             user_id: query?.auth_id,
           };
-          let dataLike: CourseUser[] = await this.courseUserService.filter(dataFilterView, {}, 1, 1000);
+          let dataLike: CourseUser[] = await this.courseUserService.filter(dataFilterLike, {}, 1, 1000);
 
           if (dataView && dataView[0]) {
             let dataObjectByCourse = dataView?.map((value) => {
@@ -1766,5 +1775,22 @@ export class CourseHelper {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  async countValue(userId: string) {
+    const courses = await this.courseService.findAll({ user_id: userId });
+
+    const courseIds = courses.map((course) => course._id.toString());
+
+    const [reviews, members] = await Promise.all([
+      this.courseReviewService.findAll({ course_id: { $in: courseIds } }),
+      this.courseUserService.findAll({ course_id: { $in: courseIds } }),
+    ]);
+
+    return {
+      courseCounter: courses.length,
+      reviewCounter: reviews.length,
+      memberCounter: members.length,
+    };
   }
 }
