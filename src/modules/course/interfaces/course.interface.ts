@@ -34,3 +34,12 @@ export enum CoursePublicStatus {
   DRAFT = "draft",
 }
 
+export enum CourseClassType {
+  CLASS = "class",
+  ONE_ONE = "one-one",
+}
+
+export enum CourseOneOneRole {
+  TEACHER = "teacher",
+  STUDENT = "student",
+}
