@@ -150,9 +150,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
 export interface UserCertificate {
   name: string;
-  placeOfIssue: string;
-  dateOfIssue: string;
-  isValidated: boolean;
+  place_of_issue: string;
+  date_of_issue: string;
+  is_validated: boolean;
 }
 
 export interface UserEducation {
