@@ -111,6 +111,10 @@ export class CourseClassService {
   getCondition(filter: FilterClassCourseDto) {
     let condition: any = {};
 
+    if (filter._id) {
+      condition = Object.assign(condition, { _id: filter._id });
+    }
+
     if (filter.course_id) {
       condition = Object.assign(condition, { course_id: filter.course_id });
     }
@@ -120,9 +124,9 @@ export class CourseClassService {
 
   async filter(
     filter: FilterClassCourseDto,
-    sortBy: any,
-    page: number,
-    limit: number,
+    sortBy?: any,
+    page?: number,
+    limit?: number,
     projection: any = {}
   ): Promise<CourseClass[]> {
     let condition = await this.getCondition(filter);

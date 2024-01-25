@@ -47,7 +47,8 @@ export class CourseClass {
   })
   members: MongooseSchema.Types.ObjectId[];
 
-  // janus properties
+  @Prop({ type: String, nullable: false })
+  code: string;
 }
 
 export const CourseClassSchema = SchemaFactory.createForClass(CourseClass);

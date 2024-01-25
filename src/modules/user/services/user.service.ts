@@ -276,6 +276,21 @@ export class UserService {
     }
   }
 
+  async updateMultipleUsers(userIds: string[], dataUpdate: any) {
+    try {
+      return await this.appUserModel.updateMany(
+        {
+          _id: {
+            $in: userIds,
+          },
+        },
+        dataUpdate
+      );
+    } catch (e) {
+      return e;
+    }
+  }
+
   /**
    * @author Tony Vu
    * @param dataUpdate

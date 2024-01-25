@@ -15,6 +15,7 @@ import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { makeRandom } from "../../../utils/utils";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
@@ -357,7 +358,7 @@ export class LivestreamHelper {
   }
 
   async handleLiveStreamData(dataLivestream: Livestream) {
-    const streamKey = this.makeRandom(20);
+    const streamKey = makeRandom(20);
     try {
       let dataUpdate = {
         livestream_data: {
@@ -1421,17 +1422,5 @@ export class LivestreamHelper {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-  }
-
-  makeRandom(length: number) {
-    let result = "";
-    const pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const patternLength = pattern.length;
-    let counter = 0;
-    while (counter < length) {
-      result += pattern.charAt(Math.floor(Math.random() * patternLength));
-      counter += 1;
-    }
-    return result;
   }
 }

@@ -9,6 +9,8 @@ import { HandleServiceService } from "../../../modules/plan/services/handle_serv
 import { PlanService } from "../../../modules/plan/services/plan.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
+import { UserOrganizationService } from "../../../modules/user/services/user_organization.service";
+import { makeRandom } from "../../../utils/utils";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
 import {
@@ -73,7 +75,8 @@ export class CourseHelper {
     private planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly hookWorker: EventHookWorkerService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly userOrganization: UserOrganizationService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -107,6 +110,11 @@ export class CourseHelper {
    */
   async createNewCourse(createCourseData: CreateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
+      if (createCourseData.organization_id) {
+        const organization = await this.userOrganization.findOne({ _id: createCourseData.organization_id });
+        if (!organization) throw new Error("Not found Organization");
+      }
+
       createCourseData = { ...createCourseData, ...{ user_id: req.user_object._id.toString() } };
       let dataCreate: any = await this.courseService.create(createCourseData);
       let dataReturn: any = await this.courseService.findById(dataCreate?._id?.toString());
@@ -256,6 +264,9 @@ export class CourseHelper {
    */
   async updateCourse(dataUpdate: UpdateCourseDto, res: Response, req: ExpressRequestDto) {
     try {
+      const isValidUser = await this.checkUserCoursePermission(dataUpdate._id, req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+
       let dataCreate: any = await this.courseService.update(dataUpdate);
       if (dataCreate?.price && !dataCreate?.service_id) {
         dataCreate = await this.handleUpdateServiceCourse(dataCreate);
@@ -810,8 +821,10 @@ export class CourseHelper {
    */
   async handleDeleteCourse(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.courseService.remove(id);
+      const isValidUser = await this.checkUserCoursePermission(id, req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
 
+      let dataReturn = await this.courseService.remove(id);
       if (!dataReturn) throw new NotFoundException("Not found course");
 
       return res
@@ -917,6 +930,9 @@ export class CourseHelper {
    */
   async handleAddUserToCourse(dataFollow: CreateCourseUserDto, req: ExpressRequestDto, res: Response) {
     try {
+      const isValidUser = await this.checkUserCoursePermission(dataFollow.course_id, req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+
       let userObject = req?.user_object;
       let userId = userObject._id;
 
@@ -1133,12 +1149,7 @@ export class CourseHelper {
 
       const courseReview = await this.courseReviewService.create(dataFollow);
 
-      // update course id
-      const newRating = await this.calculateRating(dataFollow.course_id);
-      await this.courseService.update({
-        _id: dataFollow.course_id,
-        rating: newRating,
-      });
+      this.processUpdateRating(dataFollow.course_id);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1152,6 +1163,9 @@ export class CourseHelper {
   async updateReview(dataFollow: UpdateCourseReviewDto, req: ExpressRequestDto, res: Response) {
     try {
       const courseReview = await this.courseReviewService.update(dataFollow);
+
+      this.processUpdateRating(courseReview.course_id.toString());
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1267,7 +1281,6 @@ export class CourseHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      //Check Video View
       let dataReturn: any = await this.courseClassService.filter(dataToFilter, orderByObject, page, limit);
       let countCourse = await this.courseClassService.count(dataToFilter);
 
@@ -1280,17 +1293,27 @@ export class CourseHelper {
     }
   }
 
+  async getCourseClassDetail(id: string, req: ExpressRequestDto, res: Response) {
+    try {
+      let dataReturn: any = await this.courseClassService.filter({ _id: id });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn[0]);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async createNewClass(dataFollow: CreateCourseClassDto, req: ExpressRequestDto, res: Response) {
     try {
       // check if user is in course
       const userObject = req.user_object;
       if (!userObject) throw new Error("User is invalid");
 
-      const course = await this.courseService.findOne({
-        user_id: userObject._id.toString(),
-        _id: dataFollow.course_id,
-      });
-      if (!course) throw new Error("User don't have permission to create new class in this course");
+      const isValidUser = await this.checkUserCoursePermission(dataFollow.course_id, req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of this course");
 
       // check other class time
       const courseClasses = await this.courseClassService.getAllAssignedTimeInCourse(dataFollow.course_id);
@@ -1334,6 +1357,7 @@ export class CourseHelper {
         start_time: dataFollow.start_time,
         end_time: dataFollow.end_time,
         limit_member: dataFollow.limit_member,
+        code: makeRandom(10),
       };
       const courseClass = await this.courseClassService.create(createParams);
 
@@ -1352,6 +1376,9 @@ export class CourseHelper {
         _id: dataFollow._id,
       });
       if (!oldClass) throw new Error("Not found your class");
+
+      const isValidUser = await this.checkUserCoursePermission(oldClass.course_id.toString(), req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
 
       const courseInfo = await this.courseService.findOne({ _id: oldClass.course_id.toString() });
       const isAfter = moment().isAfter(moment(courseInfo.start_time.toString()));
@@ -1424,6 +1451,14 @@ export class CourseHelper {
 
   async deleteClass(id: string, req: ExpressRequestDto, res: Response) {
     try {
+      const oldClass = await this.courseClassService.findOne({
+        _id: id,
+      });
+      if (!oldClass) throw new Error("Not found your class");
+
+      const isValidUser = await this.checkUserCoursePermission(oldClass.course_id.toString(), req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+
       const courseClass = await this.courseClassService.remove({ _id: id });
 
       return res
@@ -1441,6 +1476,9 @@ export class CourseHelper {
         _id: dataFollow.class_id,
       });
       if (!courseClass) throw new Error("Not found your class");
+
+      const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
 
       const isUserBoughtCourse = await this.courseUserService.findOne({
         user_id: dataFollow.user_id,
@@ -1471,6 +1509,9 @@ export class CourseHelper {
         _id: dataFollow.class_id,
       });
       if (!courseClass) throw new Error("Not found your class");
+
+      const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
+      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
 
       const newMembers = courseClass.members.filter((member) => {
         return member.toString() !== dataFollow.user_id;
@@ -1878,7 +1919,7 @@ export class CourseHelper {
     };
   }
 
-  async calculateRating(courseId: string): Promise<number> {
+  async calculateRatingForCourse(courseId: string): Promise<number> {
     const reviews = await this.courseReviewService.findAll({ course_id: courseId });
     if (reviews.length === 0) return 0;
 
@@ -1886,5 +1927,55 @@ export class CourseHelper {
       return accumulator + currentValue.rating;
     }, 0);
     return totalRating / reviews.length;
+  }
+
+  async calculateRatingForUser(userId: string): Promise<number> {
+    const courses = await this.courseService.findAllCourseReviewOfUser(userId);
+    let totalReview = 0;
+    let totalRating = 0;
+    for (const course of courses) {
+      const reviews = course.reviews;
+      if (reviews.length === 0) continue;
+
+      const _totalRating = reviews.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.rating;
+      }, 0);
+      totalRating += _totalRating;
+      totalReview += reviews.length;
+    }
+
+    return totalRating / totalReview;
+  }
+
+  async checkUserCoursePermission(courseId: string, req: ExpressRequestDto, res: Response): Promise<boolean> {
+    const course = await this.courseService.findOne({ _id: courseId });
+    if (course?.organization_id) {
+      if (req.user_object?.organization_id.toString() === course?.organization_id.toString()) {
+        return true;
+      } else return false;
+    } else if (course?.user_id) {
+      if (req.user_object?._id.toString() === course?.user_id?._id.toString()) {
+        return true;
+      } else return false;
+    }
+
+    return true;
+  }
+
+  async processUpdateRating(courseId: string) {
+    const newCourseRating = await this.calculateRatingForCourse(courseId);
+    await this.courseService.update({
+      _id: courseId,
+      rating: newCourseRating,
+    });
+
+    const course = await this.courseService.findOne({ _id: courseId });
+    if (course.user_id) {
+      const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
+      await this.userService.update({
+        _id: course.user_id._id.toString(),
+        rating: newUserRating,
+      });
+    }
   }
 }

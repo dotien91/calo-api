@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import mongoose, { Model, Types } from "mongoose";
 import { UserRoles } from "../../user/interfaces/user.interface";
 import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
@@ -186,6 +186,9 @@ export class CourseService {
           },
           certificates: {
             $first: "$certificates",
+          },
+          rating: {
+            $first: "$rating",
           },
         },
       },
@@ -468,5 +471,23 @@ export class CourseService {
     }
 
     return true; // All items from array1 are in range
+  }
+
+  async findAllCourseReviewOfUser(user_id: string): Promise<any[]> {
+    return this.courseModel.aggregate([
+      {
+        $match: {
+          user_id: new mongoose.Types.ObjectId(user_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "coursereviews",
+          localField: "_id",
+          foreignField: "course_id",
+          as: "reviews",
+        },
+      },
+    ]);
   }
 }
