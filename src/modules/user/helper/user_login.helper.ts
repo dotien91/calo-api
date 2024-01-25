@@ -996,7 +996,6 @@ export class UserLoginHelper {
 
   async makeRandom(length: number) {
     let result = "";
-    // old_pattern = ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
     const characters = "0123456789";
     const charactersLength = characters.length;
     let counter = 0;

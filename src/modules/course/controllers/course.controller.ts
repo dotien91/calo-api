@@ -206,6 +206,11 @@ export class CourseController {
     return await this.courseHelper.getCourseClassList(query, req, res);
   }
 
+  @Get("class/:id")
+  async getCourseClassDetail(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseClassDetail(id, req, res);
+  }
+
   @Post("class/create")
   async createNewClass(
     @Body() createClassBody: CreateCourseClassDto,

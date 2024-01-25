@@ -10,6 +10,7 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserOrganizationService } from "../../../modules/user/services/user_organization.service";
+import { makeRandom } from "../../../utils/utils";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
 import {
@@ -1148,20 +1149,7 @@ export class CourseHelper {
 
       const courseReview = await this.courseReviewService.create(dataFollow);
 
-      const newCourseRating = await this.calculateRatingForCourse(dataFollow.course_id);
-      await this.courseService.update({
-        _id: dataFollow.course_id,
-        rating: newCourseRating,
-      });
-
-      const course = await this.courseService.findOne({ _id: user.course_id.toString() });
-      if (course.user_id) {
-        const newUserRating = await this.calculateRatingForUser(courseReview.user_id._id.toString());
-        await this.userService.update({
-          _id: course.user_id._id.toString(),
-          rating: newUserRating,
-        });
-      }
+      this.processUpdateRating(dataFollow.course_id);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1175,6 +1163,9 @@ export class CourseHelper {
   async updateReview(dataFollow: UpdateCourseReviewDto, req: ExpressRequestDto, res: Response) {
     try {
       const courseReview = await this.courseReviewService.update(dataFollow);
+
+      this.processUpdateRating(courseReview.course_id.toString());
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1290,7 +1281,6 @@ export class CourseHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      //Check Video View
       let dataReturn: any = await this.courseClassService.filter(dataToFilter, orderByObject, page, limit);
       let countCourse = await this.courseClassService.count(dataToFilter);
 
@@ -1298,6 +1288,19 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getCourseClassDetail(id: string, req: ExpressRequestDto, res: Response) {
+    try {
+      let dataReturn: any = await this.courseClassService.filter({ _id: id });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn[0]);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1354,6 +1357,7 @@ export class CourseHelper {
         start_time: dataFollow.start_time,
         end_time: dataFollow.end_time,
         limit_member: dataFollow.limit_member,
+        code: makeRandom(10),
       };
       const courseClass = await this.courseClassService.create(createParams);
 
@@ -1931,7 +1935,7 @@ export class CourseHelper {
     let totalRating = 0;
     for (const course of courses) {
       const reviews = course.reviews;
-      if (reviews.length === 0) return 0;
+      if (reviews.length === 0) continue;
 
       const _totalRating = reviews.reduce((accumulator, currentValue) => {
         return accumulator + currentValue.rating;
@@ -1956,5 +1960,22 @@ export class CourseHelper {
     }
 
     return true;
+  }
+
+  async processUpdateRating(courseId: string) {
+    const newCourseRating = await this.calculateRatingForCourse(courseId);
+    await this.courseService.update({
+      _id: courseId,
+      rating: newCourseRating,
+    });
+
+    const course = await this.courseService.findOne({ _id: courseId });
+    if (course.user_id) {
+      const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
+      await this.userService.update({
+        _id: course.user_id._id.toString(),
+        rating: newUserRating,
+      });
+    }
   }
 }
