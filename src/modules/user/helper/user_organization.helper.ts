@@ -1,6 +1,6 @@
 import { BadRequestException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
-import { ExpressRequestDto } from "src/dto/express-request.dto";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import {
   AddMemberToOrganizationDto,
   CreateUserOrganizationDto,
@@ -17,7 +17,7 @@ export class UserOrganizationHelper {
 
   async get(id: string, req: ExpressRequestDto, res: Response) {
     try {
-      const dataReturn = await this.userOrganizationService.findOne({ _id: id });
+      const dataReturn = await this.userOrganizationService.detail(id);
       if (!dataReturn) throw new Error("Not found your organization");
 
       return res

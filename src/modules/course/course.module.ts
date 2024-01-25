@@ -18,8 +18,10 @@ import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/t
 import { TransactionService } from "../transaction/services/transaction.service";
 import { TransactionBankService } from "../transaction/services/transaction_bank.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
+import { UserOrganization, UserOrganizationSchema } from "../user/schemas/user_organization.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
+import { UserOrganizationService } from "../user/services/user_organization.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -69,6 +71,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: HandleService.name, schema: HandleServiceSchema },
       { name: Plan.name, schema: PlanSchema },
       { name: User.name, schema: UserSchema },
+      { name: UserOrganization.name, schema: UserOrganizationSchema },
       { name: Notification.name, schema: NotificationSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
@@ -99,6 +102,7 @@ import { CourseViewService } from "./services/course_view.service";
     TransactionHelper,
     TransactionService,
     TransactionBankService,
+    UserOrganizationService,
   ],
   exports: [
     CourseHelper,

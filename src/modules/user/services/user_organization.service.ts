@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { CreateUserOrganizationDto } from "../dto/create-user_organization.dto";
 import { FilterUserOrganizationDto } from "../dto/filter-user_organization.dto";
 import { UpdateUserOrganizationDto } from "../dto/update-user_organization.dto";
@@ -138,6 +138,43 @@ export class UserOrganizationService {
       .limit(limit)
       .exec();
     return dataReturn;
+  }
+
+  async detail(organization_id: string) {
+    const organization = await this.userOrganizationModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(organization_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "organization_id",
+          as: "users",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                user_login: 1,
+                display_name: 1,
+                user_role: 1,
+                user_status: 1,
+                user_avatar: 1,
+                user_avatar_thumbnail: 1,
+                user_avatar_square: 1,
+                last_active: 1,
+                user_active: 1,
+                official_status: 1,
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    return organization;
   }
 }
 

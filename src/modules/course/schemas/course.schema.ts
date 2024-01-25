@@ -210,6 +210,13 @@ export class Course {
     default: 0,
   })
   promotion: number;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+    ref: "UserOrganization",
+  })
+  organization_id: MongooseSchema.Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course).index({
