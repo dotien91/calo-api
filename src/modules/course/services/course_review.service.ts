@@ -120,6 +120,10 @@ export class CourseReviewService {
       condition = Object.assign(condition, { rating: filter.rating });
     }
 
+    if (filter.user_id) {
+      condition = Object.assign(condition, { user_id: filter.user_id });
+    }
+
     return condition;
   }
 

@@ -138,11 +138,11 @@ export class CourseService {
       };
 
     const matchCourseObject = {};
-    if (filter.types)
+    if (filter.types?.length)
       matchCourseObject["courses.type"] = {
         $in: filter.types,
       };
-    if (filter.skills)
+    if (filter.skills?.length)
       matchCourseObject["courses.skills"] = {
         $in: filter.skills,
       };
