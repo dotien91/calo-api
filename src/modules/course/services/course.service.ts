@@ -159,7 +159,12 @@ export class CourseService {
           as: "courses",
         },
       },
-      { $unwind: "$courses" },
+      {
+        $unwind: {
+          path: "$courses",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $match: matchCourseObject,
       },
@@ -189,6 +194,12 @@ export class CourseService {
           },
           rating: {
             $first: "$rating",
+          },
+          tutor_level: {
+            $first: "$tutor_level",
+          },
+          createdAt: {
+            $first: "$createdAt",
           },
         },
       },
@@ -242,7 +253,11 @@ export class CourseService {
     }
 
     return {
-      data: users.slice((page - 1) * limit, (page - 1) * limit + limit),
+      data: users.slice((page - 1) * limit, (page - 1) * limit + limit).sort((a, b) => {
+        if (sortObject?.levelOfTutor)
+          return (a.tutor_level - b.tutor_level) * (sortObject.levelOfTutor === "ASC" ? 1 : -1);
+        if (sortObject?.createdAt) return (a.createdAt - b.createdAt) * (sortObject.createdAt === "ASC" ? 1 : -1);
+      }),
       count: users.length,
     };
   }

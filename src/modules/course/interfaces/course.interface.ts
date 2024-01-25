@@ -45,9 +45,8 @@ export enum CourseOneOneRole {
 }
 
 export enum CourseSortBy {
+  LEVEL_OF_TUTOR = "levelOfTutor",
   CREATED_AT = "createdAt",
-  PRICE = "price",
-  RATING = "rating",
 }
 
 export enum TutorTimeAvailAble {
@@ -64,3 +63,4 @@ export enum TutorLevel {
   EIGHT_POINT_FIVE = "8.5",
   NINE = "9",
 }
+
