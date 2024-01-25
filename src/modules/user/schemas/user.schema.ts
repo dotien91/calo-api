@@ -213,6 +213,13 @@ export class User {
     type: String,
   })
   badge: string;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    default: null,
+    ref: "UserOrganization",
+  })
+  organization_id: MongooseSchema.Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

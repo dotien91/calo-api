@@ -27,6 +27,7 @@ import { UserController } from "./controllers/user.controller";
 import { UpdateUserHelper } from "./helper/update_user.helper";
 import { UserFilterHelper } from "./helper/user_filter.helper";
 import { UserLoginHelper } from "./helper/user_login.helper";
+import { UserOrganizationHelper } from "./helper/user_organization.helper";
 import { User, UserSchema } from "./schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "./schemas/user_anonymous.schema";
 import { UserAnonymousSession, UserAnonymousSessionSchema } from "./schemas/user_anonymous_session.schema";
@@ -36,6 +37,7 @@ import { UserFollow, UserFollowSchema } from "./schemas/user_follow.schema";
 import { UserInterest, UserInterestSchema } from "./schemas/user_interest.schema";
 import { UserLocationHistory, UserLocationHistorySchema } from "./schemas/user_location_history.schema";
 import { UserMood, UserMoodSchema } from "./schemas/user_mood.schema";
+import { UserOrganization, UserOrganizationSchema } from "./schemas/user_organization.schema";
 import { UserQuestion, UserQuestionSchema } from "./schemas/user_question.schema";
 import { UserSession, UserSessionSchema } from "./schemas/user_session.schema";
 import { UserView, UserViewSchema } from "./schemas/user_view.schema";
@@ -48,6 +50,7 @@ import { UserFollowService } from "./services/user_follow.service";
 import { UserInterestService } from "./services/user_interest.service";
 import { UserLocationService } from "./services/user_location.service";
 import { UserMoodService } from "./services/user_mood.service";
+import { UserOrganizationService } from "./services/user_organization.service";
 import { UserQuestionService } from "./services/user_question.service";
 import { UserSessionService } from "./services/user_session.service";
 import { UserViewService } from "./services/user_view.service";
@@ -74,6 +77,7 @@ import { UserViewService } from "./services/user_view.service";
       { name: UserView.name, schema: UserViewSchema },
       { name: UserDisagree.name, schema: UserDisagreeSchema },
       { name: UserInterest.name, schema: UserInterestSchema },
+      { name: UserOrganization.name, schema: UserOrganizationSchema },
       { name: Order.name, schema: OrderSchema },
       { name: Notification.name, schema: NotificationSchema },
       { name: UserMood.name, schema: UserMoodSchema },
@@ -115,10 +119,12 @@ import { UserViewService } from "./services/user_view.service";
     UserLocationService,
     UserAnonymousService,
     UserAnonymousSessionService,
+    UserOrganizationService,
     QueueService,
     EventHookWorkerService,
     EventHookNotificationService,
     ChatRoomUserOptionService,
+    UserOrganizationHelper,
   ],
   exports: [
     UserFilterHelper,
@@ -134,6 +140,7 @@ import { UserViewService } from "./services/user_view.service";
     UserSessionService,
     UserViewService,
     UserService,
+    UserOrganizationService,
   ],
 })
 export class UserModule {}

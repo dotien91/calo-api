@@ -11,8 +11,14 @@ import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
 import { CreateUserLocationDto } from "../dto/create-user_location.dto";
+import {
+  AddMemberToOrganizationDto,
+  CreateUserOrganizationDto,
+  RemoveMemberFromOrganizationDto,
+} from "../dto/create-user_organization.dto";
 import { CreateUserQuestionDto } from "../dto/create-user_question.dto";
 import { CreateUserViewDto } from "../dto/create-user_view.dto";
+import { ListUserOrganizationDto } from "../dto/filter-user_organization.dto";
 import { LoginUserDto } from "../dto/login-user.dto";
 import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
@@ -30,19 +36,22 @@ import { UpdateSessionDto } from "../dto/update-session.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
 import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
+import { UpdateUserOrganizationDto } from "../dto/update-user_organization.dto";
 import { UpdateUserQuestionDto } from "../dto/update-user_question.dto";
 import { ValidatePhoneDto } from "../dto/validate-phone.dto";
 import { VerifyCodeDto } from "../dto/verify-code.dto";
 import { UpdateUserHelper } from "../helper/update_user.helper";
 import { UserFilterHelper } from "../helper/user_filter.helper";
 import { UserLoginHelper } from "../helper/user_login.helper";
+import { UserOrganizationHelper } from "../helper/user_organization.helper";
 
 @Controller(Controllers.USER)
 export class UserController {
   constructor(
     private readonly userLoginHelper: UserLoginHelper,
     private readonly updateUserHelper: UpdateUserHelper,
-    private readonly userFilterHelper: UserFilterHelper
+    private readonly userFilterHelper: UserFilterHelper,
+    private readonly userOrganizationHelper: UserOrganizationHelper
   ) {}
 
   /**
@@ -436,5 +445,60 @@ export class UserController {
   @Post("verify-code")
   async handleVerifyCode(@Body() dataForgot: VerifyCodeDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userLoginHelper.handleVerifyCode(dataForgot, res, req);
+  }
+
+  @Get("organization/list")
+  async getListOrganization(
+    @Query() query: ListUserOrganizationDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userOrganizationHelper.list(query, req, res);
+  }
+
+  @Get("organization/:id")
+  async getOrganization(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: Response) {
+    return await this.userOrganizationHelper.get(id, req, res);
+  }
+
+  @Post("organization/create")
+  async createOrganization(
+    @Body() body: CreateUserOrganizationDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userOrganizationHelper.create(body, req, res);
+  }
+
+  @Post("organization/add-member")
+  async addMemberToOrganization(
+    @Body() body: AddMemberToOrganizationDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userOrganizationHelper.addMember(body, req, res);
+  }
+
+  @Post("organization/remove-member")
+  async removeMemberToOrganization(
+    @Body() body: RemoveMemberFromOrganizationDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userOrganizationHelper.removeMember(body, req, res);
+  }
+
+  @Patch("organization/update")
+  async updateOrganization(
+    @Query() body: UpdateUserOrganizationDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response
+  ) {
+    return await this.userOrganizationHelper.update(body, req, res);
+  }
+
+  @Patch("organization/delete")
+  async deleteOrganization(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: Response) {
+    return await this.userOrganizationHelper.delete(id, req, res);
   }
 }

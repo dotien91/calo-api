@@ -146,6 +146,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @ApiPropertyOptional()
   badge?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  organization_id?: string;
 }
 
 export interface UserCertificate {
