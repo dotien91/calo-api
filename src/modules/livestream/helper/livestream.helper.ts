@@ -839,7 +839,7 @@ export class LivestreamHelper {
             eventName: EmailPattern.LIVESTREAM_NOW,
             email: emailItem?.user_email,
             replacePattern: {
-              brand_name: "Exam24h.com",
+              brand_name: "IELTS_HUNTER",
               post_name: dataLivestream.title,
               fullname: emailItem.display_name,
               user_id: fromUser?._id?.toString(),
@@ -913,7 +913,7 @@ export class LivestreamHelper {
             eventName: EmailPattern.LIVESTREAM_CREATE,
             email: emailItem?.user_email,
             replacePattern: {
-              brand_name: "Gamifa",
+              brand_name: "IELTS_HUNTER",
               post_name: dataLivestream.title,
 
               fullname: emailItem?.display_name,

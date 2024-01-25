@@ -143,7 +143,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.order.success-order", async (data: any) => {
       try {
-        // await this.notificationHelper.sendNotificationAndEmail(data);
+        await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send success-order notification to user Fails :", error.message);
       }
@@ -151,7 +151,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.order.success-pay-order", async (data: any) => {
       try {
-        // await this.notificationHelper.sendNotificationAndEmail(data);
+        await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send success-pay-order notification to user Fails :", error.message);
       }

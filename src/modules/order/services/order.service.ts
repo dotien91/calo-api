@@ -35,10 +35,6 @@ export class OrderService {
       condition = Object.assign(condition, { plan_id: filter.plan_id });
     }
 
-    if (filter.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
-    }
-
     if (filter.trans_id) {
       condition = Object.assign(condition, { trans_id: filter.trans_id });
     }

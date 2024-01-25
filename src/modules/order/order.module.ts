@@ -29,6 +29,11 @@ import { UserPermissionService } from "../user_permission/services/user_permissi
 import { OrderController } from "./controllers/order.controller";
 // import { OrderHelper } from "./helper/OrderHelper";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { Course, CourseSchema } from "../course/schemas/course.schema";
+import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
+import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
+import { CourseService } from "../course/services/course.service";
+import { CourseUserService } from "../course/services/course_user.service";
 import { OrderHelper } from "./helper/order.helper";
 import { Order, OrderSchema } from "./schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "./schemas/vnpay_log.schema";
@@ -59,7 +64,10 @@ import { OrderService } from "./services/order.service";
       { name: VnpayLog.name, schema: VnpayLogSchema },
       { name: User.name, schema: UserSchema },
       { name: Notification.name, schema: NotificationSchema },
-      { name: TransactionBank.name, schema: TransactionBankSchema }
+      { name: TransactionBank.name, schema: TransactionBankSchema },
+      { name: CourseUser.name, schema: CourseUserSchema },
+      { name: Course.name, schema: CourseSchema },
+      { name: CourseOneOne.name, schema: CourseOneOneSchema },
     ]),
   ],
   controllers: [OrderController],
@@ -82,7 +90,9 @@ import { OrderService } from "./services/order.service";
     TransactionBankService,
     JwtHelperService,
     OrderHelper,
+    CourseUserService,
+    CourseService,
   ],
   exports: [OrderService],
 })
-export class OrderModule { }
+export class OrderModule {}

@@ -16,10 +16,12 @@ import { ListNotificationDto } from "../dto/list-notification.dto";
 import { Notification } from "../schemas/notification.schema";
 import { NotificationService } from "../services/notification.service";
 
+import { InjectModel } from "@nestjs/mongoose";
 import * as _ from "lodash";
-import { Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
@@ -32,8 +34,9 @@ const apn = require("apn");
 @Injectable()
 export class NotificationHelper {
   constructor(
-    // @InjectModel(User.name)
-    // private userModel: Model<UserDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
     private appUserService: UserService,
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
@@ -634,7 +637,7 @@ export class NotificationHelper {
   //   //Send E-Mail Notication to user receive gift
   //   const dataFirestore = getFirestore();
   //   const dataToUpdate = {
-  //     brand_name: "Gamifa",
+  //     brand_name: "IELTS_HUNTER",
   //     channel: dataChannel?.name?.toString(),
   //     gift: dataGift?.name,
   //     //@ts-ignore
@@ -692,84 +695,49 @@ export class NotificationHelper {
   // /**
   //  * @author SonLH
   //  */
-  // async sendNotificationAndEmail(data: any) {
-  //   try {
-  //     //Send E-Mail Notication to user receive gift
-  //     // let dataUser = await this.appUserService.findOne({ _id: data?.user_id });
-  //     const dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
-  //     const dataChannel = await this.channelService.findById(data?.channel_id);
-  //     if (!dataUser) {
-  //       this.logger.log(`Cannot found account with id ${data?.user_id}`);
-  //     } else if (!dataChannel) {
-  //       this.logger.log(`Cannot found channel with id ${data?.channel_id}`);
-  //     } else {
-  //       const dataFirestore = getFirestore();
-  //       let dataToUpdate = {
-  //         brand_name: "Gamifa",
-  //         channel: data?.dataChannel?.name?.toString() || dataChannel?.name?.toString(),
-  //         // gift: dataGift?.name,
-  //         //@ts-ignore
-  //         // post_image: dataRedeem?.attach_files[0]?.media_url || "",
-  //         email: dataUser?.user_email,
-  //         fullname: dataUser?.display_name,
-  //         user_id: dataUser?._id?.toString(),
-  //         post_url: dataChannel?.domain + data?.path,
-  //         event_name: data?.mail_template,
-  //         is_send_email: false,
-  //       };
-  //       if (data?.event_name) {
-  //         dataToUpdate = { ...dataToUpdate, ...{ event: data?.event_name } };
-  //       }
+  async sendNotificationAndEmail(data: any) {
+    try {
+      //Send E-Mail Notication to user receive gift
+      const dataUser = await this.userModel.findOne({ _id: new Types.ObjectId(data?.user_id) });
+      if (!dataUser) {
+        this.logger.log(`Cannot found account with id ${data?.user_id}`);
+      } else {
+        //Send notication to user received gift
+        const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
 
-  //       const dataUserStore = dataFirestore.collection("Users");
-  //       await dataUserStore
-  //         .add(dataToUpdate)
-  //         .then(() => {
-  //           console.log("User added!");
-  //         })
-  //         .catch((error) => {
-  //           console.log(error);
-  //         });
-
-  //       //Send notication to user received gift
-  //       const supportAccount = await this.appUserService.findOne({ _id: process.env.INFO_USER });
-
-  //       const tokenReturn = this.jwtHelper.generateJwt(
-  //         process.env.INFO_USER,
-  //         supportAccount?.user_email?.toString(),
-  //         process.env.INFO_SESSION,
-  //         true
-  //       );
-  //       const dataToSendNotification = {
-  //         request_id: "",
-  //         path: dataChannel?.domain + data?.path,
-  //         data_id: "",
-  //         order_id: data?.order_id,
-  //       };
-  //       const notificationContent = data?.content({
-  //         display_name: dataUser?.display_name.toString(),
-  //         channel_name: dataChannel?.name.toString(),
-  //       });
-  //       const dataNotification = {
-  //         createdBy: data?.send_user_id,
-  //         user_id: dataUser?._id.toString(),
-  //         channel_id: dataChannel?._id?.toString(),
-  //         title: data?.title,
-  //         content: notificationContent,
-  //         request_id: data?.request_id,
-  //         param: JSON.stringify(dataToSendNotification),
-  //         type_action: "link",
-  //         router: data?.router,
-  //         click_action: "",
-  //         image: "",
-  //         channel: "user",
-  //       };
-  //       await this.handleSendNotification(dataNotification, tokenReturn.toString());
-  //     }
-  //   } catch (error) {
-  //     this.logger.log(`Send mail and notification fails : ${error.message}`);
-  //   }
-  // }
+        const tokenReturn = this.jwtHelper.generateJwt(
+          process.env.INFO_USER,
+          supportAccount?.user_email?.toString(),
+          process.env.INFO_SESSION,
+          true
+        );
+        const dataToSendNotification = {
+          request_id: "",
+          data_id: "",
+          order_id: data?.order_id,
+        };
+        const notificationContent = data?.content({
+          display_name: dataUser?.display_name.toString(),
+        });
+        const dataNotification = {
+          createdBy: data?.send_user_id,
+          user_id: dataUser?._id.toString(),
+          title: data?.title,
+          content: notificationContent,
+          request_id: data?.request_id,
+          param: JSON.stringify(dataToSendNotification),
+          type_action: "link",
+          router: data?.router,
+          click_action: "",
+          image: "",
+          channel: "user",
+        };
+        await this.handleSendNotification(dataNotification, tokenReturn.toString());
+      }
+    } catch (error) {
+      this.logger.log(`Send mail and notification fails : ${error.message}`);
+    }
+  }
 
   /**
    * @author SonLH
