@@ -17,11 +17,6 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
   order_note: string;
 
   @IsString()
