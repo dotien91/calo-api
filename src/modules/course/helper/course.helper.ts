@@ -40,6 +40,7 @@ import {
   CourseLevel,
   CourseOneOneRole,
   CourseSkill,
+  CourseSortByFrontEnd,
   CourseType,
   TutorLevel,
   TutorTimeAvailAble,
@@ -523,7 +524,7 @@ export class CourseHelper {
       let page = body.page ? body.page : 1;
 
       let orderByObject = {};
-      if (body.order_by && body.sort_by) orderByObject[body.sort_by] = body.order_by;
+      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
       let dataToFilter = { ...body };
       delete dataToFilter.page;
@@ -1216,6 +1217,12 @@ export class CourseHelper {
         types: [CourseType.ALL_FORMS, CourseType.CALL_ONE_ONE, CourseType.SELF_LEARNING, CourseType.CALL_GROUP],
         price: "slider",
         onlyEnglishNativeSpeakers: "checkbox",
+        sortBy: [
+          CourseSortByFrontEnd.HIGHEST_RATING,
+          CourseSortByFrontEnd.PRICE_LOWEST,
+          CourseSortByFrontEnd.PRICE_HIGHEST,
+          CourseSortByFrontEnd.NEWEST,
+        ],
       };
 
       return res
