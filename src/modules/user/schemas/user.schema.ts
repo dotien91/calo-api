@@ -220,6 +220,11 @@ export class User {
     ref: "UserOrganization",
   })
   organization_id: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: Number,
+  })
+  rating: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

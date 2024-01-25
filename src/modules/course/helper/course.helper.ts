@@ -1148,12 +1148,20 @@ export class CourseHelper {
 
       const courseReview = await this.courseReviewService.create(dataFollow);
 
-      // update course id
-      const newRating = await this.calculateRating(dataFollow.course_id);
+      const newCourseRating = await this.calculateRatingForCourse(dataFollow.course_id);
       await this.courseService.update({
         _id: dataFollow.course_id,
-        rating: newRating,
+        rating: newCourseRating,
       });
+
+      const course = await this.courseService.findOne({ _id: user.course_id.toString() });
+      if (course.user_id) {
+        const newUserRating = await this.calculateRatingForUser(courseReview.user_id._id.toString());
+        await this.userService.update({
+          _id: course.user_id._id.toString(),
+          rating: newUserRating,
+        });
+      }
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1907,7 +1915,7 @@ export class CourseHelper {
     };
   }
 
-  async calculateRating(courseId: string): Promise<number> {
+  async calculateRatingForCourse(courseId: string): Promise<number> {
     const reviews = await this.courseReviewService.findAll({ course_id: courseId });
     if (reviews.length === 0) return 0;
 
@@ -1915,6 +1923,24 @@ export class CourseHelper {
       return accumulator + currentValue.rating;
     }, 0);
     return totalRating / reviews.length;
+  }
+
+  async calculateRatingForUser(userId: string): Promise<number> {
+    const courses = await this.courseService.findAllCourseReviewOfUser(userId);
+    let totalReview = 0;
+    let totalRating = 0;
+    for (const course of courses) {
+      const reviews = course.reviews;
+      if (reviews.length === 0) return 0;
+
+      const _totalRating = reviews.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.rating;
+      }, 0);
+      totalRating += _totalRating;
+      totalReview += reviews.length;
+    }
+
+    return totalRating / totalReview;
   }
 
   async checkUserCoursePermission(courseId: string, req: ExpressRequestDto, res: Response): Promise<boolean> {

@@ -5,6 +5,7 @@ import {
   IsBooleanString,
   IsDate,
   IsIn,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -151,6 +152,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @ApiPropertyOptional()
   organization_id?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiPropertyOptional()
+  rating?: number;
 }
 
 export interface UserCertificate {
