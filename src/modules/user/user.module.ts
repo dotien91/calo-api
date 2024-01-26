@@ -6,6 +6,11 @@ import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schem
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { Config, ConfigSchema } from "../config/schemas/config.schema";
 import { ConfigService } from "../config/services/config.service";
+import { Course, CourseSchema } from "../course/schemas/course.schema";
+import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
+import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
+import { CourseService } from "../course/services/course.service";
+import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
@@ -90,6 +95,9 @@ import { UserViewService } from "./services/user_view.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: VnpayLog.name, schema: VnpayLogSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
+      { name: Course.name, schema: CourseSchema },
+      { name: CourseUser.name, schema: CourseUserSchema },
+      { name: CourseOneOne.name, schema: CourseOneOneSchema },
     ]),
     EmailModule,
   ],
@@ -125,6 +133,8 @@ import { UserViewService } from "./services/user_view.service";
     EventHookNotificationService,
     ChatRoomUserOptionService,
     UserOrganizationHelper,
+    CourseService,
+    CourseUserService,
   ],
   exports: [
     UserFilterHelper,

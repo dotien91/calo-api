@@ -6,8 +6,9 @@ import * as _ from "lodash";
 import { Types } from "mongoose";
 import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { OrderService } from "../../../modules/order/services/order.service";
+import { CourseService } from "../../course/services/course.service";
+import { CourseUserService } from "../../course/services/course_user.service";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SearchBlockListDto } from "../dto/search-block_list.dto";
@@ -23,7 +24,6 @@ import { UserFollowService } from "../services/user_follow.service";
 import { UserLocationService } from "../services/user_location.service";
 import { UserMoodService } from "../services/user_mood.service";
 import { UserQuestionService } from "../services/user_question.service";
-import { UserSessionService } from "../services/user_session.service";
 import { UserViewService } from "../services/user_view.service";
 /**
  * @author Tony Vu
@@ -38,11 +38,11 @@ export class UserFilterHelper {
     private orderService: OrderService,
     private userDisagreeService: UserDisagreeService,
     private userBlockService: UserBlockService,
-    private jwtHelper: JwtHelperService,
-    private userSessionService: UserSessionService,
     private userMoodService: UserMoodService,
     private userQuestionService: UserQuestionService,
-    private userLocationService: UserLocationService
+    private userLocationService: UserLocationService,
+    private courseService: CourseService,
+    private courseUserService: CourseUserService
   ) {}
 
   /**
@@ -854,15 +854,24 @@ export class UserFilterHelper {
         user_email: false,
       };
 
-      let dataUser = await this.appUserService.findById(id, projection);
+      let dataUser: any = await this.appUserService.findById(id, projection);
+
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
       }
 
+      const courses = await this.courseService.findAll({ user_id: id });
+      const courseIds = courses.map((course) => course._id.toString());
+      const members = await this.courseUserService.findAll({ course_id: { $in: courseIds } });
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
-        .json(dataUser);
+        .json({
+          ...dataUser._doc,
+          course_count: courses.length,
+          student_count: members.length,
+        });
     } catch (error) {
       throw new NotFoundException(error.message);
     }
