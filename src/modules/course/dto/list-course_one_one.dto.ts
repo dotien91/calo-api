@@ -28,3 +28,9 @@ export class ListCourseOneOneDto {
   user_id?: string;
 }
 
+export class GetOneOneTimeAvailableDto {
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  course_id?: string;
+}

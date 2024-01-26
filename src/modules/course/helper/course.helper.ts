@@ -26,7 +26,7 @@ import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
-import { ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
+import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { ListTutorDto } from "../dto/list-tutor.dto";
@@ -1538,6 +1538,17 @@ export class CourseHelper {
     }
   }
 
+  formatHoursToHHmm(hours) {
+    // Ensure that hours is within the valid range
+    if (hours < 0 || hours > 23) {
+      throw new Error("Invalid hours value. Must be between 0 and 23.");
+    }
+
+    // Use moment to format the hours as HH:mm
+    const formattedTime = moment().hours(hours).minutes(0).format("HH:mm");
+    return formattedTime;
+  }
+
   addDurationToTime(time: string, duration: number) {
     // Parse the input time using Moment.js
     const parsedTime = moment(time, "HH:mm");
@@ -1601,7 +1612,7 @@ export class CourseHelper {
     return true; // All items from array1 are in range
   }
 
-  // helper for course calendar teacher
+  // helper for course one one teacher
   async getCourseCalendarTeacherList(query: ListCourseOneOneDto, req: ExpressRequestDto, res: Response) {
     try {
       if (Number(query.limit) > 1000) {
@@ -1634,6 +1645,12 @@ export class CourseHelper {
 
   async createCourseCalendarTeacher(dataFollow: CreateCourseOneOneTeacherDto, req: ExpressRequestDto, res: Response) {
     try {
+      const isExist = await this.courseOneOneService.findOne({
+        user_id: dataFollow.user_id,
+        role: CourseOneOneRole.TEACHER,
+      });
+      if (isExist) throw new Error("The teacher already created time available, try update");
+
       const calendarIds = [];
       for (const calendar of dataFollow.time_available) {
         const params: any = {
@@ -1646,7 +1663,7 @@ export class CourseHelper {
         calendarIds.push(newCalendar._id);
       }
 
-      // create new class
+      // create time available
       const createParams = {
         course_id: dataFollow.course_id,
         user_id: dataFollow.user_id,
@@ -1715,7 +1732,7 @@ export class CourseHelper {
     }
   }
 
-  // helper for course calendar student
+  // helper for course one one student
   async getCourseCalendarStudentList(query: ListCourseOneOneDto, req: ExpressRequestDto, res: Response) {
     try {
       if (Number(query.limit) > 1000) {
@@ -1748,6 +1765,14 @@ export class CourseHelper {
 
   async createCourseCalendarStudent(dataFollow: CreateCourseOneOneStudentDto, req: ExpressRequestDto, res: Response) {
     try {
+      if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
+
+      const isExist = await this.courseOneOneService.findOne({
+        user_id: dataFollow.user_id,
+        role: CourseOneOneRole.STUDENT,
+      });
+      if (isExist) throw new Error("The student already created time available, try update");
+
       // check if the student time pick is conflict with other student or not
       const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
         dataFollow.course_id
@@ -1769,7 +1794,7 @@ export class CourseHelper {
           throw new Error("There is already student that assigned the same time");
       }
 
-      // check if the student time pick is conflict with other student or not
+      // check if the student time pick is on range of teacher time available
       const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
         dataFollow.course_id
       );
@@ -1802,7 +1827,7 @@ export class CourseHelper {
         calendarIds.push(newCalendar._id);
       }
 
-      // create new class
+      // create time pick
       const createParams = {
         course_id: dataFollow.course_id,
         user_id: dataFollow.user_id,
@@ -1822,6 +1847,8 @@ export class CourseHelper {
 
   async updateCourseCalendarStudent(dataFollow: UpdateCourseOneOneStudentDto, req: ExpressRequestDto, res: Response) {
     try {
+      if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
+
       const oldClass = await this.courseOneOneService.findOne({
         user_id: dataFollow.user_id,
         course_id: dataFollow.course_id,
@@ -1904,6 +1931,368 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(courseCalendarTeacher);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getCourseOneOneTimeAvailable(query: GetOneOneTimeAvailableDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const course = await this.courseService.findOne({ _id: query.course_id });
+      if (!course) throw new Error("Not found course");
+
+      const result = [];
+      const DAY_OF_WEEK = [
+        {
+          value: 1,
+          label: "Mon",
+        },
+        {
+          value: 2,
+          label: "Tue",
+        },
+        {
+          value: 3,
+          label: "Wed",
+        },
+        {
+          value: 4,
+          label: "Thu",
+        },
+        {
+          value: 5,
+          label: "Fri",
+        },
+        {
+          value: 6,
+          label: "Sat",
+        },
+        {
+          value: 0,
+          label: "Sun",
+        },
+      ];
+      const TEMPLATE = {
+        value: null,
+        label: null,
+        times: [
+          {
+            time_duration: 1,
+            label: "1 hour",
+            times_in_utc: [
+              {
+                label: "0:00 - 1:00",
+                is_picked: false,
+                time_start: 0,
+              },
+              {
+                label: "1:00 - 2:00",
+                is_picked: false,
+                time_start: 1,
+              },
+              {
+                label: "2:00 - 3:00",
+                is_picked: false,
+                time_start: 2,
+              },
+              {
+                label: "3:00 - 4:00",
+                is_picked: false,
+                time_start: 3,
+              },
+              {
+                label: "4:00 - 5:00",
+                is_picked: false,
+                time_start: 4,
+              },
+              {
+                label: "5:00 - 6:00",
+                is_picked: false,
+                time_start: 5,
+              },
+              {
+                label: "6:00 - 7:00",
+                is_picked: false,
+                time_start: 6,
+              },
+              {
+                label: "7:00 - 8:00",
+                is_picked: false,
+                time_start: 7,
+              },
+              {
+                label: "8:00 - 9:00",
+                is_picked: false,
+                time_start: 8,
+              },
+              {
+                label: "9:00 - 10:00",
+                is_picked: false,
+                time_start: 9,
+              },
+              {
+                label: "10:00 - 11:00",
+                is_picked: false,
+                time_start: 10,
+              },
+              {
+                label: "11:00 - 12:00",
+                is_picked: false,
+                time_start: 11,
+              },
+              {
+                label: "12:00 - 13:00",
+                is_picked: false,
+                time_start: 12,
+              },
+              {
+                label: "13:00 - 14:00",
+                is_picked: false,
+                time_start: 13,
+              },
+              {
+                label: "14:00 - 15:00",
+                is_picked: false,
+                time_start: 14,
+              },
+              {
+                label: "15:00 - 16:00",
+                is_picked: false,
+                time_start: 15,
+              },
+              {
+                label: "16:00 - 17:00",
+                is_picked: false,
+                time_start: 16,
+              },
+              {
+                label: "17:00 - 18:00",
+                is_picked: false,
+                time_start: 17,
+              },
+              {
+                label: "18:00 - 19:00",
+                is_picked: false,
+                time_start: 18,
+              },
+              {
+                label: "19:00 - 20:00",
+                is_picked: false,
+                time_start: 19,
+              },
+              {
+                label: "20:00 - 21:00",
+                is_picked: false,
+                time_start: 20,
+              },
+              {
+                label: "21:00 - 22:00",
+                is_picked: false,
+                time_start: 21,
+              },
+              {
+                label: "22:00 - 23:00",
+                is_picked: false,
+                time_start: 22,
+              },
+              {
+                label: "23:00 - 24:00",
+                is_picked: false,
+                time_start: 23,
+              },
+            ],
+          },
+          {
+            time_duration: 2,
+            label: "2 hours",
+            times_in_utc: [
+              {
+                label: "0:00 - 2:00",
+                is_picked: false,
+                time_start: 0,
+              },
+              {
+                label: "1:00 - 3:00",
+                is_picked: false,
+                time_start: 1,
+              },
+              {
+                label: "2:00 - 4:00",
+                is_picked: false,
+                time_start: 2,
+              },
+              {
+                label: "3:00 - 5:00",
+                is_picked: false,
+                time_start: 3,
+              },
+              {
+                label: "4:00 - 6:00",
+                is_picked: false,
+                time_start: 4,
+              },
+              {
+                label: "5:00 - 7:00",
+                is_picked: false,
+                time_start: 5,
+              },
+              {
+                label: "6:00 - 8:00",
+                is_picked: false,
+                time_start: 6,
+              },
+              {
+                label: "7:00 - 9:00",
+                is_picked: false,
+                time_start: 7,
+              },
+              {
+                label: "8:00 - 10:00",
+                is_picked: false,
+                time_start: 8,
+              },
+              {
+                label: "9:00 - 11:00",
+                is_picked: false,
+                time_start: 9,
+              },
+              {
+                label: "10:00 - 12:00",
+                is_picked: false,
+                time_start: 10,
+              },
+              {
+                label: "11:00 - 13:00",
+                is_picked: false,
+                time_start: 11,
+              },
+              {
+                label: "12:00 - 14:00",
+                is_picked: false,
+                time_start: 12,
+              },
+              {
+                label: "13:00 - 15:00",
+                is_picked: false,
+                time_start: 13,
+              },
+              {
+                label: "14:00 - 16:00",
+                is_picked: false,
+                time_start: 14,
+              },
+              {
+                label: "15:00 - 17:00",
+                is_picked: false,
+                time_start: 15,
+              },
+              {
+                label: "16:00 - 18:00",
+                is_picked: false,
+                time_start: 16,
+              },
+              {
+                label: "17:00 - 19:00",
+                is_picked: false,
+                time_start: 17,
+              },
+              {
+                label: "18:00 - 20:00",
+                is_picked: false,
+                time_start: 18,
+              },
+              {
+                label: "19:00 - 21:00",
+                is_picked: false,
+                time_start: 19,
+              },
+              {
+                label: "20:00 - 22:00",
+                is_picked: false,
+                time_start: 20,
+              },
+              {
+                label: "21:00 - 23:00",
+                is_picked: false,
+                time_start: 21,
+              },
+              {
+                label: "22:00 - 24:00",
+                is_picked: false,
+                time_start: 22,
+              },
+              {
+                label: "23:00 - 1:00",
+                is_picked: false,
+                time_start: 23,
+              },
+            ],
+          },
+        ],
+      };
+
+      // check if the student time pick is conflict with other student or not
+      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(query.course_id);
+      for (const courseClass of courseClasses_Student) {
+        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        for (const DAY of DAY_OF_WEEK) {
+          const dayTemplate = structuredClone(TEMPLATE);
+          dayTemplate.value = DAY.value;
+          dayTemplate.label = DAY.label;
+
+          for (const time of dayTemplate.times) {
+            for (const _time of time.times_in_utc) {
+              const time_start = this.formatHoursToHHmm(_time.time_start);
+              const incomingTime = [
+                {
+                  day: dayTemplate.value,
+                  time_start: time_start,
+                  time_end: this.addDurationToTime(time_start, time.time_duration),
+                },
+              ];
+              _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
+            }
+          }
+
+          result.push({ ...dayTemplate });
+        }
+      }
+
+      // check if the student time pick is on range of teacher time available
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(query.course_id);
+      for (const courseClass of courseClasses_Teacher) {
+        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        for (const DAY of result) {
+          for (const time of DAY.times) {
+            for (const _time of time.times_in_utc) {
+              const time_start = this.formatHoursToHHmm(_time.time_start);
+              const incomingTime = [
+                {
+                  day: DAY.value,
+                  time_start: time_start,
+                  time_end: this.addDurationToTime(time_start, time.time_duration),
+                },
+              ];
+              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
+            }
+          }
+        }
+      }
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(result);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

@@ -18,7 +18,7 @@ import { CreateCourseViewDto } from "../dto/create-course_view.dto";
 import { ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
-import { ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
+import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
 import { ListCourseReviewDto } from "../dto/list-course_review.dto";
 import { ListMemberDto } from "../dto/list-member.dto";
 import { ListTutorDto } from "../dto/list-tutor.dto";
@@ -256,6 +256,15 @@ export class CourseController {
   @Get("one-one/teacher")
   async getCalendarTeacher(@Query() query: ListCourseOneOneDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseCalendarTeacherList(query, req, res);
+  }
+
+  @Get("one-one/time-available")
+  async getOneOneTimeAvailable(
+    @Query() query: GetOneOneTimeAvailableDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.getCourseOneOneTimeAvailable(query, req, res);
   }
 
   @Post("one-one/teacher/create")
