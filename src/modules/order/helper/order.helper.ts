@@ -267,9 +267,6 @@ export class OrderHelper {
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
       const dataOrder = await this.orderService.findById(orderId?.toString() || "");
 
-      const channelId = dataOrder?.channel_id;
-      // const channelObject = await this.channelService.findOne({ _id: channelId });
-
       let dataRedirect = "https://ieltshunter.io/" + "/r/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
         dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
