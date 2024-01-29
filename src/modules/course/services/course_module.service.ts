@@ -259,7 +259,7 @@ export class CourseModuleService {
     page: number,
     limit: number,
     projection: any = {}
-  ): Promise<CourseModule[]> {
+  ): Promise<any[]> {
     let condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
@@ -267,16 +267,12 @@ export class CourseModuleService {
     }
     let dataReturn = await this.courseModuleModel
       .find(condition, projection)
-      .populate(
-        "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
-      )
       .populate("media_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
       .exec();
-    return dataReturn;
+    return this.buildHierarchy(dataReturn);
   }
 
   /**
@@ -383,5 +379,21 @@ export class CourseModuleService {
       .limit(limit)
       .exec();
     return dataReturn;
+  }
+
+  buildHierarchy(items, parentId = null) {
+    const result = [];
+
+    items.forEach((item) => {
+      if (item.parent_id?.toString() === parentId?.toString()) {
+        const children = this.buildHierarchy(items, item._id);
+        if (children.length) {
+          item.children = children;
+        }
+        result.push(item);
+      }
+    });
+
+    return result;
   }
 }

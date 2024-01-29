@@ -655,7 +655,6 @@ export class CourseHelper {
 
       //Check Video View
       let dataReturn: any = await this.courseModuleService.filter(dataToFilter, orderByObject, page, limit);
-      let dataReturnFinal = [];
 
       let dataModuleIds = dataReturn?.map((value) => {
         return value?._id?.toString();
@@ -680,6 +679,13 @@ export class CourseHelper {
             dataReturn[dataIndexCourse] = { ...dataReturn[dataIndexCourse]?.toObject(), ...{ is_view: false } };
           }
         }
+      }
+
+      for (let dataIndexCourse in dataReturn) {
+        dataReturn[dataIndexCourse] = {
+          ...dataReturn[dataIndexCourse]?.toObject(),
+          ...{ children: dataReturn[dataIndexCourse].children },
+        };
       }
 
       return res
