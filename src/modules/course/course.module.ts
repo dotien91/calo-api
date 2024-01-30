@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { ChatRoomModule } from "../chat_room/chat_room.module";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
@@ -76,6 +77,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
+    ChatRoomModule,
   ],
   controllers: [CourseController],
   providers: [

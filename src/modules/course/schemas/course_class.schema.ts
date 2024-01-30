@@ -46,9 +46,6 @@ export class CourseClass {
     ref: "User",
   })
   members: MongooseSchema.Types.ObjectId[];
-
-  @Prop({ type: String, nullable: false })
-  code: string;
 }
 
 export const CourseClassSchema = SchemaFactory.createForClass(CourseClass);

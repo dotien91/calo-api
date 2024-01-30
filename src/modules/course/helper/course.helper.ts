@@ -10,7 +10,8 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserOrganizationService } from "../../../modules/user/services/user_organization.service";
-import { makeRandom } from "../../../utils/utils";
+import { ChatRoomHelper } from "../../chat_room/helpers/chat_room.helper";
+import { ChatRoomService } from "../../chat_room/services/chat_room.service";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
 import {
@@ -77,7 +78,9 @@ export class CourseHelper {
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly hookWorker: EventHookWorkerService,
     private readonly userService: UserService,
-    private readonly userOrganization: UserOrganizationService
+    private readonly userOrganization: UserOrganizationService,
+    private readonly chatRoomHelper: ChatRoomHelper,
+    private readonly chatRoomService: ChatRoomService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -1320,11 +1323,24 @@ export class CourseHelper {
   async getCourseClassDetail(id: string, req: ExpressRequestDto, res: Response) {
     try {
       let dataReturn: any = await this.courseClassService.filter({ _id: id });
+      if (!dataReturn) throw new Error("Not found your course class detail");
+
+      const course = await this.courseService.findOne({ _id: dataReturn[0].course_id.toString() });
+      const chatRoom = await this.chatRoomService.findOneRoom({
+        user_id: course.user_id._id.toString(),
+        room_type: "group",
+        room_name: dataReturn[0].name,
+      });
+
+      const finalDataReturn = {
+        ...dataReturn[0].toObject(),
+        chat_room_id: chatRoom?._id,
+      };
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
-        .json(dataReturn[0]);
+        .json(finalDataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1381,9 +1397,26 @@ export class CourseHelper {
         start_time: dataFollow.start_time,
         end_time: dataFollow.end_time,
         limit_member: dataFollow.limit_member,
-        code: makeRandom(10),
       };
       const courseClass = await this.courseClassService.create(createParams);
+
+      // create chatroom for class
+      (async () => {
+        try {
+          await this.chatRoomHelper.handleCreateRoom(
+            userObject,
+            "",
+            "group",
+            createParams.name,
+            false,
+            req,
+            true,
+            createParams.limit_member
+          );
+        } catch (e) {
+          console.log(e);
+        }
+      })();
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1513,10 +1546,33 @@ export class CourseHelper {
       if (courseClass.limit_member === courseClass.members.length)
         throw new Error("The class has been full of members");
 
+      if (courseClass.members.find((memberId) => memberId.toString() === dataFollow.user_id))
+        throw new Error("The user already assigned to class");
+
       await this.courseClassService.update({
         _id: courseClass._id,
         members: [...courseClass.members, new mongoose.Types.ObjectId(dataFollow.user_id)],
       });
+
+      // add user to chatroom's class
+      (async () => {
+        try {
+          const course = await this.courseService.findOne({ _id: courseClass.course_id });
+          const chatRoom = await this.chatRoomService.findOneRoom({
+            user_id: course.user_id._id.toString(),
+            room_type: "group",
+            room_name: courseClass.name,
+          });
+          await this.chatRoomHelper.addUserRole(undefined, req, {
+            user_id: dataFollow.user_id,
+            chat_room_id: chatRoom._id.toString(),
+            user_permission: "write",
+            role: "user",
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      })();
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1545,6 +1601,24 @@ export class CourseHelper {
         _id: courseClass._id,
         members: newMembers,
       });
+
+      // remove user from chatroom's class
+      (async () => {
+        try {
+          const course = await this.courseService.findOne({ _id: courseClass.course_id });
+          const chatRoom = await this.chatRoomService.findOneRoom({
+            user_id: course.user_id._id.toString(),
+            room_type: "group",
+            room_name: courseClass.name,
+          });
+          await this.chatRoomHelper.removeUserRole(undefined, req, {
+            user_id: dataFollow.user_id,
+            chat_room_id: chatRoom._id.toString(),
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      })();
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

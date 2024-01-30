@@ -375,7 +375,7 @@ export class CourseService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("media_id")
       .populate("avatar")
