@@ -462,7 +462,7 @@ export class UserLoginHelper {
           user_status: 1,
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
           country: dataIp.country,
-          timezone: dataIp.timezone
+          timezone: dataIp.timezone,
         };
         userObject = await this.appUserService.create(dataToCreate);
 
@@ -987,9 +987,10 @@ export class UserLoginHelper {
 
       const response = await this.emailService.send({
         eventName: EmailPattern.VERIFY_CODE,
-        email: dataCreate?.user_email,
+        email: userObject.user_email,
         replacePattern: {
           verify_code: dataToken,
+          display_name: userObject.display_name,
         },
       });
 

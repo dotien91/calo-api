@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
+import { EmailService } from "../../email/services/email.service";
+import { EmailPattern } from "../../email/services/email.service.i";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { SearchOrderDto } from "../dto/search-order.dto";
 import { SortByOrderDto } from "../dto/sort_by-order.dto";
@@ -15,7 +17,9 @@ export class OrderService {
     @InjectModel(Order.name)
     private orderModel: Model<OrderDocument>,
     @InjectModel(VnpayLog.name)
-    private vnpayModel: Model<VnpayLogDocument>
+    private vnpayModel: Model<VnpayLogDocument>,
+
+    private emailService: EmailService
   ) {}
 
   /**
@@ -127,6 +131,19 @@ export class OrderService {
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
+      .exec();
+    return dataReturn;
+  }
+
+  async getOrdersByStatus(status: string) {
+    const dataReturn = await this.orderModel
+      .find({
+        status,
+      })
+      .populate(
+        "user_id",
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+      )
       .exec();
     return dataReturn;
   }
@@ -336,6 +353,20 @@ export class OrderService {
         .populate("plan_id")
         .populate("media_id")
         .populate(populateObject);
+
+      if (dataReturn) {
+        if (dataUpdate?.status === "close") {
+          this.emailService.send({
+            eventName: EmailPattern.CLOSE_ORDER,
+            email: dataReturn.user_id.user_email,
+            replacePattern: {
+              display_name: dataReturn.user_id.display_name,
+              total: (dataReturn.price - dataReturn.coupon_price) * dataReturn.amount_of_package,
+            },
+          });
+        }
+      }
+
       return dataReturn;
     } catch (e) {
       return e;

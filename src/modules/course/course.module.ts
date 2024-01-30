@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ChatRoomModule } from "../chat_room/chat_room.module";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationHelper } from "../notification/helper/notification.helper";
@@ -80,6 +81,7 @@ import { CourseViewService } from "./services/course_view.service";
     ]),
     ChatRoomModule,
     UserModule,
+    EmailModule,
   ],
   controllers: [CourseController],
   providers: [

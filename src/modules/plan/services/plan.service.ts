@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import mongoose, { Model, Types } from "mongoose";
 import { CreatePlanDto } from "../dto/create-plan.dto";
 import { SearchPlanDto } from "../dto/search-plan.dto";
 import { SortByPlanDto } from "../dto/sort_by-plan.dto";
@@ -178,5 +178,25 @@ export class PlanService {
     } catch (e) {
       return e;
     }
+  }
+
+  async getCourseByPlanId(planId: string): Promise<any[]> {
+    const data = await this.planModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(planId),
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "ref_id",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+    ]);
+
+    return data;
   }
 }

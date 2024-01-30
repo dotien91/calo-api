@@ -135,7 +135,7 @@ export class EventHookNotificationService {
 
     HookExpress.add_action("noti.course.apply-join-course", async (data: any) => {
       try {
-        // await this.notificationHelper.sendNotificationAndEmail(data);
+        await this.notificationHelper.sendNotificationAndEmail(data);
       } catch (error) {
         console.log("Send apply-join-course notification to user Fails :", error.message);
       }
