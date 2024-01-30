@@ -6,6 +6,7 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
+import { EmailService } from "../../../modules/email/services/email.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
@@ -13,7 +14,9 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
+import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
@@ -37,6 +40,8 @@ export class OrderHelper {
     private transactionService: TransactionService,
     private courseUserService: CourseUserService,
     private courseService: CourseService,
+    private emailService: EmailService,
+    private userService: UserService,
     private readonly eventHookWorkerService: EventHookWorkerService,
     private readonly eventHookNotificationService: EventHookNotificationService
   ) {
@@ -792,7 +797,7 @@ export class OrderHelper {
         this.eventHookNotificationService.sendNotiNMailOrderSuccess({
           user_id: orderObject?.user_id?._id.toString(),
           path: `/r/orders/detail/${orderObject._id.toString()}`,
-          router: "NAVIGATION_PURCHASE_SUCCESS_SCREEN",
+          router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_SCREEN,
           order_id: orderObject?._id?.toString(),
           mail_template: "success_order",
           content: (params: any) => {

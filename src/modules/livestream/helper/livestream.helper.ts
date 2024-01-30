@@ -17,6 +17,7 @@ import { User } from "../../../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { makeRandom } from "../../../utils/utils";
 import { EmailPattern } from "../../email/services/email.service.i";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
@@ -868,12 +869,12 @@ export class LivestreamHelper {
           param: JSON.stringify(dataToSendNotification),
           request_id: dataLivestream?._id?.toString(),
           type_action: "link",
-          router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
+          router: NotificationRouter.NAVIGATION_LIST_NOTIFICATIONS_SCREEN,
           click_action: "",
           image: "",
           channel: "user",
         };
-        await this.notificationHelper.handleSendNotification(dataNotification, authCode);
+        this.notificationHelper.handleSendNotification(dataNotification, authCode);
       }
 
       return true;
@@ -943,12 +944,12 @@ export class LivestreamHelper {
           param: JSON.stringify(dataToSendNotification),
           request_id: dataLivestream?._id?.toString(),
           type_action: "link",
-          router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
+          router: NotificationRouter.NAVIGATION_LIST_NOTIFICATIONS_SCREEN,
           click_action: "",
           image: "",
           channel: "user",
         };
-        await this.notificationHelper.handleSendNotification(dataNotification, authCode);
+        this.notificationHelper.handleSendNotification(dataNotification, authCode);
       }
 
       return true;

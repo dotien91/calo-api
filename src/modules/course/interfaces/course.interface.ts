@@ -77,3 +77,9 @@ export enum CourseSortByFrontEnd {
   NEWEST = "Newest",
 }
 
+export enum CourseModuleType {
+  VIDEO = "video",
+  FILE = "file",
+  EXAM = "exam",
+}
+

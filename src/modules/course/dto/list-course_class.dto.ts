@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsDefined, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCourseClassDto {
   @IsNumberString()
@@ -18,6 +18,7 @@ export class ListCourseClassDto {
   order_by: "DESC" | "ASC";
 
   @IsString()
+  @IsDefined()
   @ApiProperty()
   course_id: string;
 }

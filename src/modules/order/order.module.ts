@@ -34,6 +34,7 @@ import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_o
 import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
 import { CourseService } from "../course/services/course.service";
 import { CourseUserService } from "../course/services/course_user.service";
+import { EmailModule } from "../email/email.module";
 import { OrderHelper } from "./helper/order.helper";
 import { Order, OrderSchema } from "./schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "./schemas/vnpay_log.schema";
@@ -69,6 +70,7 @@ import { OrderService } from "./services/order.service";
       { name: Course.name, schema: CourseSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
     ]),
+    EmailModule,
   ],
   controllers: [OrderController],
   providers: [
@@ -92,6 +94,7 @@ import { OrderService } from "./services/order.service";
     OrderHelper,
     CourseUserService,
     CourseService,
+    UserService,
   ],
   exports: [OrderService],
 })

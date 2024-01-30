@@ -7,6 +7,7 @@ import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/c
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { UserService } from "../../user/services/user.service";
 import { CreateChatHistoryWithMediaDto } from "../dto/create-chat_history_with_media.dto";
 import { ListChatHistoryDto } from "../dto/list-chat_history.dto";
@@ -732,7 +733,7 @@ export class ChatHistoryHelper {
         content: notificationContent,
         param: JSON.stringify(dataToSendNotification),
         type_action: "link",
-        router: "NAVIGATION_CHAT_ROOM",
+        router: NotificationRouter.NAVIGATION_CHAT_ROOM,
         click_action: "",
         image: fromUser.user_avatar
           ? fromUser.user_avatar.toString()

@@ -16,6 +16,7 @@ import { NotificationHelper } from "../../../modules/notification/helper/notific
 import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -212,7 +213,7 @@ export class UpdateUserHelper {
           content: "Request Location from " + userObject.display_name,
           param: JSON.stringify(dataToSendNotification),
           type_action: "request_location",
-          router: "NAVIGATION_CHAT_ROOM",
+          router: NotificationRouter.NAVIGATION_CHAT_ROOM,
           click_action: "",
           image: userObject.user_avatar
             ? userObject.user_avatar.toString()
@@ -863,7 +864,7 @@ export class UpdateUserHelper {
         param: JSON.stringify({ path: "/v/user/", data_id: fromUser?._id }),
         type_action: "link",
         notification_type: "match",
-        router: "NAVIGATION_MESSAGE_SCREEN",
+        router: NotificationRouter.NAVIGATION_MESSAGE_SCREEN,
         click_action: "",
         image: "",
         channel: "user",
@@ -944,7 +945,7 @@ export class UpdateUserHelper {
         param: JSON.stringify({ path: "/v/user/", data_id: fromUser?._id }),
         type_action: "link",
         notification_type: "like",
-        router: "NAVIGATION_LIKED_SCREEN",
+        router: NotificationRouter.NAVIGATION_LIKED_SCREEN,
         click_action: "",
         image: "",
         channel: "user",

@@ -151,6 +151,7 @@ import { UserViewService } from "./services/user_view.service";
     UserViewService,
     UserService,
     UserOrganizationService,
+    UserLoginHelper,
   ],
 })
 export class UserModule {}

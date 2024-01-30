@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import axios from "axios";
 import { Model, Types } from "mongoose";
+import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { SearchConfigDto } from "../dto/search-config.dto";
 import { SortByConfigDto } from "../dto/sort_by-config.dto";
@@ -200,5 +202,31 @@ export class ConfigService {
     } catch (e) {
       return e;
     }
+  }
+
+  async getIpInfo(req: ExpressRequestDto) {
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+    const ipInfoArray = process.env.IPINFO_TOKEN?.split(",");
+    const random = Math.floor(Math.random() * ipInfoArray.length);
+    if (userIp && ipInfoArray && ipInfoArray[random]) {
+      const ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
+      const dataIp = await axios
+        .get(ipUrl)
+        .then((response) => {
+          if (response && response.data) {
+            return response.data;
+          } else {
+            return null;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          return null;
+        });
+
+      return dataIp;
+    }
+
+    return null;
   }
 }

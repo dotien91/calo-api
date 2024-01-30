@@ -24,6 +24,7 @@ import { UserSession, UserSessionSchema } from "../user/schemas/user_session.sch
 import { UserService } from "../user/services/user.service";
 import { UserOrganizationService } from "../user/services/user_organization.service";
 import { UserSessionService } from "../user/services/user_session.service";
+import { UserModule } from "../user/user.module";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
 import { CourseController } from "./controllers/course.controller";
@@ -78,6 +79,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
     ChatRoomModule,
+    UserModule,
   ],
   controllers: [CourseController],
   providers: [

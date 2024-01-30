@@ -225,6 +225,12 @@ export class User {
     type: Number,
   })
   rating: number;
+
+  @Prop({
+    type: String,
+    default: "",
+  })
+  timezone: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({
