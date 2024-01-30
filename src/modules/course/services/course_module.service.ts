@@ -272,7 +272,7 @@ export class CourseModuleService {
       .skip(limit * (page - 1))
       .limit(limit)
       .exec();
-    return this.buildHierarchy(dataReturn);
+    return dataReturn;
   }
 
   /**

@@ -680,32 +680,23 @@ export class CourseHelper {
             dataReturn[dataIndexCourse] = {
               ...dataReturn[dataIndexCourse]?.toObject(),
               ...{ is_view: true },
-              ...{ children: dataReturn[dataIndexCourse].children },
             };
           } else {
             dataReturn[dataIndexCourse] = {
               ...dataReturn[dataIndexCourse]?.toObject(),
               ...{ is_view: false },
-              ...{ children: dataReturn[dataIndexCourse].children },
             };
           }
         }
       }
 
       // because the above logic already use toObject() so this will skip it
-      if (!query?.auth_id) {
-        for (let dataIndexCourse in dataReturn) {
-          dataReturn[dataIndexCourse] = {
-            ...dataReturn[dataIndexCourse]?.toObject(),
-            ...{ children: dataReturn[dataIndexCourse].children },
-          };
-        }
-      }
+      const finalDataReturn = this.courseModuleService.buildHierarchy(dataReturn);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
-        .json(dataReturn);
+        .json(finalDataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
