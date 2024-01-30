@@ -674,18 +674,29 @@ export class CourseHelper {
         for (let dataIndexCourse in dataReturn) {
           //Check Is View
           if (dataModuleIdsView.indexOf(dataReturn[dataIndexCourse]?._id?.toString()) != -1) {
-            dataReturn[dataIndexCourse] = { ...dataReturn[dataIndexCourse]?.toObject(), ...{ is_view: true } };
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse]?.toObject(),
+              ...{ is_view: true },
+              ...{ children: dataReturn[dataIndexCourse].children },
+            };
           } else {
-            dataReturn[dataIndexCourse] = { ...dataReturn[dataIndexCourse]?.toObject(), ...{ is_view: false } };
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse]?.toObject(),
+              ...{ is_view: false },
+              ...{ children: dataReturn[dataIndexCourse].children },
+            };
           }
         }
       }
 
-      for (let dataIndexCourse in dataReturn) {
-        dataReturn[dataIndexCourse] = {
-          ...dataReturn[dataIndexCourse]?.toObject(),
-          ...{ children: dataReturn[dataIndexCourse].children },
-        };
+      // because the above logic already use toObject() so this will skip it
+      if (!query?.auth_id) {
+        for (let dataIndexCourse in dataReturn) {
+          dataReturn[dataIndexCourse] = {
+            ...dataReturn[dataIndexCourse]?.toObject(),
+            ...{ children: dataReturn[dataIndexCourse].children },
+          };
+        }
       }
 
       return res
