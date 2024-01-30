@@ -201,6 +201,8 @@ export class CourseService {
           createdAt: {
             $first: "$createdAt",
           },
+          course_count: { $count: {} },
+          student_count: { $sum: "$courses.join_number" },
         },
       },
     ]);
