@@ -6,6 +6,7 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
+import { EmailService } from "../../../modules/email/services/email.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
@@ -13,7 +14,10 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
+import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { EmailPattern } from "../../email/services/email.service.i";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
@@ -37,6 +41,8 @@ export class OrderHelper {
     private transactionService: TransactionService,
     private courseUserService: CourseUserService,
     private courseService: CourseService,
+    private emailService: EmailService,
+    private userService: UserService,
     private readonly eventHookWorkerService: EventHookWorkerService,
     private readonly eventHookNotificationService: EventHookNotificationService
   ) {
@@ -540,6 +546,15 @@ export class OrderHelper {
     }
   }
 
+  async getPendingOrders() {
+    try {
+      const dataReturn = await this.orderService.getOrdersByStatus("pending");
+      return dataReturn;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async getListPaymentMethod(query: ListPaymentMethodDto, res: Response, req: ExpressRequestDto) {
     try {
       const serviceObject = await this.handleService.findById(query?.service_id);
@@ -720,7 +735,6 @@ export class OrderHelper {
           try {
             setTimeout(async () => {
               this.eventHookNotificationService.sendNotiNMailPaySuccess({
-                channel_id: orderObject?.channel_id?.toString(),
                 path: `/r/orders-admin/detail/${orderObject._id.toString()}`,
                 mail_template: "success_pay_order",
                 content: (params: any) => {
@@ -758,17 +772,18 @@ export class OrderHelper {
         return null;
       }
 
+      const planCourseData = await this.planService.getCourseByPlanId(orderObject.plan_id?._id.toString());
+
       if (orderObject.status == "success" && beforeStatus == "pending") {
         const amountOfDay = Number(orderObject.plan_id.amount_of_day) * Number(orderObject.amount_of_package);
         const date = new Date();
         date.setDate(date.getDate() + amountOfDay);
         const endTime = date;
-        const dataIsTrial = orderObject?.payment_method == "free" ? true : false;
+        const dataIsTrial = orderObject.payment_method == "free" ? true : false;
         //Update subscribe
         const dataSubscribe = {
           is_trial: dataIsTrial,
-          user_id: orderObject?.user_id?._id.toString(),
-          channel_id: orderObject?.channel_id?.toString(),
+          user_id: orderObject.user_id?._id.toString(),
           service_name: orderObject.service_name,
           service_id: orderObject.service_id?._id.toString(),
           plan_id: orderObject.plan_id._id.toString(),
@@ -780,26 +795,67 @@ export class OrderHelper {
         const dataToCreate = await this.subscribeService.create(dataSubscribe);
 
         //Check if service is Extension
-        if (orderObject?.service_id?.service_type == "course") {
+        if (orderObject.service_id?.service_type == "course") {
           await this.handleUpdateCourseAfter(orderObject);
           const dataUpdate = {
-            _id: orderObject?._id?.toString(),
-            product_url: "/r/courses/view/" + orderObject?.service_id?.handle?.toString(),
+            _id: orderObject._id?.toString(),
+            product_url: "/r/courses/view/" + orderObject.service_id?.handle?.toString(),
           };
           orderObject = await this.orderService.update(dataUpdate);
         }
 
+        // send notification to user who bought the course
         this.eventHookNotificationService.sendNotiNMailOrderSuccess({
-          user_id: orderObject?.user_id?._id.toString(),
+          user_id: orderObject.user_id?._id.toString(),
           path: `/r/orders/detail/${orderObject._id.toString()}`,
-          router: "NAVIGATION_PURCHASE_SUCCESS_SCREEN",
-          order_id: orderObject?._id?.toString(),
-          mail_template: "success_order",
+          router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_SCREEN,
+          order_id: orderObject._id?.toString(),
+          mail_template: EmailPattern.SUCCESS_ORDER,
           content: (params: any) => {
-            return `${orderObject?.user_id?.display_name} đặt thành công ${orderObject.service_name} kênh ${params?.channel_name}`;
+            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
           },
-          title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} ĐẶT THÀNH CÔNG ${orderObject.service_name.toLocaleUpperCase()}`,
+          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.service_name.toLocaleUpperCase()}`,
         });
+
+        // send email to user who bought the course
+        this.emailService.send({
+          eventName: EmailPattern.SUCCESS_ORDER,
+          email: orderObject.user_id.user_email,
+          replacePattern: {
+            display_name: orderObject.user_id.display_name,
+            product_name: orderObject.service_name,
+            product_url: orderObject.product_url,
+            billing_on: orderObject.billing_on,
+          },
+        });
+
+        // send email to user who bought the course
+        this.emailService.send({
+          eventName: EmailPattern.INVOICE_ORDER,
+          email: orderObject.user_id.user_email,
+          replacePattern: {
+            display_name: orderObject.user_id.display_name,
+            product_name: orderObject.service_name,
+            product_url: orderObject.product_url,
+            billing_on: orderObject.billing_on,
+            total: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
+          },
+        });
+
+        // send notification to user who own the course
+        this.eventHookNotificationService.sendNotiNMailOrderSuccess({
+          user_id: planCourseData[0]?.course[0]?.user_id.toString(),
+          // TODO: update path
+          path: `/r/course/${orderObject._id.toString()}`,
+          router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_COURSE_SCREEN,
+          order_id: orderObject._id?.toString(),
+          mail_template: EmailPattern.SUCCESS_ORDER,
+          content: (params: any) => {
+            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
+          },
+          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.service_name.toLocaleUpperCase()}`,
+        });
+
         return orderObject;
       } else {
         return null;

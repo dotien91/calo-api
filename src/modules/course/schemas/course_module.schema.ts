@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { Media } from "../../../modules/media/schemas/media.schema";
 import { User } from "../../user/schemas/user.schema";
+import { CourseModuleType } from "../interfaces/course.interface";
 import { Course } from "./course.schema";
 
 export type CourseModuleDocument = CourseModule & Document;
@@ -38,8 +39,9 @@ export class CourseModule {
 
   @Prop({
     type: String,
+    enum: CourseModuleType,
   })
-  type: String;
+  type: CourseModuleType;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "CourseModule", index: true })
   parent_id: CourseModule;

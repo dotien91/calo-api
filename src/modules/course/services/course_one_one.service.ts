@@ -176,6 +176,30 @@ export class CourseOneOneService {
     return dataReturn;
   }
 
+  async getAllAssignedTimeOfStudent(): Promise<any[]> {
+    let condition = {
+      role: CourseOneOneRole.STUDENT,
+    };
+
+    let dataReturn = await this.courseOneOneModel
+      .find(condition)
+      .populate({
+        path: "time_pick",
+        options: { strictPopulate: false },
+        select: "day time_start time_end",
+        match: { course_type: CourseClassType.ONE_ONE },
+      })
+      .populate({
+        path: "user_id",
+        select:
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status timezone",
+      });
+
+    // should filter the old assigned time
+
+    return dataReturn;
+  }
+
   async getAllAssignedTimeInCourseOfTeacher(courseId: string): Promise<any[]> {
     let condition = {
       course_id: courseId,

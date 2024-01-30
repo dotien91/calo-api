@@ -6,10 +6,7 @@ import { Response } from "express";
 import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
-import { PlanService } from "../../../modules/plan/services/plan.service";
-import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { ListConfigDto } from "../dto/list-config.dto";
 import { UpdateConfigDto } from "../dto/update-config.dto";
@@ -21,12 +18,8 @@ import { ConfigService } from "../services/config.service";
  */
 @Injectable()
 export class ConfigHelper {
-  channelService: any;
   constructor(
     private configService: ConfigService,
-    private planService: PlanService,
-    private userPermissionService: UserPermissionService,
-    private subscribeService: SubscribeService,
     private handleServiceService: HandleServiceService,
     private userService: UserService
   ) {}
@@ -123,11 +116,7 @@ export class ConfigHelper {
       if (query.version) {
         version = query.version;
       }
-      const dataChannel: any = {};
-      if (channelId) {
-        // dataChannel = await this.channelService.findById(channelId);
-        channelVersion = Number(dataChannel?.channel_version) || 0;
-      }
+
       // let dataReturnSubscribe = await this.subscribeService.filter(dataToFilterSubscribe, configByOBject, page, limit);
       const dataServices = await this.handleServiceService.filter({}, {}, 1, 100);
       const dataServiceReturn = [];
@@ -158,27 +147,9 @@ export class ConfigHelper {
       };
 
       if (process.env.BRANCH_NAME === "esim") {
-        const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-        const ipInfoArray = process.env.IPINFO_TOKEN?.split(",");
-        const random = Math.floor(Math.random() * ipInfoArray.length);
-        if (userIp && ipInfoArray && ipInfoArray[random]) {
-          const ipUrl = `https://ipinfo.io/${userIp}?token=${ipInfoArray[random]}`;
-          const dataIp = await axios
-            .get(ipUrl)
-            .then((response) => {
-              if (response && response.data) {
-                return response.data;
-              } else {
-                return null;
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-              return null;
-            });
-          if (dataIp) {
-            dataReturn = { ...dataReturn, ...{ country: dataIp.country, data_country: JSON.stringify(dataIp) } };
-          }
+        const dataIp = await this.configService.getIpInfo(req);
+        if (dataIp) {
+          dataReturn = { ...dataReturn, ...{ country: dataIp.country, data_country: JSON.stringify(dataIp) } };
         }
       }
 

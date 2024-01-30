@@ -111,11 +111,11 @@ export class CourseClassService {
   getCondition(filter: FilterClassCourseDto) {
     let condition: any = {};
 
-    if (filter._id) {
+    if (filter?._id) {
       condition = Object.assign(condition, { _id: filter._id });
     }
 
-    if (filter.course_id) {
+    if (filter?.course_id) {
       condition = Object.assign(condition, { course_id: filter.course_id });
     }
 
@@ -123,7 +123,7 @@ export class CourseClassService {
   }
 
   async filter(
-    filter: FilterClassCourseDto,
+    filter?: FilterClassCourseDto,
     sortBy?: any,
     page?: number,
     limit?: number,
@@ -142,7 +142,7 @@ export class CourseClassService {
       .populate({
         path: "members",
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status timezone",
       })
       .sort(sortObject)
       .skip(limit * (page - 1))

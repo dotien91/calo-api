@@ -25,9 +25,6 @@ export class Order {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: String;
-
   @Prop({
     type: String,
     nullable: false,

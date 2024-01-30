@@ -8,13 +8,10 @@ export class CreateNotificationDto {
 
   @IsString()
   @IsOptional(null)
-  createdBy: string;
+  createdBy?: string;
 
   @IsString()
   content: string;
-
-  @IsIn(["user", "channel"])
-  channel: string;
 
   @IsIn(["link"])
   type_action: string;
@@ -35,5 +32,10 @@ export class CreateNotificationDto {
   send_start?: string;
 
   @IsIn(["0", "1", "2"])
+  @IsOptional()
   manual_mode?: number;
+
+  @IsString()
+  @IsOptional()
+  router?: string;
 }

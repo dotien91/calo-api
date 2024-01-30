@@ -7,6 +7,7 @@ import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserFollowService } from "../../../modules/user/services/user_follow.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
@@ -551,7 +552,7 @@ export class CommunityHelper {
           param: JSON.stringify(dataToSendNotification),
           community_id: dataCommunity?._id?.toString(),
           type_action: "link",
-          router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
+          router: NotificationRouter.NAVIGATION_LIST_NOTIFICATIONS_SCREEN,
           click_action: "",
           image: "",
           channel: "user",

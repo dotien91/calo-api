@@ -14,6 +14,7 @@ import { google } from "googleapis";
 import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { ConfigService } from "../../config/services/config.service";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
@@ -41,7 +42,8 @@ export class UserLoginHelper {
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
     private userAnonymousSessionService: UserAnonymousSessionService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private configService: ConfigService
   ) {}
 
   private readonly logger = new Logger("user_login");
@@ -444,7 +446,10 @@ export class UserLoginHelper {
       }
 
       if (!userObject || (userObject && !userObject._id)) {
-        const dataUrl = await this.handleGetUserAvatarRandom();
+        const [dataUrl, dataIp] = await Promise.all([
+          this.handleGetUserAvatarRandom(),
+          this.configService.getIpInfo(req),
+        ]);
 
         //Create New User
         const dataToCreate = {
@@ -456,8 +461,19 @@ export class UserLoginHelper {
           display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
           user_status: 1,
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
+          country: dataIp.country,
+          timezone: dataIp.timezone,
         };
         userObject = await this.appUserService.create(dataToCreate);
+
+        this.emailService.send({
+          eventName: EmailPattern.REGISTER,
+          email: userObject.email,
+          replacePattern: {
+            display_name: userObject.display_name,
+            user_email: userObject.user_email,
+          },
+        });
       }
       if (userObject && userObject._id) {
         const dataSession = await this.handleUserSession(req, userObject, dataLogin);
@@ -971,9 +987,10 @@ export class UserLoginHelper {
 
       const response = await this.emailService.send({
         eventName: EmailPattern.VERIFY_CODE,
-        email: dataCreate?.user_email,
+        email: userObject.user_email,
         replacePattern: {
           verify_code: dataToken,
+          display_name: userObject.display_name,
         },
       });
 

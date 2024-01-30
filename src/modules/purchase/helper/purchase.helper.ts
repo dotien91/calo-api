@@ -324,7 +324,6 @@ export class PurchaseHelper {
    * @returns
    */
   async validateGoogle(dataCreate: CreatePurchaseGoogleDto, orderObject: Order) {
-    console.log(dataCreate, "HEHEHE");
     const options = {
       email: process.env.GOOGLE_IAP_SERVICE_ACCOUNT,
       key: process.env.GOOGLE_IAP_SERVICE_PRIVATE_KEY,

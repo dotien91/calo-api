@@ -41,7 +41,7 @@ export class Plan {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
   channel_id: String;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Esim", index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Course", index: true })
   ref_id: String;
 
   @Prop({

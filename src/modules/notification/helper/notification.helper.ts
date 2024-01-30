@@ -25,6 +25,7 @@ import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
+import { NotificationRouter } from "../interfaces/notification.interface";
 const apn = require("apn");
 
 /**
@@ -763,7 +764,7 @@ export class NotificationHelper {
       content: notificationContent,
       param: JSON.stringify(dataToSendNotification),
       type_action: "link",
-      router: "NAVIGATION_LIST_NOTIFICATIONS_SCREEN",
+      router: NotificationRouter.NAVIGATION_LIST_NOTIFICATIONS_SCREEN,
       click_action: "",
       image: "",
       channel: "user",

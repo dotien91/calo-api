@@ -1,9 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
+import * as moment from "moment-timezone";
 import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
+import { NotificationHelper } from "../../notification/helper/notification.helper";
+import { NotificationRouter } from "../../notification/interfaces/notification.interface";
+import { UserLoginHelper } from "../../user/helper/user_login.helper";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import {
   AddMemberCourseClassDto,
@@ -33,7 +38,139 @@ import { CourseHelper } from "../helper/course.helper";
 @ApiTags("course")
 @ApiBearerAuth("ICEO")
 export class CourseController {
-  constructor(private readonly courseHelper: CourseHelper) {}
+  private todayNotifiedUserOneOneContainer = [];
+  private todayNotifiedUserClassContainer = [];
+  private authCode = "";
+
+  constructor(
+    private readonly courseHelper: CourseHelper,
+    private readonly notificationHelper: NotificationHelper,
+    private readonly userLoginHelper: UserLoginHelper
+  ) {
+    const jwt = this.userLoginHelper.generateJwt(process.env.INFO_SESSION, true);
+    if (typeof jwt !== "boolean") {
+      this.authCode = jwt;
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  cleanUpClassContainer() {
+    this.todayNotifiedUserClassContainer = [];
+    this.todayNotifiedUserOneOneContainer = [];
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkCourseClassesTime() {
+    const classes = await this.courseHelper.getAllCourseClassList();
+
+    for (const _class of classes) {
+      const calendars = _class.course_calendar_ids;
+      const classId = _class._id;
+      for (const calendar of calendars) {
+        for (const member of _class.members) {
+          const { day, time_start } = calendar as any;
+          const memberTimezone = (member as any).timezone || "UTC";
+          const memberId = (member as any)._id.toString();
+          const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+
+          const currentTimeInMemberTimezone = moment().tz(memberTimezone);
+          const startTime = moment(`${dayOfWeek} ${time_start}`, "dddd HH:mm").tz(memberTimezone);
+          const fiveMinutesBeforeStartTime = startTime?.clone().subtract(5, "minutes");
+
+          const timeDifference = currentTimeInMemberTimezone.diff(fiveMinutesBeforeStartTime, "milliseconds");
+
+          if (timeDifference > 0 && timeDifference < 300000) {
+            if (
+              this.todayNotifiedUserClassContainer.find((data) => {
+                return data.memberId === memberId && data.classId === classId;
+              })
+            ) {
+              // skip notification
+            } else {
+              this.todayNotifiedUserClassContainer.push(memberId);
+              const dataToSendNotification = {
+                data_id: classId,
+                path: `/v/room/class?room={classId}&displayName={userName}`,
+              };
+              this.todayNotifiedUserClassContainer.push({
+                memberId,
+                classId,
+              });
+              const dataNotification = {
+                user_id: memberId,
+                title: `There is a class about to start`,
+                content: "",
+                param: JSON.stringify(dataToSendNotification),
+                type_action: "link",
+                router: NotificationRouter.NAVIGATION_CLASS_ROOM,
+                click_action: "",
+                image: "",
+              };
+              this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
+            }
+          } else {
+            // do nothing
+          }
+        }
+      }
+    }
+
+    return;
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkCourseOneOneTime() {
+    const classes = await this.courseHelper.getAllAssignedTimeOfStudent();
+
+    for (const _class of classes) {
+      const classId = _class._id.toString();
+      const calendars = _class.time_pick;
+      for (const calendar of calendars) {
+        const { day, time_start } = calendar as any;
+        const memberTimezone = _class.user_id.timezone || "UTC";
+        const memberId = _class.user_id._id.toString();
+        const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+
+        const currentTimeInMemberTimezone = moment().tz(memberTimezone);
+        const startTime = moment(`${dayOfWeek} ${time_start}`, "dddd HH:mm").tz(memberTimezone);
+        const fiveMinutesBeforeStartTime = startTime?.clone().subtract(5, "minutes");
+
+        const timeDifference = currentTimeInMemberTimezone.diff(fiveMinutesBeforeStartTime, "milliseconds");
+
+        if (timeDifference > 0 && timeDifference < 300000) {
+          if (
+            this.todayNotifiedUserOneOneContainer.find((data) => {
+              return data.memberId === memberId && data.classId === classId;
+            })
+          ) {
+            // skip notification
+          } else {
+            const dataToSendNotification = {
+              data_id: classId,
+              path: `/v/room/class?room={classId}&displayName={userName}`,
+            };
+            this.todayNotifiedUserOneOneContainer.push({
+              memberId,
+              classId,
+            });
+            const dataNotification = {
+              user_id: memberId,
+              title: `There is a class about to start`,
+              content: "",
+              param: JSON.stringify(dataToSendNotification),
+              type_action: "link",
+              router: NotificationRouter.NAVIGATION_CLASS_ROOM,
+              click_action: "",
+              image: "",
+            };
+            this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
+          }
+        } else {
+          // do nothing
+        }
+      }
+    }
+  }
 
   // course api
   @Post("/list")

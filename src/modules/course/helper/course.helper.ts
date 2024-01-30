@@ -12,6 +12,8 @@ import { UserService } from "../../../modules/user/services/user.service";
 import { UserOrganizationService } from "../../../modules/user/services/user_organization.service";
 import { ChatRoomHelper } from "../../chat_room/helpers/chat_room.helper";
 import { ChatRoomService } from "../../chat_room/services/chat_room.service";
+import { EmailService } from "../../email/services/email.service";
+import { EmailPattern } from "../../email/services/email.service.i";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { CreateCourseCalendarDto } from "../dto/create-course_calendar.dto";
 import {
@@ -80,7 +82,8 @@ export class CourseHelper {
     private readonly userService: UserService,
     private readonly userOrganization: UserOrganizationService,
     private readonly chatRoomHelper: ChatRoomHelper,
-    private readonly chatRoomService: ChatRoomService
+    private readonly chatRoomService: ChatRoomService,
+    private readonly emailService: EmailService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -1025,11 +1028,19 @@ export class CourseHelper {
         send_user_id: req?.user_id?.toString(),
         user_id: userIdToAdd,
         path: ``,
-        mail_template: "apply_join_course",
         content: (params: any) => {
-          return `Chúc mừng người dùng ${userObjectNew.display_name} tham gia khóa học thành công khóa học ${videoObject.title} kênh ${params?.channel_name}`;
+          return `Congratulation user ${userObjectNew.display_name} for successfully enrolling in the course ${videoObject.title}`;
         },
-        title: `${userObjectNew.display_name.toLocaleUpperCase()} THAM GIA KHÓA HỌC ${videoObject.title.toLocaleUpperCase()}`,
+        title: `${userObjectNew.display_name.toLocaleUpperCase()} JOIN THE COURSE ${videoObject.title.toLocaleUpperCase()}`,
+      });
+
+      this.emailService.send({
+        eventName: EmailPattern.SUCCESS_ORDER_ADDING,
+        email: userObject.user_email,
+        replacePattern: {
+          display_name: userObject.display_name,
+          product_name: videoObject.title,
+        },
       });
 
       await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
@@ -1282,7 +1293,7 @@ export class CourseHelper {
   }
 
   // helper for course class
-  async getCourseClassList(query: ListCourseClassDto, req: ExpressRequestDto, res: Response) {
+  async getCourseClassList(query?: ListCourseClassDto, req?: ExpressRequestDto, res?: Response) {
     try {
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
@@ -1306,6 +1317,24 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getAllCourseClassList() {
+    try {
+      const dataReturn = await this.courseClassService.filter();
+      return dataReturn;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getAllAssignedTimeOfStudent() {
+    try {
+      const dataReturn = await this.courseOneOneService.getAllAssignedTimeOfStudent();
+      return dataReturn;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1855,6 +1884,12 @@ export class CourseHelper {
       });
       if (isExist) throw new Error("The student already created time available, try update");
 
+      const isUserBoughtCourse = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
+
       // check if the student time pick is conflict with other student or not
       const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
         dataFollow.course_id
@@ -1937,6 +1972,12 @@ export class CourseHelper {
         role: CourseOneOneRole.STUDENT,
       });
       if (!oldClass) throw new Error("Not found your class");
+
+      const isUserBoughtCourse = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: dataFollow.course_id,
+      });
+      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
 
       // // check if the student time pick is conflict with other student or not
       const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
