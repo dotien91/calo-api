@@ -22,6 +22,7 @@ import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
+import { OrderPaymentMethod } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 
@@ -557,21 +558,10 @@ export class OrderHelper {
 
   async getListPaymentMethod(query: ListPaymentMethodDto, res: Response, req: ExpressRequestDto) {
     try {
-      const serviceObject = await this.handleService.findById(query?.service_id);
-      if (serviceObject) {
-        if (serviceObject?.service_type == "extension" || serviceObject?.service_type == "channel") {
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(["vn_pay", "transfer"]);
-        } else {
-          // const dataPayment = channelObject?.payment_method;
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(["vn_pay", "transfer"]);
-        }
-      }
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json([OrderPaymentMethod.VNPAY, OrderPaymentMethod.TRANSFER]);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
