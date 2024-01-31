@@ -10,13 +10,12 @@ import axios from "axios";
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { EmailService } from "../../../modules/email/services/email.service";
+// import { EmailService } from "../../../modules/email/services/email.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { makeRandom } from "../../../utils/utils";
-import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
@@ -44,9 +43,9 @@ export class LivestreamHelper {
     private livestreamLikeService: LivestreamLikeService,
     private livestreamViewService: LivestreamViewService,
     private livestreamCommentService: LivestreamCommentService,
-    private notificationHelper: NotificationHelper,
-    private emailService: EmailService
-  ) {}
+    private notificationHelper: NotificationHelper
+  ) // private emailService: EmailService
+  {}
 
   /**
    * @author Tony Vu
@@ -834,30 +833,31 @@ export class LivestreamHelper {
       let emailArray = [];
 
       // Send email
-      for (let emailItem of emailArray) {
-        await this.emailService
-          .send({
-            eventName: EmailPattern.LIVESTREAM_NOW,
-            email: emailItem?.user_email,
-            replacePattern: {
-              brand_name: "IELTS_HUNTER",
-              post_name: dataLivestream.title,
-              fullname: emailItem.display_name,
-              user_id: fromUser?._id?.toString(),
-              post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
-              is_send_email: false,
-              //@ts-ignore
-              post_image: dataLivestream?.avatar?.media_url || "",
-            },
-          })
-          .catch((e) => {
-            console.log("Send email failed: ", e.message);
-          });
-      }
+      // for (let emailItem of emailArray) {
+      //   await this.emailService
+      //     .send({
+      //       eventName: EmailPattern.LIVESTREAM_NOW,
+      //       email: emailItem?.user_email,
+      //       replacePattern: {
+      //         brand_name: "IELTS_HUNTER",
+      //         post_name: dataLivestream.title,
+      //         fullname: emailItem.display_name,
+      //         user_id: fromUser?._id?.toString(),
+      //         post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
+      //         is_send_email: false,
+      //         //@ts-ignore
+      //         post_image: dataLivestream?.avatar?.media_url || "",
+      //       },
+      //     })
+      //     .catch((e) => {
+      //       console.log("Send email failed: ", e.message);
+      //     });
+      // }
 
       if (userIdArray && userIdArray?.length) {
         let dataToSendNotification = {
           request_id: dataLivestream?._id?.toString(),
+          // TODO: update path
           path: "/r/live-room/",
           data_id: dataLivestream?._id?.toString(),
         };
@@ -908,27 +908,27 @@ export class LivestreamHelper {
       let userIdArray = [];
       let emailArray = [];
 
-      for (let emailItem of emailArray) {
-        await this.emailService
-          .send({
-            eventName: EmailPattern.LIVESTREAM_CREATE,
-            email: emailItem?.user_email,
-            replacePattern: {
-              brand_name: "IELTS_HUNTER",
-              post_name: dataLivestream.title,
+      // for (let emailItem of emailArray) {
+      //   await this.emailService
+      //     .send({
+      //       eventName: EmailPattern.LIVESTREAM_CREATE,
+      //       email: emailItem?.user_email,
+      //       replacePattern: {
+      //         brand_name: "IELTS_HUNTER",
+      //         post_name: dataLivestream.title,
 
-              fullname: emailItem?.display_name,
-              user_id: fromUser?._id?.toString(),
-              post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
-              is_send_email: false,
-              //@ts-ignore
-              post_image: dataLivestream?.avatar?.media_url || "",
-            },
-          })
-          .catch((e) => {
-            console.log("Send email failed: ", e.message);
-          });
-      }
+      //         fullname: emailItem?.display_name,
+      //         user_id: fromUser?._id?.toString(),
+      //         post_url: process.env.FRONTEND_URI + "/r/live-room/" + dataLivestream?._id,
+      //         is_send_email: false,
+      //         //@ts-ignore
+      //         post_image: dataLivestream?.avatar?.media_url || "",
+      //       },
+      //     })
+      //     .catch((e) => {
+      //       console.log("Send email failed: ", e.message);
+      //     });
+      // }
 
       if (userIdArray && userIdArray?.length) {
         let dataToSendNotification = {

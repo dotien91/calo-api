@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import * as moment from "moment";
+import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -1035,11 +1036,13 @@ export class CourseHelper {
       });
 
       this.emailService.send({
-        eventName: EmailPattern.SUCCESS_ORDER_ADDING,
+        eventName: EmailPattern.SUCCESS_ORDER,
         email: userObject.user_email,
         replacePattern: {
           display_name: userObject.display_name,
-          product_name: videoObject.title,
+          course_name: videoObject.title,
+          course_start_time: momentTz(videoObject.start_time.toString()).tz(userObject.timezone),
+          course_end_time: momentTz(videoObject.end_time.toString()).tz(userObject.timezone),
         },
       });
 

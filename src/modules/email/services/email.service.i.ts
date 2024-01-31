@@ -11,7 +11,6 @@ export enum EmailPattern {
   REGISTER = "register",
   CLOSE_ORDER = "close-order",
   SUCCESS_ORDER = "success-order",
-  SUCCESS_ORDER_ADDING = "success-order-adding",
   PENDING_ORDER = "pending-order",
   INVOICE_ORDER = "invoice-order",
 }

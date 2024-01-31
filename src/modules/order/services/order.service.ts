@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import * as moment from "moment-timezone";
 import { Model, Types } from "mongoose";
 import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
 import { EmailService } from "../../email/services/email.service";
@@ -361,7 +362,10 @@ export class OrderService {
             email: dataReturn.user_id.user_email,
             replacePattern: {
               display_name: dataReturn.user_id.display_name,
-              total: (dataReturn.price - dataReturn.coupon_price) * dataReturn.amount_of_package,
+              order_id: dataReturn._id.toString(),
+              order_name: dataReturn.service_name,
+              order_price: (dataReturn.price - dataReturn.coupon_price) * dataReturn.amount_of_package,
+              order_date: moment().tz(dataReturn.user_id.timezone).format("DD-MM-YYYY HH:mm"),
             },
           });
         }

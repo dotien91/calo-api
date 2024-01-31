@@ -45,10 +45,11 @@ export class OrderController {
 
       if (newCounter[orderId] === 3 || newCounter[orderId] === 7) {
         // send notification
+        const path = `/checkout`;
         const dataToSendNotification = {
           data_id: orderId,
           // TODO: update path
-          path: `/v/checkout`,
+          path: path,
         };
         const dataNotification = {
           user_id: order.user_id._id.toString(),
@@ -68,7 +69,9 @@ export class OrderController {
           email: order.user_id.user_email,
           replacePattern: {
             display_name: order.user_id.display_name,
-            total: (order.price - order.coupon_price) * order.amount_of_package,
+            order_name: order.service_name,
+            order_price: (order.price - order.coupon_price) * order.amount_of_package,
+            order_checkout_url: "https://ieltshunter.io" + path,
           },
         });
 

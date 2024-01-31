@@ -273,7 +273,7 @@ export class OrderHelper {
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
       const dataOrder = await this.orderService.findById(orderId?.toString() || "");
 
-      let dataRedirect = "https://ieltshunter.io/" + "/r/orders/detail/" + dataOrder?._id?.toString();
+      let dataRedirect = "https://ieltshunter.io" + "/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
         dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
       }
@@ -730,22 +730,24 @@ export class OrderHelper {
           }
           const dataReturn = await this.orderService.update(dataUpdate);
 
-          const url = process.env.TELEGRAM_URL;
-          // let channelId = dataReturn?.trans_id;
           try {
             setTimeout(async () => {
-              this.eventHookNotificationService.sendNotiNMailPaySuccess({
-                path: `/r/orders-admin/detail/${orderObject._id.toString()}`,
-                mail_template: "success_pay_order",
-                content: (params: any) => {
-                  return `${orderObject?.user_id?.display_name} đặt thành công Extension ${orderObject.service_name} kênh ${params?.channel_name}`;
-                },
-                title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} ĐẶT THÀNH CÔNG ${orderObject.service_name.toLocaleUpperCase()}`,
+              const adminUsers = await this.userService.findAll({
+                user_role: "admin",
               });
+              for (const adminUser of adminUsers) {
+                this.eventHookNotificationService.sendNotiNMailPaySuccess({
+                  user_id: adminUser._id.toString(),
+                  path: `/orders/detail/${orderObject._id.toString()}`,
+                  content: (params: any) => {
+                    return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.service_name}`;
+                  },
+                  title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.service_name.toLocaleUpperCase()}`,
+                });
+              }
             }, 500);
           } catch (error) {}
 
-          //Send Telegram
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
@@ -810,7 +812,6 @@ export class OrderHelper {
           path: `/r/orders/detail/${orderObject._id.toString()}`,
           router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_SCREEN,
           order_id: orderObject._id?.toString(),
-          mail_template: EmailPattern.SUCCESS_ORDER,
           content: (params: any) => {
             return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
           },
@@ -823,9 +824,9 @@ export class OrderHelper {
           email: orderObject.user_id.user_email,
           replacePattern: {
             display_name: orderObject.user_id.display_name,
-            product_name: orderObject.service_name,
-            product_url: orderObject.product_url,
-            billing_on: orderObject.billing_on,
+            course_name: orderObject.service_name,
+            course_start_time: moment(dataToCreate.start_at.toString()).tz(orderObject.user_id.timezone),
+            course_end_time: moment(dataToCreate.end_at.toString()).tz(orderObject.user_id.timezone),
           },
         });
 
@@ -835,10 +836,10 @@ export class OrderHelper {
           email: orderObject.user_id.user_email,
           replacePattern: {
             display_name: orderObject.user_id.display_name,
-            product_name: orderObject.service_name,
-            product_url: orderObject.product_url,
-            billing_on: orderObject.billing_on,
-            total: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
+            order_id: orderObject._id.toString(),
+            order_name: orderObject.service_name,
+            order_price: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
+            order_date: moment().tz(orderObject.user_id.timezone).format("DD-MM-YYYY HH:mm"),
           },
         });
 
@@ -849,7 +850,6 @@ export class OrderHelper {
           path: `/r/course/${orderObject._id.toString()}`,
           router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_COURSE_SCREEN,
           order_id: orderObject._id?.toString(),
-          mail_template: EmailPattern.SUCCESS_ORDER,
           content: (params: any) => {
             return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
           },
