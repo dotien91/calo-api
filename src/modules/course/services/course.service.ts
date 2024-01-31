@@ -30,9 +30,6 @@ export class CourseService {
    */
   async getCondition(filter: SearchCourseDto) {
     let condition: any = {};
-    if (filter.user_id) {
-      condition = Object.assign(condition, { user_id: filter.user_id });
-    }
     if (filter.language) {
       condition = Object.assign(condition, { language: filter.language });
     }
@@ -108,6 +105,7 @@ export class CourseService {
 
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
+    if (filter.user_id) matchObject["_id"] = new mongoose.Types.ObjectId(filter.user_id);
 
     let dataReturn = await this.courseModel
       .find(condition, projection)
