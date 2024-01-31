@@ -231,6 +231,12 @@ export class User {
     default: "",
   })
   timezone: string;
+
+  @Prop({
+    type: String,
+    default: "",
+  })
+  default_language: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

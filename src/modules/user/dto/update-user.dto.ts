@@ -157,6 +157,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @ApiPropertyOptional()
   rating?: number;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  default_language?: string;
 }
 
 export interface UserCertificate {
