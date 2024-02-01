@@ -2470,7 +2470,7 @@ export class CourseHelper {
   async checkUserCoursePermission(courseId: string, req: ExpressRequestDto, res: Response): Promise<boolean> {
     const course = await this.courseService.findOne({ _id: courseId });
     if (course?.organization_id) {
-      if (req.user_object?.organization_id.toString() === course?.organization_id.toString()) {
+      if (req.user_object?.organization_id?.toString() === course?.organization_id?.toString()) {
         return true;
       } else return false;
     } else if (course?.user_id) {
