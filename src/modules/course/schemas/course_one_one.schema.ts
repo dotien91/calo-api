@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { User } from "../../user/schemas/user.schema";
 import { CourseOneOneRole } from "../interfaces/course.interface";
-import { Course } from "./course.schema";
 
 export type CourseOneOneDocument = CourseOneOne & Document;
 
@@ -22,10 +20,10 @@ export class CourseOneOne {
   _id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Course", index: true })
-  course_id: Course;
+  course_id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
-  user_id: User;
+  user_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: String,

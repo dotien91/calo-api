@@ -27,7 +27,7 @@ import { CreateCourseOneOneStudentDto, CreateCourseOneOneTeacherDto } from "../d
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
-import { ListCourseDto } from "../dto/list-course.dto";
+import { GetCourseRoomParams, ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
@@ -2496,6 +2496,47 @@ export class CourseHelper {
         _id: course.user_id._id.toString(),
         rating: newUserRating,
       });
+    }
+  }
+
+  async getCourseRoom(query: GetCourseRoomParams, res: Response, req: ExpressRequestDto) {
+    try {
+      const course = await this.courseService.findOne({ _id: query.course_id });
+      if (!course) throw new Error("Course not found");
+
+      let result = null;
+      switch (course.type) {
+        case CourseType.CALL_ONE_ONE: {
+          const room = await this.courseOneOneService.findOne({
+            course_id: query.course_id,
+            role: CourseOneOneRole.TEACHER,
+          });
+
+          result = room?._id.toString();
+          break;
+        }
+        case CourseType.CALL_GROUP: {
+          const room = await this.courseClassService.findOne({
+            members: {
+              $in: [new mongoose.Types.ObjectId(query.user_id)],
+            },
+            course_id: new mongoose.Types.ObjectId(query.course_id),
+          });
+
+          result = room?._id.toString();
+          break;
+        }
+        case CourseType.SELF_LEARNING: {
+          result = query?.course_id;
+          break;
+        }
+      }
+
+      return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
+        code: result,
+      });
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }

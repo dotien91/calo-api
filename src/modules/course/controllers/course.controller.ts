@@ -20,7 +20,7 @@ import { CreateCourseOneOneStudentDto, CreateCourseOneOneTeacherDto } from "../d
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
-import { ListCourseDto } from "../dto/list-course.dto";
+import { GetCourseRoomParams, ListCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
@@ -229,6 +229,11 @@ export class CourseController {
   @Permissions(Permission(Controllers.COURSE).DELETE)
   async deleteCourse(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.handleDeleteCourse(id, res, req);
+  }
+
+  @Get("room")
+  async getCourseRoom(@Query() query: GetCourseRoomParams, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseRoom(query, res, req);
   }
 
   // course user api
