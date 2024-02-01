@@ -2504,7 +2504,7 @@ export class CourseHelper {
       const course = await this.courseService.findOne({ _id: query.course_id });
       if (!course) throw new Error("Course not found");
 
-      let result = null;
+      let room_id = null;
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
           const room = await this.courseOneOneService.findOne({
@@ -2512,7 +2512,7 @@ export class CourseHelper {
             role: CourseOneOneRole.TEACHER,
           });
 
-          result = room?._id.toString();
+          room_id = room?._id.toString();
           break;
         }
         case CourseType.CALL_GROUP: {
@@ -2523,18 +2523,21 @@ export class CourseHelper {
             course_id: new mongoose.Types.ObjectId(query.course_id),
           });
 
-          result = room?._id.toString();
+          room_id = room?._id.toString();
           break;
         }
         case CourseType.SELF_LEARNING: {
-          result = query?.course_id;
+          room_id = query?.course_id;
           break;
         }
       }
 
-      return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
-        code: result,
-      });
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json({
+          redirect_url: `/room/class/${room_id}`,
+        });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
