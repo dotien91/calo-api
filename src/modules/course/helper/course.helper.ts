@@ -2532,6 +2532,8 @@ export class CourseHelper {
         }
       }
 
+      if (!room_id) throw new NotFoundException("Not found your class");
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
