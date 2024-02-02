@@ -1555,8 +1555,10 @@ export class CourseHelper {
       });
       if (!courseClass) throw new Error("Not found your class");
 
-      const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
-      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+      if (req) {
+        const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
+        if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+      }
 
       const isUserBoughtCourse = await this.courseUserService.findOne({
         user_id: dataFollow.user_id,
@@ -1595,10 +1597,12 @@ export class CourseHelper {
         }
       })();
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .send();
+      if (res) {
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .send();
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -1954,10 +1958,12 @@ export class CourseHelper {
       };
       const courseCalendarTeacher = await this.courseOneOneService.create(createParams);
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json(courseCalendarTeacher);
+      if (res) {
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(courseCalendarTeacher);
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }

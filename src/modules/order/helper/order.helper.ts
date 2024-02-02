@@ -16,13 +16,14 @@ import { SubscribeService } from "../../../modules/subscribe/services/subscribe.
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
+import { CourseHelper } from "../../course/helper/course.helper";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
-import { OrderPaymentMethod } from "../interfaces/order.interface";
+import { OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 
@@ -45,7 +46,8 @@ export class OrderHelper {
     private emailService: EmailService,
     private userService: UserService,
     private readonly eventHookWorkerService: EventHookWorkerService,
-    private readonly eventHookNotificationService: EventHookNotificationService
+    private readonly eventHookNotificationService: EventHookNotificationService,
+    private readonly courseHelper: CourseHelper
   ) {
     // if (!initHook) {
     //   this.initHook();
@@ -547,9 +549,9 @@ export class OrderHelper {
     }
   }
 
-  async getPendingOrders() {
+  async getOrdersByStatus(status: string) {
     try {
-      const dataReturn = await this.orderService.getOrdersByStatus("pending");
+      const dataReturn = await this.orderService.getOrdersByStatus(status);
       return dataReturn;
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -796,6 +798,21 @@ export class OrderHelper {
           orderObject = await this.orderService.update(dataUpdate);
         }
 
+        if (orderObject.payload) {
+          // @ts-ignore
+          if (orderObject.payload.type === PayloadType.CLASS) {
+            // @ts-ignore
+            const data = orderObject.payload.data;
+            await this.courseHelper.addMemberToClass(data, null, null);
+          }
+          // @ts-ignore
+          else if (orderObject.payload.type === PayloadType.ONE_ONE) {
+            // @ts-ignore
+            const data = orderObject.payload.data;
+            await this.courseHelper.createCourseCalendarStudent(data, null, null);
+          }
+        }
+
         // send notification to user who bought the course
         this.eventHookNotificationService.sendNotiNMailOrderSuccess({
           user_id: orderObject.user_id?._id.toString(),
@@ -815,8 +832,8 @@ export class OrderHelper {
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             course_name: orderObject.service_name,
-            course_start_time: moment(dataToCreate.start_at.toString()).tz(orderObject.user_id.timezone),
-            course_end_time: moment(dataToCreate.end_at.toString()).tz(orderObject.user_id.timezone),
+            course_start_time: moment(dataToCreate.start_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
+            course_end_time: moment(dataToCreate.end_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
           },
         });
 
@@ -829,7 +846,9 @@ export class OrderHelper {
             order_id: orderObject._id.toString(),
             order_name: orderObject.service_name,
             order_price: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
-            order_date: moment().tz(orderObject.user_id.timezone).format("DD-MM-YYYY HH:mm"),
+            order_date: moment()
+              .tz(orderObject.user_id.timezone || "UTC")
+              .format("DD-MM-YYYY HH:mm"),
           },
         });
 

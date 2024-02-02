@@ -29,6 +29,7 @@ import { UserPermissionService } from "../user_permission/services/user_permissi
 import { OrderController } from "./controllers/order.controller";
 // import { OrderHelper } from "./helper/OrderHelper";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { CourseModule } from "../course/course.module";
 import { Course, CourseSchema } from "../course/schemas/course.schema";
 import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
 import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
@@ -73,6 +74,7 @@ import { OrderService } from "./services/order.service";
     ]),
     EmailModule,
     UserModule,
+    CourseModule,
   ],
   controllers: [OrderController],
   providers: [

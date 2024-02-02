@@ -199,6 +199,13 @@ export class Order {
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   cancelled_on: MongooseSchema.Types.Date;
+
+  // this is use to save transaction info before doing purchased
+  @Prop({
+    type: Object,
+    nullable: false,
+  })
+  payload: object;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

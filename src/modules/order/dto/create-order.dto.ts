@@ -1,5 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumberString, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsDefined,
+  IsEnum,
+  IsNotEmptyObject,
+  IsNumberString,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
+import { PayloadType } from "../interfaces/order.interface";
+
+export class PayloadParams {
+  @IsEnum(PayloadType)
+  @IsDefined()
+  type: PayloadType;
+
+  @IsObject()
+  @IsNotEmptyObject()
+  @IsDefined()
+  data: object;
+}
+
 export class CreateOrderDto {
   @IsString()
   @ApiProperty()
@@ -38,4 +61,10 @@ export class CreateOrderDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   deep_link: string;
+
+  @IsObject()
+  @IsDefined()
+  @ValidateNested({ each: true })
+  @Type(() => PayloadParams)
+  payload: PayloadParams;
 }

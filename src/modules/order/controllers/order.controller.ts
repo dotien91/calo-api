@@ -14,6 +14,7 @@ import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
 import { UpdateOrderUserDto } from "../dto/update-order_user.dto";
 import { OrderHelper } from "../helper/order.helper";
+import { OrderStatus } from "../interfaces/order.interface";
 
 @Controller("order")
 @ApiTags("order")
@@ -35,51 +36,55 @@ export class OrderController {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async checkPendingOrder() {
-    const newCounter = {};
-    const pendingOrders = await this.orderHelper.getPendingOrders();
+    try {
+      const newCounter = {};
+      const pendingOrders = await this.orderHelper.getOrdersByStatus(OrderStatus.PENDING);
 
-    for (const order of pendingOrders) {
-      const orderId = order._id.toString();
-      if (!this.COUNTER[orderId]) newCounter[orderId] = 1;
-      else newCounter[orderId] = this.COUNTER[orderId] + 1;
+      for (const order of pendingOrders) {
+        const orderId = order._id.toString();
+        if (!this.COUNTER[orderId]) newCounter[orderId] = 1;
+        else newCounter[orderId] = this.COUNTER[orderId] + 1;
 
-      if (newCounter[orderId] === 3 || newCounter[orderId] === 7) {
-        // send notification
-        const path = `/checkout`;
-        const dataToSendNotification = {
-          data_id: orderId,
-          // TODO: update path
-          path: path,
-        };
-        const dataNotification = {
-          user_id: order.user_id._id.toString(),
-          title: `You have orders in your cart, please check it`,
-          content: "",
-          param: JSON.stringify(dataToSendNotification),
-          type_action: "link",
-          router: NotificationRouter.NAVIGATION_CHECKOUT_SCREEN,
-          click_action: "",
-          image: "",
-        };
-        this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
+        if (newCounter[orderId] === 3 || newCounter[orderId] === 7) {
+          // send notification
+          const path = `/checkout`;
+          const dataToSendNotification = {
+            data_id: orderId,
+            // TODO: update path
+            path: path,
+          };
+          const dataNotification = {
+            user_id: order.user_id._id.toString(),
+            title: `You have orders in your cart, please check it`,
+            content: "",
+            param: JSON.stringify(dataToSendNotification),
+            type_action: "link",
+            router: NotificationRouter.NAVIGATION_CHECKOUT_SCREEN,
+            click_action: "",
+            image: "",
+          };
+          this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
 
-        // send email
-        this.emailService.send({
-          eventName: EmailPattern.PENDING_ORDER,
-          email: order.user_id.user_email,
-          replacePattern: {
-            display_name: order.user_id.display_name,
-            order_name: order.service_name,
-            order_price: (order.price - order.coupon_price) * order.amount_of_package,
-            order_checkout_url: "https://ieltshunter.io" + path,
-          },
-        });
+          // send email
+          this.emailService.send({
+            eventName: EmailPattern.PENDING_ORDER,
+            email: order.user_id.user_email,
+            replacePattern: {
+              display_name: order.user_id.display_name,
+              order_name: order.service_name,
+              order_price: (order.price - order.coupon_price) * order.amount_of_package,
+              order_checkout_url: "https://ieltshunter.io" + path,
+            },
+          });
 
-        if (newCounter[orderId] === 7) newCounter[orderId] = 0;
+          if (newCounter[orderId] === 7) newCounter[orderId] = 0;
+        }
       }
-    }
 
-    this.COUNTER = newCounter;
+      this.COUNTER = newCounter;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   @Get("/user-list")

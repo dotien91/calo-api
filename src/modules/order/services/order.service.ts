@@ -365,7 +365,9 @@ export class OrderService {
               order_id: dataReturn._id.toString(),
               order_name: dataReturn.service_name,
               order_price: (dataReturn.price - dataReturn.coupon_price) * dataReturn.amount_of_package,
-              order_date: moment().tz(dataReturn.user_id.timezone).format("DD-MM-YYYY HH:mm"),
+              order_date: moment()
+                .tz(dataReturn.user_id.timezone || "UTC")
+                .format("DD-MM-YYYY HH:mm"),
             },
           });
         }

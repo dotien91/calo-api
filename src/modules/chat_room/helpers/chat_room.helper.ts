@@ -523,11 +523,12 @@ export class ChatRoomHelper {
 
       //Get Room Option
       let dataToFilter = {
-        user_id: userObject._id.toString(),
         chat_room_id: {
           $in: chatroomContainer,
         },
       };
+      if (userObject) dataToFilter["user_id"] = userObject._id.toString();
+
       let dataUserOption = await this.chatRoomUserOptionService.findAllChatRoom(dataToFilter);
       let dataReturn = [];
 
