@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsDefined, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsDefined,
+  IsEnum,
+  IsIn,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { CourseLevel, CourseSkill, CourseSortBy, CourseType } from "../interfaces/course.interface";
 
 export class ListCourseDto {
@@ -80,6 +90,7 @@ export class ListCourseDto {
 export class GetCourseRoomParams {
   @IsString()
   @IsDefined()
+  @IsNotEmpty()
   @ApiProperty()
   user_id: string;
 

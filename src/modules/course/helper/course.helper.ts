@@ -1731,27 +1731,14 @@ export class CourseHelper {
   // helper for course one one teacher
   async getCourseCalendarTeacherList(query: ListCourseOneOneDto, req: ExpressRequestDto, res: Response) {
     try {
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
-      }
-
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByObject = {};
-      if (query.order_by) {
-        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
-      }
-      let dataToFilter = { ...query, role: CourseOneOneRole.TEACHER };
-      delete dataToFilter.page;
-      delete dataToFilter.limit;
-      delete dataToFilter.order_by;
-
       //Check Video View
-      let dataReturn: any = await this.courseOneOneService.filter(dataToFilter, orderByObject, page, limit);
-      let countCourse = await this.courseOneOneService.count(dataToFilter);
+      let dataReturn: any = await this.courseOneOneService.findOne({
+        user_id: query.user_id,
+        role: CourseOneOneRole.TEACHER,
+      });
 
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countCourse })
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
@@ -1781,7 +1768,6 @@ export class CourseHelper {
 
       // create time available
       const createParams = {
-        course_id: dataFollow.course_id,
         user_id: dataFollow.user_id,
         time_available: calendarIds,
         role: CourseOneOneRole.TEACHER,
@@ -1801,7 +1787,6 @@ export class CourseHelper {
     try {
       const oldClass = await this.courseOneOneService.findOne({
         user_id: dataFollow.user_id,
-        course_id: dataFollow.course_id,
         role: CourseOneOneRole.TEACHER,
       });
       if (!oldClass) throw new Error("Not found your course");

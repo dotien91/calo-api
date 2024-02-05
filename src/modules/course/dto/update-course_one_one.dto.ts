@@ -10,10 +10,6 @@ export interface CourseCalendar {
 export class UpdateCourseOneOneTeacherDto {
   @IsString()
   @ApiProperty()
-  course_id: string;
-
-  @IsString()
-  @ApiProperty()
   user_id: string;
 
   @IsArray()

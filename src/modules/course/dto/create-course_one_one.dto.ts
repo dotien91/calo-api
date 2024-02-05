@@ -12,10 +12,6 @@ export class CreateCourseOneOneTeacherDto {
   @ApiProperty()
   user_id: string;
 
-  @IsString()
-  @ApiProperty()
-  course_id: string;
-
   @IsArray()
   @ApiProperty()
   time_available: CourseCalendar[];
