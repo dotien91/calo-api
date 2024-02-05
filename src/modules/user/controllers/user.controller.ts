@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
-import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Controllers } from "../../../modules/index.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
@@ -334,7 +333,6 @@ export class UserController {
   }
 
   @Delete("delete/:id")
-  @Permissions(Permission(Controllers.USER).DELETE)
   remove(@Param("id") id: string, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processDeleteUser(id, req, res);
   }

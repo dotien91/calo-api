@@ -242,6 +242,9 @@ export class UpdateUserHelper {
         _id: id,
         user_status: "0",
       };
+
+      if (req.user_id.toString() !== id) throw new ForbiddenException("You don't have permission");
+
       const dataReturn = await this.appUserService.update(dataUpdate);
       await this.userSessionService.removeByUserId(id);
       return res
