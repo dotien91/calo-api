@@ -134,8 +134,7 @@ export class UserController {
     return this.userLoginHelper.register(loginData, res, req);
   }
 
-  @Get("list/admin")
-  @ApiOperation({ summary: "List user - with admin permission" })
+  @Get("list")
   async getListUser(@Query() query: SearchUserDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.handleFilterUser(query, req, res);
   }

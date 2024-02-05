@@ -77,6 +77,15 @@ export class UserService {
       condition = Object.assign(condition, { user_email: filter.user_email });
     }
 
+    if (filter.display_name) {
+      condition = Object.assign(condition, {
+        display_name: {
+          $regex: filter.display_name,
+          $options: "i",
+        },
+      });
+    }
+
     if (filter.user_role) {
       condition = Object.assign(condition, { user_role: filter.user_role });
     }

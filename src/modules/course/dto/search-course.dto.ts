@@ -23,4 +23,5 @@ export class SearchTutorDto {
     time_end: string;
   }>;
   levelOfTutor?: string[];
+  display_name?: string;
 }

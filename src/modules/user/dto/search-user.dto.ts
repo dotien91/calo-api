@@ -12,6 +12,11 @@ export class SearchUserDto {
   @ApiPropertyOptional()
   user_email?: string;
 
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  display_name?: string;
+
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsEnum, IsIn, IsNumberString, IsOptional } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 import { CourseSkill, CourseTutorSortBy, CourseType, TutorLevel } from "../interfaces/course.interface";
 
 export class ListTutorDto {
@@ -49,7 +49,12 @@ export class ListTutorDto {
   @IsEnum(TutorLevel, { each: true })
   @IsOptional(null)
   @ApiPropertyOptional()
-  levelOfTutor: TutorLevel[];
+  levelOfTutor?: TutorLevel[];
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  display_name?: string;
 }
 
 export interface TimeAvailable {

@@ -128,11 +128,18 @@ export class CourseService {
 
   async filterTutor(filter: SearchTutorDto, sortObject: any, page: number, limit: number): Promise<any> {
     const matchObject = {};
+
+    // search filter
     matchObject["user_role"] = UserRoles.TEACHER;
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
     if (filter.levelOfTutor?.length)
       matchObject["tutor_level"] = {
         $in: filter.levelOfTutor,
+      };
+    if (filter.display_name)
+      matchObject["display_name"] = {
+        $regex: filter.display_name,
+        $options: "i",
       };
 
     const matchCourseObject = {};
@@ -145,6 +152,7 @@ export class CourseService {
         $in: filter.skills,
       };
 
+    // matching
     var users = await this.userModel.aggregate([
       {
         $match: matchObject,
