@@ -48,7 +48,7 @@ export class CourseOneOneService {
     if (isWithUser) {
       return await this.courseOneOneModel.findOne(dataToSearch).populate("user_id").exec();
     } else {
-      return await this.courseOneOneModel.findOne(dataToSearch).exec();
+      return await this.courseOneOneModel.findOne(dataToSearch).populate("time_available").exec();
     }
   }
 
