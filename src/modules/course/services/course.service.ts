@@ -62,7 +62,12 @@ export class CourseService {
     }
 
     if (filter.search) {
-      condition = Object.assign(condition, { $text: { $search: filter.search } });
+      condition = Object.assign(condition, {
+        title: {
+          $regex: filter.search,
+          $options: "i",
+        },
+      });
     }
 
     if (filter.levels && filter.levels.length) {
