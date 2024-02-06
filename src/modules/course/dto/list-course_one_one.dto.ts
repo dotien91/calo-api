@@ -30,13 +30,8 @@ export class ListCourseOneOneDto {
 
 export class GetOneOneTimeAvailableDto {
   @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  course_id?: string;
-
-  @IsString()
   @IsDefined()
   @ApiProperty()
-  user_id: string;
+  course_id: string;
 }
 

@@ -2375,7 +2375,9 @@ export class CourseHelper {
       }
 
       // check if the student time pick is on range of teacher time available
-      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(query.user_id);
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+        course.user_id._id.toString()
+      );
       for (const courseClass of courseClasses_Teacher) {
         const signedTimes = courseClass.time_available.map((courseCalendar) => ({
           day: courseCalendar.day,
