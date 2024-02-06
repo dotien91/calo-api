@@ -1791,10 +1791,6 @@ export class CourseHelper {
       });
       if (!oldClass) throw new Error("Not found your course");
 
-      const courseInfo = await this.courseService.findOne({ _id: oldClass.course_id.toString() });
-      const isAfter = moment().isAfter(moment(courseInfo.start_time.toString()));
-      if (isAfter) throw new Error("Cannot change your time available since the start time has already passed");
-
       if (dataFollow.time_available.length) {
         // should drop old class calendar
         this.courseCalendarService.remove({
