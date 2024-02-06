@@ -37,10 +37,6 @@ export class ReportHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      const partnerObject = await this.userService.findById(createReportData?.partner_id.toString(), {});
-      if (!partnerObject) {
-        throw new NotFoundException("Partner is not exist!");
-      }
 
       createReportData = { ...createReportData, ...{ user_id: userId } };
       const dataReturn = await this.reportService.create(createReportData);
