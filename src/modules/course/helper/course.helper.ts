@@ -1899,7 +1899,7 @@ export class CourseHelper {
 
       // check if the student time pick is on range of teacher time available
       const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
-        dataFollow.course_id
+        dataFollow.user_id
       );
       for (const courseClass of courseClasses_Teacher) {
         const signedTimes = courseClass.time_available.map((courseCalendar) => ({
@@ -1991,7 +1991,7 @@ export class CourseHelper {
 
       // check if the student time pick is conflict with other student or not
       const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
-        dataFollow.course_id
+        dataFollow.user_id
       );
       for (const courseClass of courseClasses_Teacher) {
         const signedTimes = courseClass.time_available.map((courseCalendar) => ({
@@ -2375,7 +2375,7 @@ export class CourseHelper {
       }
 
       // check if the student time pick is on range of teacher time available
-      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(query.course_id);
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(query.user_id);
       for (const courseClass of courseClasses_Teacher) {
         const signedTimes = courseClass.time_available.map((courseCalendar) => ({
           day: courseCalendar.day,
@@ -2495,7 +2495,7 @@ export class CourseHelper {
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
           const room = await this.courseOneOneService.findOne({
-            course_id: query.course_id,
+            user_id: course.user_id._id.toString(),
             role: CourseOneOneRole.TEACHER,
           });
 

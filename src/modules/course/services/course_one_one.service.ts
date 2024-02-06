@@ -200,9 +200,9 @@ export class CourseOneOneService {
     return dataReturn;
   }
 
-  async getAllAssignedTimeInCourseOfTeacher(courseId: string): Promise<any[]> {
+  async getAllAssignedTimeInCourseOfTeacher(userId: string): Promise<any[]> {
     let condition = {
-      course_id: courseId,
+      user_id: userId,
       role: CourseOneOneRole.TEACHER,
     };
 

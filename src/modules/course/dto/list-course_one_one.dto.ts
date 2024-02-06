@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsDefined, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCourseOneOneDto {
   @IsNumberString()
@@ -33,4 +33,10 @@ export class GetOneOneTimeAvailableDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   course_id?: string;
+
+  @IsString()
+  @IsDefined()
+  @ApiProperty()
+  user_id: string;
 }
+
