@@ -555,11 +555,13 @@ export class CourseHelper {
         //Process total View
         let dataFilterView = {
           course_ids: dataCourseIds,
+          user_id: body.auth_id,
         };
         let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
 
         let dataFilterJoin = {
           course_ids: dataCourseIds,
+          user_id: body.auth_id,
         };
         let dataJoin: CourseUser[] = await this.courseUserService.filter(dataFilterJoin, {}, 1, 1000);
 
