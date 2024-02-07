@@ -7,6 +7,7 @@ import {
   IsIn,
   IsNumber,
   IsNumberString,
+  IsObject,
   IsOptional,
   IsString,
   IsUrl,
@@ -113,10 +114,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional()
   official_status?: boolean;
 
-  @IsArray()
+  @IsObject()
   @IsOptional()
   @ApiPropertyOptional()
-  links?: Array<Object>;
+  links?: any;
 
   @IsArray()
   @IsOptional()
