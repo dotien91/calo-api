@@ -306,8 +306,6 @@ export class CommunityHelper {
    */
   async getListCommunity(query: ListCommunityDto, res: Response, req: ExpressRequestDto) {
     try {
-      if (req.user_object) throw new Error("Invalid user");
-
       if (Number(query.limit) > 1000 || !query.limit) {
         query.limit = 1000;
       }
