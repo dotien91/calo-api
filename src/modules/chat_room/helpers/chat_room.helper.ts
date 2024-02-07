@@ -537,14 +537,11 @@ export class ChatRoomHelper {
         if (!datum) {
           throw new BadRequestException("You not in Room! " + chatRoomId);
         }
-        if (
-          datum.chat_room_id.room_private === 1 &&
-          updateChatRoomDto.role === "admin" &&
-          datum &&
-          datum.user_role !== "admin"
-        ) {
+
+        if (datum.chat_room_id.room_private === 1 && datum && datum.user_role !== "admin") {
           throw new BadRequestException("You not have permission for this action! " + chatRoomId);
         }
+
         if (datum.chat_room_id.room_type !== "group") {
           throw new BadRequestException("Room is not Group type! " + chatRoomId);
         }
