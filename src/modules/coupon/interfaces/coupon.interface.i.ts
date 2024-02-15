@@ -5,7 +5,6 @@ export enum CouponPaymentMethod {
 }
 
 export enum CouponType {
-  FREESHIP = "freeship",
   PRODUCT = "product", // [course, book]
 }
 

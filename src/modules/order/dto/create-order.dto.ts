@@ -1,15 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import {
-  IsDefined,
-  IsEnum,
-  IsNumber,
-  IsNumberString,
-  IsObject,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsDefined, IsEnum, IsNumberString, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { PayloadType } from "../interfaces/order.interface";
 
 export class PayloadParams {
@@ -71,14 +62,4 @@ export class CreateOrderDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   coupon_product_id?: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  coupon_shipping_id?: string;
-
-  @IsNumber()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  shipping_fee?: number;
 }

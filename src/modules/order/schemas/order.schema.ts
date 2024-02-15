@@ -213,13 +213,6 @@ export class Order {
     default: null,
   })
   coupon_product_id: MongooseSchema.Types.ObjectId;
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: "Coupon",
-    default: null,
-  })
-  coupon_shipping_id: MongooseSchema.Types.ObjectId;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
