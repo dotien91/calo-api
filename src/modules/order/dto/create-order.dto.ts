@@ -14,13 +14,12 @@ import { PayloadType } from "../interfaces/order.interface";
 
 export class PayloadParams {
   @IsEnum(PayloadType)
-  @IsDefined()
-  type: PayloadType;
+  @IsOptional()
+  type?: PayloadType;
 
   @IsObject()
-  @IsNotEmptyObject()
-  @IsDefined()
-  data: object;
+  @IsOptional()
+  data?: object;
 }
 
 export class CreateOrderDto {
