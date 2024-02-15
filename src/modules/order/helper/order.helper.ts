@@ -3,6 +3,8 @@ import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
+import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
@@ -45,6 +47,7 @@ export class OrderHelper {
     private courseService: CourseService,
     private emailService: EmailService,
     private userService: UserService,
+    private couponService: CouponService,
     private readonly eventHookWorkerService: EventHookWorkerService,
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly courseHelper: CourseHelper
@@ -409,6 +412,22 @@ export class OrderHelper {
       }
 
       if (planObject) {
+        let couponProduct = null;
+        let shippingProduct = null;
+
+        if (createOrderData.coupon_product_id)
+          couponProduct = await this.couponService.findOne({ _id: createOrderData.coupon_product_id });
+        if (createOrderData.coupon_shipping_id)
+          shippingProduct = await this.couponService.findOne({ _id: createOrderData.coupon_shipping_id });
+
+        const orderPrice = this.getOrderPrice(
+          couponProduct,
+          shippingProduct,
+          planObject.price,
+          createOrderData.amount_of_package,
+          createOrderData.shipping_fee
+        );
+
         let dataToAdd = {
           ...createOrderData,
           ...{
@@ -418,7 +437,9 @@ export class OrderHelper {
             plan_id: planObject._id.toString(),
             plan_type: planObject.type,
             short_id: oldShortId,
-            price: Number(planObject.price) * Number(createOrderData.amount_of_package),
+            price: orderPrice,
+            coupon_product_id: createOrderData.coupon_product_id,
+            coupon_shipping_id: createOrderData.coupon_shipping_id,
           },
         };
 
@@ -467,13 +488,7 @@ export class OrderHelper {
             .json(dataCreate);
         }
         if (dataCreate.payment_method == "vn_pay") {
-          const redirectUrl = await this.createVNPayLink(
-            req,
-            Number(planObject.price) * Number(createOrderData.amount_of_package),
-            "",
-            "",
-            dataCreate?._id?.toString()
-          );
+          const redirectUrl = await this.createVNPayLink(req, orderPrice, "", "", dataCreate?._id?.toString());
           const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
           dataCreate = await this.orderService.update(dataUpdate);
           return res
@@ -506,6 +521,27 @@ export class OrderHelper {
     } catch (error) {
       throw new NotFoundException(error.message);
     }
+  }
+
+  getOrderPrice(
+    couponProduct: Coupon,
+    shippingProduct: Coupon,
+    productPrice: number,
+    productAmount: number,
+    shippingFee: number
+  ) {
+    let price = productPrice * productAmount || 0;
+    let shipping_fee = shippingFee || 0;
+
+    if (couponProduct) {
+      price = this.couponService.getPrice(price, couponProduct);
+    }
+
+    if (shippingProduct) {
+      shipping_fee = this.couponService.getPrice(shipping_fee, shippingProduct);
+    }
+
+    return price + shipping_fee;
   }
 
   /**
@@ -798,6 +834,7 @@ export class OrderHelper {
           orderObject = await this.orderService.update(dataUpdate);
         }
 
+        // check order payload
         if (orderObject.payload) {
           // @ts-ignore
           if (orderObject.payload.type === PayloadType.CLASS) {
@@ -810,6 +847,28 @@ export class OrderHelper {
             // @ts-ignore
             const data = orderObject.payload.data;
             await this.courseHelper.createCourseCalendarStudent(data, null, null);
+          }
+        }
+
+        // should update coupon total
+        if (orderObject.coupon_product_id) {
+          const couponProduct = await this.couponService.findOne({ _id: orderObject.coupon_product_id });
+          if (couponProduct) {
+            if (couponProduct.total > 0)
+              this.couponService.update({
+                _id: orderObject.coupon_product_id,
+                total: couponProduct.total - 1,
+              });
+          }
+        }
+        if (orderObject.coupon_shipping_id) {
+          const couponShipping = await this.couponService.findOne({ _id: orderObject.coupon_shipping_id });
+          if (couponShipping) {
+            if (couponShipping.total > 0)
+              this.couponService.update({
+                _id: orderObject.coupon_product_id,
+                total: couponShipping.total - 1,
+              });
           }
         }
 

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDateString, IsEnum, IsNumberString, IsOptional, IsString } from "class-validator";
 import { CourseLabel, CourseLevel, CoursePublicStatus, CourseSkill, CourseType } from "../interfaces/course.interface";
 export class CreateCourseDto {
   @IsString()
@@ -89,10 +89,10 @@ export class CreateCourseDto {
   @ApiPropertyOptional()
   type?: CourseType;
 
-  @IsNumber()
-  @IsOptional(null)
+  @IsString()
+  @IsOptional()
   @ApiPropertyOptional()
-  promotion?: number;
+  coupon_id?: string;
 
   @IsString()
   @IsOptional(null)

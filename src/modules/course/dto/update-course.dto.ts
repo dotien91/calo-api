@@ -106,10 +106,10 @@ export class UpdateCourseDto {
   @ApiPropertyOptional()
   type?: CourseType;
 
-  @IsNumber()
+  @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  promotion?: number;
+  coupon_id?: string;
 
   @IsNumber()
   @IsOptional(null)

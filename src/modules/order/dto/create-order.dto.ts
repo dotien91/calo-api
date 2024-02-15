@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import {
   IsDefined,
   IsEnum,
-  IsNotEmptyObject,
+  IsNumber,
   IsNumberString,
   IsObject,
   IsOptional,
@@ -14,13 +14,12 @@ import { PayloadType } from "../interfaces/order.interface";
 
 export class PayloadParams {
   @IsEnum(PayloadType)
-  @IsDefined()
-  type: PayloadType;
+  @IsOptional()
+  type?: PayloadType;
 
   @IsObject()
-  @IsNotEmptyObject()
-  @IsDefined()
-  data: object;
+  @IsOptional()
+  data?: object;
 }
 
 export class CreateOrderDto {
@@ -67,4 +66,19 @@ export class CreateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => PayloadParams)
   payload: PayloadParams;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  coupon_product_id?: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  coupon_shipping_id?: string;
+
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  shipping_fee?: number;
 }

@@ -122,6 +122,7 @@ export class CourseService {
       })
       .populate("media_id")
       .populate("avatar")
+      .populate("coupon_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -292,6 +293,7 @@ export class CourseService {
       })
       .populate("media_id")
       .populate("avatar")
+      .populate("coupon_id")
       .exec();
 
     dataReturn = dataReturn.filter((data) => data.user_id !== null);
@@ -392,6 +394,7 @@ export class CourseService {
       )
       .populate("media_id")
       .populate("avatar")
+      .populate("coupon_id")
       .exec();
   }
 
@@ -416,6 +419,7 @@ export class CourseService {
       )
       .populate("media_id")
       .populate("avatar")
+      .populate("coupon_id")
       .exec();
   }
 
@@ -453,7 +457,8 @@ export class CourseService {
           "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
         )
         .populate("media_id")
-        .populate("avatar");
+        .populate("avatar")
+        .populate("coupon_id");
       return dataReturn;
     } catch (e) {
       return e;
