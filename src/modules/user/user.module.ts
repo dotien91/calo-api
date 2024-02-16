@@ -6,6 +6,7 @@ import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schem
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { Config, ConfigSchema } from "../config/schemas/config.schema";
 import { ConfigService } from "../config/services/config.service";
+import { CouponModule } from "../coupon/coupon.module";
 import { Course, CourseSchema } from "../course/schemas/course.schema";
 import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
 import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
@@ -100,6 +101,7 @@ import { UserViewService } from "./services/user_view.service";
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
     ]),
     EmailModule,
+    CouponModule,
   ],
   controllers: [UserController],
   providers: [

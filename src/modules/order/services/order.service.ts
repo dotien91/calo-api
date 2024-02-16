@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as moment from "moment-timezone";
-import { Model, Types } from "mongoose";
+import mongoose, { Model, Types } from "mongoose";
 import { SearchAdminFilterDto } from "../../../modules/user/dto/search-admin_filter.dto";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
-import { CreateOrderDto } from "../dto/create-order.dto";
 import { SearchOrderDto } from "../dto/search-order.dto";
 import { SortByOrderDto } from "../dto/sort_by-order.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
@@ -224,7 +223,7 @@ export class OrderService {
    * @param createUser
    * @returns
    */
-  async create(createUser: CreateOrderDto) {
+  async create(createUser: any) {
     const createdOrder = new this.orderModel(createUser);
     const dataCreate = await createdOrder.save();
     return dataCreate;
@@ -288,28 +287,8 @@ export class OrderService {
       return null;
     }
 
-    const populateObject = {
-      path: "service_id",
-      populate: [
-        {
-          path: "avatar",
-        },
-        {
-          path: "avatar",
-        },
-      ],
-    };
-
-    return await this.orderModel
-      .findById(objectId)
-      .populate(
-        "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
-      )
-      .populate("plan_id")
-      .populate("media_id")
-      .populate(populateObject)
-      .exec();
+    const dataReturn: any = await this.orderModel.aggregate(this.getOrderDetailAggregate(objectId));
+    return dataReturn[0];
   }
 
   /**
@@ -328,32 +307,15 @@ export class OrderService {
    */
   async update(dataUpdate: UpdateOrderDto) {
     try {
-      const populateObject = {
-        path: "service_id",
-        populate: [
-          {
-            path: "avatar",
-          },
-          {
-            path: "avatar",
-          },
-        ],
-      };
+      let objectId = new mongoose.Types.ObjectId(dataUpdate._id);
       if (!dataUpdate._id) {
         return null;
       }
       if (dataUpdate?.status === "success") {
         dataUpdate = { ...dataUpdate, ...{ billing_on: new Date() } };
       }
-      const dataReturn = await this.orderModel
-        .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
-        .populate(
-          "user_id",
-          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
-        )
-        .populate("plan_id")
-        .populate("media_id")
-        .populate(populateObject);
+      await this.orderModel.updateOne({ _id: objectId }, { $set: dataUpdate }, { new: true });
+      const dataReturn: any = await this.orderModel.aggregate(this.getOrderDetailAggregate(objectId));
 
       if (dataReturn) {
         if (dataUpdate?.status === "close") {
@@ -363,8 +325,9 @@ export class OrderService {
             replacePattern: {
               display_name: dataReturn.user_id.display_name,
               order_id: dataReturn._id.toString(),
-              order_name: dataReturn.service_name,
-              order_price: (dataReturn.price - dataReturn.coupon_price) * dataReturn.amount_of_package,
+              // TODO
+              // order_name: dataReturn.service_name,
+              // order_price: (dataReturn.price - dataReturn.coupon_price),
               order_date: moment()
                 .tz(dataReturn.user_id.timezone || "UTC")
                 .format("DD-MM-YYYY HH:mm"),
@@ -373,9 +336,180 @@ export class OrderService {
         }
       }
 
-      return dataReturn;
+      return dataReturn[0];
     } catch (e) {
       return e;
     }
+  }
+
+  getOrderDetailAggregate(objectId) {
+    return [
+      {
+        $match: {
+          _id: objectId,
+        },
+      },
+      {
+        $unwind: {
+          path: "$items",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "handleservices",
+          localField: "items.service_id",
+          foreignField: "_id",
+          as: "items.service_id_array",
+        },
+      },
+      {
+        $lookup: {
+          from: "plans",
+          localField: "items.plan_id",
+          foreignField: "_id",
+          as: "items.plan_id_array",
+        },
+      },
+      {
+        $lookup: {
+          from: "medias",
+          localField: "media_id",
+          foreignField: "_id",
+          as: "media_id_array",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user_id_array",
+        },
+      },
+      {
+        $addFields: {
+          "items.plan_id": {
+            $arrayElemAt: ["$items.plan_id_array", 0], // Get the first element of the array
+          },
+        },
+      },
+      {
+        $project: {
+          "items.plan_id_array": 0, // Exclude the array field if not needed
+        },
+      },
+      {
+        $addFields: {
+          "items.service_id": {
+            $arrayElemAt: ["$items.service_id_array", 0], // Get the first element of the array
+          },
+        },
+      },
+      {
+        $project: {
+          "items.service_id_array": 0, // Exclude the array field if not needed
+        },
+      },
+      {
+        $addFields: {
+          media_id: {
+            $arrayElemAt: ["$media_id_array", 0], // Get the first element of the array
+          },
+        },
+      },
+      {
+        $project: {
+          media_id_array: 0, // Exclude the array field if not needed
+        },
+      },
+      {
+        $addFields: {
+          user_id: {
+            $arrayElemAt: ["$user_id_array", 0], // Get the first element of the array
+          },
+        },
+      },
+      {
+        $project: {
+          user_id_array: 0, // Exclude the array field if not needed
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          items: { $addToSet: "$items" },
+          user_id: {
+            $first: "$user_id",
+          },
+          media_id: {
+            $first: "$media_id",
+          },
+          amount_of_package: {
+            $first: "$amount_of_package",
+          },
+          price: {
+            $first: "$price",
+          },
+          description: {
+            $first: "$description",
+          },
+          deep_link: {
+            $first: "$deep_link",
+          },
+          product_url: {
+            $first: "$product_url",
+          },
+          payment_method: {
+            $first: "$payment_method",
+          },
+          trans_id: {
+            $first: "$trans_id",
+          },
+          status: {
+            $first: "$status",
+          },
+          error_message: {
+            $first: "$error_message",
+          },
+          data_payment: {
+            $first: "$data_payment",
+          },
+          redirect_url: {
+            $first: "$redirect_url",
+          },
+          trial_days: {
+            $first: "$trial_days",
+          },
+          short_id: {
+            $first: "$short_id",
+          },
+          vnpay_on: {
+            $first: "$vnpay_on",
+          },
+          billing_on: {
+            $first: "$billing_on",
+          },
+          trial_end_on: {
+            $first: "$trial_end_on",
+          },
+          cancelled_on: {
+            $first: "$cancelled_on",
+          },
+          coupon_product_id: {
+            $first: "$coupon_product_id",
+          },
+          createdAt: {
+            $first: "$createdAt",
+          },
+          updatedAt: {
+            $first: "$updatedAt",
+          },
+          order_note: {
+            $first: "$order_note",
+          },
+        },
+      },
+    ];
   }
 }
