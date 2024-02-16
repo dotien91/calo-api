@@ -305,7 +305,7 @@ export class UserService {
    * @param dataUpdate
    * @returns
    */
-  async update(dataUpdate: UpdateUserDto) {
+  async update(dataUpdate: any) {
     try {
       if (!dataUpdate._id) {
         return null;

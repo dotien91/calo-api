@@ -10,6 +10,7 @@ import axios from "axios";
 import { createHash } from "crypto";
 import { Response } from "express";
 import * as _ from "lodash";
+import mongoose from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
@@ -18,7 +19,7 @@ import { UserPermissionService } from "../../../modules/user_permission/services
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
-import { CreateUserBlockDto } from "../dto/create-user_block.dto";
+import { CreateUserBlockDto, IgnoreFollowerDTO } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
 import { CreateUserLocationDto } from "../dto/create-user_location.dto";
@@ -1333,6 +1334,56 @@ export class UpdateUserHelper {
       }
 
       const dataReturn = await this.userQuestionService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async ignoreFollower(data: IgnoreFollowerDTO, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+
+      const ignoreFollowers = [
+        ...userObject.ignore_followers,
+        ...data.user_ids.map((user_id) => new mongoose.Types.ObjectId(user_id)),
+      ];
+
+      const dataReturn = await this.appUserService.update({
+        _id: userObject._id.toString(),
+        ignore_followers: ignoreFollowers,
+      });
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async unIgnoreFollower(data: IgnoreFollowerDTO, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+
+      let currentIgnoreUser = userObject.ignore_followers;
+      currentIgnoreUser = currentIgnoreUser.filter((userId) => {
+        return !data.user_ids.includes(userId.toString());
+      });
+
+      const dataReturn = await this.appUserService.update({
+        _id: userObject._id.toString(),
+        ignore_followers: currentIgnoreUser,
+      });
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

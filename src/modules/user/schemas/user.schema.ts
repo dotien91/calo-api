@@ -237,6 +237,13 @@ export class User {
     default: "",
   })
   default_language: string;
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+    ref: "User",
+  })
+  ignore_followers: MongooseSchema.Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({
