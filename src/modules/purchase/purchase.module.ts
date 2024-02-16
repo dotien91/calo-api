@@ -8,6 +8,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 // import { OrderHelper } from "../order/helper/OrderHelper";
+import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
 import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
@@ -68,6 +69,7 @@ import { PurchaseService } from "./services/purchase.service";
       { name: VnpayLog.name, schema: VnpayLogSchema },
     ]),
     EmailModule,
+    CouponModule,
   ],
   controllers: [PurchaseController],
   providers: [
