@@ -6,7 +6,7 @@ import { Controllers } from "../../../modules/index.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
-import { CreateUserBlockDto } from "../dto/create-user_block.dto";
+import { CreateUserBlockDto, IgnoreFollowerDTO } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
 import { CreateUserInterestDto } from "../dto/create-user_interest.dto";
 import { CreateUserLocationDto } from "../dto/create-user_location.dto";
@@ -391,6 +391,16 @@ export class UserController {
   @Post("un-block")
   handleUnBlockUser(@Body() dataBlock: CreateUserBlockDto, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.processUnBlockUser(dataBlock, req, res);
+  }
+
+  @Post("ignore-follower")
+  handleIgnoreFollower(@Body() data: IgnoreFollowerDTO, @Res() res: Response, @Req() req: Request) {
+    return this.updateUserHelper.ignoreFollower(data, res, req);
+  }
+
+  @Post("un-ignore-follower")
+  handleUnIgnoreFollower(@Body() data: IgnoreFollowerDTO, @Res() res: Response, @Req() req: Request) {
+    return this.updateUserHelper.unIgnoreFollower(data, res, req);
   }
 
   @Get("follow-count")
