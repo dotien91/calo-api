@@ -2487,7 +2487,7 @@ export class CourseHelper {
     });
 
     const course = await this.courseService.findOne({ _id: courseId });
-    if (course.user_id) {
+    if (course) {
       const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
       await this.userService.update({
         _id: course.user_id._id.toString(),

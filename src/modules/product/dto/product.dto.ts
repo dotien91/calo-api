@@ -1,4 +1,4 @@
-import { IsArray, IsDefined, IsEnum, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDefined, IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 import { ProductLabel } from "../interfaces/product.interface";
 
 export class CreateProductDTO {
@@ -65,6 +65,10 @@ export class UpdateProductDTO {
   @IsString()
   @IsOptional()
   coupon_id?: string;
+
+  @IsNumber()
+  @IsOptional()
+  rating?: number;
 }
 
 export interface SearchProductParams {

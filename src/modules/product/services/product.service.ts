@@ -80,7 +80,7 @@ export class ProductService {
     return this.productModel.find(pattern).exec();
   }
 
-  async findOne(dataToSearch: any): Promise<Product> {
+  async findOne(dataToSearch: any): Promise<any> {
     return await this.productModel
       .findOne(dataToSearch)
       .populate("shop_id")
@@ -96,5 +96,23 @@ export class ProductService {
       .populate("media_id")
       .populate("coupon_id")
       .exec();
+  }
+
+  async findAllShopProductReviewOfUser(shop_id: string): Promise<any[]> {
+    return this.productModel.aggregate([
+      {
+        $match: {
+          shop_id: new mongoose.Types.ObjectId(shop_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "productreviews",
+          localField: "_id",
+          foreignField: "product_id",
+          as: "reviews",
+        },
+      },
+    ]);
   }
 }

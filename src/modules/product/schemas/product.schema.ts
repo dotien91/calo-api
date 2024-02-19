@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { Shop } from "../../../modules/shop/schemas/shop.schema";
 import { Media } from "../../media/schemas/media.schema";
 import { HandleService } from "../../plan/schemas/handle_service.schema";
 import { Plan } from "../../plan/schemas/plan.schema";
@@ -23,7 +22,7 @@ export class Product {
   _id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Shop", index: true })
-  shop_id: Shop;
+  shop_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: String,
