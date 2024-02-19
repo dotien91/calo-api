@@ -236,6 +236,11 @@ export class CourseController {
     return await this.courseHelper.getCourseRoom(query, res, req);
   }
 
+  @Post("my-course")
+  async getMyCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getMyCourse(body, res, req);
+  }
+
   // course user api
   @Post("join")
   handleFollowUser(@Body() dataFollow: CreateCourseUserDto, @Res() res: Response, @Req() req: ExpressRequestDto) {

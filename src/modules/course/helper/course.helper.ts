@@ -606,6 +606,92 @@ export class CourseHelper {
     }
   }
 
+  async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
+    try {
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
+      }
+
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
+
+      let orderByObject = {};
+      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
+
+      let dataToFilter = { ...body };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      delete dataToFilter.sort_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+
+      let dataCourseIds = dataReturn?.map((value) => {
+        return value?._id?.toString();
+      });
+
+      for (let dataIndexCourse in dataReturn) {
+        dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
+      }
+
+      if (body?.auth_id) {
+        //Process total View
+        let dataFilterView = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+
+        let dataFilterJoin = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        let dataJoin: CourseUser[] = await this.courseUserService.filter(dataFilterJoin, {}, 1, 1000);
+
+        for (let dataIndexCourse in dataReturn) {
+          let dataObjectByCourse = dataView?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.module_id?.toString();
+            }
+          });
+
+          let dataObjectJoinCourse = dataJoin?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.course_id?.toString();
+            }
+          });
+
+          if (dataObjectJoinCourse?.length) {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: true },
+            };
+          } else {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: false },
+            };
+          }
+
+          dataReturn[dataIndexCourse] = {
+            ...dataReturn[dataIndexCourse],
+            ...{ total_view: dataObjectByCourse?.length, module_view: dataObjectByCourse },
+          };
+        }
+
+        dataReturn = dataReturn.filter((elem: any) => elem.is_join);
+      }
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async getTutors(body: ListTutorDto, req: ExpressRequestDto, res: Response) {
     try {
       if (Number(body.limit) > 1000) {
