@@ -390,49 +390,49 @@ export class OrderService {
       {
         $addFields: {
           "items.plan_id": {
-            $arrayElemAt: ["$items.plan_id_array", 0], // Get the first element of the array
+            $arrayElemAt: ["$items.plan_id_array", 0],
           },
         },
       },
       {
         $project: {
-          "items.plan_id_array": 0, // Exclude the array field if not needed
+          "items.plan_id_array": 0,
         },
       },
       {
         $addFields: {
           "items.service_id": {
-            $arrayElemAt: ["$items.service_id_array", 0], // Get the first element of the array
+            $arrayElemAt: ["$items.service_id_array", 0],
           },
         },
       },
       {
         $project: {
-          "items.service_id_array": 0, // Exclude the array field if not needed
+          "items.service_id_array": 0,
         },
       },
       {
         $addFields: {
           media_id: {
-            $arrayElemAt: ["$media_id_array", 0], // Get the first element of the array
+            $arrayElemAt: ["$media_id_array", 0],
           },
         },
       },
       {
         $project: {
-          media_id_array: 0, // Exclude the array field if not needed
+          media_id_array: 0,
         },
       },
       {
         $addFields: {
           user_id: {
-            $arrayElemAt: ["$user_id_array", 0], // Get the first element of the array
+            $arrayElemAt: ["$user_id_array", 0],
           },
         },
       },
       {
         $project: {
-          user_id_array: 0, // Exclude the array field if not needed
+          user_id_array: 0,
         },
       },
       {

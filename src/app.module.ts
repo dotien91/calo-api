@@ -27,6 +27,7 @@ import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CallKitModule } from "./modules/callkit/call_kit";
+import { CartModule } from "./modules/cart/cart.module";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
@@ -86,6 +87,7 @@ const dataImport = [
   CouponModule,
   ShopModule,
   ProductModule,
+  CartModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
