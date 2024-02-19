@@ -207,6 +207,12 @@ export class Order {
     default: [],
   })
   items: Array<OrderItem>;
+
+  @Prop({
+    type: String,
+    nullable: false,
+  })
+  address: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

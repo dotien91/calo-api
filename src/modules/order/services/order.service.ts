@@ -508,6 +508,9 @@ export class OrderService {
           order_note: {
             $first: "$order_note",
           },
+          address: {
+            $first: "$address",
+          },
         },
       },
     ];
