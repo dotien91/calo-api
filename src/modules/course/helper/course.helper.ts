@@ -1515,7 +1515,7 @@ export class CourseHelper {
           await this.chatRoomHelper.handleCreateRoom(
             userObject,
             "",
-            "group",
+            "class",
             createParams.name,
             false,
             req,
@@ -2582,14 +2582,26 @@ export class CourseHelper {
       if (!course) throw new Error("Course not found");
 
       let redirect_url = null;
+      let chat_room_id = null;
+
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
-          const room = await this.courseOneOneService.findOne({
-            user_id: course.user_id._id.toString(),
-            role: CourseOneOneRole.TEACHER,
-          });
+          const [room, chatroom] = await Promise.all([
+            this.courseOneOneService.findOne({
+              user_id: course.user_id._id.toString(),
+              role: CourseOneOneRole.TEACHER,
+            }),
+            this.chatRoomService.findOneRoom({
+              room_type: "personal",
+              user_id: course.user_id._id.toString(),
+            }),
+          ]);
 
-          redirect_url = `/room/class/${room?._id.toString()}`;
+          if (room && chatroom) {
+            redirect_url = `/room/class/${room?._id.toString()}`;
+            chat_room_id = chatroom._id.toString();
+          } else throw new BadRequestException();
+
           break;
         }
         case CourseType.CALL_GROUP: {
@@ -2599,8 +2611,17 @@ export class CourseHelper {
             },
             course_id: new mongoose.Types.ObjectId(query.course_id),
           });
+          const chatroom = await this.chatRoomService.findOneRoom({
+            room_type: "class",
+            user_id: course.user_id._id.toString(),
+            room_name: room.name,
+          });
 
-          redirect_url = `/room/class/${room?._id.toString()}`;
+          if (room && chatroom) {
+            redirect_url = `/room/class/${room?._id.toString()}`;
+            chat_room_id = chatroom._id.toString();
+          } else throw new BadRequestException();
+
           break;
         }
         case CourseType.SELF_LEARNING: {
@@ -2613,6 +2634,7 @@ export class CourseHelper {
 
       return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
         redirect_url,
+        chat_room_id,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
