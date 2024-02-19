@@ -833,10 +833,18 @@ export class UserFilterHelper {
         updatedAt: true,
       };
       const dataCountView = await this.userViewService.count(dataToFilterView);
+
+      const dataToFilterFriend = {
+        partner_id: dataQuery?.user_id,
+        match_status: 1,
+      };
+      const dataCountFriend = await this.userFollowService.count(dataToFilterFriend);
+
       const dataReturn = {
         following: Number(dataCountFollowing),
         followers: Number(dataCountFollower),
         view_number: Number(dataCountView),
+        friends: Number(dataCountFriend),
         // contribute: dataContributeCount,
       };
       return res

@@ -52,7 +52,7 @@ export class ChatRoomHelper {
   async handleCreateRoom(
     userObject: User,
     partnerId: string,
-    chatType: "personal" | "group" | "anonymous",
+    chatType: "personal" | "group" | "anonymous" | "class",
     roomName: string = "",
     isReturn: boolean = false,
     req: ExpressRequestDto = null,

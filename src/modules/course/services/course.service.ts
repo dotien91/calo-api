@@ -34,6 +34,10 @@ export class CourseService {
       condition = Object.assign(condition, { language: filter.language });
     }
 
+    if (filter.user_id) {
+      condition = Object.assign(condition, { user_id: filter.user_id });
+    }
+
     if (filter.course_status) {
       condition = Object.assign(condition, { course_status: filter.course_status });
     }
@@ -110,7 +114,6 @@ export class CourseService {
 
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
-    if (filter.user_id) matchObject["_id"] = new mongoose.Types.ObjectId(filter.user_id);
 
     let dataReturn = await this.courseModel
       .find(condition, projection)
@@ -118,7 +121,6 @@ export class CourseService {
         path: "user_id",
         select:
           "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
-        match: matchObject,
       })
       .populate("media_id")
       .populate("avatar")

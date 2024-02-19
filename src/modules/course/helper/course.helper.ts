@@ -612,6 +612,92 @@ export class CourseHelper {
     }
   }
 
+  async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
+    try {
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
+      }
+
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
+
+      let orderByObject = {};
+      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
+
+      let dataToFilter = { ...body };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      delete dataToFilter.sort_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+
+      let dataCourseIds = dataReturn?.map((value) => {
+        return value?._id?.toString();
+      });
+
+      for (let dataIndexCourse in dataReturn) {
+        dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
+      }
+
+      if (body?.auth_id) {
+        //Process total View
+        let dataFilterView = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        let dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+
+        let dataFilterJoin = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        let dataJoin: CourseUser[] = await this.courseUserService.filter(dataFilterJoin, {}, 1, 1000);
+
+        for (let dataIndexCourse in dataReturn) {
+          let dataObjectByCourse = dataView?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.module_id?.toString();
+            }
+          });
+
+          let dataObjectJoinCourse = dataJoin?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.course_id?.toString();
+            }
+          });
+
+          if (dataObjectJoinCourse?.length) {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: true },
+            };
+          } else {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: false },
+            };
+          }
+
+          dataReturn[dataIndexCourse] = {
+            ...dataReturn[dataIndexCourse],
+            ...{ total_view: dataObjectByCourse?.length, module_view: dataObjectByCourse },
+          };
+        }
+
+        dataReturn = dataReturn.filter((elem: any) => elem.is_join);
+      }
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async getTutors(body: ListTutorDto, req: ExpressRequestDto, res: Response) {
     try {
       if (Number(body.limit) > 1000) {
@@ -1435,7 +1521,7 @@ export class CourseHelper {
           await this.chatRoomHelper.handleCreateRoom(
             userObject,
             "",
-            "group",
+            "class",
             createParams.name,
             false,
             req,
@@ -2350,10 +2436,12 @@ export class CourseHelper {
         ],
       };
 
-      // check if the student time pick is conflict with other student or not
-      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(query.course_id);
-      for (const courseClass of courseClasses_Student) {
-        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
+      // check if the student time pick is on range of teacher time available
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+        course.user_id._id.toString()
+      );
+      for (const courseClass of courseClasses_Teacher) {
+        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
           day: courseCalendar.day,
           time_start: courseCalendar.time_start,
           time_end: courseCalendar.time_end,
@@ -2374,7 +2462,7 @@ export class CourseHelper {
                   time_end: this.addDurationToTime(time_start, time.time_duration),
                 },
               ];
-              _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
+              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
             }
           }
 
@@ -2382,12 +2470,10 @@ export class CourseHelper {
         }
       }
 
-      // check if the student time pick is on range of teacher time available
-      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
-        course.user_id._id.toString()
-      );
-      for (const courseClass of courseClasses_Teacher) {
-        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+      // check if the student time pick is conflict with other student or not
+      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(query.course_id);
+      for (const courseClass of courseClasses_Student) {
+        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
           day: courseCalendar.day,
           time_start: courseCalendar.time_start,
           time_end: courseCalendar.time_end,
@@ -2404,7 +2490,7 @@ export class CourseHelper {
                   time_end: this.addDurationToTime(time_start, time.time_duration),
                 },
               ];
-              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
+              _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
             }
           }
         }
@@ -2502,14 +2588,26 @@ export class CourseHelper {
       if (!course) throw new Error("Course not found");
 
       let redirect_url = null;
+      let chat_room_id = null;
+
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
-          const room = await this.courseOneOneService.findOne({
-            user_id: course.user_id._id.toString(),
-            role: CourseOneOneRole.TEACHER,
-          });
+          const [room, chatroom] = await Promise.all([
+            this.courseOneOneService.findOne({
+              user_id: course.user_id._id.toString(),
+              role: CourseOneOneRole.TEACHER,
+            }),
+            this.chatRoomService.findOneRoom({
+              room_type: "personal",
+              user_id: course.user_id._id.toString(),
+            }),
+          ]);
 
-          redirect_url = `/room/class/${room?._id.toString()}`;
+          if (room && chatroom) {
+            redirect_url = `/room/class/${room?._id.toString()}`;
+            chat_room_id = chatroom._id.toString();
+          } else throw new BadRequestException();
+
           break;
         }
         case CourseType.CALL_GROUP: {
@@ -2519,8 +2617,17 @@ export class CourseHelper {
             },
             course_id: new mongoose.Types.ObjectId(query.course_id),
           });
+          const chatroom = await this.chatRoomService.findOneRoom({
+            room_type: "class",
+            user_id: course.user_id._id.toString(),
+            room_name: room.name,
+          });
 
-          redirect_url = `/room/class/${room?._id.toString()}`;
+          if (room && chatroom) {
+            redirect_url = `/room/class/${room?._id.toString()}`;
+            chat_room_id = chatroom._id.toString();
+          } else throw new BadRequestException();
+
           break;
         }
         case CourseType.SELF_LEARNING: {
@@ -2533,6 +2640,7 @@ export class CourseHelper {
 
       return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
         redirect_url,
+        chat_room_id,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
