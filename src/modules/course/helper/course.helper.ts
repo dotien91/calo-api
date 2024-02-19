@@ -2430,10 +2430,12 @@ export class CourseHelper {
         ],
       };
 
-      // check if the student time pick is conflict with other student or not
-      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(query.course_id);
-      for (const courseClass of courseClasses_Student) {
-        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
+      // check if the student time pick is on range of teacher time available
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+        course.user_id._id.toString()
+      );
+      for (const courseClass of courseClasses_Teacher) {
+        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
           day: courseCalendar.day,
           time_start: courseCalendar.time_start,
           time_end: courseCalendar.time_end,
@@ -2454,7 +2456,7 @@ export class CourseHelper {
                   time_end: this.addDurationToTime(time_start, time.time_duration),
                 },
               ];
-              _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
+              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
             }
           }
 
@@ -2462,12 +2464,10 @@ export class CourseHelper {
         }
       }
 
-      // check if the student time pick is on range of teacher time available
-      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
-        course.user_id._id.toString()
-      );
-      for (const courseClass of courseClasses_Teacher) {
-        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+      // check if the student time pick is conflict with other student or not
+      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(query.course_id);
+      for (const courseClass of courseClasses_Student) {
+        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
           day: courseCalendar.day,
           time_start: courseCalendar.time_start,
           time_end: courseCalendar.time_end,
@@ -2484,7 +2484,7 @@ export class CourseHelper {
                   time_end: this.addDurationToTime(time_start, time.time_duration),
                 },
               ];
-              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
+              _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
             }
           }
         }
