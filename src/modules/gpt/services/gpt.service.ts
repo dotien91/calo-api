@@ -37,7 +37,8 @@ export class GptService {
         return null;
       });
 
-    return dataReturn.choices[0].message.content === "Không";
+    if (dataReturn) return dataReturn?.choices[0]?.message?.content === "Không";
+    return true;
   }
 }
 
