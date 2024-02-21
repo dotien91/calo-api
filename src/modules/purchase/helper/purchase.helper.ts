@@ -49,7 +49,6 @@ export class PurchaseHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      console.log(JSON.stringify(createPurchaseData));
       const userId = userObject._id.toString();
       const orderObject = await this.orderService.findById(createPurchaseData?.local_order_id);
       if (!orderObject) {
@@ -107,8 +106,10 @@ export class PurchaseHelper {
         };
         const dataCreate = await this.purchaseService.create(dataToAdd);
 
-        if (orderObject.plan_type === "coin") {
-          await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataCreate, authCode);
+        for (const orderItem of orderObject.items) {
+          if (orderItem.plan_type === "coin") {
+            await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataCreate, authCode);
+          }
         }
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -261,12 +262,12 @@ export class PurchaseHelper {
 
       const dataReturn = await this.purchaseService.create(dataToAdd);
 
-      if (orderObject.plan_type !== "coin") {
-        //Update Subscribe
-        // await this.orderHelper.updateOrderAfter(dataCreate?.local_order_id);
-      } else {
-        await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataReturn, authCode);
+      for (const orderItem of orderObject.items) {
+        if (orderItem.plan_type === "coin") {
+          await this.transactionHelper.handleUpdateTransactionAfter(orderObject, userObject, dataReturn, authCode);
+        }
       }
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -337,23 +338,25 @@ export class PurchaseHelper {
     };
 
     try {
-      console.log(orderObject?.plan_type);
-      if (orderObject?.plan_type === "recurring") {
-        receipt = {
-          ...receipt,
-          ...{
-            developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
-          },
-        };
-        const checkResult: any = await verifier.verifySub(receipt);
-        console.log(checkResult);
-        if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
-      } else {
-        const checkResult: any = await verifier.verifyINAPP(receipt);
-        console.log(checkResult);
-        if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
-        if (checkResult.payload.purchaseState !== 0) throw new Error("payment_pending");
+      for (const orderItem of orderObject.items) {
+        if (orderItem?.plan_type === "recurring") {
+          receipt = {
+            ...receipt,
+            ...{
+              developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
+            },
+          };
+          const checkResult: any = await verifier.verifySub(receipt);
+          console.log(checkResult);
+          if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
+        } else {
+          const checkResult: any = await verifier.verifyINAPP(receipt);
+          console.log(checkResult);
+          if (checkResult.isSuccessful === false) throw new Error(checkResult.errorMessage);
+          if (checkResult.payload.purchaseState !== 0) throw new Error("payment_pending");
+        }
       }
+
       return "success";
     } catch (e) {
       console.log(e);
@@ -388,23 +391,25 @@ export class PurchaseHelper {
     };
 
     try {
-      //console.log(orderObject?.plan_type);
-      if (orderObject?.plan_type === "recurring") {
-        receipt = {
-          ...receipt,
-          ...{
-            developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
-          },
-        };
-        const checkResult: any = await verifier.verifySub(receipt);
-        //console.log(checkResult);
-        if (checkResult.isSuccessful === false) return false;
-      } else {
-        const checkResult: any = await verifier.verifyINAPP(receipt);
-        //console.log(checkResult);
-        if (checkResult.isSuccessful === false) return false;
-        if (checkResult.payload.purchaseState !== 0) return false;
+      for (const orderItem of orderObject.items) {
+        if (orderItem?.plan_type === "recurring") {
+          receipt = {
+            ...receipt,
+            ...{
+              developerPayload: dataCreate?.developer_payload ? dataCreate.developer_payload : "abc",
+            },
+          };
+          const checkResult: any = await verifier.verifySub(receipt);
+          //console.log(checkResult);
+          if (checkResult.isSuccessful === false) return false;
+        } else {
+          const checkResult: any = await verifier.verifyINAPP(receipt);
+          //console.log(checkResult);
+          if (checkResult.isSuccessful === false) return false;
+          if (checkResult.payload.purchaseState !== 0) return false;
+        }
       }
+
       return true;
     } catch (e) {
       console.log(e);
@@ -424,140 +429,140 @@ export class PurchaseHelper {
     console.log(dataOrder.length, ">>>> LENGTH");
     if (dataOrder) {
       for (const itemOrder of dataOrder) {
-        if (itemOrder.plan_type === "onetime") {
-          continue;
-        }
-        const purchaseData: any = await this.purchaseService.findOne({ local_order_id: itemOrder._id.toString() });
-        if (purchaseData) {
-          //Update by Google or Apple
-          let dataValidate = null;
-
-          if (itemOrder.payment_method === "google_payment") {
-            dataValidate = await this.validateGoogleCron(purchaseData, itemOrder);
-          } else {
-            dataValidate = await this.validateAppleCron(purchaseData, itemOrder);
+        for (const orderItem of itemOrder.items) {
+          if (orderItem.plan_type === "onetime") {
+            continue;
           }
-          if (dataValidate) {
-            const subscribeData = await this.subscribeService.filter(
-              { service_name: itemOrder.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
-              {},
-              1,
-              10
-            );
-            if (subscribeData) {
-              let lastEnd = 0;
-              for (const subscribeItem of subscribeData) {
-                const dataEnd = new Date(subscribeItem.end_at.toString());
-                const dataEndNumber = dataEnd.getTime();
-                if (dataEndNumber > lastEnd) {
-                  lastEnd = dataEndNumber;
+          const purchaseData: any = await this.purchaseService.findOne({ local_order_id: itemOrder._id.toString() });
+          if (purchaseData) {
+            //Update by Google or Apple
+            let dataValidate = null;
+
+            if (itemOrder.payment_method === "google_payment") {
+              dataValidate = await this.validateGoogleCron(purchaseData, itemOrder);
+            } else {
+              dataValidate = await this.validateAppleCron(purchaseData, itemOrder);
+            }
+            if (dataValidate) {
+              const subscribeData = await this.subscribeService.filter(
+                { service_name: orderItem.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
+                {},
+                1,
+                10
+              );
+              if (subscribeData) {
+                let lastEnd = 0;
+                for (const subscribeItem of subscribeData) {
+                  const dataEnd = new Date(subscribeItem.end_at.toString());
+                  const dataEndNumber = dataEnd.getTime();
+                  if (dataEndNumber > lastEnd) {
+                    lastEnd = dataEndNumber;
+                  }
                 }
-              }
-              const totalData = Date.now() - lastEnd;
-              const dataHour = totalData / (1000 * 60 * 60);
-              if (dataHour < 3) {
+                const totalData = Date.now() - lastEnd;
+                const dataHour = totalData / (1000 * 60 * 60);
+                if (dataHour < 3) {
+                  //Create new Sub
+                  const amountOfDay = Number(orderItem.plan_id.amount_of_day);
+                  const date = new Date();
+                  date.setDate(date.getDate() + amountOfDay);
+                  const endTime = date;
+                  //Update subscribe
+                  const dataSubscribe = {
+                    user_id: itemOrder?.user_id?._id.toString(),
+                    service_name: orderItem.service_name,
+                    service_id: orderItem.service_id.toString(),
+                    plan_id: orderItem.plan_id._id.toString(),
+                    status: "active",
+                    start_at: new Date(),
+                    end_at: endTime,
+                  };
+                  console.log("create Sub", 454);
+                  await this.subscribeService.create(dataSubscribe);
+                }
+              } else {
+                //Create New Purchase
                 //Create new Sub
-                const amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
+                const amountOfDay = Number(orderItem.plan_id.amount_of_day);
                 const date = new Date();
                 date.setDate(date.getDate() + amountOfDay);
                 const endTime = date;
                 //Update subscribe
                 const dataSubscribe = {
                   user_id: itemOrder?.user_id?._id.toString(),
-                  service_name: itemOrder.service_name,
-                  service_id: itemOrder.service_id.toString(),
-                  plan_id: itemOrder.plan_id._id.toString(),
-                  coupon_code: itemOrder.coupon_code,
+                  service_name: orderItem.service_name,
+                  service_id: orderItem.service_id.toString(),
+                  plan_id: orderItem.plan_id._id.toString(),
                   status: "active",
                   start_at: new Date(),
                   end_at: endTime,
                 };
-                console.log("create Sub", 454);
-                await this.subscribeService.create(dataSubscribe);
+                console.log("create Sub", 476);
+                //await this.subscribeService.create(dataSubscribe);
               }
-            } else {
-              //Create New Purchase
-              //Create new Sub
-              const amountOfDay = Number(itemOrder.plan_id.amount_of_day) * Number(itemOrder.amount_of_package);
-              const date = new Date();
-              date.setDate(date.getDate() + amountOfDay);
-              const endTime = date;
-              //Update subscribe
-              const dataSubscribe = {
-                user_id: itemOrder?.user_id?._id.toString(),
-                service_name: itemOrder.service_name,
-                service_id: itemOrder.service_id.toString(),
-                plan_id: itemOrder.plan_id._id.toString(),
-                coupon_code: itemOrder.coupon_code,
-                status: "active",
-                start_at: new Date(),
-                end_at: endTime,
-              };
-              console.log("create Sub", 476);
-              //await this.subscribeService.create(dataSubscribe);
-            }
 
-            //@ts-ignore
-            const dataStartSub = new Date(itemOrder.createdAt.toString());
+              //@ts-ignore
+              const dataStartSub = new Date(itemOrder.createdAt.toString());
 
-            const dataStart = dataStartSub.getTime();
+              const dataStart = dataStartSub.getTime();
 
-            const currentDay = Date.now();
-            const dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
-            //Update to Success
-            //Update Order to trial-false
-            const dataUpdate = {
-              _id: itemOrder._id?.toString(),
-              status: "success",
-            };
-            await this.orderService.update(dataUpdate);
-          } else {
-            //When Validate is False
-            //Check
-            const subscribeData = await this.subscribeService.filter(
-              { service_name: itemOrder.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
-              {},
-              1,
-              10
-            );
-            if (subscribeData) {
-              let dataStart = 0;
-              let lastTestSubscribe = null;
-              for (const subscribeItem of subscribeData) {
-                const dataStartSub = new Date(subscribeItem.start_at.toString());
-                if (dataStartSub.getTime() > dataStart) {
-                  dataStart = dataStartSub.getTime();
-                  lastTestSubscribe = subscribeItem;
-                }
-              }
               const currentDay = Date.now();
               const dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
-              if (dataDay < 3) {
-                //Do no thing
+              //Update to Success
+              //Update Order to trial-false
+              const dataUpdate = {
+                _id: itemOrder._id?.toString(),
+                status: "success",
+              };
+              await this.orderService.update(dataUpdate);
+            } else {
+              //When Validate is False
+              //Check
+              const subscribeData = await this.subscribeService.filter(
+                { service_name: orderItem?.service_name.toString(), user_id: itemOrder?.user_id?._id.toString() },
+                {},
+                1,
+                10
+              );
+              if (subscribeData) {
+                let dataStart = 0;
+                let lastTestSubscribe = null;
+                for (const subscribeItem of subscribeData) {
+                  const dataStartSub = new Date(subscribeItem.start_at.toString());
+                  if (dataStartSub.getTime() > dataStart) {
+                    dataStart = dataStartSub.getTime();
+                    lastTestSubscribe = subscribeItem;
+                  }
+                }
+                const currentDay = Date.now();
+                const dataDay = (currentDay - dataStart) / (1000 * 60 * 60 * 24);
+                if (dataDay < 3) {
+                  //Do no thing
+                } else {
+                  //Update Order to trial-false
+                  const dataUpdate = {
+                    _id: itemOrder._id?.toString(),
+                    status: "trial_false",
+                  };
+                  await this.orderService.update(dataUpdate);
+                  //Update subscribe
+                  if (lastTestSubscribe) {
+                    const dataUpdate = {
+                      _id: lastTestSubscribe._id.toString(),
+                      status: "deactivate",
+                      end_at: new Date(),
+                    };
+                    await this.subscribeService.update(dataUpdate);
+                  }
+                }
               } else {
                 //Update Order to trial-false
                 const dataUpdate = {
                   _id: itemOrder._id?.toString(),
-                  status: "trial_false",
+                  status: "done",
                 };
                 await this.orderService.update(dataUpdate);
-                //Update subscribe
-                if (lastTestSubscribe) {
-                  const dataUpdate = {
-                    _id: lastTestSubscribe._id.toString(),
-                    status: "deactivate",
-                    end_at: new Date(),
-                  };
-                  await this.subscribeService.update(dataUpdate);
-                }
               }
-            } else {
-              //Update Order to trial-false
-              const dataUpdate = {
-                _id: itemOrder._id?.toString(),
-                status: "done",
-              };
-              await this.orderService.update(dataUpdate);
             }
           }
         }

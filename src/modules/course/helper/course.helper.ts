@@ -4,6 +4,7 @@ import * as moment from "moment";
 import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
@@ -84,7 +85,8 @@ export class CourseHelper {
     private readonly userOrganization: UserOrganizationService,
     private readonly chatRoomHelper: ChatRoomHelper,
     private readonly chatRoomService: ChatRoomService,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly couponService: CouponService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -154,10 +156,14 @@ export class CourseHelper {
       };
       let serviceData = await this.handleServiceService.create(dataServiceToAdd);
       if (serviceData) {
+        const price = courseData?.coupon_id
+          ? this.couponService.getPrice(Number(courseData.price), courseData.coupon_id as any)
+          : Number(courseData?.price);
+
         let dataPlanCreate = {
           service_id: serviceData?._id?.toString(),
           name: courseData?.title?.toString(),
-          price: Number(courseData?.price),
+          price,
           amount_of_day: 365,
           trial_day: 0,
           amount_of_coin: 365,
@@ -2567,7 +2573,7 @@ export class CourseHelper {
     });
 
     const course = await this.courseService.findOne({ _id: courseId });
-    if (course.user_id) {
+    if (course) {
       const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
       await this.userService.update({
         _id: course.user_id._id.toString(),

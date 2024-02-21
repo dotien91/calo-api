@@ -38,6 +38,12 @@ export class User {
   user_address?: string;
 
   @Prop({
+    type: Array,
+    default: [],
+  })
+  user_payment_address?: string[];
+
+  @Prop({
     type: String,
     default: "",
     nullable: true,

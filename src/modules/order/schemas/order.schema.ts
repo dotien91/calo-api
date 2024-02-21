@@ -5,8 +5,62 @@ import { Document, Schema as MongooseSchema } from "mongoose";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
+import { OrderItemType, OrderStatus, PayloadType } from "../interfaces/order.interface";
 
 export type OrderDocument = Order & Document;
+
+export class OrderItem {
+  @Prop({
+    type: String,
+    nullable: false,
+  })
+  service_name: string;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    index: true,
+    ref: "HandleService",
+  })
+  service_id: HandleService;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    index: true,
+    ref: "Plan",
+  })
+  plan_id: Plan;
+
+  @Prop({
+    type: String,
+    nullable: true,
+    default: "recurring",
+  })
+  plan_type: string;
+
+  // this is use to save transaction info before doing purchased
+  @Prop({
+    type: Object,
+    nullable: false,
+  })
+  payload: {
+    type?: PayloadType;
+    data?: any;
+  };
+
+  @Prop({
+    type: String,
+    nullable: false,
+    enum: OrderItemType,
+  })
+  type: OrderItemType;
+
+  @Prop({
+    type: String,
+    default: "",
+    nullable: true,
+  })
+  product_url: string;
+}
 
 @Schema({
   timestamps: {
@@ -26,19 +80,6 @@ export class Order {
   user_id: User;
 
   @Prop({
-    type: String,
-    nullable: false,
-  })
-  service_name: string;
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    index: true,
-    ref: "HandleService",
-  })
-  service_id: HandleService;
-
-  @Prop({
     type: MongooseSchema.Types.ObjectId,
     default: null,
     ref: "Media",
@@ -46,31 +87,10 @@ export class Order {
   media_id: String;
 
   @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    index: true,
-    ref: "Plan",
-  })
-  plan_id: Plan;
-
-  @Prop({
     type: String,
     index: true,
   })
   client_secret: string;
-
-  @Prop({
-    type: String,
-    nullable: true,
-    default: "recurring",
-  })
-  plan_type: string;
-
-  @Prop({
-    type: String,
-    nullable: true,
-    default: "",
-  })
-  coupon_code: string;
 
   @Prop({
     type: String,
@@ -92,12 +112,6 @@ export class Order {
   price: number;
 
   @Prop({
-    type: Number,
-    default: 0,
-  })
-  coupon_price: number;
-
-  @Prop({
     type: String,
     default: "",
     nullable: true,
@@ -116,34 +130,15 @@ export class Order {
     default: "",
     nullable: true,
   })
-  product_url: string;
-
-  @Prop({
-    type: String,
-    default: "",
-    nullable: true,
-  })
   payment_method: string;
 
   @Prop({
     type: String,
     default: "pending",
     index: true,
-    enum: [
-      "pending",
-      "processing",
-      "fraud",
-      "success",
-      "close",
-      "draft",
-      "trial",
-      "error",
-      "trial_false",
-      "done",
-      "free",
-    ],
+    enum: OrderStatus,
   })
-  status: string;
+  status: OrderStatus;
 
   @Prop({
     type: String,
@@ -200,12 +195,24 @@ export class Order {
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   cancelled_on: MongooseSchema.Types.Date;
 
-  // this is use to save transaction info before doing purchased
   @Prop({
-    type: Object,
+    type: MongooseSchema.Types.ObjectId,
+    ref: "Coupon",
+    default: null,
+  })
+  coupon_product_id: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+  })
+  items: Array<OrderItem>;
+
+  @Prop({
+    type: String,
     nullable: false,
   })
-  payload: object;
+  address: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

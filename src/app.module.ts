@@ -27,14 +27,18 @@ import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CallKitModule } from "./modules/callkit/call_kit";
+import { CartModule } from "./modules/cart/cart.module";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
+import { CouponModule } from "./modules/coupon/coupon.module";
 import { CourseModule } from "./modules/course/course.module";
 import { EmailModule } from "./modules/email/email.module";
 import { LivestreamModule } from "./modules/livestream/livestream.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
+import { ProductModule } from "./modules/product/product.module";
+import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
@@ -80,6 +84,10 @@ const dataImport = [
   LivestreamModule,
   CallKitModule,
   EmailModule,
+  CouponModule,
+  ShopModule,
+  ProductModule,
+  CartModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

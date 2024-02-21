@@ -3,6 +3,8 @@ import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
+import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
@@ -23,7 +25,7 @@ import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
-import { OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
+import { OrderItemType, OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 
@@ -45,6 +47,7 @@ export class OrderHelper {
     private courseService: CourseService,
     private emailService: EmailService,
     private userService: UserService,
+    private couponService: CouponService,
     private readonly eventHookWorkerService: EventHookWorkerService,
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly courseHelper: CourseHelper
@@ -345,167 +348,179 @@ export class OrderHelper {
    * @param req
    * @returns
    */
-  async createNewOrder(createOrderData: CreateOrderDto, res: Response, req: ExpressRequestDto) {
-    try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      const userId = userObject._id.toString();
+  // async createNewOrder(createOrderData: CreateOrderDto, res: Response, req: ExpressRequestDto) {
+  //   try {
+  //     const userObject = req?.user_object;
+  //     if (!userObject) {
+  //       throw new ForbiddenException("User is invalid");
+  //     }
+  //     const userId = userObject._id.toString();
 
-      const planObject = await this.planService.findById(createOrderData.plan_id);
-      const oldOrder = await this.orderService.findOne({});
-      let oldShortId = 1;
-      if (oldOrder) {
-        oldShortId = Number(oldOrder.short_id) + 1;
-      }
-      const channelId = req?.channel_id || "";
-      if (channelId) {
-        createOrderData = { ...createOrderData, ...{ channel_id: channelId } };
-      }
+  //     const planObject = await this.planService.findById(createOrderData.plan_id);
+  //     const oldOrder = await this.orderService.findOne({});
+  //     let oldShortId = 1;
+  //     if (oldOrder) {
+  //       oldShortId = Number(oldOrder.short_id) + 1;
+  //     }
+  //     const channelId = req?.channel_id || "";
+  //     if (channelId) {
+  //       createOrderData = { ...createOrderData, ...{ channel_id: channelId } };
+  //     }
 
-      //Check Plan Service
-      if (!createOrderData?.payment_method && !Number(planObject?.trial_day) && Number(planObject?.price)) {
-        throw new ForbiddenException("Payment method need!");
-      }
+  //     //Check Plan Service
+  //     if (!createOrderData?.payment_method && !Number(planObject?.trial_day) && Number(planObject?.price)) {
+  //       throw new ForbiddenException("Payment method need!");
+  //     }
 
-      //Kiểm tra trường hợp có ngày dùng thử
-      if (Number(planObject?.trial_day)) {
-        //Check Subscribe
-        const subscribe = await this.subscribeService.filter(
-          {
-            user_id: userId,
-            service_id: planObject?.service_id?.toString(),
-            channel_id: channelId,
-          },
-          { createdAt: "DESC" },
-          1,
-          1
-        );
-        // console.log(subscribe, "subscribe");
-        //Trường hợp Đã tồn tại một gói đăng ký của người dùng
-        if (subscribe?.length) {
-          //Kiểm tra xem Extension đó có phí hay không
-          if (Number(planObject?.price)) {
-            if (!createOrderData?.payment_method) {
-              //Trả về lỗi
-              throw new ForbiddenException("Payment method need!");
-            } else {
-              //Trường hợp này khách thanh toán bình thường nó sẽ chạy tới hàm tiếp theo và sẽ bị tính tiền!
-            }
-          } else {
-            //Trường hợp còn lại là trường hợp miễn phí
-            createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
-          }
-        } else {
-          //Trường hợp này là chưa có gói đăng ksy, tiến hành cập nhập cho khách thành free và trạng thái đơn chuyển về thành công!
-          createOrderData = { ...createOrderData, ...{ payment_method: "free", status: "success" } };
-        }
-      }
+  //     //Kiểm tra trường hợp có ngày dùng thử
+  //     if (Number(planObject?.trial_day)) {
+  //       //Check Subscribe
+  //       const subscribe = await this.subscribeService.filter(
+  //         {
+  //           user_id: userId,
+  //           service_id: planObject?.service_id?.toString(),
+  //           channel_id: channelId,
+  //         },
+  //         { createdAt: "DESC" },
+  //         1,
+  //         1
+  //       );
+  //       // console.log(subscribe, "subscribe");
+  //       //Trường hợp Đã tồn tại một gói đăng ký của người dùng
+  //       if (subscribe?.length) {
+  //         //Kiểm tra xem Extension đó có phí hay không
+  //         if (Number(planObject?.price)) {
+  //           if (!createOrderData?.payment_method) {
+  //             //Trả về lỗi
+  //             throw new ForbiddenException("Payment method need!");
+  //           } else {
+  //             //Trường hợp này khách thanh toán bình thường nó sẽ chạy tới hàm tiếp theo và sẽ bị tính tiền!
+  //           }
+  //         } else {
+  //           //Trường hợp còn lại là trường hợp miễn phí
+  //           createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
+  //         }
+  //       } else {
+  //         //Trường hợp này là chưa có gói đăng ksy, tiến hành cập nhập cho khách thành free và trạng thái đơn chuyển về thành công!
+  //         createOrderData = { ...createOrderData, ...{ payment_method: "free", status: "success" } };
+  //       }
+  //     }
 
-      //Cập nhập lại payment_method nếu gói miễn phí!
-      if (!Number(planObject?.price)) {
-        createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
-      }
+  //     //Cập nhập lại payment_method nếu gói miễn phí!
+  //     if (!Number(planObject?.price)) {
+  //       createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
+  //     }
 
-      if (planObject) {
-        let dataToAdd = {
-          ...createOrderData,
-          ...{
-            user_id: userId,
-            service_name: planObject.handle,
-            service_id: planObject.service_id,
-            plan_id: planObject._id.toString(),
-            plan_type: planObject.type,
-            short_id: oldShortId,
-            price: Number(planObject.price) * Number(createOrderData.amount_of_package),
-          },
-        };
+  //     if (planObject) {
+  //       let couponProduct = null;
 
-        if (planObject?.service_id?.service_type == "channel") {
-          dataToAdd = { ...dataToAdd, ...{ trans_id: req?.channel_id?.toString() } };
-        }
+  //       if (createOrderData.coupon_product_id)
+  //         couponProduct = await this.couponService.findOne({ _id: createOrderData.coupon_product_id });
 
-        if (createOrderData?.payment_method === "vn_pay") {
-          // Lấy thời điểm hiện tại
-          const currentTime = new Date();
+  //       const orderPrice = this.getOrderPrice(couponProduct, planObject.price, createOrderData.amount_of_package);
 
-          // Lấy thời điểm hiện tại dưới dạng số miligiây
-          const currentTimeInMilliseconds = currentTime.getTime();
+  //       let dataToAdd = {
+  //         ...createOrderData,
+  //         ...{
+  //           user_id: userId,
+  //           service_name: planObject.handle,
+  //           service_id: planObject.service_id,
+  //           plan_id: planObject._id.toString(),
+  //           plan_type: planObject.type,
+  //           short_id: oldShortId,
+  //           price: orderPrice,
+  //           coupon_product_id: createOrderData.coupon_product_id,
+  //         },
+  //       };
 
-          // Cộng thêm 5 giây (5,000 miligiây)
-          const newTimeInMilliseconds = currentTimeInMilliseconds + 4000;
+  //       if (planObject?.service_id?.service_type == "channel") {
+  //         dataToAdd = { ...dataToAdd, ...{ trans_id: req?.channel_id?.toString() } };
+  //       }
 
-          // Tạo đối tượng Date mới với thời điểm sau khi cộng
-          const newTime = new Date(newTimeInMilliseconds);
-          dataToAdd = { ...dataToAdd, ...{ vnpay_on: newTime } };
-        }
-        let dataCreate: Order = await this.orderService.create(dataToAdd);
+  //       if (createOrderData?.payment_method === "vn_pay") {
+  //         // Lấy thời điểm hiện tại
+  //         const currentTime = new Date();
 
-        //Hậu xử lý!
-        //Nếu là chuyển khoản thì bay tới trang detail luôn!
-        if (dataCreate.payment_method == "transfer") {
-          //Return after
-          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
-          dataCreate = await this.orderService.update(dataUpdate);
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        }
+  //         // Lấy thời điểm hiện tại dưới dạng số miligiây
+  //         const currentTimeInMilliseconds = currentTime.getTime();
 
-        //Trường hợp này là payment_method là miễn phí!
-        if (dataCreate.payment_method == "free") {
-          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl, status: "success" };
-          dataCreate = await this.orderService.update(dataUpdate);
-          dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        }
-        if (dataCreate.payment_method == "vn_pay") {
-          const redirectUrl = await this.createVNPayLink(
-            req,
-            Number(planObject.price) * Number(createOrderData.amount_of_package),
-            "",
-            "",
-            dataCreate?._id?.toString()
-          );
-          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
-          dataCreate = await this.orderService.update(dataUpdate);
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        }
+  //         // Cộng thêm 5 giây (5,000 miligiây)
+  //         const newTimeInMilliseconds = currentTimeInMilliseconds + 4000;
 
-        if (dataCreate?.status == "success") {
-          //Update After
+  //         // Tạo đối tượng Date mới với thời điểm sau khi cộng
+  //         const newTime = new Date(newTimeInMilliseconds);
+  //         dataToAdd = { ...dataToAdd, ...{ vnpay_on: newTime } };
+  //       }
+  //       let dataCreate: Order = await this.orderService.create(dataToAdd);
 
-          //Update Channel
-          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
-          dataCreate = await this.orderService.update(dataUpdate);
-          dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataCreate);
-        }
+  //       //Hậu xử lý!
+  //       //Nếu là chuyển khoản thì bay tới trang detail luôn!
+  //       if (dataCreate.payment_method == "transfer") {
+  //         //Return after
+  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+  //         dataCreate = await this.orderService.update(dataUpdate);
+  //         return res
+  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //           .status(HttpStatus.OK)
+  //           .json(dataCreate);
+  //       }
 
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("Plan not found!");
-      }
-    } catch (error) {
-      throw new NotFoundException(error.message);
+  //       //Trường hợp này là payment_method là miễn phí!
+  //       if (dataCreate.payment_method == "free") {
+  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl, status: "success" };
+  //         dataCreate = await this.orderService.update(dataUpdate);
+  //         dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
+  //         return res
+  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //           .status(HttpStatus.OK)
+  //           .json(dataCreate);
+  //       }
+  //       if (dataCreate.payment_method == "vn_pay") {
+  //         const redirectUrl = await this.createVNPayLink(req, orderPrice, "", "", dataCreate?._id?.toString());
+  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
+  //         dataCreate = await this.orderService.update(dataUpdate);
+  //         return res
+  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //           .status(HttpStatus.OK)
+  //           .json(dataCreate);
+  //       }
+
+  //       if (dataCreate?.status == "success") {
+  //         //Update After
+
+  //         //Update Channel
+  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+  //         dataCreate = await this.orderService.update(dataUpdate);
+  //         dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
+  //         return res
+  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //           .status(HttpStatus.OK)
+  //           .json(dataCreate);
+  //       }
+
+  //       return res
+  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+  //         .status(HttpStatus.OK)
+  //         .json(dataCreate);
+  //     } else {
+  //       throw new BadRequestException("Plan not found!");
+  //     }
+  //   } catch (error) {
+  //     throw new NotFoundException(error.message);
+  //   }
+  // }
+
+  getOrderPrice(couponProduct: Coupon, productPrice: number, productAmount = 1) {
+    let price = productPrice * productAmount || 0;
+
+    if (couponProduct) {
+      price = this.couponService.getPrice(price, couponProduct);
     }
+
+    return price;
   }
 
   /**
@@ -648,16 +663,6 @@ export class OrderHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
-
-      //Check User Role
-      let channelId = process.env.DEFAULT_CHANNEL;
-
-      const dataOrderBefore = await this.orderService.findById(dataUpdate?._id?.toString());
-      if (dataOrderBefore?.service_id?.service_type === "course") {
-        channelId = req?.channel_id;
-      }
-
       // const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
       // let havePermission = false;
       // if (
@@ -691,13 +696,13 @@ export class OrderHelper {
     }
   }
 
-  /**
-   * @author Tony Vu
-   * @param id
-   * @param res
-   * @param req
-   * @returns
-   */
+  // /**
+  //  * @author Tony Vu
+  //  * @param id
+  //  * @param res
+  //  * @param req
+  //  * @returns
+  //  */
   async handleUpdateOrderByUser(dataUpdate: UpdateOrderDto, res: Response, req: ExpressRequestDto) {
     try {
       const userObject = req?.user_object;
@@ -732,9 +737,13 @@ export class OrderHelper {
                   user_id: adminUser._id.toString(),
                   path: `/orders/detail/${orderObject._id.toString()}`,
                   content: (params: any) => {
-                    return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.service_name}`;
+                    return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.items
+                      .map((item) => item.service_name)
+                      .toString()}`;
                   },
-                  title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.service_name.toLocaleUpperCase()}`,
+                  title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.items
+                    .map((item) => item.service_name.toLocaleUpperCase())
+                    .toString()}`,
                 });
               }
             }, 500);
@@ -762,54 +771,71 @@ export class OrderHelper {
     let orderObject: Order = await this.orderService.findById(orderId);
     try {
       if (!orderObject) {
-        console.log("ORDER NOT FOUND");
         return null;
       }
 
-      const planCourseData = await this.planService.getCourseByPlanId(orderObject.plan_id?._id.toString());
-
       if (orderObject.status == "success" && beforeStatus == "pending") {
-        const amountOfDay = Number(orderObject.plan_id.amount_of_day) * Number(orderObject.amount_of_package);
-        const date = new Date();
-        date.setDate(date.getDate() + amountOfDay);
-        const endTime = date;
-        const dataIsTrial = orderObject.payment_method == "free" ? true : false;
-        //Update subscribe
-        const dataSubscribe = {
-          is_trial: dataIsTrial,
-          user_id: orderObject.user_id?._id.toString(),
-          service_name: orderObject.service_name,
-          service_id: orderObject.service_id?._id.toString(),
-          plan_id: orderObject.plan_id._id.toString(),
-          coupon_code: orderObject.coupon_code,
-          status: "active",
-          start_at: new Date(),
-          end_at: endTime,
-        };
-        const dataToCreate = await this.subscribeService.create(dataSubscribe);
-
-        //Check if service is Extension
-        if (orderObject.service_id?.service_type == "course") {
-          await this.handleUpdateCourseAfter(orderObject);
-          const dataUpdate = {
-            _id: orderObject._id?.toString(),
-            product_url: "/r/courses/view/" + orderObject.service_id?.handle?.toString(),
+        let dataToCreate = null;
+        for (const orderItem of orderObject.items) {
+          const amountOfDay = Number(orderItem.plan_id.amount_of_day);
+          const date = new Date();
+          date.setDate(date.getDate() + amountOfDay);
+          const endTime = date;
+          const dataIsTrial = orderObject.payment_method == "free" ? true : false;
+          //Update subscribe
+          const dataSubscribe = {
+            is_trial: dataIsTrial,
+            user_id: orderObject.user_id?._id.toString(),
+            service_name: orderItem.service_name,
+            service_id: orderItem.service_id?._id.toString(),
+            plan_id: orderItem.plan_id._id.toString(),
+            status: "active",
+            start_at: new Date(),
+            end_at: endTime,
           };
-          orderObject = await this.orderService.update(dataUpdate);
+          dataToCreate = await this.subscribeService.create(dataSubscribe);
+
+          // check order payload
+          if (orderItem.payload) {
+            if (orderItem.payload.type === PayloadType.CLASS) {
+              const data = orderItem.payload.data;
+              await this.courseHelper.addMemberToClass(data, null, null);
+            } else if (orderItem.payload.type === PayloadType.ONE_ONE) {
+              const data = orderItem.payload.data;
+              await this.courseHelper.createCourseCalendarStudent(data, null, null);
+            }
+          }
+
+          // send notification to user who own the course
+          if (orderItem.type === OrderItemType.COURSE) {
+            const planCourseData = await this.planService.getCourseByPlanId(orderItem.plan_id?._id.toString());
+            this.eventHookNotificationService.sendNotiNMailOrderSuccess({
+              user_id: planCourseData[0]?.course[0]?.user_id.toString(),
+              // TODO: update path
+              path: `/r/course/${orderObject._id.toString()}`,
+              router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_COURSE_SCREEN,
+              order_id: orderObject._id?.toString(),
+              content: (params: any) => {
+                return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.items
+                  .map((item) => item.service_name)
+                  .toString()}`;
+              },
+              title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.items
+                .map((item) => item.service_name.toLocaleUpperCase())
+                .toString()}`,
+            });
+          }
         }
 
-        if (orderObject.payload) {
-          // @ts-ignore
-          if (orderObject.payload.type === PayloadType.CLASS) {
-            // @ts-ignore
-            const data = orderObject.payload.data;
-            await this.courseHelper.addMemberToClass(data, null, null);
-          }
-          // @ts-ignore
-          else if (orderObject.payload.type === PayloadType.ONE_ONE) {
-            // @ts-ignore
-            const data = orderObject.payload.data;
-            await this.courseHelper.createCourseCalendarStudent(data, null, null);
+        // should update coupon total
+        if (orderObject.coupon_product_id) {
+          const couponProduct = await this.couponService.findOne({ _id: orderObject.coupon_product_id });
+          if (couponProduct) {
+            if (couponProduct.total > 0)
+              this.couponService.update({
+                _id: orderObject.coupon_product_id,
+                total: couponProduct.total - 1,
+              });
           }
         }
 
@@ -820,9 +846,13 @@ export class OrderHelper {
           router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_SCREEN,
           order_id: orderObject._id?.toString(),
           content: (params: any) => {
-            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
+            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.items
+              .map((item) => item.service_name)
+              .toString()}`;
           },
-          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.service_name.toLocaleUpperCase()}`,
+          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.items
+            .map((item) => item.service_name.toLocaleUpperCase())
+            .toString()}`,
         });
 
         // send email to user who bought the course
@@ -831,7 +861,7 @@ export class OrderHelper {
           email: orderObject.user_id.user_email,
           replacePattern: {
             display_name: orderObject.user_id.display_name,
-            course_name: orderObject.service_name,
+            course_name: orderObject.items.map((item) => item.service_name).toString(),
             course_start_time: moment(dataToCreate.start_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
             course_end_time: moment(dataToCreate.end_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
           },
@@ -844,25 +874,13 @@ export class OrderHelper {
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             order_id: orderObject._id.toString(),
-            order_name: orderObject.service_name,
-            order_price: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
+            // TODO
+            // order_name: orderObject.service_name,
+            // order_price: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
             order_date: moment()
               .tz(orderObject.user_id.timezone || "UTC")
               .format("DD-MM-YYYY HH:mm"),
           },
-        });
-
-        // send notification to user who own the course
-        this.eventHookNotificationService.sendNotiNMailOrderSuccess({
-          user_id: planCourseData[0]?.course[0]?.user_id.toString(),
-          // TODO: update path
-          path: `/r/course/${orderObject._id.toString()}`,
-          router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_COURSE_SCREEN,
-          order_id: orderObject._id?.toString(),
-          content: (params: any) => {
-            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.service_name}`;
-          },
-          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.service_name.toLocaleUpperCase()}`,
         });
 
         return orderObject;
@@ -881,18 +899,21 @@ export class OrderHelper {
    */
   async handleUpdateCourseAfter(orderObject: Order) {
     try {
-      const dataUpdate = {
-        user_id: orderObject?.user_id?._id.toString(),
-        course_id: orderObject?.service_id?.handle?.toString(),
-      };
-      const dataReturn = await this.courseUserService.update(dataUpdate);
+      for (const orderItem of orderObject.items) {
+        if (orderItem.type === OrderItemType.COURSE) {
+          const dataUpdate = {
+            user_id: orderObject?.user_id?._id.toString(),
+            course_id: orderItem?.service_id?.handle?.toString(),
+          };
+          const dataReturn = await this.courseUserService.update(dataUpdate);
 
-      //Update count Video
-      const dataUpdateFilter = {
-        _id: orderObject?.service_id?.handle?.toString(),
-      };
-      const dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
-
+          //Update count Video
+          const dataUpdateFilter = {
+            _id: orderItem?.service_id?.handle?.toString(),
+          };
+          const dataCourse = await this.courseService.updateCount(dataUpdateFilter, { join_number: 1 });
+        }
+      }
       //Update Transaction
 
       //For User
@@ -1061,34 +1082,36 @@ export class OrderHelper {
     let currentToken = 0;
     currentToken = lastToken + Number(transactionValue);
 
-    const dataTransactionToAdd = {
-      user_id: userIdTransaction,
-      channel_id: channelId,
-      ref_id: orderObject?.service_id?.handle?.toString(),
-      ref_type: "course",
-      ref_name: dataCourse?.title?.toString(),
-      ref_url: `/r/courses/view/${orderObject?.service_id?.handle?.toString()}`,
-      last_coin: 0,
-      current_coin: 0,
-      last_token: lastToken,
-      current_token: currentToken,
-      transaction_value: transactionValue,
-      commission_value: commmissionValue,
-      transaction_type: "output",
-      income_value: 0,
-      method: "plus",
-      note: `Recive ${transactionValue} coin from System ID: ${orderObject?.service_id?.handle?.toString()}`,
-      status: "done",
-      trans_id: "",
-      error_message: "",
-      data_payment: "",
-      billing_on: new Date(),
-      processing_on: null,
-      successfully_on: new Date(),
-      from_user: orderObject?.user_id?._id.toString(),
-      type_system: "system",
-    };
-    const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
+    for (const orderItem of orderObject.items) {
+      const dataTransactionToAdd = {
+        user_id: userIdTransaction,
+        channel_id: channelId,
+        ref_id: orderItem?.service_id?.handle?.toString(),
+        ref_type: "course",
+        ref_name: dataCourse?.title?.toString(),
+        ref_url: `/r/courses/view/${orderItem?.service_id?.handle?.toString()}`,
+        last_coin: 0,
+        current_coin: 0,
+        last_token: lastToken,
+        current_token: currentToken,
+        transaction_value: transactionValue,
+        commission_value: commmissionValue,
+        transaction_type: "output",
+        income_value: 0,
+        method: "plus",
+        note: `Recive ${transactionValue} coin from System ID: ${orderItem?.service_id?.handle?.toString()}`,
+        status: "done",
+        trans_id: "",
+        error_message: "",
+        data_payment: "",
+        billing_on: new Date(),
+        processing_on: null,
+        successfully_on: new Date(),
+        from_user: orderObject?.user_id?._id.toString(),
+        type_system: "system",
+      };
+      const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
+    }
     // setTimeout(() => {
 
     //   console.log("đã vào cộng điểm!!!");
@@ -1119,89 +1142,90 @@ export class OrderHelper {
    */
   async updateEsim(orderObject: Order, subscribeObject: Subscribe) {
     try {
-      //Handle EsimObject
-      const planNote = orderObject?.plan_id?.note;
-      const planObject = orderObject?.plan_id?.options;
-      let urlAxios = "";
-      let authCode = "";
-      let packageName = "";
-      let bodyData = "";
-      let contentType = "application/json";
-      for (const itemOption of planObject) {
-        if (itemOption?.key === "url") {
-          urlAxios = itemOption?.value;
-        }
-        if (itemOption?.key === "auth") {
-          authCode = itemOption?.value;
-        }
-        if (itemOption?.key === "package_name") {
-          packageName = itemOption?.value;
-        }
-        if (itemOption?.key === "body_data") {
-          bodyData = itemOption?.value;
-        }
-        if (itemOption?.key === "content_type") {
-          contentType = itemOption?.value;
-        }
-      }
-
-      const config = {
-        headers: {
-          "Content-Type": contentType,
-          Authorization: authCode,
-        },
-      };
-
-      let params: any = "";
-      try {
-        // let dataToLogin = JSON.parse(bodyData);
-        params = bodyData;
-      } catch (error) {
-        params = "";
-      }
-      const dataReturn = await axios
-        .post(urlAxios, params, config)
-        .then((response) => {
-          if (response?.data) {
-            return response?.data;
-          } else {
-            return null;
+      for (const orderItem of orderObject.items) {
+        const planNote = orderItem?.plan_id?.note;
+        const planObject = orderItem?.plan_id?.options;
+        let urlAxios = "";
+        let authCode = "";
+        let packageName = "";
+        let bodyData = "";
+        let contentType = "application/json";
+        for (const itemOption of planObject) {
+          if (itemOption?.key === "url") {
+            urlAxios = itemOption?.value;
           }
-        })
-        .catch((error) => {
-          return error;
-          return null;
-        });
-
-      if (dataReturn) {
-        switch (planNote) {
-          case "airalo":
-            //Update to Air Alo
-            break;
-          default:
-            //Update to
-            let dataUpdate = {
-              manual1: dataReturn?.purchase?.esim?.manual1,
-              manual2: dataReturn?.purchase?.esim?.manual2,
-              phone: dataReturn?.purchase?.esim?.phone,
-              serial: dataReturn?.purchase?.esim?.serial,
-              expiryDate: dataReturn?.purchase?.esim?.expiryDate,
-              qrCodeString: dataReturn?.purchase?.esim?.qrCodeString,
-              dataClient: JSON.stringify(dataReturn),
-            };
-            dataUpdate = { ...dataUpdate, ...{ _id: subscribeObject?._id } };
-            await this.subscribeService.update(dataUpdate);
-
-            //@ts-ignore
-            // let dataSendSocket = {...subscribeObject?.toObject(), ...{dataUpdate}}
-
-            // const dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
-            //Update socket
-            // this.socketService.handleSendOrder(dataSendSocket, orderObject?.user_id?._id?.toString());
-            break;
+          if (itemOption?.key === "auth") {
+            authCode = itemOption?.value;
+          }
+          if (itemOption?.key === "package_name") {
+            packageName = itemOption?.value;
+          }
+          if (itemOption?.key === "body_data") {
+            bodyData = itemOption?.value;
+          }
+          if (itemOption?.key === "content_type") {
+            contentType = itemOption?.value;
+          }
         }
+
+        const config = {
+          headers: {
+            "Content-Type": contentType,
+            Authorization: authCode,
+          },
+        };
+
+        let params: any = "";
+        try {
+          // let dataToLogin = JSON.parse(bodyData);
+          params = bodyData;
+        } catch (error) {
+          params = "";
+        }
+        const dataReturn = await axios
+          .post(urlAxios, params, config)
+          .then((response) => {
+            if (response?.data) {
+              return response?.data;
+            } else {
+              return null;
+            }
+          })
+          .catch((error) => {
+            return error;
+            return null;
+          });
+
+        if (dataReturn) {
+          switch (planNote) {
+            case "airalo":
+              //Update to Air Alo
+              break;
+            default:
+              //Update to
+              let dataUpdate = {
+                manual1: dataReturn?.purchase?.esim?.manual1,
+                manual2: dataReturn?.purchase?.esim?.manual2,
+                phone: dataReturn?.purchase?.esim?.phone,
+                serial: dataReturn?.purchase?.esim?.serial,
+                expiryDate: dataReturn?.purchase?.esim?.expiryDate,
+                qrCodeString: dataReturn?.purchase?.esim?.qrCodeString,
+                dataClient: JSON.stringify(dataReturn),
+              };
+              dataUpdate = { ...dataUpdate, ...{ _id: subscribeObject?._id } };
+              await this.subscribeService.update(dataUpdate);
+
+              //@ts-ignore
+              // let dataSendSocket = {...subscribeObject?.toObject(), ...{dataUpdate}}
+
+              // const dataSendSocket = await this.subscribeService.findById(subscribeObject?._id);
+              //Update socket
+              // this.socketService.handleSendOrder(dataSendSocket, orderObject?.user_id?._id?.toString());
+              break;
+          }
+        }
+        return true;
       }
-      return true;
     } catch (error) {
       console.log(error);
       return false;
@@ -1274,5 +1298,131 @@ export class OrderHelper {
       sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
     }
     return sorted;
+  }
+
+  async createNewOrder(data: CreateOrderDto, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      const userId = userObject._id.toString();
+
+      const planObjects = await this.planService.findAll({
+        _id: { $in: data.plan_objects.map((plan) => plan.plan_id) },
+      });
+      const lastOrder = await this.orderService.findOne({});
+      let oldShortId = 1;
+      if (lastOrder) {
+        oldShortId = Number(lastOrder.short_id) + 1;
+      }
+
+      //Check Plan Service
+      if (!data?.payment_method) {
+        throw new ForbiddenException("Payment method need!");
+      }
+
+      if (planObjects.length) {
+        let dataToAdd = null;
+        let couponProduct = null;
+        let orderPrice = 0;
+        let orderItems = [];
+
+        for (const planObject of planObjects) {
+          const currentPlan = data.plan_objects.find((plan) => plan.plan_id === planObject._id.toString());
+
+          let item: any = {
+            service_name: planObject.handle,
+            service_id: planObject.service_id,
+            plan_id: planObject._id,
+            plan_type: planObject.type,
+            type: currentPlan.type,
+          };
+
+          if (currentPlan.type === OrderItemType.COURSE) {
+            item.payload = currentPlan.payload;
+          }
+
+          orderItems.push(item);
+          orderPrice += planObject.price * currentPlan.amount_of_package;
+        }
+        dataToAdd = {
+          ...data,
+          ...{
+            user_id: userId,
+            items: orderItems,
+            short_id: oldShortId,
+            coupon_product_id: data.coupon_product_id,
+          },
+        };
+        if (data?.payment_method === "vn_pay") {
+          // Lấy thời điểm hiện tại
+          const currentTime = new Date();
+
+          // Lấy thời điểm hiện tại dưới dạng số miligiây
+          const currentTimeInMilliseconds = currentTime.getTime();
+
+          // Cộng thêm 5 giây (5,000 miligiây)
+          const newTimeInMilliseconds = currentTimeInMilliseconds + 4000;
+
+          // Tạo đối tượng Date mới với thời điểm sau khi cộng
+          const newTime = new Date(newTimeInMilliseconds);
+          dataToAdd = { ...dataToAdd, ...{ vnpay_on: newTime } };
+        }
+
+        if (data.coupon_product_id) couponProduct = await this.couponService.findOne({ _id: data.coupon_product_id });
+        orderPrice = this.getOrderPrice(couponProduct, orderPrice);
+        dataToAdd = {
+          ...dataToAdd,
+          price: orderPrice,
+        };
+        let dataCreate: Order = await this.orderService.create(dataToAdd);
+
+        //Hậu xử lý!
+        //Nếu là chuyển khoản thì bay tới trang detail luôn!
+        if (dataCreate.payment_method == "transfer") {
+          //Return after
+          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+          dataCreate = await this.orderService.update(dataUpdate);
+          return res
+            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+            .status(HttpStatus.OK)
+            .json(dataCreate);
+        }
+        if (dataCreate.payment_method == "vn_pay") {
+          const redirectUrl = await this.createVNPayLink(req, orderPrice, "", "", dataCreate?._id?.toString());
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
+          dataCreate = await this.orderService.update(dataUpdate);
+          return res
+            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+            .status(HttpStatus.OK)
+            .json(dataCreate);
+        }
+
+        if (dataCreate?.status == "success") {
+          //Update After
+
+          //Update Channel
+          const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
+          const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
+          dataCreate = await this.orderService.update(dataUpdate);
+          dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
+          return res
+            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+            .status(HttpStatus.OK)
+            .json(dataCreate);
+        }
+
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataCreate);
+      } else {
+        throw new BadRequestException("No plan not found!");
+      }
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 }

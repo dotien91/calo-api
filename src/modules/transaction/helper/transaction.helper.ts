@@ -39,7 +39,7 @@ export class TransactionHelper {
     private userPermissionService: UserPermissionService,
     private userService: UserService,
     private readonly eventHookNotificationService: EventHookNotificationService
-  ) { }
+  ) {}
 
   private readonly logger = new Logger("chat_history_controller");
 
@@ -618,7 +618,7 @@ export class TransactionHelper {
       if (query?.search) {
         //Search User First
         const dataSearch = {
-          search: query?.search
+          search: query?.search,
         };
         const dataUserArray = await this.userService.filter(dataSearch, {}, page, limit);
         const ids = dataUserArray.map((itemValue, index) => {
@@ -733,33 +733,35 @@ export class TransactionHelper {
           currentToken = Number(dataTransactionLastCoinObject.current_token);
         }
 
-        const dataValue = Number(orderData.plan_id.amount_of_coin);
+        for (const orderItem of orderData.items) {
+          const dataValue = Number(orderItem.plan_id.amount_of_coin);
 
-        const newCoin = lastCoin + dataValue;
-        const noteTransaction = `Top-up ${dataValue} coin from Order ID: #${orderData._id.toString()} at: ${new Date().toISOString()}. Created by User: #${userObject._id.toString()}.`;
+          const newCoin = lastCoin + dataValue;
+          const noteTransaction = `Top-up ${dataValue} coin from Order ID: #${orderData._id.toString()} at: ${new Date().toISOString()}. Created by User: #${userObject._id.toString()}.`;
 
-        //Create New Transaction
-        const dataCreate = {
-          ref_id: orderData._id.toString(),
-          ref_type: "order",
-          method: "plus",
-          current_token: currentToken,
-          last_token: currentToken,
-          current_coin: newCoin,
-          last_coin: lastCoin,
-          transaction_value: dataValue,
-          user_id: userObject._id.toString(),
-          note: noteTransaction,
-          status: "done",
-          data_payment: JSON.stringify(purchase),
-          trans_id: purchase._id.toString(),
-          successfully_on: new Date(),
-          billing_on: new Date(),
-        };
+          //Create New Transaction
+          const dataCreate = {
+            ref_id: orderData._id.toString(),
+            ref_type: "order",
+            method: "plus",
+            current_token: currentToken,
+            last_token: currentToken,
+            current_coin: newCoin,
+            last_coin: lastCoin,
+            transaction_value: dataValue,
+            user_id: userObject._id.toString(),
+            note: noteTransaction,
+            status: "done",
+            data_payment: JSON.stringify(purchase),
+            trans_id: purchase._id.toString(),
+            successfully_on: new Date(),
+            billing_on: new Date(),
+          };
 
-        await this.handleProcessUpdateCoin(userObject, newCoin, currentToken, auth);
-        const dataToReturn = await this.transactionService.create(dataCreate);
-        return dataToReturn;
+          await this.handleProcessUpdateCoin(userObject, newCoin, currentToken, auth);
+          await this.transactionService.create(dataCreate);
+        }
+        return null;
       } else {
         return null;
       }

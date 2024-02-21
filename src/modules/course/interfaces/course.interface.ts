@@ -32,6 +32,7 @@ export enum CoursePublicStatus {
   END = "end",
   TRASH = "trash",
   DRAFT = "draft",
+  INREVIEW = "inreview",
 }
 
 export enum CourseClassType {

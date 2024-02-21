@@ -40,5 +40,6 @@ import { PlanService } from "./services/plan.service";
     HandleServiceHelper,
     HandleServiceService,
   ],
+  exports: [SubscribeService, PlanHelper, PlanService, HandleServiceHelper, HandleServiceService],
 })
 export class PlanModule {}
