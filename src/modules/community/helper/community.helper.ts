@@ -2,7 +2,14 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { GptService } from "../../../modules/gpt/services/gpt.service";
+import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
+import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import {
+  UserPointHistory_EntityAction,
+  UserPointHistory_EntityType,
+} from "../../../modules/user/interfaces/user.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserFollowService } from "../../../modules/user/services/user_follow.service";
@@ -46,7 +53,9 @@ export class CommunityHelper {
     private userService: UserService,
     private notificationHelper: NotificationHelper,
     private communityPollService: CommunityPollService,
-    private userFollowService: UserFollowService
+    private userFollowService: UserFollowService,
+    private eventHookWorkerService: EventHookWorkerService,
+    private gptService: GptService
   ) {}
 
   /**
@@ -418,7 +427,10 @@ export class CommunityHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const isValid = await this.gptService.isValidCommunity(
+        createCommunityData.post_content + " " + createCommunityData.post_title
+      );
+      if (!isValid) throw new Error("The community's content violates community standards");
 
       let dataSlug = this.toSlug(createCommunityData.post_title);
       createCommunityData = { ...createCommunityData, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
@@ -472,6 +484,16 @@ export class CommunityHelper {
         notification_community: dataCreate?._id?.toString(),
       };
       await this.userService.updateArray(dataUpdateNotification, false);
+
+      // update point for user
+      const data: AddPointToUserData = {
+        user_id: userObject._id.toString(),
+        point: 5,
+        entity_id: dataCreate?._id?.toString(),
+        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_action: UserPointHistory_EntityAction.POST,
+      };
+      this.eventHookWorkerService.AddPointToUser(data);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -635,6 +657,16 @@ export class CommunityHelper {
         await this.handleSendNotification(userObject, dataCommunity, dataCreate, authCode, req);
       }, 500);
 
+      // update point for user
+      const data: AddPointToUserData = {
+        user_id: userObject._id.toString(),
+        point: 2,
+        entity_id: dataCreate?._id?.toString(),
+        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_action: UserPointHistory_EntityAction.COMMENT,
+      };
+      this.eventHookWorkerService.AddPointToUser(data);
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -669,6 +701,16 @@ export class CommunityHelper {
 
       //Check
       let dataCheck = await this.communityLikeService.findOne(dataToCreate);
+
+      // update point for user
+      const data: AddPointToUserData = {
+        user_id: userObject._id.toString(),
+        point: 1,
+        entity_id: dataCreate.community_id,
+        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_action: UserPointHistory_EntityAction.LIKE,
+      };
+      this.eventHookWorkerService.AddPointToUser(data);
 
       if (dataCheck) {
         let dataRemove: any = await this.communityLikeService.removeOne(dataToCreate);

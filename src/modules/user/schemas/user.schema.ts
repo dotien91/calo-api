@@ -250,6 +250,24 @@ export class User {
     ref: "User",
   })
   ignore_followers: MongooseSchema.Types.ObjectId[];
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  point: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  point_exchange: number;
+
+  @Prop({
+    type: Number,
+    default: 1,
+  })
+  level: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

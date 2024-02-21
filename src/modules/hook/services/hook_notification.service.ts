@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
-import HookExpress from "../hook_epress";
+import HookExpress from "../hook_express";
 const cron = require("node-cron");
 let alreadyWork = false;
 

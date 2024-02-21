@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { GptService } from "../gpt/services/gpt.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationHelper } from "../notification/helper/notification.helper";
@@ -13,7 +14,6 @@ import { Transaction, TransactionSchema } from "../transaction/schemas/transacti
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
 import { TransactionService } from "../transaction/services/transaction.service";
 import { TransactionBankService } from "../transaction/services/transaction_bank.service";
-import { TransactionModule } from "../transaction/transaction.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymous.schema";
 import { UserAnonymousSession, UserAnonymousSessionSchema } from "../user/schemas/user_anonymous_session.schema";
@@ -45,14 +45,15 @@ import { CommunityPollService } from "./services/community_poll.service";
   imports: [
     BullModule.registerQueueAsync(
       {
-        name: 'gift'
+        name: "gift",
       },
       {
-        name: 'noti'
+        name: "noti",
       },
       {
-        name: 'challenge'
-      }),
+        name: "challenge",
+      }
+    ),
     MongooseModule.forFeature([
       { name: Community.name, schema: CommunitySchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
@@ -68,7 +69,7 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: CommunityPoll.name, schema: CommunityPollSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: Transaction.name, schema: TransactionSchema },
-      { name: TransactionBank.name, schema: TransactionBankSchema }
+      { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
   ],
   controllers: [CommunityController],
@@ -96,7 +97,16 @@ import { CommunityPollService } from "./services/community_poll.service";
     EventHookNotificationService,
     TransactionService,
     TransactionBankService,
+    GptService,
   ],
-  exports: [CommunityHelper, CommunityCategoryService, CommunityCommentService, CommunityDisLikeService, CommunityLikeService, CommunityPollService, CommunityService],
+  exports: [
+    CommunityHelper,
+    CommunityCategoryService,
+    CommunityCommentService,
+    CommunityDisLikeService,
+    CommunityLikeService,
+    CommunityPollService,
+    CommunityService,
+  ],
 })
-export class CommunityModule { }
+export class CommunityModule {}

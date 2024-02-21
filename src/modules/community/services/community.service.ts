@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import HookExpress from "../../hook/hook_epress";
+import HookExpress from "../../hook/hook_express";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { SearchPostDto } from "../dto/search-community.dto";
 import { SortByPostDto } from "../dto/sort_by-community.dto";

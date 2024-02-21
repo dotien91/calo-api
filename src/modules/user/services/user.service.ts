@@ -6,6 +6,7 @@ import { CreateUserDto } from "../dto/create-user.dto";
 import { SearchUserDto } from "../dto/search-user.dto";
 import { SortByUserDto } from "../dto/sort_by-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserLevel } from "../interfaces/user.interface";
 import { User, UserDocument } from "../schemas/user.schema";
 @Injectable()
 export class UserService {
@@ -354,6 +355,70 @@ export class UserService {
       return await this.appUserModel.findById(id, resultData).exec();
     } catch (e) {
       return null;
+    }
+  }
+
+  async updateUserPoint(userId: string, point: number) {
+    try {
+      if (!userId) {
+        return null;
+      }
+      const dataReturn = await this.appUserModel.findByIdAndUpdate(
+        userId,
+        { $inc: { point, point_exchange: point } },
+        { new: false }
+      );
+      if (dataReturn._id) {
+        const data = await this.updateUserLevel(dataReturn._id.toString(), dataReturn.point + point);
+        return {
+          ...data,
+          is_level_up: dataReturn.level !== data.level,
+        };
+      }
+      throw new Error("Cannot update user point");
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async updateUserLevel(userId: string, point: number) {
+    try {
+      const level = this.calculateLevelByPoint(point);
+
+      const dataReturn = await this.appUserModel.findByIdAndUpdate(userId, { $set: { level } }, { new: false });
+      if (dataReturn._id) {
+        return {
+          point,
+          level,
+        };
+      }
+      throw new Error("Cannot update user point");
+    } catch (e) {
+      return e;
+    }
+  }
+
+  calculateLevelByPoint(point: number) {
+    if (point >= UserLevel.RANK_10) {
+      return 10;
+    } else if (point >= UserLevel.RANK_9) {
+      return 9;
+    } else if (point >= UserLevel.RANK_8) {
+      return 8;
+    } else if (point >= UserLevel.RANK_7) {
+      return 7;
+    } else if (point >= UserLevel.RANK_6) {
+      return 6;
+    } else if (point >= UserLevel.RANK_5) {
+      return 5;
+    } else if (point >= UserLevel.RANK_4) {
+      return 4;
+    } else if (point >= UserLevel.RANK_3) {
+      return 3;
+    } else if (point >= UserLevel.RANK_2) {
+      return 2;
+    } else if (point >= UserLevel.RANK_1) {
+      return 1;
     }
   }
 }

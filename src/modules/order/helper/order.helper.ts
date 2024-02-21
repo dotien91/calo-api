@@ -9,6 +9,7 @@ import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
 import { EmailService } from "../../../modules/email/services/email.service";
+import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
@@ -16,6 +17,10 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
+import {
+  UserPointHistory_EntityAction,
+  UserPointHistory_EntityType,
+} from "../../../modules/user/interfaces/user.interface";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CourseHelper } from "../../course/helper/course.helper";
@@ -881,6 +886,20 @@ export class OrderHelper {
               .tz(orderObject.user_id.timezone || "UTC")
               .format("DD-MM-YYYY HH:mm"),
           },
+        });
+
+        // update point for user
+        orderObject.items.forEach((item) => {
+          if (item.type === OrderItemType.COURSE) {
+            const data: AddPointToUserData = {
+              user_id: orderObject.user_id.toString(),
+              point: orderObject.payment_method === "free" ? 10 : Math.floor(orderObject.price / 10000),
+              entity_id: orderObject?._id?.toString(),
+              entity_type: UserPointHistory_EntityType.COURSE,
+              entity_action: UserPointHistory_EntityAction.BUY,
+            };
+            this.eventHookWorkerService.AddPointToUser(data);
+          }
         });
 
         return orderObject;

@@ -5,10 +5,15 @@ import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
+import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
+import {
+  UserPointHistory_EntityAction,
+  UserPointHistory_EntityType,
+} from "../../../modules/user/interfaces/user.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserOrganizationService } from "../../../modules/user/services/user_organization.service";
@@ -1168,6 +1173,37 @@ export class CourseHelper {
       };
 
       let dataReturn = await this.courseViewService.update(dataUpdate);
+
+      // update point for user
+      (async () => {
+        let dataFilterView = {
+          course_ids: [moduleObject.course_id?._id?.toString()],
+          user_id: userObject._id.toString(),
+        };
+        let [dataCourseViewedModule, dataCourse] = await Promise.all([
+          this.courseViewService.filter(dataFilterView, {}, 1, 1000),
+          this.courseService.findOne({
+            _id: moduleObject.course_id?._id?.toString(),
+          }),
+        ]);
+
+        let point = 0;
+        // TODO
+        if (dataCourse.module_count === dataCourseViewedModule.length) {
+          point = 100;
+        } else {
+          point = 10;
+        }
+
+        const data: AddPointToUserData = {
+          user_id: userObject._id.toString(),
+          point: point,
+          entity_id: dataFollow.module_id,
+          entity_type: UserPointHistory_EntityType.COURSE,
+          entity_action: UserPointHistory_EntityAction.WATCH,
+        };
+        this.hookWorker.AddPointToUser(data);
+      })();
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

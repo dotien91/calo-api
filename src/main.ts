@@ -6,7 +6,7 @@ import * as cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./filters/http-exception.filter";
-export * from "./modules/hook/hook_epress";
+export * from "./modules/hook/hook_express";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
