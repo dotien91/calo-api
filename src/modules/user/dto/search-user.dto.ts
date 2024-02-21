@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { UserSortBy } from "../interfaces/user.interface";
 
 export class SearchUserDto {
   @IsString()
@@ -36,6 +37,11 @@ export class SearchUserDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   order_by?: "DESC" | "ASC";
+
+  @IsEnum(UserSortBy)
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  sort_by?: UserSortBy;
 
   @IsString()
   @IsOptional(null)
@@ -93,4 +99,16 @@ export class SearchUserDto {
   user_interest?: string;
 
   verify_code?: string;
+}
+
+export class GetRankingBoardParams {
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  page?: number;
+
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  limit?: number;
 }

@@ -1,4 +1,10 @@
-import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import { ConfigService as ConfigServiceNest } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Response } from "express";
@@ -13,10 +19,11 @@ import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SearchBlockListDto } from "../dto/search-block_list.dto";
 import { SearchFollowCountDto } from "../dto/search-follow_count.dto";
-import { SearchUserDto } from "../dto/search-user.dto";
+import { GetRankingBoardParams, SearchUserDto } from "../dto/search-user.dto";
 import { SearchUserFollowDto } from "../dto/search-user_follow.dto";
 import { SearchUserLocationDto } from "../dto/search-user_location.dto";
 import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
+import { User } from "../schemas/user.schema";
 import { UserService } from "../services/user.service";
 import { UserBlockService } from "../services/user_block.service";
 import { UserDisagreeService } from "../services/user_disagree.service";
@@ -102,9 +109,12 @@ export class UserFilterHelper {
 
       const limit = query.limit ? query.limit : 1000;
       const page = query.page ? query.page : 1;
+
       let orderByOBject = {};
-      if (query.order_by) {
-        orderByOBject = { ...orderByOBject, ...{ updatedAt: query.order_by } };
+      if (query.sort_by) {
+        orderByOBject[query.sort_by] = query.order_by || "DESC";
+      } else {
+        orderByOBject["createdAt"] = query.order_by || "DESC";
       }
 
       let dataToFilter = {
@@ -1196,4 +1206,59 @@ export class UserFilterHelper {
 
   //     return true;
   //   }
+
+  async getRankingBoard(query: GetRankingBoardParams, req: ExpressRequestDto, res: Response) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+
+      const users = await this.appUserService.findAllWithMinimumData();
+      for (let dataIndexCourse in users) {
+        // @ts-ignore
+        users[dataIndexCourse] = users[dataIndexCourse]?.toObject();
+      }
+      const rankedUsers = this.getUsersRanking(users);
+
+      const me = rankedUsers.find((user: any) => user._id.toString() === req.user_id.toString());
+      const paginationUsers = rankedUsers.slice((page - 1) * limit, page * limit);
+
+      const dataReturn = {
+        user_id: me,
+        other_users: paginationUsers,
+      };
+
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+          "X-Total-Count": paginationUsers.length,
+        })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private getUsersRanking(users: User[]) {
+    const sortedUsers = users.slice().sort((a, b) => b.point - a.point);
+    let rank = 1;
+    let prevPoint = sortedUsers[0].point;
+    const rankedData = sortedUsers.map((item) => {
+      if (item.point !== prevPoint) {
+        rank++;
+        prevPoint = item.point;
+      }
+      return { ...item, rank };
+    });
+
+    return rankedData;
+  }
 }

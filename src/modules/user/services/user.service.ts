@@ -30,7 +30,27 @@ export class UserService {
    * @returns
    */
   async findAll(dataToSearch?: any): Promise<User[]> {
-    return this.appUserModel.find(dataToSearch).exec();
+    return await this.appUserModel.find(dataToSearch).exec();
+  }
+
+  async findAllWithMinimumData(dataToSearch?: any): Promise<User[]> {
+    return await this.appUserModel
+      .find(dataToSearch)
+      .select(
+        `
+        user_avatar
+        user_avatar_thumbnail
+        display_name
+        user_role
+        country
+        educations
+        certificates
+        badge
+        point
+        level
+        `
+      )
+      .exec();
   }
 
   /**
@@ -130,12 +150,15 @@ export class UserService {
    * @returns
    */
   getSort(sortBy: SortByUserDto) {
-    let sort = { priority: -1 };
+    let sort = {};
     if (sortBy.createdAt) {
-      sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
+      sort["createdAt"] = sortBy.createdAt === "DESC" ? -1 : 1;
     }
     if (sortBy.updatedAt) {
-      sort = Object.assign(sort, { _id: sortBy.updatedAt === "DESC" ? -1 : 1 });
+      sort["updatedAt"] = sortBy.updatedAt === "DESC" ? -1 : 1;
+    }
+    if (sortBy.point) {
+      sort["point"] = sortBy.point === "DESC" ? -1 : 1;
     }
     return sort;
   }

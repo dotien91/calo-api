@@ -26,7 +26,7 @@ import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
 import { SearchBaseUserDto } from "../dto/search-base_user.dto";
 import { SearchBlockListDto } from "../dto/search-block_list.dto";
 import { SearchFollowCountDto } from "../dto/search-follow_count.dto";
-import { SearchUserDto } from "../dto/search-user.dto";
+import { GetRankingBoardParams, SearchUserDto } from "../dto/search-user.dto";
 import { SearchUserFollowDto } from "../dto/search-user_follow.dto";
 import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
 import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
@@ -507,5 +507,10 @@ export class UserController {
   @Patch("organization/delete")
   async deleteOrganization(@Param("id") id: string, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userOrganizationHelper.delete(id, req, res);
+  }
+
+  @Get("ranking")
+  async getRankingBoard(@Query() query: GetRankingBoardParams, @Req() req: ExpressRequestDto, @Res() res: Response) {
+    return await this.userFilterHelper.getRankingBoard(query, req, res);
   }
 }

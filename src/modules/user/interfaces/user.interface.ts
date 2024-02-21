@@ -34,3 +34,6 @@ export enum UserPointHistory_EntityAction {
   SIGN_UP = "sign-up",
 }
 
+export enum UserSortBy {
+  POINT = "point",
+}
