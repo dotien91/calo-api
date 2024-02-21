@@ -125,6 +125,6 @@ export class CreateOrderDto {
   coupon_product_id?: string;
 
   @IsString()
-  @IsDefined()
-  address: string;
+  @IsOptional()
+  address?: string;
 }
