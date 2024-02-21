@@ -14,6 +14,7 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
+import { Referral } from "../../../modules/referral/schemas/referral.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
@@ -772,6 +773,56 @@ export class TransactionHelper {
     }
   }
 
+  async handleProcessUpdateCoinReferral(
+    userObject: User,
+    coinToUpdate: number,
+    referralObject: Referral,
+    auth: string
+  ) {
+    try {
+      let dataFilterLastCoin = {
+        user_id: userObject._id.toString(),
+      };
+      let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+      let lastCoin = 0;
+      if (dataTransactionLastCoinObject) {
+        lastCoin = Number(dataTransactionLastCoinObject.current_coin);
+      }
+
+      let dataValue = 0;
+      let newCoin = lastCoin;
+      let noteTransaction = "";
+      let method = "plus";
+      if (coinToUpdate) {
+        dataValue = coinToUpdate;
+        noteTransaction = `Transaction ${dataValue} coin for message at: ${new Date().toISOString()}.`;
+        newCoin = lastCoin + dataValue;
+      }
+
+      //Create New Transaction
+      let dataCreate = {
+        ref_id: referralObject._id.toString(),
+        ref_type: "referral",
+        method: method,
+        current_coin: newCoin,
+        last_coin: lastCoin,
+        transaction_value: dataValue,
+        user_id: userObject._id.toString(),
+        note: noteTransaction,
+        status: "done",
+        data_payment: "",
+        trans_id: referralObject._id.toString(),
+        successfully_on: new Date(),
+        billing_on: new Date(),
+      };
+
+      await this.handleProcessUpdateCoin(userObject, newCoin, 0, auth);
+      let dataToReturn = await this.transactionService.create(dataCreate);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   /**
    *
    * @param userObject
@@ -783,14 +834,12 @@ export class TransactionHelper {
   async handleProcessUpdateCoin(userObject: User, coinNumber: number, tokenNumber: number, authCode: string) {
     try {
       const dataToUpdate: any = {
-        user_id: userObject._id?.toString(),
+        _id: userObject._id?.toString(),
         current_coin: coinNumber,
         current_token: tokenNumber,
       };
       const dataUpdateUser = await this.userService.update(dataToUpdate);
-      // let dataToSend = {
-      //   data_update: JSON.stringify(dataToUpdate),
-      // };
+
       const params = new URLSearchParams(dataToUpdate);
       const config = {
         headers: {

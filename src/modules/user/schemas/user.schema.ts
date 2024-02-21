@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { makeRandom } from "../../../utils/utils";
 
 export type UserDocument = User & Document;
 
@@ -268,6 +269,19 @@ export class User {
     default: 1,
   })
   level: number;
+
+  @Prop({
+    type: String,
+    default: makeRandom(10),
+    unique: true,
+  })
+  invitation_code: string;
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  current_coin: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

@@ -22,6 +22,7 @@ import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
 import { QueueService } from "../queue/queue.service";
+import { ReferralModule } from "../referral/referral.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
@@ -102,6 +103,7 @@ import { UserViewService } from "./services/user_view.service";
     ]),
     EmailModule,
     CouponModule,
+    ReferralModule,
   ],
   controllers: [UserController],
   providers: [

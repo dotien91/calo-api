@@ -1,0 +1,221 @@
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
+import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
+import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
+import {
+  UserPointHistory_EntityAction,
+  UserPointHistory_EntityType,
+} from "../../../modules/user/interfaces/user.interface";
+import { User } from "../../../modules/user/schemas/user.schema";
+import { UserService } from "../../../modules/user/services/user.service";
+import { FilterReferralDTO } from "../dtos/referral.dto";
+import { CreateReferralDTO, ReferralType } from "../interfaces/referral.interface.i";
+import { Referral, ReferralDocument } from "../schemas/referral.schema";
+
+@Injectable()
+export class ReferralService {
+  constructor(
+    @InjectModel(Referral.name)
+    private couponModel: Model<ReferralDocument>,
+
+    private userService: UserService,
+    private transactionHelper: TransactionHelper,
+    private jwtHelperService: JwtHelperService,
+    private eventHookWorkerService: EventHookWorkerService
+  ) {}
+
+  /**
+   * @author Tony Vu
+   * @param createUser
+   * @returns
+   */
+  async create(createUser: CreateReferralDTO): Promise<Referral> {
+    const createdUser = new this.couponModel(createUser);
+    return createdUser.save();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataToSearch
+   * @returns
+   */
+  async remove(dataToSearch: any): Promise<any> {
+    await this.couponModel.deleteMany(dataToSearch);
+  }
+
+  /**
+   * @author Tony Vu
+   * @returns
+   */
+  async findAll(pattern?: any): Promise<Referral[]> {
+    return this.couponModel.find(pattern).exec();
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataToSearch
+   * @returns
+   */
+  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<Referral> {
+    if (isWithUser) {
+      return await this.couponModel.findOne(dataToSearch).exec();
+    } else {
+      return await this.couponModel.findOne(dataToSearch).exec();
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param dataUpdate
+   * @returns
+   */
+  async update(dataUpdate: any) {
+    try {
+      let dataReturn = await this.couponModel.findOneAndUpdate(
+        { _id: dataUpdate._id },
+        { $set: dataUpdate },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+      if (dataReturn._id) {
+        return { ...dataReturn.toObject(), ...dataUpdate };
+      } else {
+        return dataReturn;
+      }
+    } catch (e) {
+      return e;
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * @param filter
+   * @returns
+   */
+  public count = async (filter: FilterReferralDTO) => {
+    try {
+      let condition = await this.getCondition(filter);
+      if (JSON.stringify(condition) === JSON.stringify({})) {
+        return this.couponModel.estimatedDocumentCount();
+      } else {
+        return this.couponModel.countDocuments(condition);
+      }
+    } catch (e) {
+      return 0;
+    }
+  };
+
+  /**
+   * @author Tony Vu
+   * @param sortBy
+   * @returns
+   */
+  getSort(sortBy: any) {
+    let sort = { priority: -1 };
+    if (sortBy.createdAt) {
+      sort = Object.assign(sort, { _id: sortBy.createdAt === "DESC" ? -1 : 1 });
+    }
+    if (sortBy.updatedAt) {
+      sort = Object.assign(sort, { updatedAt: sortBy.updatedAt === "DESC" ? -1 : 1 });
+    }
+    return sort;
+  }
+
+  getCondition(filter: FilterReferralDTO) {
+    let condition: any = {};
+
+    if (filter.user_id) {
+      condition = Object.assign(condition, {
+        user_id: filter.user_id,
+      });
+    }
+
+    if (filter.from_user_id) {
+      condition = Object.assign(condition, {
+        from_user_id: filter.from_user_id,
+      });
+    }
+
+    if (filter.type) {
+      condition = Object.assign(condition, {
+        type: filter.type,
+      });
+    }
+
+    return condition;
+  }
+
+  async filter(
+    filter: FilterReferralDTO,
+    sortBy: any,
+    page: number,
+    limit: number,
+    projection: any = {}
+  ): Promise<Referral[]> {
+    let condition = await this.getCondition(filter);
+    let sortObject: any;
+    if (sortBy) {
+      sortObject = this.getSort(sortBy);
+    }
+    let dataReturn = await this.couponModel
+      .find(condition, projection)
+      .sort(sortObject)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .exec();
+    return dataReturn;
+  }
+
+  async processSignUpBonusForReferralUser(invitationCode: string, userObject: User) {
+    const bonusCoin = 1;
+    const bonusPoint = 20;
+    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.SIGN_UP, (userId, entityId) => {
+      const data: AddPointToUserData = {
+        user_id: userId,
+        point: bonusPoint,
+        entity_id: entityId,
+        entity_type: UserPointHistory_EntityType.REFERRAL,
+        entity_action: UserPointHistory_EntityAction.SIGN_UP,
+      };
+      this.eventHookWorkerService.AddPointToUser(data);
+    });
+  }
+
+  async processBuyCourseBonusForReferralUser(invitationCode: string, userObject: User, price: number) {
+    const bonusCoin = 0.0008 * price;
+    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+  }
+
+  async processCompletedCourseBonusForReferralUser(invitationCode: string, userObject: User, price: number) {
+    const bonusCoin = 0.0002 * price;
+    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+  }
+
+  private async processReferral(
+    invitationCode: string,
+    userObject: User,
+    coin: number,
+    referralType: string,
+    processPoint?: (userId: string, entityId: string) => void
+  ) {
+    const authCode = this.jwtHelperService.generateJwt(userObject._id.toString(), "", "")?.toString();
+
+    const referralUser = await this.userService.findOne({
+      invitation_code: invitationCode,
+    });
+
+    if (referralUser) {
+      const params: CreateReferralDTO = {
+        user_id: userObject._id.toString(),
+        from_user_id: referralUser._id.toString(),
+        type: referralType,
+      };
+      const referralData = await this.create(params);
+      processPoint(referralUser._id.toString(), referralData?._id?.toString());
+      this.transactionHelper.handleProcessUpdateCoinReferral(referralUser, coin, referralData, authCode);
+    }
+  }
+}
+

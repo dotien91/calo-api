@@ -325,9 +325,8 @@ export class OrderService {
             replacePattern: {
               display_name: dataReturn.user_id.display_name,
               order_id: dataReturn._id.toString(),
-              // TODO
-              // order_name: dataReturn.service_name,
-              // order_price: (dataReturn.price - dataReturn.coupon_price),
+              order_name: dataReturn.items?.map((item) => item.service_name)?.toString(),
+              order_price: dataReturn.price,
               order_date: moment()
                 .tz(dataReturn.user_id.timezone || "UTC")
                 .format("DD-MM-YYYY HH:mm"),

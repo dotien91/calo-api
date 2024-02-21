@@ -2,7 +2,7 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
-import { GptService } from "../gpt/services/gpt.service";
+import { GptModule } from "../gpt/gpt.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationHelper } from "../notification/helper/notification.helper";
@@ -71,6 +71,7 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
+    GptModule,
   ],
   controllers: [CommunityController],
   providers: [
@@ -97,7 +98,6 @@ import { CommunityPollService } from "./services/community_poll.service";
     EventHookNotificationService,
     TransactionService,
     TransactionBankService,
-    GptService,
   ],
   exports: [
     CommunityHelper,

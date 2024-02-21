@@ -56,5 +56,5 @@ export class LoginUserPasswordDto {
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  referal_user?: string;
+  invitation_code?: string;
 }

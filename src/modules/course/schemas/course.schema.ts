@@ -134,7 +134,7 @@ export class Course {
     default: 0,
     nullable: false,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Number,

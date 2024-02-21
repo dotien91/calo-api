@@ -14,6 +14,7 @@ import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.s
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
+import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
@@ -55,7 +56,8 @@ export class OrderHelper {
     private couponService: CouponService,
     private readonly eventHookWorkerService: EventHookWorkerService,
     private readonly eventHookNotificationService: EventHookNotificationService,
-    private readonly courseHelper: CourseHelper
+    private readonly courseHelper: CourseHelper,
+    private readonly referralService: ReferralService
   ) {
     // if (!initHook) {
     //   this.initHook();
@@ -889,9 +891,8 @@ export class OrderHelper {
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             order_id: orderObject._id.toString(),
-            // TODO
-            // order_name: orderObject.service_name,
-            // order_price: (orderObject.price - orderObject.coupon_price) * orderObject.amount_of_package,
+            order_name: orderObject.items?.map((item) => item.service_name)?.toString(),
+            order_price: orderObject.price,
             order_date: moment()
               .tz(orderObject.user_id.timezone || "UTC")
               .format("DD-MM-YYYY HH:mm"),
@@ -899,7 +900,9 @@ export class OrderHelper {
         });
 
         // update point for user
+        // update coin for referral user
         orderObject.items.forEach((item) => {
+          // update coin for referral user
           if (item.type === OrderItemType.COURSE) {
             const data: AddPointToUserData = {
               user_id: orderObject.user_id.toString(),
@@ -909,6 +912,14 @@ export class OrderHelper {
               entity_action: UserPointHistory_EntityAction.BUY,
             };
             this.eventHookWorkerService.AddPointToUser(data);
+
+            // update coin for referral user
+            if (orderObject.invitation_code)
+              this.referralService.processBuyCourseBonusForReferralUser(
+                orderObject.invitation_code,
+                orderObject.user_id,
+                orderObject.price
+              );
           }
         });
 

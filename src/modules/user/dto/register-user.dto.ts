@@ -58,5 +58,5 @@ export class RegisterUserDto {
   @IsString()
   @ApiPropertyOptional()
   @IsOptional(null)
-  referal_user?: string;
+  invitation_code?: string;
 }

@@ -19,7 +19,7 @@ export enum UserPointHistory_EntityType {
   COMMUNITY = "community",
   COURSE = "course",
   TEST = "test",
-  ACCOUNT = "account",
+  REFERRAL = "referral",
   ORDER = "order",
 }
 
@@ -31,5 +31,6 @@ export enum UserPointHistory_EntityAction {
   JOIN = "join",
   REFERRAL = "referral",
   WATCH = "watch",
+  SIGN_UP = "sign-up",
 }
 

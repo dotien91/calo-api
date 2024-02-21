@@ -14,6 +14,7 @@ import { google } from "googleapis";
 import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { ConfigService } from "../../config/services/config.service";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
@@ -43,7 +44,8 @@ export class UserLoginHelper {
     private jwtHelper: JwtHelperService,
     private userAnonymousSessionService: UserAnonymousSessionService,
     private emailService: EmailService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private referralService: ReferralService
   ) {}
 
   private readonly logger = new Logger("user_login");
@@ -487,6 +489,13 @@ export class UserLoginHelper {
           sessionGenerator,
           true
         );
+
+        // update coin for referral user
+        // update point for referral user
+        if (dataLogin.invitation_code) {
+          this.referralService.processSignUpBonusForReferralUser(dataLogin.invitation_code, userObject);
+        }
+
         return res
           .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
           .status(HttpStatus.OK)

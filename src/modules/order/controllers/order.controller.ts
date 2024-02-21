@@ -71,9 +71,8 @@ export class OrderController {
             email: order.user_id.user_email,
             replacePattern: {
               display_name: order.user_id.display_name,
-              // TODO
-              // order_name: order.service_name,
-              // order_price: (order.price - order.coupon_price) * order.amount_of_package,
+              order_name: order.items?.map((item) => item.service_name)?.toString(),
+              order_price: order.price,
               order_checkout_url: "https://ieltshunter.io" + path,
             },
           });

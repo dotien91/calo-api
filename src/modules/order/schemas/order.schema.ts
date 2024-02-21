@@ -210,9 +210,15 @@ export class Order {
 
   @Prop({
     type: String,
-    nullable: false,
+    default: "",
   })
   address: string;
+
+  @Prop({
+    type: String,
+    nullable: false,
+  })
+  invitation_code: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

@@ -10,6 +10,7 @@ import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.s
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
+import { ReferralService } from "../../../modules/referral/services/referral.service";
 import {
   UserPointHistory_EntityAction,
   UserPointHistory_EntityType,
@@ -91,7 +92,8 @@ export class CourseHelper {
     private readonly chatRoomHelper: ChatRoomHelper,
     private readonly chatRoomService: ChatRoomService,
     private readonly emailService: EmailService,
-    private readonly couponService: CouponService
+    private readonly couponService: CouponService,
+    private readonly referralService: ReferralService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -1160,6 +1162,7 @@ export class CourseHelper {
   async processViewCourse(dataFollow: CreateCourseViewDto, req: ExpressRequestDto, res: Response) {
     try {
       let userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
 
       let moduleObject = await this.courseModuleService.findById(dataFollow.module_id, {});
       if (!moduleObject) {
@@ -1188,9 +1191,15 @@ export class CourseHelper {
         ]);
 
         let point = 0;
-        // TODO
         if (dataCourse.module_count === dataCourseViewedModule.length) {
           point = 100;
+
+          // update coin for referral user
+          this.referralService.processCompletedCourseBonusForReferralUser(
+            userObject.invitation_code,
+            userObject,
+            moduleObject?.course_id?.price
+          );
         } else {
           point = 10;
         }

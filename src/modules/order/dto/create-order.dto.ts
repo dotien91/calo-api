@@ -127,4 +127,8 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   address?: string;
+
+  @IsString()
+  @IsOptional()
+  invitation_code?: string;
 }
