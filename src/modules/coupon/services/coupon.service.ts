@@ -112,10 +112,10 @@ export class CouponService {
     let condition: any = {};
 
     // should always get active coupon
-    condition = Object.assign(condition, { expired: { $gte: new Date() } });
+    condition = Object.assign(condition, { $or: [{ expired: { $gte: new Date() } }, { expired: null }] });
 
     // should get coupon that have total left > 0
-    condition = Object.assign(condition, { total: { $gt: 0 } });
+    condition = Object.assign(condition, { $or: [{ total: { $gt: 0 } }, { total: { $eq: -1 } }] });
 
     if (filter.title) {
       condition = Object.assign(condition, {
