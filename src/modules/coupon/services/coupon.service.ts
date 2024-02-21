@@ -138,6 +138,10 @@ export class CouponService {
       condition = Object.assign(condition, { visible: filter.visible });
     }
 
+    if (filter.user_id) {
+      condition = Object.assign(condition, { user_id: filter.user_id });
+    }
+
     return condition;
   }
 

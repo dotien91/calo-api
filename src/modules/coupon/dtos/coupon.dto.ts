@@ -37,6 +37,10 @@ export class ListCouponDto {
   @IsOptional()
   @IsEnum(CouponVisible)
   visible?: CouponVisible;
+
+  @IsOptional()
+  @IsString()
+  user_id?: string;
 }
 
 export class CreateCouponDTO {
