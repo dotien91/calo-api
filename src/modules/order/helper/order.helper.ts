@@ -800,6 +800,16 @@ export class OrderHelper {
           };
           dataToCreate = await this.subscribeService.create(dataSubscribe);
 
+          //Check if service is Extension
+          if (orderItem.service_id?.service_type == "course") {
+            await this.handleUpdateCourseAfter(orderObject);
+            const dataUpdate = {
+              _id: orderObject._id?.toString(),
+              product_url: "/r/courses/view/" + orderItem.service_id?.handle?.toString(),
+            };
+            orderObject = await this.orderService.update(dataUpdate);
+          }
+
           // check order payload
           if (orderItem.payload) {
             if (orderItem.payload.type === PayloadType.CLASS) {
