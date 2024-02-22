@@ -34,7 +34,7 @@ export class CouponController {
     return await this.couponHelper.getCouponByUserId(body, res, req);
   }
 
-  @Delete(":id")
+  @Delete("delete/:id")
   async removeCoupon(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.removeCoupon(id, res, req);
   }

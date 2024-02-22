@@ -30,7 +30,7 @@ export class RedeemController {
     return await this.redeemHelper.updateRedeem(updateRedeemData, res, req);
   }
 
-  @Delete(":id")
+  @Delete("delete/:id")
   async removeRedeem(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.redeemHelper.removeRedeem(id, res, req);
   }
@@ -64,7 +64,7 @@ export class RedeemController {
     return await this.redeemMissionHelper.updateRedeem(updateRedeemData, res, req);
   }
 
-  @Delete("mission/:id")
+  @Delete("delete/mission/:id")
   async removeRedeemMission(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.redeemMissionHelper.removeRedeem(id, res, req);
   }

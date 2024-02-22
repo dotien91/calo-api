@@ -37,7 +37,7 @@ export class ProductController {
     return await this.productHelper.update(updateData, res, req);
   }
 
-  @Delete("/:id")
+  @Delete("delete/:id")
   async deleteProduct(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.productHelper.delete(id, res, req);
   }

@@ -24,7 +24,7 @@ export class ShopController {
     return await this.shopHelper.updateShop(updateCouponData, res, req);
   }
 
-  @Delete(":id")
+  @Delete("delete/:id")
   async removeCoupon(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shopHelper.removeShop(id, res, req);
   }
