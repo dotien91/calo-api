@@ -2,12 +2,46 @@ import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import mongoose from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
+import { CreateRedeemDTO, HandleUpdateUserRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
+import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
 import { RedeemService } from "../services/redeem.service";
+import { RedeemUserService } from "../services/redeem_user.service";
 
 @Injectable()
 export class RedeemHelper {
-  constructor(private redeemService: RedeemService) {}
+  constructor(private redeemService: RedeemService, private redeemUserService: RedeemUserService) {}
+
+  async getUserRedeem(res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
+      const redeems = await this.redeemService.getListMissionOfRedeemsByUser(userObject);
+
+      // this process will create user - redeem history
+      for (const redeem of redeems) {
+        const redeemUser = await this.redeemUserService.findOne({
+          user_id: userObject._id.toString(),
+          redeem_id: redeem._id,
+        });
+        if (!redeemUser) {
+          this.redeemUserService.create({
+            user_id: userObject._id.toString(),
+            redeem_id: redeem._id,
+          });
+        }
+      }
+
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json(redeems);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
 
   async list(query: ListRedeemDto, res: Response, req: ExpressRequestDto) {
     try {
@@ -107,11 +141,64 @@ export class RedeemHelper {
 
   async handleGetDetailRedeem(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      const dataReturn = await this.redeemService.getListMissionOfRedeem(id);
+      const dataReturn = await this.redeemService.getListMissionOfRedeems([new mongoose.Types.ObjectId(id)]);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getRedeemEnum(res: Response, req: ExpressRequestDto) {
+    try {
+      const dataReturn = {
+        action_type: [
+          RedeemMissionActionType.LIKE,
+          RedeemMissionActionType.POST,
+          RedeemMissionActionType.COMMENT,
+          RedeemMissionActionType.BUY,
+          RedeemMissionActionType.COMPLETE,
+          RedeemMissionActionType.JOIN,
+          RedeemMissionActionType.REFERRAL,
+          RedeemMissionActionType.WATCH,
+          RedeemMissionActionType.SHARE,
+        ],
+        action_target: [
+          RedeemMissionActionTarget.COMMUNITY,
+          RedeemMissionActionTarget.COURSE,
+          RedeemMissionActionTarget.TEST,
+          RedeemMissionActionTarget.ACCOUNT,
+          RedeemMissionActionTarget.PRODUCT,
+          RedeemMissionActionTarget.CLASS,
+          RedeemMissionActionTarget.ONE,
+        ],
+      };
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleUpdateUserRedeem(body: HandleUpdateUserRedeemDTO, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
+      await this.redeemUserService.updateUserRedeem(userObject, body.action_type, body.action_target);
+
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json();
     } catch (error) {
       throw new NotFoundException(error.message);
     }

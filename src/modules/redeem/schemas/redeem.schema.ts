@@ -51,6 +51,12 @@ export class Redeem {
     default: 0,
   })
   coin: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 1,
+  })
+  required_level: Number;
 }
 
 export const RedeemSchema = SchemaFactory.createForClass(Redeem);

@@ -89,6 +89,14 @@ export class RedeemMissionService {
       condition = Object.assign(condition, { redeem_id: filter.redeem_id });
     }
 
+    if (filter.action_type) {
+      condition = Object.assign(condition, { action_type: filter.action_type });
+    }
+
+    if (filter.action_target) {
+      condition = Object.assign(condition, { action_target: filter.action_target });
+    }
+
     return condition;
   }
 

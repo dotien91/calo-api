@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
-import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
+import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import {
   UserPointHistory_EntityAction,
-  UserPointHistory_EntityType,
+  UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
@@ -22,8 +21,6 @@ export class ReferralService {
     private couponModel: Model<ReferralDocument>,
 
     private userService: UserService,
-    private transactionHelper: TransactionHelper,
-    private jwtHelperService: JwtHelperService,
     private eventHookWorkerService: EventHookWorkerService
   ) {}
 
@@ -176,8 +173,8 @@ export class ReferralService {
         user_id: userId,
         point: bonusPoint,
         entity_id: entityId,
-        entity_type: UserPointHistory_EntityType.REFERRAL,
-        entity_action: UserPointHistory_EntityAction.SIGN_UP,
+        entity_target: UserPointHistory_EntityTarget.ACCOUNT,
+        entity_action: UserPointHistory_EntityAction.REFERRAL,
       };
       this.eventHookWorkerService.AddPointToUser(data);
     });
@@ -188,9 +185,9 @@ export class ReferralService {
     this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
   }
 
-  async processCompletedCourseBonusForReferralUser(invitationCode: string, userObject: User, price: number) {
+  async processCompletedCourseBonusForReferralUser(userObject: User, price: number) {
     const bonusCoin = 0.0002 * price;
-    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+    this.processReferral(userObject.invitation_code, userObject, bonusCoin, ReferralType.COMPLETE_COURSE);
   }
 
   private async processReferral(
@@ -200,8 +197,6 @@ export class ReferralService {
     referralType: string,
     processPoint?: (userId: string, entityId: string) => void
   ) {
-    const authCode = this.jwtHelperService.generateJwt(userObject._id.toString(), "", "")?.toString();
-
     const referralUser = await this.userService.findOne({
       invitation_code: invitationCode,
     });
@@ -214,7 +209,12 @@ export class ReferralService {
       };
       const referralData = await this.create(params);
       processPoint(referralUser._id.toString(), referralData?._id?.toString());
-      this.transactionHelper.handleProcessUpdateCoinReferral(referralUser, coin, referralData, authCode);
+      this.eventHookWorkerService.AddCoinToUser({
+        userId: referralUser._id.toString(),
+        coin,
+        refObject: referralData,
+        refType: TransactionRefType.REFERRAL,
+      });
     }
   }
 }

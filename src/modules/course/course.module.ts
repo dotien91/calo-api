@@ -15,6 +15,7 @@ import { Plan, PlanSchema } from "../plan/schemas/plan.schema";
 import { HandleServiceService } from "../plan/services/handle_service.service";
 import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
+import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -86,6 +87,7 @@ import { CourseViewService } from "./services/course_view.service";
     EmailModule,
     CouponModule,
     ReferralModule,
+    RedeemModule,
   ],
   controllers: [CourseController],
   providers: [

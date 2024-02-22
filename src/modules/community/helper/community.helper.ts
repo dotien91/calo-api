@@ -7,8 +7,13 @@ import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interf
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
+import {
   UserPointHistory_EntityAction,
-  UserPointHistory_EntityType,
+  UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
@@ -55,7 +60,8 @@ export class CommunityHelper {
     private communityPollService: CommunityPollService,
     private userFollowService: UserFollowService,
     private eventHookWorkerService: EventHookWorkerService,
-    private gptService: GptService
+    private gptService: GptService,
+    private redeemUserService: RedeemUserService
   ) {}
 
   /**
@@ -490,10 +496,17 @@ export class CommunityHelper {
         user_id: userObject._id.toString(),
         point: 5,
         entity_id: dataCreate?._id?.toString(),
-        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_target: UserPointHistory_EntityTarget.COMMUNITY,
         entity_action: UserPointHistory_EntityAction.POST,
       };
       this.eventHookWorkerService.AddPointToUser(data);
+
+      // update redeem for user
+      this.redeemUserService.updateUserRedeem(
+        userObject,
+        RedeemMissionActionType.POST,
+        RedeemMissionActionTarget.COMMUNITY
+      );
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -662,10 +675,17 @@ export class CommunityHelper {
         user_id: userObject._id.toString(),
         point: 2,
         entity_id: dataCreate?._id?.toString(),
-        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_target: UserPointHistory_EntityTarget.COMMUNITY,
         entity_action: UserPointHistory_EntityAction.COMMENT,
       };
       this.eventHookWorkerService.AddPointToUser(data);
+
+      // update redeem for user
+      this.redeemUserService.updateUserRedeem(
+        userObject,
+        RedeemMissionActionType.COMMENT,
+        RedeemMissionActionTarget.COMMUNITY
+      );
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -707,10 +727,17 @@ export class CommunityHelper {
         user_id: userObject._id.toString(),
         point: 1,
         entity_id: dataCreate.community_id,
-        entity_type: UserPointHistory_EntityType.COMMUNITY,
+        entity_target: UserPointHistory_EntityTarget.COMMUNITY,
         entity_action: UserPointHistory_EntityAction.LIKE,
       };
       this.eventHookWorkerService.AddPointToUser(data);
+
+      // update redeem for user
+      this.redeemUserService.updateUserRedeem(
+        userObject,
+        RedeemMissionActionType.LIKE,
+        RedeemMissionActionTarget.COMMUNITY
+      );
 
       if (dataCheck) {
         let dataRemove: any = await this.communityLikeService.removeOne(dataToCreate);

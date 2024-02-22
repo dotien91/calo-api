@@ -1,5 +1,5 @@
 import { BullModule } from "@nestjs/bull";
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../../modules/core/services/jwt_helper.service";
 import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
@@ -22,6 +22,7 @@ import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
 import { QueueService } from "../queue/queue.service";
+import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -104,6 +105,7 @@ import { UserViewService } from "./services/user_view.service";
     EmailModule,
     CouponModule,
     ReferralModule,
+    forwardRef(() => RedeemModule),
   ],
   controllers: [UserController],
   providers: [

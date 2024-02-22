@@ -1,10 +1,8 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationModule } from "../notification/notification.module";
-import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { TransactionModule } from "../transaction/transaction.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
@@ -30,8 +28,6 @@ import { ReferralService } from "./services/referral.service";
   providers: [
     ReferralService,
     UserService,
-    TransactionHelper,
-    JwtHelperService,
     EventHookWorkerService,
     EventHookNotificationService,
     UserPermissionService,

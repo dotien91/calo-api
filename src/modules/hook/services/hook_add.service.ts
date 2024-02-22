@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import axios from "axios";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPointHistoryService } from "../../../modules/user/services/user_point_history.service";
 import HookExpress from "../hook_express";
-import { AddPointToUserData } from "../interfaces/hook.interface";
+import { AddCoinToUserData, AddPointToUserData } from "../interfaces/hook.interface";
 let alreadyWork = false;
 
 @Injectable()
@@ -12,7 +13,8 @@ export class EventHookAdderService {
   constructor(
     private readonly userService: UserService,
     private readonly userPointHistoryService: UserPointHistoryService,
-    private readonly jwtHelperService: JwtHelperService
+    private readonly jwtHelperService: JwtHelperService,
+    private readonly transactionHelper: TransactionHelper
   ) {
     if (alreadyWork !== true) {
       this.initHook();
@@ -27,7 +29,7 @@ export class EventHookAdderService {
         const isSameAction = await this.userPointHistoryService.findOne({
           user_id: data.user_id,
           entity_id: data.entity_id,
-          entity_type: data.entity_type,
+          entity_target: data.entity_target,
           entity_action: data.entity_action,
         });
         if (isSameAction) throw new Error("User already earned point from this action");
@@ -68,6 +70,22 @@ export class EventHookAdderService {
         }
       } catch (error) {
         console.log("Plus point for customer fails :", error.message);
+      }
+    });
+
+    HookExpress.add_action("user.plus-coin", async (data: AddCoinToUserData) => {
+      try {
+        const authCode = this.jwtHelperService.generateJwt(data.userId, "", "");
+
+        await this.transactionHelper.handleProcessUpdateCoinHook(
+          data.userId,
+          data.coin,
+          data.refObject,
+          data.refType,
+          String(authCode)
+        );
+      } catch (error) {
+        console.log("Plus coin for customer fails :", error.message);
       }
     });
   }

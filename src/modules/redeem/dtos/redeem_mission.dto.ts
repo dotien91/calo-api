@@ -4,6 +4,8 @@ import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interface
 export interface FilterRedeemMissionDTO {
   title?: string;
   redeem_id?: string;
+  action_type?: string;
+  action_target?: string;
 }
 
 export class ListRedeemMissionDto {

@@ -9,6 +9,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { RedeemModule } from "../redeem/redeem.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
@@ -72,6 +73,7 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
     GptModule,
+    RedeemModule,
   ],
   controllers: [CommunityController],
   providers: [
