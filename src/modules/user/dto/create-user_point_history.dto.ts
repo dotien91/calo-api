@@ -11,7 +11,7 @@ export class CreateUserPointHistoryDto {
 
   @IsString()
   @IsDefined()
-  entity_type: string;
+  entity_target: string;
 
   @IsString()
   @IsDefined()

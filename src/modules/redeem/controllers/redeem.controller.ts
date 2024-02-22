@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
+import { CreateRedeemDTO, HandleUpdateUserRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
 import { CreateRedeemMissionDTO, ListRedeemMissionDto, UpdateRedeemMissionDTO } from "../dtos/redeem_mission.dto";
 import { RedeemHelper } from "../helpers/redeem.helper";
 import { RedeemMissionHelper } from "../helpers/redeem_mission.helper";
@@ -9,6 +9,11 @@ import { RedeemMissionHelper } from "../helpers/redeem_mission.helper";
 @Controller("redeem")
 export class RedeemController {
   constructor(private readonly redeemHelper: RedeemHelper, private readonly redeemMissionHelper: RedeemMissionHelper) {}
+
+  @Get("user")
+  async test(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.redeemHelper.getUserRedeem(res, req);
+  }
 
   // redeem apis
   @Get("/list")
@@ -38,6 +43,20 @@ export class RedeemController {
   @Get("detail/:id")
   async handleGetDetailRedeem(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.redeemHelper.handleGetDetailRedeem(id, res, req);
+  }
+
+  @Get("enum")
+  async getRedeemEnum(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.redeemHelper.getRedeemEnum(res, req);
+  }
+
+  @Post("complete")
+  async handleUpdateUserRedeem(
+    @Body() data: HandleUpdateUserRedeemDTO,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.redeemHelper.handleUpdateUserRedeem(data, res, req);
   }
 
   // redeem mission apis

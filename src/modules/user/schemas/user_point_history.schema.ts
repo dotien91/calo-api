@@ -28,7 +28,7 @@ export class UserPointHistory {
     type: String,
     nullable: false,
   })
-  entity_type: String;
+  entity_target: String;
 
   @Prop({
     type: String,

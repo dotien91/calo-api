@@ -14,7 +14,6 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
-import { Referral } from "../../../modules/referral/schemas/referral.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
@@ -116,7 +115,7 @@ export class TransactionHelper {
         const userToUpdate = await this.userService.findById(createTransactionData.user_id, {});
 
         //@ts-ignore
-        await this.handleProcessUpdateCoin(userToUpdate, currentCoin, lastToken, authCode);
+        await this.handleProcessUpdateCoin(userToUpdate?._id?.toString(), currentCoin, lastToken, authCode);
 
         const dataCreate = await this.transactionService.create(createTransactionData);
         return res
@@ -307,7 +306,7 @@ export class TransactionHelper {
         },
       };
 
-      await this.handleProcessUpdateCoin(userObject, lastCoin, currentToken, authCode);
+      await this.handleProcessUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
       //Send Notification
 
       // const channel = await this.channelService.findById(channelId);
@@ -759,7 +758,7 @@ export class TransactionHelper {
             billing_on: new Date(),
           };
 
-          await this.handleProcessUpdateCoin(userObject, newCoin, currentToken, auth);
+          await this.handleProcessUpdateCoin(userObject?._id?.toString(), newCoin, currentToken, auth);
           await this.transactionService.create(dataCreate);
         }
         return null;
@@ -773,15 +772,16 @@ export class TransactionHelper {
     }
   }
 
-  async handleProcessUpdateCoinReferral(
-    userObject: User,
+  async handleProcessUpdateCoinHook(
+    userId: string,
     coinToUpdate: number,
-    referralObject: Referral,
+    refObject: any,
+    refType: string,
     auth: string
   ) {
     try {
       let dataFilterLastCoin = {
-        user_id: userObject._id.toString(),
+        user_id: userId,
       };
       let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       let lastCoin = 0;
@@ -801,23 +801,23 @@ export class TransactionHelper {
 
       //Create New Transaction
       let dataCreate = {
-        ref_id: referralObject._id.toString(),
-        ref_type: "referral",
+        ref_id: refObject._id.toString(),
+        ref_type: refType,
         method: method,
         current_coin: newCoin,
         last_coin: lastCoin,
         transaction_value: dataValue,
-        user_id: userObject._id.toString(),
+        user_id: userId,
         note: noteTransaction,
         status: "done",
         data_payment: "",
-        trans_id: referralObject._id.toString(),
+        trans_id: refObject._id.toString(),
         successfully_on: new Date(),
         billing_on: new Date(),
       };
 
-      await this.handleProcessUpdateCoin(userObject, newCoin, 0, auth);
-      let dataToReturn = await this.transactionService.create(dataCreate);
+      await this.handleProcessUpdateCoin(userId, newCoin, 0, auth);
+      await this.transactionService.create(dataCreate);
     } catch (error) {
       console.log(error);
     }
@@ -831,10 +831,10 @@ export class TransactionHelper {
    * @param authCode
    * @returns
    */
-  async handleProcessUpdateCoin(userObject: User, coinNumber: number, tokenNumber: number, authCode: string) {
+  async handleProcessUpdateCoin(userId: string, coinNumber: number, tokenNumber: number, authCode: string) {
     try {
       const dataToUpdate: any = {
-        _id: userObject._id?.toString(),
+        _id: userId,
         current_coin: coinNumber,
         current_token: tokenNumber,
       };
@@ -849,7 +849,7 @@ export class TransactionHelper {
       };
       const urlLogin = process.env.SOCKET_API;
 
-      const dataNotification = await axios
+      await axios
         .post(urlLogin + "/update-coin", params, config)
         .then((response) => {
           if (response?.data) {

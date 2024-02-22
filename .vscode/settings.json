@@ -3,9 +3,6 @@
   "editor.formatOnPaste": false,
   "notebook.formatOnSave.enabled": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.sortImports": "explicit"
-  },
   "editor.indentSize": 2,
   "editor.tabSize": 2
 }

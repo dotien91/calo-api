@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Course } from "../../../modules/course/schemas/course.schema";
 import { CreateCourseUserDto } from "../../course/dto/create-course_user.dto";
 import HookExpress from "../hook_express";
-import { AddPointToUserData } from "../interfaces/hook.interface";
+import { AddCoinToUserData, AddPointToUserData } from "../interfaces/hook.interface";
 
 @Injectable()
 export class EventHookWorkerService {
@@ -10,6 +10,10 @@ export class EventHookWorkerService {
 
   AddPointToUser(data: AddPointToUserData) {
     HookExpress.do_action("user.plus-point", data);
+  }
+
+  AddCoinToUser(data: AddCoinToUserData) {
+    HookExpress.do_action("user.plus-coin", data);
   }
 
   // PlusPointChallengePusher(data: PlusPointChallengeDto) {

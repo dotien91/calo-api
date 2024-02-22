@@ -14,13 +14,18 @@ import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.s
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
 import {
   UserPointHistory_EntityAction,
-  UserPointHistory_EntityType,
+  UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
@@ -54,10 +59,11 @@ export class OrderHelper {
     private emailService: EmailService,
     private userService: UserService,
     private couponService: CouponService,
-    private readonly eventHookWorkerService: EventHookWorkerService,
-    private readonly eventHookNotificationService: EventHookNotificationService,
-    private readonly courseHelper: CourseHelper,
-    private readonly referralService: ReferralService
+    private eventHookWorkerService: EventHookWorkerService,
+    private eventHookNotificationService: EventHookNotificationService,
+    private courseHelper: CourseHelper,
+    private referralService: ReferralService,
+    private redeemUserService: RedeemUserService
   ) {
     // if (!initHook) {
     //   this.initHook();
@@ -901,25 +907,46 @@ export class OrderHelper {
 
         // update point for user
         // update coin for referral user
-        orderObject.items.forEach((item) => {
-          // update coin for referral user
+        orderObject.items.forEach(async (item) => {
           if (item.type === OrderItemType.COURSE) {
+            // update point for user
             const data: AddPointToUserData = {
               user_id: orderObject.user_id.toString(),
               point: orderObject.payment_method === "free" ? 10 : Math.floor(orderObject.price / 10000),
               entity_id: orderObject?._id?.toString(),
-              entity_type: UserPointHistory_EntityType.COURSE,
+              entity_target: UserPointHistory_EntityTarget.COURSE,
               entity_action: UserPointHistory_EntityAction.BUY,
             };
             this.eventHookWorkerService.AddPointToUser(data);
 
+            // update redeem for user
+            this.redeemUserService.updateUserRedeem(
+              orderObject.user_id,
+              RedeemMissionActionType.BUY,
+              RedeemMissionActionTarget.COURSE
+            );
+
             // update coin for referral user
-            if (orderObject.invitation_code)
+            // update redeem mission for user
+            if (orderObject.invitation_code) {
+              // update coin for referral user
               this.referralService.processBuyCourseBonusForReferralUser(
                 orderObject.invitation_code,
                 orderObject.user_id,
                 orderObject.price
               );
+
+              // update redeem mission for user
+              const referralUser = await this.userService.findOne({
+                invitation_code: orderObject.invitation_code,
+              });
+              if (referralUser)
+                this.redeemUserService.updateUserRedeem(
+                  referralUser,
+                  RedeemMissionActionType.BUY,
+                  RedeemMissionActionTarget.COURSE
+                );
+            }
           }
         });
 

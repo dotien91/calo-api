@@ -1,3 +1,8 @@
+export enum RedeemMissionStatus {
+  PROCESS = "process",
+  DONE = "done",
+}
+
 export enum RedeemMissionActionType {
   LIKE = "like",
   POST = "post",
@@ -7,6 +12,7 @@ export enum RedeemMissionActionType {
   JOIN = "join",
   REFERRAL = "referral",
   WATCH = "watch",
+  SHARE = "share",
 }
 
 export enum RedeemMissionActionTarget {
@@ -16,5 +22,6 @@ export enum RedeemMissionActionTarget {
   ACCOUNT = "account",
   PRODUCT = "product",
   CLASS = "class",
+  ONE = "oneone",
 }
 

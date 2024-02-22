@@ -10,10 +10,15 @@ import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.s
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { HandleServiceService } from "../../../modules/plan/services/handle_service.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import {
   UserPointHistory_EntityAction,
-  UserPointHistory_EntityType,
+  UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
@@ -75,16 +80,16 @@ import { CourseViewService } from "../services/course_view.service";
 @Injectable()
 export class CourseHelper {
   constructor(
-    private courseService: CourseService,
-    private courseModuleService: CourseModuleService,
-    private courseUserService: CourseUserService,
-    private courseViewService: CourseViewService,
-    private courseReviewService: CourseReviewService,
-    private courseCalendarService: CourseCalendarService,
-    private courseClassService: CourseClassService,
-    private courseOneOneService: CourseOneOneService,
-    private handleServiceService: HandleServiceService,
-    private planService: PlanService,
+    private readonly courseService: CourseService,
+    private readonly courseModuleService: CourseModuleService,
+    private readonly courseUserService: CourseUserService,
+    private readonly courseViewService: CourseViewService,
+    private readonly courseReviewService: CourseReviewService,
+    private readonly courseCalendarService: CourseCalendarService,
+    private readonly courseClassService: CourseClassService,
+    private readonly courseOneOneService: CourseOneOneService,
+    private readonly handleServiceService: HandleServiceService,
+    private readonly planService: PlanService,
     private readonly eventHookNotificationService: EventHookNotificationService,
     private readonly hookWorker: EventHookWorkerService,
     private readonly userService: UserService,
@@ -93,7 +98,8 @@ export class CourseHelper {
     private readonly chatRoomService: ChatRoomService,
     private readonly emailService: EmailService,
     private readonly couponService: CouponService,
-    private readonly referralService: ReferralService
+    private readonly referralService: ReferralService,
+    private readonly redeemUserService: RedeemUserService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -1195,10 +1201,13 @@ export class CourseHelper {
           point = 100;
 
           // update coin for referral user
-          this.referralService.processCompletedCourseBonusForReferralUser(
-            userObject.invitation_code,
+          this.referralService.processCompletedCourseBonusForReferralUser(userObject, moduleObject?.course_id?.price);
+
+          // update redeem for user
+          this.redeemUserService.updateUserRedeem(
             userObject,
-            moduleObject?.course_id?.price
+            RedeemMissionActionType.COMPLETE,
+            RedeemMissionActionTarget.COURSE
           );
         } else {
           point = 10;
@@ -1208,10 +1217,17 @@ export class CourseHelper {
           user_id: userObject._id.toString(),
           point: point,
           entity_id: dataFollow.module_id,
-          entity_type: UserPointHistory_EntityType.COURSE,
+          entity_target: UserPointHistory_EntityTarget.COURSE,
           entity_action: UserPointHistory_EntityAction.WATCH,
         };
         this.hookWorker.AddPointToUser(data);
+
+        // update redeem for user
+        this.redeemUserService.updateUserRedeem(
+          userObject,
+          RedeemMissionActionType.WATCH,
+          RedeemMissionActionTarget.COURSE
+        );
       })();
 
       return res

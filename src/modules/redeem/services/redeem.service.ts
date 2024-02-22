@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import mongoose, { Model } from "mongoose";
+import { User } from "../../../modules/user/schemas/user.schema";
 import { FilterRedeemDTO } from "../dtos/redeem.dto";
 import { Redeem, RedeemDocument } from "../schemas/redeem.schema";
 
@@ -109,11 +110,42 @@ export class RedeemService {
     return dataReturn;
   }
 
-  async getListMissionOfRedeem(redeemId: string) {
+  async getListMissionOfRedeems(redeemIds: mongoose.Types.ObjectId[]) {
     return await this.redeemModel.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(redeemId),
+          _id: {
+            $in: redeemIds,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "redeemmissions",
+          localField: "_id",
+          foreignField: "redeem_id",
+          as: "missions",
+        },
+      },
+    ]);
+  }
+
+  async getListMissionOfRedeemsByUser(user: User) {
+    return await this.redeemModel.aggregate([
+      {
+        $match: {
+          $or: [
+            {
+              $and: [
+                { start_time: { $lte: new Date() } },
+                { $or: [{ end_time: { $gte: new Date() } }, { end_time: null }] },
+              ],
+            },
+            {
+              end_time: null,
+            },
+          ],
+          required_level: { $lte: user.level },
         },
       },
       {

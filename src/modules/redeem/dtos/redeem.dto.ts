@@ -1,4 +1,5 @@
-import { IsDefined, IsIn, IsNumber, IsNumberString, IsOptional, IsString, Min } from "class-validator";
+import { IsDefined, IsEnum, IsIn, IsNumber, IsNumberString, IsOptional, IsString, Min } from "class-validator";
+import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
 
 export interface FilterRedeemDTO {
   title?: string;
@@ -44,6 +45,11 @@ export class CreateRedeemDTO {
   @Min(0)
   @IsOptional()
   coin?: number;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  required_level?: number;
 }
 
 export class UpdateRedeemDTO {
@@ -72,5 +78,19 @@ export class UpdateRedeemDTO {
   @Min(0)
   @IsOptional()
   coin?: number;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  required_level?: number;
 }
 
+export class HandleUpdateUserRedeemDTO {
+  @IsEnum(RedeemMissionActionType)
+  @IsDefined()
+  action_type: RedeemMissionActionType;
+
+  @IsEnum(RedeemMissionActionTarget)
+  @IsDefined()
+  action_target: RedeemMissionActionTarget;
+}

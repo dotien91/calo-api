@@ -15,12 +15,15 @@ export enum UserLevel {
   RANK_10 = 100000,
 }
 
-export enum UserPointHistory_EntityType {
+export enum UserPointHistory_EntityTarget {
   COMMUNITY = "community",
   COURSE = "course",
   TEST = "test",
-  REFERRAL = "referral",
   ORDER = "order",
+  ACCOUNT = "account",
+  PRODUCT = "product",
+  CLASS = "class",
+  ONE = "oneone",
 }
 
 export enum UserPointHistory_EntityAction {
@@ -31,9 +34,11 @@ export enum UserPointHistory_EntityAction {
   JOIN = "join",
   REFERRAL = "referral",
   WATCH = "watch",
-  SIGN_UP = "sign-up",
+  COMPLETE = "complete",
+  SHARE = "share",
 }
 
 export enum UserSortBy {
   POINT = "point",
 }
+
