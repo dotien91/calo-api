@@ -38,6 +38,7 @@ import { LivestreamModule } from "./modules/livestream/livestream.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ProductModule } from "./modules/product/product.module";
+import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
@@ -88,6 +89,7 @@ const dataImport = [
   ShopModule,
   ProductModule,
   CartModule,
+  RedeemModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

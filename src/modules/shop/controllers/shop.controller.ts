@@ -8,7 +8,7 @@ import { ShopHelper } from "../helpers/shop.helper";
 export class ShopController {
   constructor(private readonly shopHelper: ShopHelper) {}
 
-  // coupon apis
+  // shop apis
   @Get("/list")
   async listCoupon(@Query() query: ListShopDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shopHelper.list(query, res, req);
