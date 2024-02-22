@@ -151,7 +151,7 @@ export class UpdateCouponDTO {
   availableAt?: string;
 
   @IsOptional()
-  @IsDateString()
-  visible?: string;
+  @IsEnum(CouponVisible)
+  visible?: CouponVisible;
 }
 
