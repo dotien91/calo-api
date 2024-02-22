@@ -172,7 +172,12 @@ export class RedeemHelper {
           RedeemMissionActionTarget.ACCOUNT,
           RedeemMissionActionTarget.PRODUCT,
           RedeemMissionActionTarget.CLASS,
-          RedeemMissionActionTarget.ONE,
+          RedeemMissionActionTarget.ONE_ONE,
+          RedeemMissionActionTarget.INSTAGRAM,
+          RedeemMissionActionTarget.TELEGRAM,
+          RedeemMissionActionTarget.TIKTOK,
+          RedeemMissionActionTarget.TWITTER,
+          RedeemMissionActionTarget.FACEBOOK,
         ],
       };
       return res

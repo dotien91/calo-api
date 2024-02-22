@@ -22,6 +22,11 @@ export enum RedeemMissionActionTarget {
   ACCOUNT = "account",
   PRODUCT = "product",
   CLASS = "class",
-  ONE = "oneone",
+  ONE_ONE = "oneone",
+  INSTAGRAM = "instagram",
+  TELEGRAM = "telegram",
+  TIKTOK = "tiktok",
+  TWITTER = "twitter",
+  FACEBOOK = "facebook",
 }
 
