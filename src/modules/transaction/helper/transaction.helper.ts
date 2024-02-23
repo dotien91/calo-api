@@ -834,7 +834,7 @@ export class TransactionHelper {
   async handleProcessUpdateCoin(userId: string, coinNumber: number, tokenNumber: number, authCode: string) {
     try {
       const dataToUpdate: any = {
-        _id: userId,
+        user_id: userId,
         current_coin: coinNumber,
         current_token: tokenNumber,
       };

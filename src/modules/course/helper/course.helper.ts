@@ -1573,6 +1573,7 @@ export class CourseHelper {
         start_time: dataFollow.start_time,
         end_time: dataFollow.end_time,
         limit_member: dataFollow.limit_member,
+        user_id: userObject._id.toString(),
       };
       const courseClass = await this.courseClassService.create(createParams);
 

@@ -126,7 +126,7 @@ export class OrderService {
         "user_id",
         "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
-      .populate("plan_id")
+      // .populate("plan_id")
       .populate("media_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -173,7 +173,7 @@ export class OrderService {
     const dataReturn = await this.orderModel
       .find(condition, projection)
       .populate(dataPopulate)
-      .populate("plan_id")
+      // .populate("plan_id")
       .populate("media_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -372,7 +372,7 @@ export class OrderService {
       },
       {
         $lookup: {
-          from: "medias",
+          from: "media",
           localField: "media_id",
           foreignField: "_id",
           as: "media_id_array",

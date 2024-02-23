@@ -41,6 +41,7 @@ import { ProductModule } from "./modules/product/product.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
+import { ThreadModule } from "./modules/thread/thread.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
 const dataImport = [
@@ -90,6 +91,7 @@ const dataImport = [
   ProductModule,
   CartModule,
   RedeemModule,
+  ThreadModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
