@@ -115,6 +115,10 @@ export class ListSaleCourseDto {
   @IsBoolean()
   @IsOptional()
   is_sale?: boolean;
+
+  @IsString()
+  @IsOptional()
+  user_id?: string;
 }
 
 export class GetCourseRoomParams {

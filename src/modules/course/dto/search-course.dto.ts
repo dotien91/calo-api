@@ -17,6 +17,7 @@ export class SearchCourseDto {
 export class SearchSaleCourseDto {
   coupon_id?: string;
   is_sale?: boolean;
+  user_id?: string;
 }
 
 export class SearchTutorDto {

@@ -112,6 +112,10 @@ export class CourseService {
       else condition = Object.assign(condition, { coupon_id: { $eq: null } });
     }
 
+    if (filter.user_id) {
+      condition = Object.assign(condition, { user_id: filter.user_id });
+    }
+
     return condition;
   }
 
