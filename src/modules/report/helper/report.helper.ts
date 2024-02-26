@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { UserService } from "../../user/services/user.service";
 import { CreateContactUsDto } from "../dto/create-contact_us.dto";
 import { CreateReportDto } from "../dto/create-report.dto";
@@ -19,8 +18,7 @@ export class ReportHelper {
   constructor(
     private appUserService: UserService,
     private reportService: ReportService,
-    private userService: UserService,
-    private userPermissionService: UserPermissionService
+    private userService: UserService
   ) {}
 
   /**
@@ -207,9 +205,7 @@ export class ReportHelper {
       }
       const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
-        if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
+        throw new BadRequestException("You haven't permission for this Action!");
       }
       //Check Permission
       let dataToFilter = {

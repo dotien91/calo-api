@@ -1,14 +1,13 @@
 import { Body, Controller, Get, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../index.i";
 import { GetCallkitDto } from "../dto/get-callkit.dto";
 import { PostMakeRoomDto } from "../dto/post.make_room.dto";
 import { SendVoipDto } from "../dto/send-voip.dto";
 import { UpdateCallkitDto } from "../dto/update-callkit.dto";
 import { CallKitHelper } from "../helper/call_kit.helper";
 
-@Controller(Controllers.CALLKIT)
+@Controller("callkit")
 export class CallKitController {
   constructor(private readonly callKitHelper: CallKitHelper) {}
 

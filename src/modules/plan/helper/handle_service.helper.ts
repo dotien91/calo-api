@@ -1,7 +1,6 @@
-import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateHandleServiceDto } from "../dto/create-handle_service.dto";
 import { ListHandleServiceDto } from "../dto/list-handle_service.dto";
 import { UpdateHandleServiceDto } from "../dto/update-handle_service.dto";
@@ -12,10 +11,7 @@ import { HandleServiceService } from "../services/handle_service.service";
  */
 @Injectable()
 export class HandleServiceHelper {
-  constructor(
-    private userPermissionService: UserPermissionService,
-    private handleServiceService: HandleServiceService
-  ) {}
+  constructor(private handleServiceService: HandleServiceService) {}
 
   /**
    * @author Tony Vu
@@ -32,40 +28,36 @@ export class HandleServiceHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "handle_service/create")) {
-        if (createHandleServiceData.public_album) {
-          createHandleServiceData = {
-            ...createHandleServiceData,
-            ...{ public_album: JSON.parse(createHandleServiceData.public_album) },
-          };
-        } else {
-          createHandleServiceData = {
-            ...createHandleServiceData,
-            ...{ public_album: [] },
-          };
-        }
-
-        if (createHandleServiceData.sub_menu) {
-          createHandleServiceData = {
-            ...createHandleServiceData,
-            ...{ sub_menu: JSON.parse(createHandleServiceData.sub_menu) },
-          };
-        } else {
-          createHandleServiceData = {
-            ...createHandleServiceData,
-            ...{ sub_menu: [] },
-          };
-        }
-
-        createHandleServiceData = { ...createHandleServiceData, ...{ user_id: userObject._id.toString() } };
-        const dataToCreate = await this.handleServiceService.create(createHandleServiceData);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataToCreate);
+      if (createHandleServiceData.public_album) {
+        createHandleServiceData = {
+          ...createHandleServiceData,
+          ...{ public_album: JSON.parse(createHandleServiceData.public_album) },
+        };
       } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        createHandleServiceData = {
+          ...createHandleServiceData,
+          ...{ public_album: [] },
+        };
       }
+
+      if (createHandleServiceData.sub_menu) {
+        createHandleServiceData = {
+          ...createHandleServiceData,
+          ...{ sub_menu: JSON.parse(createHandleServiceData.sub_menu) },
+        };
+      } else {
+        createHandleServiceData = {
+          ...createHandleServiceData,
+          ...{ sub_menu: [] },
+        };
+      }
+
+      createHandleServiceData = { ...createHandleServiceData, ...{ user_id: userObject._id.toString() } };
+      const dataToCreate = await this.handleServiceService.create(createHandleServiceData);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataToCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -86,28 +78,24 @@ export class HandleServiceHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "handle_service/update")) {
-        if (updateData.public_album) {
-          updateData = {
-            ...updateData,
-            ...{ public_album: JSON.parse(updateData.public_album) },
-          };
-        }
-
-        if (updateData.sub_menu) {
-          updateData = {
-            ...updateData,
-            ...{ sub_menu: JSON.parse(updateData.sub_menu) },
-          };
-        }
-        const dataReturn = await this.handleServiceService.update(updateData);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (updateData.public_album) {
+        updateData = {
+          ...updateData,
+          ...{ public_album: JSON.parse(updateData.public_album) },
+        };
       }
+
+      if (updateData.sub_menu) {
+        updateData = {
+          ...updateData,
+          ...{ sub_menu: JSON.parse(updateData.sub_menu) },
+        };
+      }
+      const dataReturn = await this.handleServiceService.update(updateData);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -162,16 +150,12 @@ export class HandleServiceHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "handle_service/delete")) {
-        //Check Permission
-        const dataReturn = await this.handleServiceService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataReturn = await this.handleServiceService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

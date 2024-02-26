@@ -3,9 +3,9 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import * as moment from "moment-timezone";
-import { Permission, Permissions } from "../../../decorators/auth.decorator";
+import { Permissions } from "src/decorators/auth.decorator";
+import { UserRoles } from "src/modules/user/interfaces/user.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../../modules/index.i";
 import { NotificationHelper } from "../../notification/helper/notification.helper";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { UserLoginHelper } from "../../user/helper/user_login.helper";
@@ -34,7 +34,7 @@ import { UpdateCourseOneOneStudentDto, UpdateCourseOneOneTeacherDto } from "../d
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { CourseHelper } from "../helper/course.helper";
 
-@Controller(Controllers.COURSE)
+@Controller("course")
 @ApiTags("course")
 @ApiBearerAuth("ICEO")
 export class CourseController {
@@ -184,7 +184,7 @@ export class CourseController {
   }
 
   @Post("/admin-list")
-  @Permissions(Permission(Controllers.COURSE).LIST)
+  @Permissions(UserRoles.ADMIN)
   async getAdminCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getCourseListByAdmin(body, res, req);
   }
@@ -200,7 +200,7 @@ export class CourseController {
   }
 
   @Post("/create")
-  @Permissions(Permission(Controllers.COURSE).CREATE)
+  @Permissions(UserRoles.TEACHER)
   async createNewCourse(
     @Body() createCourseBody: CreateCourseDto,
     @Res() res: Response,
@@ -210,7 +210,7 @@ export class CourseController {
   }
 
   @Patch("/update")
-  @Permissions(Permission(Controllers.COURSE).UPDATE)
+  @Permissions(UserRoles.TEACHER)
   async updateCourse(@Body() dataUpdate: UpdateCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.updateCourse(dataUpdate, res, req);
   }
@@ -226,7 +226,6 @@ export class CourseController {
   }
 
   @Delete("delete/:id")
-  @Permissions(Permission(Controllers.COURSE).DELETE)
   async deleteCourse(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.handleDeleteCourse(id, res, req);
   }
@@ -248,12 +247,13 @@ export class CourseController {
 
   // course user api
   @Post("join")
+  @Permissions(UserRoles.TEACHER)
   handleFollowUser(@Body() dataFollow: CreateCourseUserDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processFollowUser(dataFollow, req, res);
   }
 
   @Post("add-user")
-  @Permissions(Permission(Controllers.COURSE).CREATE)
+  @Permissions(UserRoles.TEACHER)
   handleAddUser(@Body() addAdd: CreateCourseUserDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.handleAddUserToCourse(addAdd, req, res);
   }
@@ -269,7 +269,6 @@ export class CourseController {
   }
 
   @Post("un-join")
-  @Permissions(Permission(Controllers.COURSE).UPDATE)
   handleUnFollowUser(@Body() dataFollow: CreateCourseUserDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return this.courseHelper.processUnFollowUser(dataFollow, req, res);
   }
@@ -293,7 +292,7 @@ export class CourseController {
   }
 
   @Post("/create-module")
-  @Permissions(Permission(Controllers.COURSE).CREATE)
+  @Permissions(UserRoles.TEACHER)
   async createNewCourseModule(
     @Body() createCourseBody: CreateCourseModuleDto,
     @Res() res: Response,
@@ -303,7 +302,7 @@ export class CourseController {
   }
 
   @Patch("/update-module")
-  @Permissions(Permission(Controllers.COURSE).UPDATE)
+  @Permissions(UserRoles.TEACHER)
   async updateCourseModule(
     @Body() dataUpdate: UpdateCourseModuleDto,
     @Res() res: Response,
@@ -318,7 +317,7 @@ export class CourseController {
   }
 
   @Delete("delete-module/:id")
-  @Permissions(Permission(Controllers.COURSE).DELETE)
+  @Permissions(UserRoles.TEACHER)
   async deleteCourseModule(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.handleDeleteCourseModule(id, res, req);
   }
@@ -364,6 +363,7 @@ export class CourseController {
   }
 
   @Post("class/create")
+  @Permissions(UserRoles.TEACHER)
   async createNewClass(
     @Body() createClassBody: CreateCourseClassDto,
     @Res() res: Response,
@@ -373,6 +373,7 @@ export class CourseController {
   }
 
   @Post("class/add-member")
+  @Permissions(UserRoles.TEACHER)
   async addMemberToClass(
     @Body() addMemberClassBody: AddMemberCourseClassDto,
     @Res() res: Response,
@@ -382,6 +383,7 @@ export class CourseController {
   }
 
   @Post("class/remove-member")
+  @Permissions(UserRoles.TEACHER)
   async removeMemberFromClass(
     @Body() removeMemberClassBody: RemoveMemberCourseClassDto,
     @Res() res: Response,
@@ -391,6 +393,7 @@ export class CourseController {
   }
 
   @Patch("class/update")
+  @Permissions(UserRoles.TEACHER)
   async updateClass(
     @Body() updateClassBody: UpdateCourseClassDto,
     @Res() res: Response,
@@ -400,6 +403,7 @@ export class CourseController {
   }
 
   @Delete("class/delete/:id")
+  @Permissions(UserRoles.TEACHER)
   async deleteClass(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.deleteClass(id, req, res);
   }
@@ -420,6 +424,7 @@ export class CourseController {
   }
 
   @Post("one-one/teacher/create")
+  @Permissions(UserRoles.TEACHER)
   async createNewCalendarTeacher(
     @Body() createBody: CreateCourseOneOneTeacherDto,
     @Res() res: Response,
@@ -429,6 +434,7 @@ export class CourseController {
   }
 
   @Patch("one-one/teacher/update")
+  @Permissions(UserRoles.TEACHER)
   async updateCalendarTeacher(
     @Body() updateBody: UpdateCourseOneOneTeacherDto,
     @Res() res: Response,

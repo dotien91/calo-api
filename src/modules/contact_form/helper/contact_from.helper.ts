@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { UserService } from "../../user/services/user.service";
 import { CreateContactFormDto } from "../dto/create-contact_form.dto";
 import { ListContactFormDto } from "../dto/list-contact_form.dto";
@@ -18,9 +17,8 @@ export class ContactFormHelper {
   constructor(
     private appUserService: UserService,
     private contactFormService: ContactFormService,
-    private userService: UserService,
-    private userPermissionService: UserPermissionService
-  ) { }
+    private userService: UserService
+  ) {}
 
   /**
    * @author Tony Vu
@@ -94,10 +92,7 @@ export class ContactFormHelper {
       //Check Permission
       const contactFormData = await this.contactFormService.findOne({ _id: updateContactFormData._id.toString() });
       if (contactFormData && contactFormData.user_id.toString()) {
-        if (
-          contactFormData.user_id.toString() !== userId &&
-          !(await this.userPermissionService.isHavePermission(userId, "contact_form/update"))
-        ) {
+        if (contactFormData.user_id.toString() !== userId) {
           throw new BadRequestException("You haven't permission for this Action!");
         }
         updateContactFormData = { ...updateContactFormData, ...{ user_id: userId } };
@@ -197,21 +192,17 @@ export class ContactFormHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "contact_form/list")) {
-        //Check Permission
-        const dataToFilter = query;
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        const dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
-        const count = await this.contactFormService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": count })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataToFilter = query;
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      const dataReturn = await this.contactFormService.filter(dataToFilter, orderByOBject, page, limit);
+      const count = await this.contactFormService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": count })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -233,9 +224,7 @@ export class ContactFormHelper {
       }
       const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
-        if (!(await this.userPermissionService.isHavePermission(userId, "contact_form/list"))) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
+        throw new BadRequestException("You haven't permission for this Action!");
       }
       //Check Permission
       let dataToFilter = {
@@ -280,37 +269,33 @@ export class ContactFormHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "contact_form/delete")) {
-        //Check Permission
-        const dataReturn = await this.contactFormService.remove(id);
-        //get entity
-        // const dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
-        // let userEntity = dataEntity.user_entity;
-        // if (!userEntity) {
-        //   userEntity = [];
-        // }
-        // userEntity = userEntity.filter((value, index) => {
-        //   if (value?.toString() == dataReturn?.user_id?.toString()) {
-        //     return false;
-        //   } else {
-        //     return true;
-        //   }
-        // });
-        // const dataUpdate = {
-        //   _id: dataReturn?.entity_id?.toString(),
-        //   user_entity: userEntity,
-        // };
-        // console.log(dataUpdate, 'dataUpdate')
-        //Update Entity
-        // await this.postService.update(dataUpdate);
+      //Check Permission
+      const dataReturn = await this.contactFormService.remove(id);
+      //get entity
+      // const dataEntity = await this.postService.findById(dataReturn?.entity_id?.toString());
+      // let userEntity = dataEntity.user_entity;
+      // if (!userEntity) {
+      //   userEntity = [];
+      // }
+      // userEntity = userEntity.filter((value, index) => {
+      //   if (value?.toString() == dataReturn?.user_id?.toString()) {
+      //     return false;
+      //   } else {
+      //     return true;
+      //   }
+      // });
+      // const dataUpdate = {
+      //   _id: dataReturn?.entity_id?.toString(),
+      //   user_entity: userEntity,
+      // };
+      // console.log(dataUpdate, 'dataUpdate')
+      //Update Entity
+      // await this.postService.update(dataUpdate);
 
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -330,19 +315,15 @@ export class ContactFormHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "contact_form/list")) {
-        const dataFilter = {
-          _id: id,
-        };
-        //Check Permission
-        const dataReturn = await this.contactFormService.findOne(dataFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataFilter = {
+        _id: id,
+      };
+      //Check Permission
+      const dataReturn = await this.contactFormService.findOne(dataFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

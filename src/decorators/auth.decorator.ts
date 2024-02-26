@@ -10,14 +10,13 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { User } from "../modules/user/schemas/user.schema";
-import { UserPermissionService } from "../modules/user_permission/services/user_permission.service";
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
-  constructor(private service: UserPermissionService, private reflector: Reflector) {}
+  constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const allowedPermissions = this.reflector.getAllAndOverride("permissions", [
+    const allowedPermissions: string[] = this.reflector.getAllAndOverride("permissions", [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -25,25 +24,21 @@ export class PermissionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const userObject: User = request.user_object;
 
+    // define role point
+    const rolePoint = {
+      user: 0,
+      teacher: 1,
+      admin: 2,
+    };
+
     if (!userObject) throw new UnauthorizedException("Require Token!");
     try {
-      // check super admin
-      const isSuperAdmin = await this.service.isSuperAdmin(String(userObject._id));
-      if (isSuperAdmin) return true;
-
-      // check route permission
-      const userPermissions = await this.service.findAll({ user_id: userObject._id });
-      const userPermissionArray = userPermissions.map((userPermission) => userPermission.permission);
-
-      const parentRoute = request.url.split("/")[2]; // /api/parentRoute/childRoute
-      if (userPermissionArray.some((userPermission) => userPermission === parentRoute)) return true;
-
-      // check specify route permission
-      for (const allowedPermission of allowedPermissions) {
-        if (!userPermissionArray.includes(allowedPermission)) return false;
-      }
-
-      return true;
+      if (
+        allowedPermissions.includes(userObject.user_role) ||
+        allowedPermissions.filter((permission) => rolePoint[permission] < rolePoint[userObject.user_role]).length
+      )
+        return true;
+      return false;
     } catch (e) {
       console.log(e);
       throw new ForbiddenException();
@@ -54,11 +49,3 @@ export class PermissionGuard implements CanActivate {
 export function Permissions(...permissions: string[]) {
   return applyDecorators(SetMetadata("permissions", permissions), UseGuards(PermissionGuard));
 }
-
-export const Permission = (controller: string) => ({
-  ALL: `${controller}`,
-  LIST: `${controller}/list`,
-  CREATE: `${controller}/create`,
-  UPDATE: `${controller}/update`,
-  DELETE: `${controller}/delete`,
-});

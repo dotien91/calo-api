@@ -28,7 +28,6 @@ import {
   UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CourseHelper } from "../../course/helper/course.helper";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
@@ -51,7 +50,6 @@ export class OrderHelper {
     private orderService: OrderService,
     private planService: PlanService,
     private handleService: HandleServiceService,
-    private userPermissionService: UserPermissionService,
     private subscribeService: SubscribeService,
     private transactionService: TransactionService,
     private courseUserService: CourseUserService,

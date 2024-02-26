@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { PlanService } from "../../../modules/plan/services/plan.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { UserService } from "../../user/services/user.service";
 import { CreateSubscribeDto } from "../dto/create-subscribe.dto";
 import { ListSubscribeDto } from "../dto/list-subscribe.dto";
@@ -19,7 +18,6 @@ export class SubscribeHelper {
   constructor(
     private appUserService: UserService,
     private appSubscribeService: SubscribeService,
-    private userPermissionService: UserPermissionService,
     private planService: PlanService
   ) {}
 
@@ -47,19 +45,13 @@ export class SubscribeHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "subscribe/list")) {
-        const channelId = req?.channel_id || "";
-        //Check Permission
-        const dataToFilter = { ...query, ...{ is_admin: 1, channel_id: channelId } };
-        const dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataToFilter = { ...query, ...{ is_admin: 1 } };
+      const dataReturn = await this.appSubscribeService.filter(dataToFilter, orderByOBject, page, limit);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -78,32 +70,26 @@ export class SubscribeHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "subscribe/create")) {
-        // dataCreateSubscribe = { ...dataCreateSubscribe, ...{ user_id: userObject._id.toString() } };
-        const planObject = await this.planService.findById(dataCreateSubscribe.plan_id);
-        if (!planObject) {
-          throw new NotFoundException("Plan is not found!");
-        }
-        const userObject = await this.appUserService.findOne({ _id: dataCreateSubscribe.user_id });
-        if (!userObject) {
-          throw new NotFoundException("User is not found!");
-        }
-        dataCreateSubscribe = {
-          ...dataCreateSubscribe,
-          ...{
-            service_id: planObject.service_id.toString(),
-            service_name: planObject.handle.toString(),
-          },
-        };
-        const dataToCreate = await this.appSubscribeService.create(dataCreateSubscribe);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataToCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      const planObject = await this.planService.findById(dataCreateSubscribe.plan_id);
+      if (!planObject) {
+        throw new NotFoundException("Plan is not found!");
       }
+      const targetUser = await this.appUserService.findOne({ _id: dataCreateSubscribe.user_id });
+      if (!targetUser) {
+        throw new NotFoundException("User is not found!");
+      }
+      dataCreateSubscribe = {
+        ...dataCreateSubscribe,
+        ...{
+          service_id: planObject.service_id.toString(),
+          service_name: planObject.handle.toString(),
+        },
+      };
+      const dataToCreate = await this.appSubscribeService.create(dataCreateSubscribe);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataToCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -122,16 +108,11 @@ export class SubscribeHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "subscribe/update")) {
-        const dataReturn = await this.appSubscribeService.update(updateData);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataReturn = await this.appSubscribeService.update(updateData);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -185,9 +166,7 @@ export class SubscribeHelper {
       }
       const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
-        if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
+        throw new BadRequestException("You haven't permission for this Action!");
       }
       const channelId = req?.channel_id || "";
       //Check Permission
@@ -232,9 +211,7 @@ export class SubscribeHelper {
       }
       const userId = userObject._id.toString();
       if (id !== userObject._id.toString()) {
-        if (!(await this.userPermissionService.isHavePermission(userId, "subscribe/list"))) {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
+        throw new BadRequestException("You haven't permission for this Action!");
       }
       const channelId = req?.channel_id || "";
       //Check Permission
@@ -278,16 +255,12 @@ export class SubscribeHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "subscribe/list")) {
-        //Check Permission
-        const dataReturn = await this.appSubscribeService.findById(id.toString());
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataReturn = await this.appSubscribeService.findById(id.toString());
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

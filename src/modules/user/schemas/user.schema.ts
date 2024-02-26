@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { makeRandom } from "../../../utils/utils";
+import { UserRoles } from "../interfaces/user.interface";
 
 export type UserDocument = User & Document;
 
@@ -84,9 +85,10 @@ export class User {
 
   @Prop({
     type: String,
-    default: "user",
+    default: UserRoles.USER,
+    enum: UserRoles,
   })
-  user_role: string;
+  user_role: UserRoles;
 
   @Prop({
     type: Number,

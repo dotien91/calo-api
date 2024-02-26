@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res } from "@ne
 import { CronExpression } from "@nestjs/schedule";
 import { Response } from "express";
 import { schedule } from "node-cron";
+import { Permissions } from "src/decorators/auth.decorator";
+import { UserRoles } from "src/modules/user/interfaces/user.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateNotificationDto } from "../dto/create-notifcation.dto";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
@@ -35,6 +37,7 @@ export class NotificationController {
   }
 
   @Get("/admin-list")
+  @Permissions(UserRoles.ADMIN)
   async getAdminOrder(@Query() query: ListNotificationDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.notificationHelper.getNotificationByAdmin(query, res, req);
   }
@@ -45,6 +48,7 @@ export class NotificationController {
   }
 
   @Post("/admin-create")
+  @Permissions(UserRoles.ADMIN)
   createNotificationAdmin(
     @Body() dataFollow: CreateNotificationDto,
     @Res() res: Response,
@@ -54,6 +58,7 @@ export class NotificationController {
   }
 
   @Post("/admin-update")
+  @Permissions(UserRoles.ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateNotificationDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.notificationHelper.handleUpdateByAdmin(dataUpdate, res, req);
   }

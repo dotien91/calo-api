@@ -18,7 +18,6 @@ import {
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserFollowService } from "../../../modules/user/services/user_follow.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateCommunityDto } from "../dto/create-community.dto";
 import { CreateCommunityCategoryDto } from "../dto/create-community_category.dto";
@@ -51,7 +50,6 @@ export class CommunityHelper {
   constructor(
     private communityService: CommunityService,
     private communityCategoryService: CommunityCategoryService,
-    private userPermissionService: UserPermissionService,
     private communityLikeService: CommunityLikeService,
     private communityDisLikeService: CommunityDisLikeService,
     private communityCommentService: CommunityCommentService,

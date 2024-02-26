@@ -6,7 +6,6 @@ import { NotificationHelper } from "../../../modules/notification/helper/notific
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserAnonymousService } from "../../../modules/user/services/user_anonymous.service";
 import { UserAnonymousSessionService } from "../../../modules/user/services/user_anonymous_session.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreatePodcastDto } from "../dto/create-podcast.dto";
 import { CreatePodcastCategoryDto } from "../dto/create-podcast_category.dto";
 import { ListPodcastDto } from "../dto/list-podcast.dto";
@@ -26,7 +25,6 @@ export class PodcastHelper {
   constructor(
     private podcastService: PodcastService,
     private podcastCategoryService: PodcastCategoryService,
-    private userPermissionService: UserPermissionService,
     private userAnonymousSession: UserAnonymousSessionService,
     private userAnonymousService: UserAnonymousService,
     private userService: UserService,

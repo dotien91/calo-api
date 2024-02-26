@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { ThreadGuard } from "../decorators/thread.decorator";
 import { CreateThreadDTO, ListThreadDto, UpdateThreadDTO } from "../dtos/thread.dto";
 import {
@@ -78,6 +80,7 @@ export class ThreadController {
   }
 
   @Patch("comment/mark")
+  @Permissions(UserRoles.TEACHER)
   async updateThreadCommentMark(
     @Body() updateThreadData: HandleGiveMarkDTO,
     @Res() res: Response,

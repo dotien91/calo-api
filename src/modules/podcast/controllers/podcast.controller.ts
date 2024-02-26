@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { Permission, Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../../modules/index.i";
 import { CreatePodcastDto } from "../dto/create-podcast.dto";
 import { CreatePodcastCategoryDto } from "../dto/create-podcast_category.dto";
 import { ListPodcastDto } from "../dto/list-podcast.dto";
@@ -12,7 +10,7 @@ import { UpdatePodcastDto } from "../dto/update-podcast.dto";
 import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
 import { PodcastHelper } from "../helper/podcast.helper";
 
-@Controller(Controllers.PODCAST)
+@Controller("podcast")
 @ApiTags("podcast")
 @ApiBearerAuth("ICEO")
 export class PodcastController {
@@ -66,7 +64,6 @@ export class PodcastController {
    * @returns
    */
   @Delete("delete/:id")
-  @Permissions(Permission(Controllers.PODCAST).DELETE)
   async deletePodcast(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleDeletePodcast(id, res, req);
   }
@@ -150,7 +147,6 @@ export class PodcastController {
    * @returns
    */
   @Delete("delete-category/:id")
-  @Permissions(Permission(Controllers.PODCAST).DELETE)
   async deleteCategory(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.podcastHelper.handleDeleteCategory(id, res, req);
   }

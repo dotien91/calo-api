@@ -17,18 +17,12 @@ import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChatRoomAdminDto } from "../../../modules/chat_room/dto/create-chat_room_admin.dto";
 import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.helper";
-import { Controllers } from "../../../modules/index.i";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { ListChatHistoryDto } from "../dto/list-chat_history.dto";
 import { ChatHistoryHelper } from "../helpers/chat_history.helper";
 
-@Controller(Controllers.CHAT_HISTORY)
+@Controller("chat-history")
 export class ChatHistoryController {
-  constructor(
-    private readonly chatHistoryHelper: ChatHistoryHelper,
-    private readonly userPermissionService: UserPermissionService,
-    private readonly chatRoomHelper: ChatRoomHelper
-  ) {}
+  constructor(private readonly chatHistoryHelper: ChatHistoryHelper, private readonly chatRoomHelper: ChatRoomHelper) {}
 
   private readonly logger = new Logger("chat_history_controller");
 

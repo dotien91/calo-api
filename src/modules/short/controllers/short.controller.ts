@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
+import { Permissions } from "src/decorators/auth.decorator";
+import { UserRoles } from "src/modules/user/interfaces/user.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateCategoryDto } from "../dto/create-category.dto";
 import { CreateShortDto } from "../dto/create-short.dto";
@@ -22,6 +24,7 @@ export class ShortController {
   }
 
   @Get("/admin-list")
+  @Permissions(UserRoles.ADMIN)
   async getAdminShort(@Query() query: ListShortDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shortHelper.getShortListByAdmin(query, res, req);
   }
@@ -82,6 +85,7 @@ export class ShortController {
   }
 
   @Get("/admin-list-category")
+  @Permissions(UserRoles.ADMIN)
   async getAdminCategory(@Query() query: ListCategoryDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.categoryHelper.getCategoryListByAdmin(query, res, req);
   }

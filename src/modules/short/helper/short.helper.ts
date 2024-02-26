@@ -7,7 +7,6 @@ import { MediaService } from "../../../modules/media/services/media.service";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserSessionService } from "../../../modules/user/services/user_session.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateShortDto } from "../dto/create-short.dto";
 import { CreateShortLikeDto } from "../dto/create-short_like.dto";
 import { CreateShortViewDto } from "../dto/create-short_view.dto";
@@ -25,7 +24,6 @@ import { ShortViewService } from "../services/short_view.service";
 export class ShortHelper {
   constructor(
     private shortService: ShortService,
-    private userPermissionService: UserPermissionService,
     private mediaService: MediaService,
     private shortLikeService: ShortLikeService,
     private shortViewService: ShortViewService,
@@ -143,30 +141,26 @@ export class ShortHelper {
         throw new ForbiddenException("User is invalid");
       }
       let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "short/list")) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
-
-        let limit = query.limit ? query.limit : 1000;
-        let page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        let dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-        let dataReturn = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
-        let dataCount = await this.shortService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
+
+      let limit = query.limit ? query.limit : 1000;
+      let page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
+      }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      let dataReturn = await this.shortService.filter(dataToFilter, orderByOBject, page, limit);
+      let dataCount = await this.shortService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -416,10 +410,7 @@ export class ShortHelper {
       }
       let userId = userObject._id.toString();
       let dataShort = await this.shortService.findById(dataUpdate._id.toString());
-      if (
-        dataShort?.user_id?._id.toString() === userObject._id.toString() ||
-        (await this.userPermissionService.isHavePermission(userId, "short/update"))
-      ) {
+      if (dataShort?.user_id?._id.toString() === userObject._id.toString()) {
         let dataReturn = await this.shortService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -449,10 +440,7 @@ export class ShortHelper {
       let userId = userObject._id.toString();
 
       let dataShort = await this.shortService.findById(id.toString());
-      if (
-        dataShort?.user_id?._id.toString() === userObject?._id.toString() ||
-        (await this.userPermissionService.isHavePermission(userId, "short/delete"))
-      ) {
+      if (dataShort?.user_id?._id.toString() === userObject?._id.toString()) {
         let dataReturn = await this.shortService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

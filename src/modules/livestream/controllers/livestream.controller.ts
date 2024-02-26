@@ -13,10 +13,10 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { Permission, Permissions } from "../../../decorators/auth.decorator";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ListChatHistoryDto } from "../../../modules/chat_history/dto/list-chat_history.dto";
-import { Controllers } from "../../../modules/index.i";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
@@ -25,7 +25,7 @@ import { ListLivestreamDto } from "../dto/list-livestream.dto";
 import { UpdateLivestreamDto } from "../dto/update-livestream.dto";
 import { LivestreamHelper } from "../helper/livestream.helper";
 
-@Controller(Controllers.LIVESTREAM)
+@Controller("livestream")
 @ApiTags("livestream")
 @ApiBearerAuth("ICEO")
 export class LivestreamController {
@@ -50,12 +50,13 @@ export class LivestreamController {
   }
 
   @Get("/admin-list")
-  @Permissions(Permission(Controllers.LIVESTREAM).LIST)
+  @Permissions(UserRoles.ADMIN)
   async getAdminLivestream(@Query() query: ListLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.getLivestreamListByAdmin(query, res, req);
   }
 
   @Post("/create")
+  @Permissions(UserRoles.TEACHER)
   async createNewLivestream(
     @Body() createLivestreamBody: CreateLivestreamDto,
     @Res() res: Response,
@@ -65,6 +66,7 @@ export class LivestreamController {
   }
 
   @Patch("/update")
+  @Permissions(UserRoles.TEACHER)
   async updateLivestream(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.updateLivestream(dataUpdate, res, req);
   }
@@ -89,7 +91,7 @@ export class LivestreamController {
   }
 
   @Patch("/admin-update")
-  @Permissions(Permission(Controllers.LIVESTREAM).UPDATE)
+  @Permissions(UserRoles.ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateLivestreamDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.handleUpdateLivestreamByAdmin(dataUpdate, res, req);
   }
@@ -100,6 +102,7 @@ export class LivestreamController {
   }
 
   @Delete("delete/:id")
+  @Permissions(UserRoles.TEACHER)
   async deleteLivestream(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.livestreamHelper.handleDeleteLivestream(id, res, req);
   }
