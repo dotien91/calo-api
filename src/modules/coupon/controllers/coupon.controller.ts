@@ -46,7 +46,7 @@ export class CouponController {
   }
 
   // coupon user apis
-  @Post("save/:id")
+  @Post("save")
   async saveCouponToUser(@Body() body: CreateCouponUserDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponUserHelper.createCouponUser(body, res, req);
   }
