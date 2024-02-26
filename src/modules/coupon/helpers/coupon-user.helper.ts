@@ -26,6 +26,7 @@ export class CouponUserHelper {
       const coupon = await this.couponService.findOne(condition);
       if (!coupon) throw new Error("Coupon not found");
       if (coupon.visible === CouponVisible.PUBLIC) throw new Error("No need to save public coupon");
+      if (!this.couponService.isUsedAble(coupon)) throw new Error("Coupon is expired or not available yet");
 
       const params = { coupon_id: coupon._id.toString(), user_id: userId };
       const dataReturn = await this.couponUserService.create(params);

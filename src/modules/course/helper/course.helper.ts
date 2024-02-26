@@ -187,6 +187,7 @@ export class CourseHelper {
           version: "1.0.1",
           ref_id: courseData?._id?.toString(),
           google_store_product_id: "",
+          user_id: courseData.user_id.toString(),
         };
         let planService = await this.planService.create(dataPlanCreate);
         // console.log(planService, 'planService')
@@ -216,11 +217,15 @@ export class CourseHelper {
    */
   async handleUpdatePlan(courseData: Course) {
     try {
+      const price = courseData?.coupon_id
+        ? this.couponService.getPrice(Number(courseData.price), courseData.coupon_id as any)
+        : Number(courseData?.price);
+
       let dataPlanCreate = {
         _id: courseData?.plan_id?.toString(),
         service_id: courseData?.service_id.toString(),
         name: courseData?.title?.toString(),
-        price: Number(courseData?.price),
+        price,
         amount_of_day: 365,
         trial_day: 0,
         amount_of_coin: 365,
@@ -232,7 +237,7 @@ export class CourseHelper {
         ref_id: courseData?._id?.toString(),
         google_store_product_id: "",
       };
-      let planService = await this.planService.update(dataPlanCreate);
+      await this.planService.update(dataPlanCreate);
       return {};
     } catch (error) {
       console.log(error);
@@ -2723,13 +2728,11 @@ export class CourseHelper {
       let page = body.page ? body.page : 1;
 
       let orderByObject = {};
-      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
       let dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      delete dataToFilter.sort_by;
 
       //Check Video View
       let dataReturn: any = await this.courseService.getSaleCourse(dataToFilter, orderByObject, page, limit);

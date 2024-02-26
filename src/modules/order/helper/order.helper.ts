@@ -808,6 +808,14 @@ export class OrderHelper {
           };
           dataToCreate = await this.subscribeService.create(dataSubscribe);
 
+          // handle transaction
+          // TODO
+          this.handleUpdateOrderAfterTransaction(
+            orderObject._id.toString(),
+            orderItem.plan_id.user_id.toString(),
+            orderItem.amount_of_package * orderItem.plan_id.price
+          );
+
           //Check if service is Extension
           if (orderItem.service_id?.service_type == "course") {
             await this.handleUpdateCourseAfter(orderObject);
@@ -1375,6 +1383,11 @@ export class OrderHelper {
       }
       const userId = userObject._id.toString();
 
+      if (data.coupon_product_id) {
+        const coupon = await this.couponService.findOne({ _id: data.coupon_product_id });
+        if (!this.couponService.isUsedAble(coupon)) throw new Error("Coupon is expired or not available yet");
+      }
+
       const planObjects = await this.planService.findAll({
         _id: { $in: data.plan_objects.map((plan) => plan.plan_id) },
       });
@@ -1404,6 +1417,7 @@ export class OrderHelper {
             plan_id: planObject._id,
             plan_type: planObject.type,
             type: currentPlan.type,
+            amount_of_package: currentPlan.amount_of_package,
           };
 
           if (currentPlan.type === OrderItemType.COURSE) {
@@ -1490,6 +1504,39 @@ export class OrderHelper {
       }
     } catch (error) {
       throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleUpdateOrderAfterTransaction(orderId: string, targetUserId: string, tokenValue: number) {
+    try {
+      const dataFilter = {
+        user_id: targetUserId,
+      };
+      const oldDataTransaction = await this.transactionService.findOne(dataFilter);
+      let lastCoin = 0;
+      let lastToken = 0;
+      if (oldDataTransaction) {
+        lastToken = Number(oldDataTransaction.current_token);
+        lastCoin = Number(oldDataTransaction.current_coin);
+      }
+      const newDataCreate = {
+        user_id: targetUserId,
+        current_coin: lastCoin,
+        last_coin: lastCoin,
+        current_token: lastToken + tokenValue,
+        last_token: lastToken,
+        note: `Withdrawal ${tokenValue} token from System ID: ${targetUserId}`,
+        billing_on: new Date(),
+        processing_on: new Date(),
+        method: "plus",
+        trans_id: "",
+        ref_id: orderId,
+        ref_type: "order",
+        status: "done",
+      };
+      await this.transactionService.create(newDataCreate);
+    } catch (e) {
+      throw new Error(e.message);
     }
   }
 }

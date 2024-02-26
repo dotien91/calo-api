@@ -24,6 +24,9 @@ export class Product {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Shop", index: true })
   shop_id: MongooseSchema.Types.ObjectId;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
+  user_id: MongooseSchema.Types.ObjectId;
+
   @Prop({
     type: String,
     default: "",

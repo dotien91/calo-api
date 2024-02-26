@@ -170,8 +170,14 @@ export class CouponService {
     const data = await this.couponModel.aggregate([
       {
         $match: {
-          expired: { $gte: new Date() },
-          total: { $gt: 0 },
+          $and: [
+            {
+              $or: [{ expired: { $gte: new Date() } }, { expired: null }],
+            },
+            {
+              $or: [{ total: { $gt: 0 } }, { total: { $eq: -1 } }],
+            },
+          ],
         },
       },
       {
@@ -223,6 +229,22 @@ export class CouponService {
     }
 
     return price - discount;
+  }
+
+  isUsedAble(coupon: Coupon): boolean {
+    if (coupon.total > 0 || coupon.total === -1) {
+      // do nothing
+    } else return false;
+
+    const start_time = new Date(coupon.availableAt.toString());
+    const end_time = new Date(coupon.expired.toString());
+    const now = new Date();
+
+    if (start_time <= now && now <= end_time) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

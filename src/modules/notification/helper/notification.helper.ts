@@ -755,6 +755,7 @@ export class NotificationHelper {
     const dataToSendNotification = {
       path: data?.path,
       data_id: "",
+      ...data?.params,
     };
     const notificationContent = data?.content();
     const dataNotification = {
@@ -762,7 +763,7 @@ export class NotificationHelper {
       user_id: data?.user_id,
       title: data.title,
       content: notificationContent,
-      param: JSON.stringify(dataToSendNotification),
+      params: JSON.stringify(dataToSendNotification),
       type_action: "link",
       router: NotificationRouter.NAVIGATION_LIST_NOTIFICATIONS_SCREEN,
       click_action: "",

@@ -60,6 +60,12 @@ export class OrderItem {
     nullable: true,
   })
   product_url: string;
+
+  @Prop({
+    type: Number,
+    nullable: false,
+  })
+  amount_of_package: number;
 }
 
 @Schema({

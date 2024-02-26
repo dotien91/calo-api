@@ -296,7 +296,6 @@ export class TransactionHelper {
           last_coin: lastCoin,
           current_token: currentToken,
           last_token: lastToken,
-          channel_id: channelId,
           note: `Withdrawal ${createTransactionData.transaction_value} token from System ID: ${userId}`,
           billing_on: new Date(),
           processing_on: new Date(),
@@ -311,12 +310,18 @@ export class TransactionHelper {
 
       // const channel = await this.channelService.findById(channelId);
 
+      const adminUser = await this.userService.findOne({ role: "admin" });
       this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
         send_user_id: req?.user_id?.toString(),
-        // user_id: channel?.user_id?._id.toString(),
-        channel_id: channelId,
+        user_id: adminUser._id.toString(),
+        // TODO: update path
         path: `/r/mentor/payment-management`,
-        mail_template: "success_buy_goods",
+        mail_template: "withdraw_request",
+        params: {
+          transaction_value: createTransactionData.transaction_value,
+          data_payment: createTransactionData.data_payment,
+          transaction_bank: createTransactionData.transaction_bank,
+        },
         content: (params: any) => {
           return `${userObject?.display_name} RÚT TIỀN `;
         },

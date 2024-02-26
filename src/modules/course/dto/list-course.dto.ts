@@ -103,11 +103,6 @@ export class ListSaleCourseDto {
   @ApiPropertyOptional()
   order_by?: "DESC" | "ASC";
 
-  @IsEnum(CourseSortBy)
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  sort_by?: CourseSortBy;
-
   @IsString()
   @IsOptional()
   coupon_id?: string;

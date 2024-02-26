@@ -72,7 +72,7 @@ export class ProductHelper {
       const shop = await this.shopService.findOne({ user_id: userObject._id.toString() });
       if (!shop) throw new Error("You don't own any shop yet");
 
-      createData = { ...createData, ...{ shop_id: shop._id.toString() } };
+      createData = { ...createData, ...{ shop_id: shop._id.toString(), user_id: userObject._id.toString() } };
       let dataCreate: any = await this.productService.create(createData);
 
       if (dataCreate?.price) {
@@ -160,6 +160,7 @@ export class ProductHelper {
           version: "1.0.1",
           ref_id: productData?._id?.toString(),
           google_store_product_id: "",
+          user_id: productData.user_id.toString(),
         };
         let planService = await this.planService.create(dataPlanCreate);
 
@@ -182,11 +183,15 @@ export class ProductHelper {
 
   async handleUpdatePlan(productData: Product) {
     try {
+      const price = productData?.coupon_id
+        ? this.couponService.getPrice(Number(productData.price), productData.coupon_id as any)
+        : Number(productData?.price);
+
       let dataPlanCreate = {
         _id: productData?.plan_id?.toString(),
         service_id: productData?.service_id.toString(),
         name: productData?.name?.toString(),
-        price: Number(productData?.price),
+        price,
         amount_of_day: 365,
         trial_day: 0,
         amount_of_coin: 365,

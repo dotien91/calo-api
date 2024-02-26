@@ -181,7 +181,7 @@ export class EventHookNotificationService {
       }
     });
 
-    HookExpress.add_action("noti.mentor.withdraw-money-user", async (data: any) => {
+    HookExpress.add_action("noti.withdraw-money-user", async (data: any) => {
       try {
         await this.notificationHelper.sendNotification(data);
       } catch (error) {
@@ -275,7 +275,7 @@ export class EventHookNotificationService {
   }
 
   sendNotiUserWithdrawMoneyForBoss(data: any) {
-    HookExpress.do_action("noti.mentor.withdraw-money-user", data);
+    HookExpress.do_action("noti.withdraw-money-user", data);
   }
 
   sendNotiNMailCreateNewTicket(data: any) {
