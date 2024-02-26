@@ -87,6 +87,36 @@ export class ListCourseDto {
   user_id?: string;
 }
 
+export class ListSaleCourseDto {
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  page?: number;
+
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  limit?: number;
+
+  @IsIn(["DESC", "ASC"])
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  order_by?: "DESC" | "ASC";
+
+  @IsEnum(CourseSortBy)
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  sort_by?: CourseSortBy;
+
+  @IsString()
+  @IsOptional()
+  coupon_id?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  is_sale?: boolean;
+}
+
 export class GetCourseRoomParams {
   @IsString()
   @IsDefined()

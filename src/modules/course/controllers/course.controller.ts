@@ -20,7 +20,7 @@ import { CreateCourseOneOneStudentDto, CreateCourseOneOneTeacherDto } from "../d
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
-import { GetCourseRoomParams, ListCourseDto } from "../dto/list-course.dto";
+import { GetCourseRoomParams, ListCourseDto, ListSaleCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
@@ -239,6 +239,11 @@ export class CourseController {
   @Post("my-course")
   async getMyCourse(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getMyCourse(body, res, req);
+  }
+
+  @Post("sale")
+  async getSaleCourse(@Body() body: ListSaleCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getSaleCourse(body, res, req);
   }
 
   // course user api

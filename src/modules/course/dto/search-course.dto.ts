@@ -14,6 +14,11 @@ export class SearchCourseDto {
   onlyEnglishNativeSpeakers?: boolean;
 }
 
+export class SearchSaleCourseDto {
+  coupon_id?: string;
+  is_sale?: boolean;
+}
+
 export class SearchTutorDto {
   skills?: string[];
   types?: string[];

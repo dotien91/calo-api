@@ -39,7 +39,7 @@ import { CreateCourseOneOneStudentDto, CreateCourseOneOneTeacherDto } from "../d
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
-import { GetCourseRoomParams, ListCourseDto } from "../dto/list-course.dto";
+import { GetCourseRoomParams, ListCourseDto, ListSaleCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
 import { GetOneOneTimeAvailableDto, ListCourseOneOneDto } from "../dto/list-course_one_one.dto";
@@ -2628,19 +2628,23 @@ export class CourseHelper {
   }
 
   async processUpdateRating(courseId: string) {
-    const newCourseRating = await this.calculateRatingForCourse(courseId);
-    await this.courseService.update({
-      _id: courseId,
-      rating: newCourseRating,
-    });
-
-    const course = await this.courseService.findOne({ _id: courseId });
-    if (course) {
-      const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
-      await this.userService.update({
-        _id: course.user_id._id.toString(),
-        rating: newUserRating,
+    try {
+      const newCourseRating = await this.calculateRatingForCourse(courseId);
+      await this.courseService.update({
+        _id: courseId,
+        rating: newCourseRating,
       });
+
+      const course = await this.courseService.findOne({ _id: courseId });
+      if (course) {
+        const newUserRating = await this.calculateRatingForUser(course.user_id._id.toString());
+        await this.userService.update({
+          _id: course.user_id._id.toString(),
+          rating: newUserRating,
+        });
+      }
+    } catch (e) {
+      throw new Error(e.message);
     }
   }
 
@@ -2706,6 +2710,36 @@ export class CourseHelper {
       });
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  async getSaleCourse(body: ListSaleCourseDto, res: Response, req: ExpressRequestDto) {
+    try {
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
+      }
+
+      let limit = body.limit ? body.limit : 1000;
+      let page = body.page ? body.page : 1;
+
+      let orderByObject = {};
+      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
+
+      let dataToFilter = { ...body };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      delete dataToFilter.sort_by;
+
+      //Check Video View
+      let dataReturn: any = await this.courseService.getSaleCourse(dataToFilter, orderByObject, page, limit);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
     }
   }
 }

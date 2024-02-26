@@ -4,7 +4,7 @@ import mongoose, { Model, Types } from "mongoose";
 import { UserRoles } from "../../user/interfaces/user.interface";
 import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
-import { SearchCourseDto, SearchTutorDto } from "../dto/search-course.dto";
+import { SearchCourseDto, SearchSaleCourseDto, SearchTutorDto } from "../dto/search-course.dto";
 import { UpdateCourseDto } from "../dto/update-course.dto";
 import { CourseOneOneRole, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
@@ -100,6 +100,21 @@ export class CourseService {
     return condition;
   }
 
+  async getSaleCondition(filter: SearchSaleCourseDto) {
+    let condition: any = {};
+
+    if (filter.coupon_id) {
+      condition = Object.assign(condition, { coupon_id: filter.coupon_id });
+    }
+
+    if (typeof filter.is_sale === "boolean") {
+      if (filter.is_sale) condition = Object.assign(condition, { coupon_id: { $ne: null } });
+      else condition = Object.assign(condition, { coupon_id: { $eq: null } });
+    }
+
+    return condition;
+  }
+
   /**
    * @author Tony Vu
    * @param filter
@@ -121,6 +136,7 @@ export class CourseService {
         path: "user_id",
         select:
           "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+        match: matchObject,
       })
       .populate("media_id")
       .populate("avatar")
@@ -524,5 +540,28 @@ export class CourseService {
         },
       },
     ]);
+  }
+
+  async getSaleCourse(filter: SearchSaleCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
+    let projection = {};
+    let condition = await this.getSaleCondition(filter);
+
+    let dataReturn = await this.courseModel
+      .find(condition, projection)
+      .populate({
+        path: "user_id",
+        select:
+          "user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+      })
+      .populate("media_id")
+      .populate("avatar")
+      .populate("coupon_id")
+      .sort(sortObject)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .exec();
+
+    dataReturn = dataReturn.filter((data) => data.user_id !== null);
+    return dataReturn;
   }
 }
