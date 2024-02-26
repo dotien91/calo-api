@@ -1,11 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumberString, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNumberString, IsString } from "class-validator";
 export class CreateWithdrawalDto {
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  user_id: string;
-
   @IsNumberString()
   @ApiProperty()
   transaction_value: number;
@@ -17,9 +12,4 @@ export class CreateWithdrawalDto {
   @IsString()
   @ApiProperty()
   transaction_bank: string;
-
-  @IsString()
-  @ApiPropertyOptional()
-  @IsOptional(null)
-  channel_id?: string;
 }

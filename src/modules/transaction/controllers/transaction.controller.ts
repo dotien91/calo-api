@@ -70,7 +70,7 @@ export class TransactionController {
   }
 
   @Delete("delete-bank/:id")
-  async deleteChallengeGame(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async deleteTransactionBank(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleDeleteTransactionBank(id, res, req);
   }
 

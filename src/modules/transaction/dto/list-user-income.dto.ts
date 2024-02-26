@@ -26,9 +26,4 @@ export class ListUserIncomeDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   method: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  channel_id: string;
 }

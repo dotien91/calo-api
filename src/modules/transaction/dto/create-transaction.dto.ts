@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsIn, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 export class CreateTransactionDto {
   @IsString()
   @ApiProperty()
@@ -9,11 +9,6 @@ export class CreateTransactionDto {
   @ApiPropertyOptional()
   @ApiPropertyOptional()
   from_user?: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  channel_id?: string;
 
   @IsString()
   @IsOptional(null)
@@ -78,9 +73,28 @@ export class CreateTransactionDto {
   @ApiPropertyOptional()
   trans_id?: string;
 
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   current_coin?: number;
+
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   last_coin?: number;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   note?: string;
+
+  @IsDateString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   successfully_on?: Date;
+
+  @IsDateString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
   billing_on?: Date;
 }

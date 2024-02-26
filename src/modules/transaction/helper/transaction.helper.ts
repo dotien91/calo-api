@@ -68,63 +68,52 @@ export class TransactionHelper {
         throw new BadRequestException("Error while Transaction!");
       }
 
-      const headerObject = req?.headers;
-      if (headerObject && headerObject["x-channel"]) {
-        const channelId = headerObject["x-channel"]?.toString();
-        createTransactionData = { ...createTransactionData, ...{ channel_id: channelId } };
-      }
-
-      //Only Admin Create Transaction
-      //Check Admin
+      // TODO: only admin
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "transaction/create")) {
-        //Check Transaction
-        const dataFilter = {
-          user_id: createTransactionData.user_id,
-        };
-        const newDataTransaction = await this.transactionService.findOne(dataFilter);
-        let lastCoin = 0;
-        let lastToken = 0;
-        if (newDataTransaction) {
-          lastCoin = Number(newDataTransaction.current_coin);
-          lastToken = Number(newDataTransaction.current_token);
-        }
 
-        let currentCoin = 0;
-        if (createTransactionData.method === "plus") {
-          currentCoin = lastCoin + Number(createTransactionData.transaction_value);
-        } else {
-          currentCoin = lastCoin - Number(createTransactionData.transaction_value);
-          if (currentCoin < 0) {
-            currentCoin = 0;
-          }
-        }
-        createTransactionData = {
-          ...createTransactionData,
-          ...{
-            current_coin: currentCoin,
-            last_coin: lastCoin,
-            note: `Top-up ${createTransactionData.transaction_value} coin from System ID: ${userId}`,
-            billing_on: new Date(),
-            successfully_on: new Date(),
-            last_token: lastToken,
-            current_token: lastToken,
-          },
-        };
-
-        const userToUpdate = await this.userService.findById(createTransactionData.user_id, {});
-
-        //@ts-ignore
-        await this.handleProcessUpdateCoin(userToUpdate?._id?.toString(), currentCoin, lastToken, authCode);
-
-        const dataCreate = await this.transactionService.create(createTransactionData);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      const dataFilter = {
+        user_id: createTransactionData.user_id,
+      };
+      const newDataTransaction = await this.transactionService.findOne(dataFilter);
+      let lastCoin = 0;
+      let lastToken = 0;
+      if (newDataTransaction) {
+        lastCoin = Number(newDataTransaction.current_coin);
+        lastToken = Number(newDataTransaction.current_token);
       }
+
+      let currentCoin = 0;
+      if (createTransactionData.method === "plus") {
+        currentCoin = lastCoin + Number(createTransactionData.transaction_value);
+      } else {
+        currentCoin = lastCoin - Number(createTransactionData.transaction_value);
+        if (currentCoin < 0) {
+          currentCoin = 0;
+        }
+      }
+      createTransactionData = {
+        ...createTransactionData,
+        ...{
+          current_coin: currentCoin,
+          last_coin: lastCoin,
+          note: `Top-up ${createTransactionData.transaction_value} coin from System ID: ${userId}`,
+          billing_on: new Date(),
+          successfully_on: new Date(),
+          last_token: lastToken,
+          current_token: lastToken,
+        },
+      };
+
+      const userToUpdate = await this.userService.findById(createTransactionData.user_id, {});
+
+      //@ts-ignore
+      await this.handleProcessUpdateCoin(userToUpdate?._id?.toString(), currentCoin, lastToken, authCode);
+
+      const dataCreate = await this.transactionService.create(createTransactionData);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -209,14 +198,6 @@ export class TransactionHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      const headerObject = req?.headers;
-      let channelId = createTransactionData?.channel_id;
-      if (headerObject && headerObject["x-channel"]) {
-        channelId = headerObject["x-channel"]?.toString();
-      }
-      if (channelId) {
-        createTransactionData = { ...createTransactionData, ...{ channel_id: channelId } };
-      }
       createTransactionData = { ...createTransactionData, ...{ user_id: userObject?._id?.toString() } };
       const dataCreate = await this.transactionBankService.create(createTransactionData);
       return res
@@ -244,7 +225,6 @@ export class TransactionHelper {
         throw new ForbiddenException("User is invalid");
       }
 
-      const channelId = req?.channel_id || createTransactionData?.channel_id || "";
       if (
         Number(createTransactionData.transaction_value) <= 0 ||
         Number(createTransactionData.transaction_value) > 1000000000
@@ -256,22 +236,11 @@ export class TransactionHelper {
       //Check Admin
       let userId = userObject._id.toString();
 
-      if (createTransactionData.user_id) {
-        //Check data
-        if (await this.userPermissionService.isHavePermission(userId, "transaction/create")) {
-          userId = createTransactionData.user_id;
-        } else {
-          throw new BadRequestException("You haven't permission for this Action!");
-        }
-      }
-
-      //if (await this.userPermissionService.isHavePermission(userId, "transaction/create")) {
       //Check Transaction
       const dataFilter = {
         user_id: userId,
       };
       const newDataTransaction = await this.transactionService.findOne(dataFilter);
-      console.log(newDataTransaction, "newDataTransaction");
       let lastCoin = 0;
       let lastToken = 0;
       if (newDataTransaction) {
@@ -310,7 +279,7 @@ export class TransactionHelper {
 
       // const channel = await this.channelService.findById(channelId);
 
-      const adminUser = await this.userService.findOne({ role: "admin" });
+      const adminUser = await this.userService.findOne({ user_role: "admin" });
       this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
         send_user_id: req?.user_id?.toString(),
         user_id: adminUser._id.toString(),
@@ -351,40 +320,13 @@ export class TransactionHelper {
   async getUserIncome(query: ListUserIncomeDto, res: Response, req: ExpressRequestDto) {
     try {
       const userObject = req?.user_object;
-      const authCode = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      const headerObject = req?.headers;
-      let channelId: string = query?.channel_id;
-      if (headerObject && headerObject["x-channel"]) {
-        channelId = headerObject["x-channel"]?.toString();
-      }
-
-      // const userPermission = await this.channelPermissionService.findOne({
-      //   user_id: userObject?._id?.toString(),
-      //   channel_id: channelId,
-      // });
-      let havePermission = false;
-      // if (
-      //   userPermission?.channel_role == "mentor" ||
-      //   userPermission?.channel_role == "super_admin" ||
-      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("challenge/delete") !== -1)
-      // ) {
-      //   havePermission = true;
-      // }
-      // if (await this.userPermissionService.isHavePermission(userObject?._id?.toString(), "challenge/delete")) {
-      //   havePermission = true;
-      // }
-
       if (!query?.user_id) {
         query = { ...query, ...{ user_id: userObject?._id?.toString() } };
       } else {
-        //Check permission
-        if (!havePermission) {
-          throw new ForbiddenException("You not have permission for this activity!");
-        }
       }
 
       let timeZone = "Asia/Ho_Chi_Minh";
@@ -472,58 +414,28 @@ export class TransactionHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
 
-      const headerObject = req?.headers;
-      let channelId: string = query?.channel_id;
-      if (headerObject && headerObject["x-channel"]) {
-        channelId = headerObject["x-channel"]?.toString();
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
       }
 
-      // const userPermission = await this.channelPermissionService.findOne({ user_id: userId, channel_id: channelId });
-      let havePermission = false;
-      // if (
-      //   userPermission?.channel_role == "mentor" ||
-      //   userPermission?.channel_role == "super_admin" ||
-      //   (userPermission?.channel_role == "user" && userPermission?.permission?.indexOf("mentor/list") !== -1)
-      // ) {
-      //   havePermission = true;
-      // }
-      // if (await this.userPermissionService.isHavePermission(userId, "mentor/list")) {
-      //   havePermission = true;
-      // }
-
-      // if (!havePermission) {
-      //   throw new ForbiddenException("You not have permission for this action!");
-      // }
-      if (havePermission) {
-        if (Number(query.limit) > 1000) {
-          query.limit = 1000;
-        }
-
-        const limit = query.limit ? query.limit : 1000;
-        const page = query.page ? query.page : 1;
-        let orderByOBject = {};
-        if (query.order_by) {
-          orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
-        }
-        let dataToFilter = { ...query };
-        delete dataToFilter.page;
-        delete dataToFilter.limit;
-        delete dataToFilter.order_by;
-
-        if (channelId) {
-          dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
-        }
-        const dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
-        const dataCount = await this.transactionService.count(dataToFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      let orderByOBject = {};
+      if (query.order_by) {
+        orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
+      let dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      const dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.transactionService.count(dataToFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -559,15 +471,6 @@ export class TransactionHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-
-      const headerObject = req?.headers;
-      let channelId: string = query?.channel_id;
-      if (headerObject && headerObject["x-channel"]) {
-        channelId = headerObject["x-channel"]?.toString();
-      }
-      if (channelId) {
-        dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
-      }
 
       const dataReturn = await this.transactionBankService.filter(dataToFilter, orderByOBject, page, limit);
       const dataCount = await this.transactionBankService.count(dataToFilter);
@@ -609,15 +512,6 @@ export class TransactionHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-
-      const headerObject = req?.headers;
-      let channelId: string = query?.channel_id;
-      if (headerObject && headerObject["x-channel"]) {
-        channelId = headerObject["x-channel"]?.toString();
-      }
-      if (channelId) {
-        dataToFilter = { ...dataToFilter, ...{ channel_id: channelId } };
-      }
 
       dataToFilter = { ...dataToFilter, ...{ transaction_type: "output" } };
       if (query?.search) {
@@ -666,10 +560,7 @@ export class TransactionHelper {
       const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.transactionService.findById(id.toString());
-      if (
-        (await this.userPermissionService.isHavePermission(userId, "transaction/list")) ||
-        dataReturn.user_id.toString() === userId
-      ) {
+      if (dataReturn.user_id.toString() === userId) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -697,7 +588,6 @@ export class TransactionHelper {
       }
       const userId = userObject._id.toString();
       //Check Permission
-      // if (await this.userPermissionService.isHavePermission(userId, "order/update")) {
       const dataReturn = await this.transactionService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

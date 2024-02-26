@@ -26,9 +26,4 @@ export class ListTransactionBankDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   user_id: string;
-
-  @IsString()
-  @IsOptional(null)
-  @ApiPropertyOptional()
-  channel_id: string;
 }
