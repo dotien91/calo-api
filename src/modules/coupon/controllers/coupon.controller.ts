@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { ApplyCouponByCodeDTO } from "../dtos/coupon-user.dto";
+import { CreateCouponUserDTO } from "../dtos/coupon-user.dto";
 import { CreateCouponDTO, ListCouponDto, UpdateCouponDTO } from "../dtos/coupon.dto";
 import { CouponUserHelper } from "../helpers/coupon-user.helper";
 import { CouponHelper } from "../helpers/coupon.helper";
@@ -47,12 +47,7 @@ export class CouponController {
 
   // coupon user apis
   @Post("save/:id")
-  async saveCouponToUser(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.couponUserHelper.createCouponUser(id, res, req);
-  }
-
-  @Post("code")
-  async applyCouponByCode(@Body() body: ApplyCouponByCodeDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.couponUserHelper.applyCouponByCode(body, res, req);
+  async saveCouponToUser(@Body() body: CreateCouponUserDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.couponUserHelper.createCouponUser(body, res, req);
   }
 }

@@ -1,16 +1,14 @@
-import { IsDefined, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export interface FilterCouponUserDTO {}
 
 export class CreateCouponUserDTO {
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  coupon_id: string;
-}
+  coupon_id?: string;
 
-export class ApplyCouponByCodeDTO {
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  code: string;
+  code?: string;
 }
 
