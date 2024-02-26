@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { makeRandom } from "../../../utils/utils";
 import { CouponPaymentMethod, CouponPromotionType, CouponType, CouponVisible } from "../interfaces/coupon.interface.i";
 
 export type CouponDocument = Coupon & Document;
@@ -94,6 +95,13 @@ export class Coupon {
     default: CouponVisible.PUBLIC,
   })
   visible: CouponVisible;
+
+  @Prop({
+    type: String,
+    default: makeRandom(6, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
+    nullable: false,
+  })
+  code: string;
 }
 
 export const CouponSchema = SchemaFactory.createForClass(Coupon);

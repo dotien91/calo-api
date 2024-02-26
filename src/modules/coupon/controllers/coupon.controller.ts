@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { ApplyCouponByCodeDTO } from "../dtos/coupon-user.dto";
 import { CreateCouponDTO, ListCouponDto, UpdateCouponDTO } from "../dtos/coupon.dto";
 import { CouponUserHelper } from "../helpers/coupon-user.helper";
 import { CouponHelper } from "../helpers/coupon.helper";
@@ -10,12 +11,12 @@ export class CouponController {
   constructor(private readonly couponHelper: CouponHelper, private readonly couponUserHelper: CouponUserHelper) {}
 
   // coupon apis
-  @Get("/list")
+  @Get("list")
   async listCoupon(@Query() query: ListCouponDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.list(query, res, req);
   }
 
-  @Post("/create")
+  @Post("create")
   async createNewCoupon(
     @Body() createCouponData: CreateCouponDTO,
     @Res() res: Response,
@@ -24,12 +25,12 @@ export class CouponController {
     return await this.couponHelper.createCoupon(createCouponData, res, req);
   }
 
-  @Patch("/update")
+  @Patch("update")
   async updateCoupon(@Body() updateCouponData: UpdateCouponDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.updateCoupon(updateCouponData, res, req);
   }
 
-  @Post("/user")
+  @Post("user")
   async getSubscribe(@Body() body: ListCouponDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.getCouponByUserId(body, res, req);
   }
@@ -45,8 +46,13 @@ export class CouponController {
   }
 
   // coupon user apis
-  @Post("/save/:id")
+  @Post("save/:id")
   async saveCouponToUser(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponUserHelper.createCouponUser(id, res, req);
+  }
+
+  @Post("code")
+  async applyCouponByCode(@Body() body: ApplyCouponByCodeDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.couponUserHelper.applyCouponByCode(body, res, req);
   }
 }

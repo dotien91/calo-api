@@ -1,6 +1,5 @@
-export function makeRandom(length: number) {
+export function makeRandom(length: number, pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") {
   let result = "";
-  const pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const patternLength = pattern.length;
   let counter = 0;
   while (counter < length) {
@@ -9,3 +8,4 @@ export function makeRandom(length: number) {
   }
   return result;
 }
+

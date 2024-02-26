@@ -17,5 +17,6 @@ export enum CouponVisible {
   PRIVATE = "private",
   PUBLIC = "public",
   PRODUCT = "product",
+  CODE = "code",
 }
 

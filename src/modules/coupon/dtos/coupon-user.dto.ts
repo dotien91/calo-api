@@ -8,3 +8,9 @@ export class CreateCouponUserDTO {
   coupon_id: string;
 }
 
+export class ApplyCouponByCodeDTO {
+  @IsDefined()
+  @IsString()
+  code: string;
+}
+
