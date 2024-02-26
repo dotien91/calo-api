@@ -20,8 +20,6 @@ import { SubscribeModule } from "./modules/subscribe/subscribe.module";
 // import { TaskService } from "./modules/task/task.service";
 import { TransactionModule } from "./modules/transaction/transaction.module";
 // import { UserService } from "./modules/user/services/user.service";
-import { UserModule } from "./modules/user/user.module";
-// import { UserPermissionService } from "./modules/user_permission/services/user_permission.service";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { AppController } from "./app.controller";
@@ -42,6 +40,7 @@ import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { ThreadModule } from "./modules/thread/thread.module";
+import { UserModule } from "./modules/user/user.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
 const dataImport = [

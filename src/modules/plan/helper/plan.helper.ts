@@ -1,9 +1,7 @@
-import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
-import { UserService } from "../../user/services/user.service";
 import { CreatePlanDto } from "../dto/create-plan.dto";
 import { ListPlanDto } from "../dto/list-plan.dto";
 import { UpdatePlanDto } from "../dto/update-plan.dto";
@@ -16,9 +14,7 @@ import { PlanService } from "../services/plan.service";
 @Injectable()
 export class PlanHelper {
   constructor(
-    private appUserService: UserService,
     private planService: PlanService,
-    private userPermissionService: UserPermissionService,
     private handleServiceService: HandleServiceService,
     private subscribeService: SubscribeService
   ) {}
@@ -38,21 +34,17 @@ export class PlanHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "plan/create")) {
-        createPlanData = { ...createPlanData, ...{ user_id: userObject?._id?.toString() } };
-        const dataHandleService = await this.handleServiceService.findById(createPlanData.service_id);
-        if (dataHandleService) {
-          createPlanData = { ...createPlanData, ...{ handle: dataHandleService.handle } };
-          const dataReturn = await this.planService.create(createPlanData);
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataReturn);
-        } else {
-          throw new NotFoundException("Handle Service is not found!");
-        }
+      createPlanData = { ...createPlanData, ...{ user_id: userObject?._id?.toString() } };
+      const dataHandleService = await this.handleServiceService.findById(createPlanData.service_id);
+      if (dataHandleService) {
+        createPlanData = { ...createPlanData, ...{ handle: dataHandleService.handle } };
+        const dataReturn = await this.planService.create(createPlanData);
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataReturn);
       } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        throw new NotFoundException("Handle Service is not found!");
       }
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -74,20 +66,16 @@ export class PlanHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "plan/update")) {
-        const dataHandleService = await this.handleServiceService.findById(updatePlanData.service_id);
-        if (dataHandleService) {
-          updatePlanData = { ...updatePlanData, ...{ handle: dataHandleService.handle } };
-          const dataReturn = await this.planService.update(updatePlanData);
-          return res
-            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-            .status(HttpStatus.OK)
-            .json(dataReturn);
-        } else {
-          throw new NotFoundException("Handle Service is not found!");
-        }
+      const dataHandleService = await this.handleServiceService.findById(updatePlanData.service_id);
+      if (dataHandleService) {
+        updatePlanData = { ...updatePlanData, ...{ handle: dataHandleService.handle } };
+        const dataReturn = await this.planService.update(updatePlanData);
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(dataReturn);
       } else {
-        throw new BadRequestException("You haven't permission for this Action!");
+        throw new NotFoundException("Handle Service is not found!");
       }
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -166,16 +154,12 @@ export class PlanHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "plan/delete")) {
-        //Check Permission
-        const dataReturn = await this.planService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      const dataReturn = await this.planService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -195,19 +179,15 @@ export class PlanHelper {
         throw new ForbiddenException("User is invalid");
       }
       const userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "plan/list")) {
-        const dataFilter = {
-          _id: id,
-        };
-        //Check Permission
-        const dataReturn = await this.planService.findOne(dataFilter);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      const dataFilter = {
+        _id: id,
+      };
+      //Check Permission
+      const dataReturn = await this.planService.findOne(dataFilter);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

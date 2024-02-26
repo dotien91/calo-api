@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } fr
 import { ApiOperation } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../../modules/index.i";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
@@ -44,7 +43,7 @@ import { UserFilterHelper } from "../helper/user_filter.helper";
 import { UserLoginHelper } from "../helper/user_login.helper";
 import { UserOrganizationHelper } from "../helper/user_organization.helper";
 
-@Controller(Controllers.USER)
+@Controller("user")
 export class UserController {
   constructor(
     private readonly userLoginHelper: UserLoginHelper,

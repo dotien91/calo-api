@@ -17,7 +17,6 @@ import {
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response as ExpressResponse } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../../modules/index.i";
 import { CreateChatRoomDto } from "../dto/create-chat_room.dto";
 import { DeleteChatRoomUserRoleDto } from "../dto/delete-chat_room_user_role.dto";
 import { GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
@@ -28,7 +27,7 @@ import { ChatRoomHelper } from "../helpers/chat_room.helper";
 import { ChatRoomService } from "../services/chat_room.service";
 import { ChatRoomUserOptionService } from "../services/chat_room_user_option.service";
 
-@Controller(Controllers.CHAT_ROOM)
+@Controller("chat-room")
 @ApiTags("chat")
 @ApiBearerAuth("ICEO")
 export class ChatRoomController {

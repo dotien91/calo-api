@@ -14,7 +14,6 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { makeRandom } from "../../../utils/utils";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
@@ -38,14 +37,12 @@ import { LivestreamViewService } from "../services/livestream_view.service";
 export class LivestreamHelper {
   constructor(
     private livestreamService: LivestreamService,
-    private userPermissionService: UserPermissionService,
     private mediaService: MediaService,
     private livestreamLikeService: LivestreamLikeService,
     private livestreamViewService: LivestreamViewService,
     private livestreamCommentService: LivestreamCommentService,
-    private notificationHelper: NotificationHelper
-  ) // private emailService: EmailService
-  {}
+    private notificationHelper: NotificationHelper // private emailService: EmailService
+  ) {}
 
   /**
    * @author Tony Vu

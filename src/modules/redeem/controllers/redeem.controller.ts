@@ -11,7 +11,7 @@ export class RedeemController {
   constructor(private readonly redeemHelper: RedeemHelper, private readonly redeemMissionHelper: RedeemMissionHelper) {}
 
   @Get("user")
-  async test(@Res() res: Response, @Req() req: ExpressRequestDto) {
+  async listRedeemByUser(@Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.redeemHelper.getUserRedeem(res, req);
   }
 

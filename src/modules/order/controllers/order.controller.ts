@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/com
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
+import { Permissions } from "src/decorators/auth.decorator";
+import { UserRoles } from "src/modules/user/interfaces/user.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
@@ -93,6 +95,7 @@ export class OrderController {
   }
 
   @Get("/admin-list")
+  @Permissions(UserRoles.ADMIN)
   async getAdminOrder(@Query() query: ListOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.orderHelper.getOrderListByAdmin(query, res, req);
   }
@@ -112,6 +115,7 @@ export class OrderController {
   }
 
   @Post("/admin-update")
+  @Permissions(UserRoles.ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.orderHelper.handleUpdateOrderByAdmin(dataUpdate, res, req);
   }

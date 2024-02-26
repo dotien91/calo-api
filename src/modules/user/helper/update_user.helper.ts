@@ -15,7 +15,6 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { NotificationService } from "../../../modules/notification/services/notification.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
@@ -54,7 +53,6 @@ export class UpdateUserHelper {
     private userFollowService: UserFollowService,
     private userViewService: UserViewService,
     private userDisagreeService: UserDisagreeService,
-    private userPermissionService: UserPermissionService,
     private userBlockService: UserBlockService,
     private userSessionService: UserSessionService,
     private notificationHelper: NotificationHelper,

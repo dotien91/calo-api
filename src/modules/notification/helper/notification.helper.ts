@@ -10,7 +10,6 @@ import axios from "axios";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserSessionService } from "../../../modules/user/services/user_session.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateNotificationDto } from "../dto/create-notifcation.dto";
 import { ListNotificationDto } from "../dto/list-notification.dto";
 import { Notification } from "../schemas/notification.schema";
@@ -41,7 +40,6 @@ export class NotificationHelper {
     private appUserService: UserService,
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
-    private userPermissionService: UserPermissionService,
     private jwtHelper: JwtHelperService
   ) {}
   private readonly logger = new Logger("notification");

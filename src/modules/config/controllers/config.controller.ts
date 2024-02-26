@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
+import { Permissions } from "src/decorators/auth.decorator";
+import { UserRoles } from "src/modules/user/interfaces/user.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Controllers } from "../../../modules/index.i";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { ListConfigDto } from "../dto/list-config.dto";
 import { UpdateConfigDto } from "../dto/update-config.dto";
 import { ConfigHelper } from "../helper/config.helper";
 
-@Controller(Controllers.CONFIG)
+@Controller("config")
 export class ConfigController {
   constructor(private readonly configHelper: ConfigHelper) {}
 
@@ -38,6 +39,7 @@ export class ConfigController {
   }
 
   @Get("/admin-list")
+  @Permissions(UserRoles.ADMIN)
   async getAdminConfig(@Query() query: ListConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.getConfigListByAdmin(query, res, req);
   }
@@ -52,6 +54,7 @@ export class ConfigController {
   }
 
   @Post("/admin-update")
+  @Permissions(UserRoles.ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateConfigDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.configHelper.handleUpdateConfigByAdmin(dataUpdate, res, req);
   }

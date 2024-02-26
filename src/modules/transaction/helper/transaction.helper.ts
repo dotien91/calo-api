@@ -16,7 +16,6 @@ import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
 import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
@@ -36,7 +35,6 @@ export class TransactionHelper {
   constructor(
     private transactionService: TransactionService,
     private transactionBankService: TransactionBankService,
-    private userPermissionService: UserPermissionService,
     private userService: UserService,
     private readonly eventHookNotificationService: EventHookNotificationService
   ) {}

@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreateCategoryDto } from "../dto/create-category.dto";
 import { ListCategoryDto } from "../dto/list-category.dto";
 import { UpdateCategoryDto } from "../dto/update-category.dto";
@@ -14,10 +13,7 @@ import { ShortCategoryService } from "../services/short_category.service";
  */
 @Injectable()
 export class ShortCategoryHelper {
-  constructor(
-    private postCategoryService: ShortCategoryService,
-    private userPermissionService: UserPermissionService
-  ) {}
+  constructor(private postCategoryService: ShortCategoryService) {}
 
   /**
    * @author Tony Vu
@@ -35,18 +31,14 @@ export class ShortCategoryHelper {
       }
 
       let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
-        let dataSlug = this.toSlug(createPostData.category_title);
-        createPostData = { ...createPostData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
+      let dataSlug = this.toSlug(createPostData.category_title);
+      createPostData = { ...createPostData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
 
-        let dataCreate = await this.postCategoryService.create(createPostData);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataCreate);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      let dataCreate = await this.postCategoryService.create(createPostData);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataCreate);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -67,7 +59,6 @@ export class ShortCategoryHelper {
       //   throw new ForbiddenException("User is invalid");
       // }
       // let userId = userObject._id.toString();
-      // if (await this.userPermissionService.isHavePermission(userId, "order/list")) {
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
@@ -197,15 +188,11 @@ export class ShortCategoryHelper {
       }
       let userId = userObject._id.toString();
       //Check Permission
-      if (await this.userPermissionService.isHavePermission(userId, "post/update")) {
-        let dataReturn = await this.postCategoryService.update(dataUpdate);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      let dataReturn = await this.postCategoryService.update(dataUpdate);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -224,17 +211,12 @@ export class ShortCategoryHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      if (await this.userPermissionService.isHavePermission(userId, "post/delete")) {
-        //Check Permission
-        let dataReturn = await this.postCategoryService.remove(id);
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(dataReturn);
-      } else {
-        throw new BadRequestException("You haven't permission for this Action!");
-      }
+      //Check Permission
+      let dataReturn = await this.postCategoryService.remove(id);
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

@@ -11,7 +11,6 @@ import { PlanService } from "../../../modules/plan/services/plan.service";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
 import { UserService } from "../../../modules/user/services/user.service";
-import { UserPermissionService } from "../../../modules/user_permission/services/user_permission.service";
 import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
 import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
 import { PurchaseService } from "../services/purchase.service";
@@ -24,7 +23,6 @@ import { PurchaseService } from "../services/purchase.service";
 export class PurchaseHelper {
   constructor(
     private planService: PlanService,
-    private userPermissionService: UserPermissionService,
     private subscribeService: SubscribeService,
     private purchaseService: PurchaseService,
     private orderService: OrderService,

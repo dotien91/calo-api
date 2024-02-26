@@ -17,7 +17,6 @@ import {
 } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { UserPermissionService } from "../../user_permission/services/user_permission.service";
 import { CreateMediaPresignDto } from "../dto/create-media_presign.dto";
 import { GetMediaRoomDto } from "../dto/get-media_room.dto";
 import { UpdateMediaDto } from "../dto/update-media.dto";
@@ -25,10 +24,7 @@ import { MediaService } from "../services/media.service";
 
 @Controller("media")
 export class MediaController {
-  constructor(
-    private readonly mediaService: MediaService,
-    private readonly userPermissionService: UserPermissionService
-  ) {}
+  constructor(private readonly mediaService: MediaService) {}
 
   private readonly logger = new Logger("media_controller");
   @Post("/create")
@@ -174,25 +170,21 @@ export class MediaController {
         throw new ForbiddenException("User is invalid");
       }
 
-      if (await this.userPermissionService.isHavePermission(userObject._id.toString(), "media/list")) {
-        const page = Number(query?.page) || 1;
-        const limit = query?.limit || 150;
+      const page = Number(query?.page) || 1;
+      const limit = query?.limit || 150;
 
-        const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
+      const orderBy = <"DESC" | "ASC">query?.order_by ? query.order_by : "DESC";
 
-        const dataUserOptionFilter = query;
-        delete dataUserOptionFilter.page;
-        delete dataUserOptionFilter.limit;
-        delete dataUserOptionFilter.order_by;
+      const dataUserOptionFilter = query;
+      delete dataUserOptionFilter.page;
+      delete dataUserOptionFilter.limit;
+      delete dataUserOptionFilter.order_by;
 
-        const dataOrder = {
-          createdAt: orderBy,
-        };
-        const dataMedia = await this.mediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
-        res.status(HttpStatus.OK).json(dataMedia);
-      } else {
-        throw new ForbiddenException("Not have permission !");
-      }
+      const dataOrder = {
+        createdAt: orderBy,
+      };
+      const dataMedia = await this.mediaService.filter(dataUserOptionFilter, dataOrder, page, limit);
+      res.status(HttpStatus.OK).json(dataMedia);
     } catch (error) {
       this.logger.log("findAll Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);

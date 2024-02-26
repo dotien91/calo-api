@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
 import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
@@ -33,6 +35,7 @@ export class TransactionController {
   }
 
   @Get("/admin-list")
+  @Permissions(UserRoles.ADMIN)
   async getAdminTransaction(@Query() query: ListTransactionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.getTransactionListByAdmin(query, res, req);
   }
@@ -43,6 +46,7 @@ export class TransactionController {
   }
 
   @Post("/create")
+  @Permissions(UserRoles.ADMIN)
   async createNewTransaction(
     @Body() createTransactionBody: CreateTransactionDto,
     @Res() res: Response,
@@ -52,6 +56,7 @@ export class TransactionController {
   }
 
   @Patch("/update-bank")
+  @Permissions(UserRoles.ADMIN)
   async updateBankTransaction(
     @Body() createTransactionBody: UpdateTransactionBankDto,
     @Res() res: Response,
@@ -61,6 +66,7 @@ export class TransactionController {
   }
 
   @Post("/create-bank")
+  @Permissions(UserRoles.ADMIN)
   async createNewTransactionBank(
     @Body() createTransactionBody: CreateTransactionBankDto,
     @Res() res: Response,
@@ -70,6 +76,7 @@ export class TransactionController {
   }
 
   @Delete("delete-bank/:id")
+  @Permissions(UserRoles.ADMIN)
   async deleteTransactionBank(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleDeleteTransactionBank(id, res, req);
   }
@@ -84,6 +91,7 @@ export class TransactionController {
   }
 
   @Patch("/admin-update")
+  @Permissions(UserRoles.ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateTransactionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleUpdateTransactionByAdmin(dataUpdate, res, req);
   }
