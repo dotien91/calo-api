@@ -32,6 +32,12 @@ export class Thread {
 
   @Prop({
     type: MongooseSchema.Types.String,
+    nullable: false,
+  })
+  thread_title: string;
+
+  @Prop({
+    type: MongooseSchema.Types.String,
     default: "",
     nullable: false,
   })
@@ -66,7 +72,12 @@ export class Thread {
     type: MongooseSchema.Types.Number,
     default: 0,
   })
-  comment_count: 0;
+  comment_count: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Date,
+  })
+  expired: string;
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);

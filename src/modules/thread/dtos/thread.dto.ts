@@ -1,4 +1,14 @@
-import { IsArray, IsDefined, IsEnum, IsIn, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsDateString,
+  IsDefined,
+  IsEnum,
+  IsIn,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { ThreadType } from "../interfaces/thread.interface.i";
 
 export interface FilterThreadDTO {
@@ -45,6 +55,10 @@ export class CreateThreadDTO {
 
   @IsString()
   @IsDefined()
+  thread_title: string;
+
+  @IsString()
+  @IsDefined()
   thread_content: string;
 
   @IsEnum(ThreadType)
@@ -64,6 +78,10 @@ export class CreateThreadDTO {
   @IsString({ each: true })
   @IsOptional()
   assigned_user_ids?: string[];
+
+  @IsDateString()
+  @IsOptional()
+  expired?: string;
 }
 
 export class UpdateThreadDTO {
@@ -74,6 +92,10 @@ export class UpdateThreadDTO {
   @IsString()
   @IsOptional()
   class_id?: string;
+
+  @IsString()
+  @IsOptional()
+  thread_title?: string;
 
   @IsString()
   @IsOptional()
@@ -96,5 +118,9 @@ export class UpdateThreadDTO {
   @IsString({ each: true })
   @IsOptional()
   assigned_user_ids?: string[];
+
+  @IsDateString()
+  @IsOptional()
+  expired?: string;
 }
 

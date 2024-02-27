@@ -130,7 +130,7 @@ export class ThreadHelper {
       const courseClass = await this.courseClassService.findOne({ _id: dataReturn.class_id });
 
       const finalDataReturn = dataReturn.map((thread) => {
-        return {
+        const data = {
           ...thread,
           thread_comments: {
             public_comment: thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC),
@@ -147,6 +147,10 @@ export class ThreadHelper {
             })[0],
           },
         };
+        return {
+          ...data,
+          is_late_submit: this.isLateSubmit(thread.expired, data.thread_comments.file_comment),
+        };
       })[0];
 
       return res
@@ -156,6 +160,15 @@ export class ThreadHelper {
     } catch (error) {
       throw new NotFoundException(error.message);
     }
+  }
+
+  isLateSubmit(expired: string, file_comment: any): boolean {
+    if (!file_comment) return false;
+    const submitTime = new Date(file_comment.createdAt);
+    const expiredTime = new Date(expired);
+
+    if (submitTime > expiredTime) return true;
+    return false;
   }
 }
 

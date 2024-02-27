@@ -91,6 +91,9 @@ export class ThreadService {
           user_id: {
             $first: "$user_id",
           },
+          thread_title: {
+            $first: "$thread_title",
+          },
           thread_content: {
             $first: "$thread_content",
           },
@@ -108,6 +111,9 @@ export class ThreadService {
           },
           attach_files: {
             $first: "$attach_files",
+          },
+          expired: {
+            $first: "$expired",
           },
         },
       },
