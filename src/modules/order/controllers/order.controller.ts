@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/com
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { Permissions } from "src/decorators/auth.decorator";
-import { UserRoles } from "src/modules/user/interfaces/user.interface";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationHelper } from "../../notification/helper/notification.helper";

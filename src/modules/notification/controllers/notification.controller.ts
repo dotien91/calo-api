@@ -2,9 +2,9 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res } from "@ne
 import { CronExpression } from "@nestjs/schedule";
 import { Response } from "express";
 import { schedule } from "node-cron";
-import { Permissions } from "src/decorators/auth.decorator";
-import { UserRoles } from "src/modules/user/interfaces/user.interface";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateNotificationDto } from "../dto/create-notifcation.dto";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { ListNotificationDto } from "../dto/list-notification.dto";

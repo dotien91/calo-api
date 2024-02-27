@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
-import { Permissions } from "src/decorators/auth.decorator";
-import { UserRoles } from "src/modules/user/interfaces/user.interface";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateCategoryDto } from "../dto/create-category.dto";
 import { CreateShortDto } from "../dto/create-short.dto";
 import { CreateShortLikeDto } from "../dto/create-short_like.dto";

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import mongoose, { Model, Types } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { UserRoles } from "../../user/interfaces/user.interface";
 import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
@@ -429,12 +429,9 @@ export class CourseService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
-    if (!objectId) {
-      return null;
-    }
+
     return await this.courseModel
-      .findById(objectId)
+      .findById(id)
       .populate(
         "user_id",
         "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"

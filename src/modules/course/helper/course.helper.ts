@@ -187,7 +187,7 @@ export class CourseHelper {
           version: "1.0.1",
           ref_id: courseData?._id?.toString(),
           google_store_product_id: "",
-          user_id: courseData.user_id.toString(),
+          user_id: courseData.user_id._id.toString(),
         };
         let planService = await this.planService.create(dataPlanCreate);
         // console.log(planService, 'planService')

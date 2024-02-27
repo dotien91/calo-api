@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
-import { Permissions } from "src/decorators/auth.decorator";
-import { UserRoles } from "src/modules/user/interfaces/user.interface";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateConfigDto } from "../dto/create-config.dto";
 import { ListConfigDto } from "../dto/list-config.dto";
 import { UpdateConfigDto } from "../dto/update-config.dto";

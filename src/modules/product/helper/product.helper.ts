@@ -202,6 +202,7 @@ export class ProductHelper {
         version: "1.0.1",
         ref_id: productData?._id?.toString(),
         google_store_product_id: "",
+        user_id: productData.user_id.toString(),
       };
       await this.planService.update(dataPlanCreate);
       return {};
