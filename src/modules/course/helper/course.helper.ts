@@ -2657,6 +2657,9 @@ export class CourseHelper {
 
   async getCourseRoom(query: GetCourseRoomParams, res: Response, req: ExpressRequestDto) {
     try {
+      const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
       const course = await this.courseService.findOne({ _id: query.course_id });
       if (!course) throw new Error("Course not found");
 
@@ -2665,20 +2668,16 @@ export class CourseHelper {
 
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
-          const [room, chatroom] = await Promise.all([
+          const [room] = await Promise.all([
             this.courseOneOneService.findOne({
               user_id: course.user_id._id.toString(),
               role: CourseOneOneRole.TEACHER,
             }),
-            this.chatRoomService.findOneRoom({
-              room_type: "personal",
-              user_id: course.user_id._id.toString(),
-            }),
           ]);
 
-          if (room && chatroom) {
+          if (room) {
             redirect_url = `/room/class/${room?._id.toString()}`;
-            chat_room_id = chatroom._id.toString();
+            chat_room_id = null;
           } else throw new BadRequestException();
 
           break;

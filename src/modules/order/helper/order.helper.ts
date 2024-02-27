@@ -807,7 +807,6 @@ export class OrderHelper {
           dataToCreate = await this.subscribeService.create(dataSubscribe);
 
           // handle transaction
-          // TODO
           this.handleUpdateOrderAfterTransaction(
             orderObject._id.toString(),
             orderItem.plan_id.user_id.toString(),
@@ -853,6 +852,49 @@ export class OrderHelper {
                 .map((item) => item.service_name.toLocaleUpperCase())
                 .toString()}`,
             });
+          }
+
+          // update point for user
+          // update coin for referral user
+          if (orderItem.type === OrderItemType.COURSE) {
+            // update point for user
+            const data: AddPointToUserData = {
+              user_id: orderObject.user_id._id.toString(),
+              point: orderObject.payment_method === "free" ? 10 : Math.floor(orderObject.price / 10000),
+              entity_id: orderItem?.plan_id._id?.toString(),
+              entity_target: UserPointHistory_EntityTarget.COURSE,
+              entity_action: UserPointHistory_EntityAction.BUY,
+            };
+            this.eventHookWorkerService.AddPointToUser(data);
+
+            // update redeem for user
+            this.redeemUserService.updateUserRedeem(
+              orderObject.user_id,
+              RedeemMissionActionType.BUY,
+              RedeemMissionActionTarget.COURSE
+            );
+
+            // update coin for referral user
+            // update redeem mission for user
+            if (orderObject.invitation_code) {
+              // update coin for referral user
+              this.referralService.processBuyCourseBonusForReferralUser(
+                orderObject.invitation_code,
+                orderObject.user_id,
+                orderObject.price
+              );
+
+              // update redeem mission for user
+              const referralUser = await this.userService.findOne({
+                invitation_code: orderObject.invitation_code,
+              });
+              if (referralUser)
+                this.redeemUserService.updateUserRedeem(
+                  referralUser,
+                  RedeemMissionActionType.BUY,
+                  RedeemMissionActionTarget.COURSE
+                );
+            }
           }
         }
 
@@ -909,51 +951,6 @@ export class OrderHelper {
               .tz(orderObject.user_id.timezone || "UTC")
               .format("DD-MM-YYYY HH:mm"),
           },
-        });
-
-        // update point for user
-        // update coin for referral user
-        orderObject.items.forEach(async (item) => {
-          if (item.type === OrderItemType.COURSE) {
-            // update point for user
-            const data: AddPointToUserData = {
-              user_id: orderObject.user_id.toString(),
-              point: orderObject.payment_method === "free" ? 10 : Math.floor(orderObject.price / 10000),
-              entity_id: orderObject?._id?.toString(),
-              entity_target: UserPointHistory_EntityTarget.COURSE,
-              entity_action: UserPointHistory_EntityAction.BUY,
-            };
-            this.eventHookWorkerService.AddPointToUser(data);
-
-            // update redeem for user
-            this.redeemUserService.updateUserRedeem(
-              orderObject.user_id,
-              RedeemMissionActionType.BUY,
-              RedeemMissionActionTarget.COURSE
-            );
-
-            // update coin for referral user
-            // update redeem mission for user
-            if (orderObject.invitation_code) {
-              // update coin for referral user
-              this.referralService.processBuyCourseBonusForReferralUser(
-                orderObject.invitation_code,
-                orderObject.user_id,
-                orderObject.price
-              );
-
-              // update redeem mission for user
-              const referralUser = await this.userService.findOne({
-                invitation_code: orderObject.invitation_code,
-              });
-              if (referralUser)
-                this.redeemUserService.updateUserRedeem(
-                  referralUser,
-                  RedeemMissionActionType.BUY,
-                  RedeemMissionActionTarget.COURSE
-                );
-            }
-          }
         });
 
         return orderObject;
