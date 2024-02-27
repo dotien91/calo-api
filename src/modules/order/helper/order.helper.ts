@@ -930,6 +930,7 @@ export class OrderHelper {
         this.emailService.send({
           eventName: EmailPattern.SUCCESS_ORDER,
           email: orderObject.user_id.user_email,
+          language: orderObject.user_id.default_language,
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             course_name: orderObject.items.map((item) => item.service_name).toString(),
@@ -942,6 +943,7 @@ export class OrderHelper {
         this.emailService.send({
           eventName: EmailPattern.INVOICE_ORDER,
           email: orderObject.user_id.user_email,
+          language: orderObject.user_id.default_language,
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             order_id: orderObject._id.toString(),

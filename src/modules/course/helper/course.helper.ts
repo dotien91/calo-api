@@ -1148,6 +1148,7 @@ export class CourseHelper {
       this.emailService.send({
         eventName: EmailPattern.SUCCESS_ORDER,
         email: userObject.user_email,
+        language: userObject.default_language,
         replacePattern: {
           display_name: userObject.display_name,
           course_name: videoObject.title,

@@ -477,6 +477,7 @@ export class UserLoginHelper {
         this.emailService.send({
           eventName: EmailPattern.REGISTER,
           email: userObject.email,
+          language: userObject.default_language,
           replacePattern: {
             display_name: userObject.display_name,
             user_email: userObject.user_email,
@@ -1017,6 +1018,7 @@ export class UserLoginHelper {
       const response = await this.emailService.send({
         eventName: EmailPattern.VERIFY_CODE,
         email: userObject.user_email,
+        language: userObject.default_language,
         replacePattern: {
           verify_code: dataToken,
           display_name: userObject.display_name,

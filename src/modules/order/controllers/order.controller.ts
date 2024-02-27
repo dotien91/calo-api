@@ -71,6 +71,7 @@ export class OrderController {
           this.emailService.send({
             eventName: EmailPattern.PENDING_ORDER,
             email: order.user_id.user_email,
+            language: order.user_id.default_language,
             replacePattern: {
               display_name: order.user_id.display_name,
               order_name: order.items?.map((item) => item.service_name)?.toString(),

@@ -11,6 +11,7 @@ export class EmailService {
     return await this.httpClient.post$(`${this.httpConfig.emailConfig}/api/email/add`, {
       eventName: payload.eventName,
       email: payload.email,
+      language: payload.language,
       replacePattern: payload.replacePattern,
     });
   }

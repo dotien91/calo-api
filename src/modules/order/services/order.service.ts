@@ -322,6 +322,7 @@ export class OrderService {
           this.emailService.send({
             eventName: EmailPattern.CLOSE_ORDER,
             email: dataReturn.user_id.user_email,
+            language: dataReturn.user_id.default_language,
             replacePattern: {
               display_name: dataReturn.user_id.display_name,
               order_id: dataReturn._id.toString(),

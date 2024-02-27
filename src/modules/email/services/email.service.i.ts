@@ -2,6 +2,7 @@ export interface SendEmailPayload {
   eventName: string;
   email: string;
   replacePattern: object;
+  language: string;
 }
 
 export enum EmailPattern {
