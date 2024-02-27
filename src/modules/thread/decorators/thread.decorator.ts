@@ -14,7 +14,10 @@ export class ThreadGuard implements CanActivate {
     try {
       const courseClass = await this.courseClassService.findOne({ _id: request.headers["class-id"] });
       if (!courseClass) throw new Error("Not found class");
-      const isJoin = courseClass.members.find((member: any) => member.toString() === userObject._id.toString());
+      const isJoin = [
+        ...courseClass.members.map((memberId) => memberId.toString()),
+        courseClass.user_id.toString(),
+      ].find((memberId: any) => memberId === userObject._id.toString());
       if (!isJoin) throw new Error("You're not a part of this class");
 
       return true;
