@@ -2665,6 +2665,7 @@ export class CourseHelper {
 
       let redirect_url = null;
       let chat_room_id = null;
+      let course_type = course.type;
 
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
@@ -2713,6 +2714,7 @@ export class CourseHelper {
       return res.set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" }).status(HttpStatus.OK).json({
         redirect_url,
         chat_room_id,
+        course_type,
       });
     } catch (error) {
       throw new BadRequestException(error.message);
