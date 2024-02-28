@@ -117,6 +117,13 @@ export class ProductHelper {
 
   async delete(id: string, res: Response, req: ExpressRequestDto) {
     try {
+      const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
+      const product = await this.productService.findOne({ _id: id });
+      if (product?.user_id.toString() === userObject._id.toString())
+        throw new Error("You don't have permission to do this");
+
       let dataReturn = await this.productService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

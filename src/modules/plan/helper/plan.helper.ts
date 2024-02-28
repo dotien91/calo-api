@@ -153,7 +153,6 @@ export class PlanHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.planService.remove(id);
       return res

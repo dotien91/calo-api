@@ -2,6 +2,8 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ChatRoomModule } from "../chat_room/chat_room.module";
+import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
+import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
@@ -81,6 +83,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: Notification.name, schema: NotificationSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
+      { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
     ]),
     ChatRoomModule,
     UserModule,
@@ -115,6 +118,7 @@ import { CourseViewService } from "./services/course_view.service";
     TransactionService,
     TransactionBankService,
     UserOrganizationService,
+    ChatRoomUserOptionService,
   ],
   exports: [
     CourseHelper,

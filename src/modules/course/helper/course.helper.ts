@@ -4,6 +4,7 @@ import * as moment from "moment";
 import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -99,7 +100,8 @@ export class CourseHelper {
     private readonly emailService: EmailService,
     private readonly couponService: CouponService,
     private readonly referralService: ReferralService,
-    private readonly redeemUserService: RedeemUserService
+    private readonly redeemUserService: RedeemUserService,
+    private readonly chatRoomUserOptionService: ChatRoomUserOptionService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -2102,6 +2104,23 @@ export class CourseHelper {
       };
       const courseCalendarTeacher = await this.courseOneOneService.create(createParams);
 
+      // create chatroom for one-one
+      (async () => {
+        try {
+          const user = await this.userService.findOne({ _id: dataFollow.user_id });
+          await this.chatRoomHelper.handleCreateRoom(
+            user,
+            course.user_id._id.toString(),
+            "personal",
+            undefined,
+            false,
+            req
+          );
+        } catch (e) {
+          console.log(e);
+        }
+      })();
+
       if (res) {
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -2670,16 +2689,21 @@ export class CourseHelper {
 
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
-          const [room] = await Promise.all([
+          const [room, chatRoomUserOption] = await Promise.all([
             this.courseOneOneService.findOne({
               user_id: course.user_id._id.toString(),
               role: CourseOneOneRole.TEACHER,
+            }),
+            this.chatRoomUserOptionService.findOne({
+              user_id: userObject._id.toString(),
+              partner_id: course.user_id._id.toString(),
+              room_type: "personal",
             }),
           ]);
 
           if (room) {
             redirect_url = `/room/class/${room?._id.toString()}`;
-            chat_room_id = null;
+            chat_room_id = chatRoomUserOption?.chat_room_id ? chatRoomUserOption.chat_room_id._id.toString() : null;
           } else throw new BadRequestException();
 
           break;

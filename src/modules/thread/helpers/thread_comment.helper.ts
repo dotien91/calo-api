@@ -132,14 +132,20 @@ export class ThreadCommentHelper {
       const userId = req?.user_id?.toString();
       if (!userId) throw new Error("Invalid user");
 
-      const threadComment = await this.threadCommentService.findByIdAndDelete(id);
+      const threadComment = await this.threadCommentService.findOne({ _id: id });
+      if (!threadComment) throw new Error("Thread not found");
 
-      this.threadService.updateCount({ _id: threadComment?.thread_id }, { comment_count: -1 });
+      if (threadComment.user_id.toString() === userId) {
+        await this.threadCommentService.remove({ _id: id });
+        this.threadService.updateCount({ _id: threadComment?.thread_id }, { comment_count: -1 });
 
-      return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-        .status(HttpStatus.OK)
-        .json();
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json();
+      } else {
+        throw new Error("You don't have permission to do that");
+      }
     } catch (error) {
       throw new NotFoundException(error.message);
     }

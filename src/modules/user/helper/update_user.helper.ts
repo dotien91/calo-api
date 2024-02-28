@@ -1305,7 +1305,6 @@ export class UpdateUserHelper {
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      const userId = userObject._id.toString();
       //Check Permission
       const dataReturn = await this.userInterestService.remove(id);
       return res

@@ -605,7 +605,6 @@ export class LivestreamHelper {
   async handleDeleteLivestream(id: string, res: Response, req: ExpressRequestDto) {
     try {
       let userObject = req?.user_object;
-      let userId = req?.user_id;
 
       let dataLivestream = await this.livestreamService.findById(id.toString());
       if (dataLivestream?.user_id?._id.toString() === userObject?._id.toString()) {
