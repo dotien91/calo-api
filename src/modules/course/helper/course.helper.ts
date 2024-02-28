@@ -1347,6 +1347,13 @@ export class CourseHelper {
 
   async updateReview(dataFollow: UpdateCourseReviewDto, req: ExpressRequestDto, res: Response) {
     try {
+      const userId = req?.user_id;
+      if (!userId) throw new Error("Invalid user");
+
+      const _courseReview = await this.courseReviewService.findOne({ _id: dataFollow._id });
+      if (_courseReview && _courseReview.user_id.toString() !== userId)
+        throw new Error("You don't have permission to do this");
+
       const courseReview = await this.courseReviewService.update(dataFollow);
 
       this.processUpdateRating(courseReview.course_id.toString());

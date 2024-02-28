@@ -19,7 +19,10 @@ export class CartHelper {
 
       const cart = await this.cartService.findOne({ user_id: new mongoose.Types.ObjectId(userId) });
       if (!cart) dataReturn = await this.createCart(data, userId);
-      else dataReturn = await this.updateCart(cart, data);
+      else {
+        if (cart.user_id.toString() !== userId) throw new Error("You don't have permission to do this");
+        dataReturn = await this.updateCart(cart, data);
+      }
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

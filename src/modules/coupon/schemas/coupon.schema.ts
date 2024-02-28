@@ -100,6 +100,7 @@ export class Coupon {
     type: String,
     default: makeRandom(6, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
     nullable: false,
+    unique: true,
   })
   code: string;
 }

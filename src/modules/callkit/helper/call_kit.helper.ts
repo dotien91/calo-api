@@ -190,8 +190,6 @@ export class CallKitHelper {
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      //Check Permission
 
       let callKitObject = await this.callkitService.findOne({ room_name: dataUpdate.room_id });
       if (!callKitObject) {

@@ -90,6 +90,12 @@ export class ProductHelper {
 
   async update(dataUpdate: UpdateProductDTO, res: Response, req: ExpressRequestDto) {
     try {
+      const userId = req?.user_id;
+      if (!userId) throw new Error("Invalid user");
+
+      let product = await this.productService.findOne({ _id: dataUpdate._id });
+      if (product?.user_id.toString() !== userId) throw new Error("You don't have permission to do this");
+
       let dataCreate: any = await this.productService.update(dataUpdate);
       if (dataCreate?.price && !dataCreate?.service_id) {
         dataCreate = await this.handleUpdateServiceProduct(dataCreate);

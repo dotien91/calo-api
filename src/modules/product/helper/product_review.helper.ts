@@ -87,6 +87,12 @@ export class ProductReviewHelper {
 
   async updateReview(dataFollow: UpdateProductReviewDto, req: ExpressRequestDto, res: Response) {
     try {
+      const userId = req?.user_id;
+      if (userId) throw new Error("Invalid user");
+
+      const _productReview = await this.productReviewService.findOne({ _id: dataFollow._id });
+      if (_productReview?.user_id.toString() !== userId) throw new Error("You don't have permission to do this");
+
       const productReview = await this.productReviewService.update(dataFollow);
 
       this.processUpdateRating(productReview.product_id.toString());

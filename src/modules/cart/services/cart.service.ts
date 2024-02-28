@@ -78,6 +78,9 @@ export class CartService {
       {
         $group: {
           _id: "$_id",
+          user_id: {
+            $first: "$user_id",
+          },
           items: { $addToSet: "$items" },
         },
       },
