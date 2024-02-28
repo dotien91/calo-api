@@ -130,21 +130,24 @@ export class ThreadHelper {
       const courseClass = await this.courseClassService.findOne({ _id: dataReturn.class_id });
 
       const finalDataReturn = dataReturn.map((thread) => {
+        const public_comment = thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC);
+        const private_comment = thread.thread_comments.filter((elem) => {
+          return (
+            elem.type === ThreadCommentType.PRIVATE &&
+            (userId === elem.user_id.toString() ||
+              (courseClass.user_id.toString() === elem.user_id.toString() &&
+                elem.reply_to_user_id.toString() === userId))
+          );
+        });
+        const file_comment = thread.thread_comments.filter((elem) => {
+          return elem.type === ThreadCommentType.FILE && elem.user_id.toString() === userId;
+        })[0];
         const data = {
           ...thread,
           thread_comments: {
-            public_comment: thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC),
-            private_comment: thread.thread_comments.filter((elem) => {
-              return (
-                elem.type === ThreadCommentType.PRIVATE &&
-                (userId === elem.user_id.toString() ||
-                  (courseClass.user_id.toString() === elem.user_id.toString() &&
-                    elem.reply_to_user_id.toString() === userId))
-              );
-            }),
-            file_comment: thread.thread_comments.filter((elem) => {
-              return elem.type === ThreadCommentType.FILE && elem.user_id.toString() === userId;
-            })[0],
+            public_comment,
+            private_comment,
+            file_comment: file_comment || null,
           },
         };
         return {

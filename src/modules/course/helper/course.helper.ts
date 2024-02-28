@@ -4,7 +4,6 @@ import * as moment from "moment";
 import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -100,8 +99,7 @@ export class CourseHelper {
     private readonly emailService: EmailService,
     private readonly couponService: CouponService,
     private readonly referralService: ReferralService,
-    private readonly redeemUserService: RedeemUserService,
-    private readonly chatRoomUserOptionService: ChatRoomUserOptionService
+    private readonly redeemUserService: RedeemUserService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -2689,21 +2687,16 @@ export class CourseHelper {
 
       switch (course.type) {
         case CourseType.CALL_ONE_ONE: {
-          const [room, chatRoomUserOption] = await Promise.all([
+          const [room] = await Promise.all([
             this.courseOneOneService.findOne({
               user_id: course.user_id._id.toString(),
               role: CourseOneOneRole.TEACHER,
-            }),
-            this.chatRoomUserOptionService.findOne({
-              user_id: userObject._id.toString(),
-              partner_id: query.partner_id,
-              room_type: "personal",
             }),
           ]);
 
           if (room) {
             redirect_url = `/room/class/${room?._id.toString()}`;
-            chat_room_id = chatRoomUserOption?.chat_room_id ? chatRoomUserOption.chat_room_id._id.toString() : null;
+            chat_room_id = null;
           } else throw new BadRequestException();
 
           break;
