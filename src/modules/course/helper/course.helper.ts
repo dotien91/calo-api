@@ -2675,9 +2675,6 @@ export class CourseHelper {
 
   async getCourseRoom(query: GetCourseRoomParams, res: Response, req: ExpressRequestDto) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) throw new Error("Invalid user");
-
       const course = await this.courseService.findOne({ _id: query.course_id });
       if (!course) throw new Error("Course not found");
 
