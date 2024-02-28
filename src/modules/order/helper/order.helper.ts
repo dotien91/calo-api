@@ -5,7 +5,6 @@ import * as moment from "moment";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
-import { Course } from "../../../modules/course/schemas/course.schema";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
 import { EmailService } from "../../../modules/email/services/email.service";
@@ -808,9 +807,11 @@ export class OrderHelper {
 
           // handle transaction
           this.handleUpdateOrderAfterTransaction(
-            orderObject._id.toString(),
+            orderObject.user_id._id.toString(),
             orderItem.plan_id.user_id.toString(),
-            orderItem.amount_of_package * orderItem.plan_id.price
+            orderItem.amount_of_package * orderItem.plan_id.price,
+            orderItem.plan_id.ref_id.toString(),
+            orderItem.type
           );
 
           //Check if service is Extension
@@ -1135,77 +1136,77 @@ export class OrderHelper {
     }
   }
 
-  async handleCreateTransaction(
-    userIdTransaction: string,
-    transactionValue: number,
-    orderObject: Order,
-    dataCourse: Course,
-    channelId: string,
-    commmissionValue: number
-  ) {
-    const dataFilter = {
-      user_id: userIdTransaction,
-    };
-    const newDataTransaction = await this.transactionService.findOne(dataFilter);
-    let lastToken = 0;
-    if (newDataTransaction) {
-      lastToken = Number(newDataTransaction.current_token);
-    }
-    let currentToken = 0;
-    currentToken = lastToken + Number(transactionValue);
+  // async handleCreateTransaction(
+  //   userIdTransaction: string,
+  //   transactionValue: number,
+  //   orderObject: Order,
+  //   dataCourse: Course,
+  //   channelId: string,
+  //   commmissionValue: number
+  // ) {
+  //   const dataFilter = {
+  //     user_id: userIdTransaction,
+  //   };
+  //   const newDataTransaction = await this.transactionService.findOne(dataFilter);
+  //   let lastToken = 0;
+  //   if (newDataTransaction) {
+  //     lastToken = Number(newDataTransaction.current_token);
+  //   }
+  //   let currentToken = 0;
+  //   currentToken = lastToken + Number(transactionValue);
 
-    for (const orderItem of orderObject.items) {
-      const dataTransactionToAdd = {
-        user_id: userIdTransaction,
-        channel_id: channelId,
-        ref_id: orderItem?.service_id?.handle?.toString(),
-        ref_type: "course",
-        ref_name: dataCourse?.title?.toString(),
-        ref_url: `/r/courses/view/${orderItem?.service_id?.handle?.toString()}`,
-        last_coin: 0,
-        current_coin: 0,
-        last_token: lastToken,
-        current_token: currentToken,
-        transaction_value: transactionValue,
-        commission_value: commmissionValue,
-        transaction_type: "output",
-        income_value: 0,
-        method: "plus",
-        note: `Recive ${transactionValue} coin from System ID: ${orderItem?.service_id?.handle?.toString()}`,
-        status: "done",
-        trans_id: "",
-        error_message: "",
-        data_payment: "",
-        billing_on: new Date(),
-        processing_on: null,
-        successfully_on: new Date(),
-        from_user: orderObject?.user_id?._id.toString(),
-        type_system: "system",
-      };
-      const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
-    }
-    // setTimeout(() => {
+  //   for (const orderItem of orderObject.items) {
+  //     const dataTransactionToAdd = {
+  //       user_id: userIdTransaction,
+  //       channel_id: channelId,
+  //       ref_id: orderItem?.service_id?.handle?.toString(),
+  //       ref_type: "Course",
+  //       ref_name: dataCourse?.title?.toString(),
+  //       ref_url: `/r/courses/view/${orderItem?.service_id?.handle?.toString()}`,
+  //       last_coin: 0,
+  //       current_coin: 0,
+  //       last_token: lastToken,
+  //       current_token: currentToken,
+  //       transaction_value: transactionValue,
+  //       commission_value: commmissionValue,
+  //       transaction_type: "output",
+  //       income_value: 0,
+  //       method: "plus",
+  //       note: `Recive ${transactionValue} coin from System ID: ${orderItem?.service_id?.handle?.toString()}`,
+  //       status: "done",
+  //       trans_id: "",
+  //       error_message: "",
+  //       data_payment: "",
+  //       billing_on: new Date(),
+  //       processing_on: null,
+  //       successfully_on: new Date(),
+  //       from_user: orderObject?.user_id?._id.toString(),
+  //       type_system: "system",
+  //     };
+  //     const dataTransaction = await this.transactionService.create(dataTransactionToAdd);
+  //   }
+  //   // setTimeout(() => {
 
-    //   console.log("đã vào cộng điểm!!!");
-    //   this.eventHookWorkerService.PlusPointChallengePusher({
-    //     user_id: orderObject?.user_id?._id.toString(),
-    //     game_type: "revenue",
-    //     channel_id: channelId,
-    //     point_value: transactionValue,
-    //     display_name: orderObject?.user_id?.display_name.toString(),
-    //   });
-    //   this.eventHookNotificationService.sendNotiMentorReceiveCommission({
-    //     user_id: orderObject?.user_id?._id.toString(),
-    //     channel_id: channelId,
-    //     path: `r/mentor/income`,
-    //     mail_template: "commission_receive_mentor",
-    //     content: (params: any) => {
-    //       return `Chúc mừng người dùng ${dataPermission?.from_user?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
-    //     },
-    //     title: `${dataPermission?.from_user?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
-    //   })
-    // }, 300);
-  }
+  //   //   console.log("đã vào cộng điểm!!!");
+  //   //   this.eventHookWorkerService.PlusPointChallengePusher({
+  //   //     user_id: orderObject?.user_id?._id.toString(),
+  //   //     game_type: "revenue",
+  //   //     channel_id: channelId,
+  //   //     point_value: transactionValue,
+  //   //     display_name: orderObject?.user_id?.display_name.toString(),
+  //   //   });
+  //   //   this.eventHookNotificationService.sendNotiMentorReceiveCommission({
+  //   //     user_id: orderObject?.user_id?._id.toString(),
+  //   //     channel_id: channelId,
+  //   //     path: `r/mentor/income`,
+  //   //     mail_template: "commission_receive_mentor",
+  //   //     content: (params: any) => {
+  //   //       return `Chúc mừng người dùng ${dataPermission?.from_user?.display_name} nhận được hoa hồng từ hóa đơn ${orderObject.service_name} kênh ${params?.channel_name}`;
+  //   //     },
+  //   //     title: `${dataPermission?.from_user?.display_name.toLocaleUpperCase()} NHẬN ĐƯỢC TIỀN HOA HỒNG`,
+  //   //   })
+  //   // }, 300);
+  // }
 
   /**
    *
@@ -1504,7 +1505,13 @@ export class OrderHelper {
     }
   }
 
-  async handleUpdateOrderAfterTransaction(orderId: string, targetUserId: string, tokenValue: number) {
+  async handleUpdateOrderAfterTransaction(
+    fromUserId: string,
+    targetUserId: string,
+    tokenValue: number,
+    refId: string,
+    refType: string
+  ) {
     try {
       const dataFilter = {
         user_id: targetUserId,
@@ -1527,9 +1534,10 @@ export class OrderHelper {
         processing_on: new Date(),
         method: "plus",
         trans_id: "",
-        ref_id: orderId,
-        ref_type: "order",
+        ref_id: refId,
+        ref_type: refType,
         status: "done",
+        from_user: fromUserId,
       };
       await this.transactionService.create(newDataCreate);
     } catch (e) {

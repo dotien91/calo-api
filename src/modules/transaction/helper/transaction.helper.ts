@@ -611,7 +611,7 @@ export class TransactionHelper {
     try {
       const dataFilter = {
         ref_id: orderData,
-        ref_type: "order",
+        ref_type: "Order",
       };
       const dataTransaction = await this.transactionService.findOne(dataFilter);
       if (!dataTransaction) {
@@ -635,7 +635,7 @@ export class TransactionHelper {
           //Create New Transaction
           const dataCreate = {
             ref_id: orderData._id.toString(),
-            ref_type: "order",
+            ref_type: "Order",
             method: "plus",
             current_token: currentToken,
             last_token: currentToken,

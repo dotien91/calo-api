@@ -27,8 +27,9 @@ export enum PayloadType {
 }
 
 export enum OrderItemType {
-  COURSE = "course",
-  PRODUCT = "product",
+  COURSE = "Course",
+  PRODUCT = "Product",
+  ORDER = "Order", // private, not show this to frontend
 }
 
 export interface OrderItem {

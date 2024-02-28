@@ -128,6 +128,7 @@ export class TransactionService {
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")
+      .populate("ref_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
