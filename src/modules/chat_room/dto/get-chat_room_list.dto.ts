@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsDefined, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class GetChatRoomListDto {
   @IsNumberString()
@@ -61,4 +61,14 @@ export class GetChatRoomListDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   to?: string;
+}
+
+export class FindChatRoomDto {
+  @IsDefined()
+  @IsString()
+  user_id: string;
+
+  @IsDefined()
+  @IsString()
+  partner_id: string;
 }

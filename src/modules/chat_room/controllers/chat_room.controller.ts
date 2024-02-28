@@ -19,7 +19,7 @@ import { Response as ExpressResponse } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChatRoomDto } from "../dto/create-chat_room.dto";
 import { DeleteChatRoomUserRoleDto } from "../dto/delete-chat_room_user_role.dto";
-import { GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
+import { FindChatRoomDto, GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
 import { GetSameGroupDto } from "../dto/get-same_group.dto";
 import { UpdateChatRoomUserDto } from "../dto/update-chat_room_user.dto";
 import { UpdateChatRoomUserRoleDto } from "../dto/update-chat_room_user_role.dto";
@@ -103,6 +103,20 @@ export class ChatRoomController {
         throw new BadRequestException("User is invalid");
       }
       return this.chatRoomHelper.handleGetCountReply(query, userObject, res);
+    } catch (error) {
+      this.logger.log("getList Error: " + JSON.stringify(error));
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Get("/find")
+  async findChatRoom(@Req() req: ExpressRequestDto, @Query() query: FindChatRoomDto, @Res() res: ExpressResponse) {
+    try {
+      let userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+      return this.chatRoomHelper.findChatRoom(query, req, res);
     } catch (error) {
       this.logger.log("getList Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);

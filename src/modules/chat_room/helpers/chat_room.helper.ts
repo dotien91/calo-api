@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import * as _ from "lodash";
 import { Types } from "mongoose";
@@ -13,7 +13,7 @@ import { UserFollowService } from "../../../modules/user/services/user_follow.se
 import { UserSessionService } from "../../../modules/user/services/user_session.service";
 import { UserService } from "../../user/services/user.service";
 import { DeleteChatRoomUserRoleDto } from "../dto/delete-chat_room_user_role.dto";
-import { GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
+import { FindChatRoomDto, GetChatRoomListDto } from "../dto/get-chat_room_list.dto";
 import { GetSameGroupDto } from "../dto/get-same_group.dto";
 import { UpdateChatRoomUserDto } from "../dto/update-chat_room_user.dto";
 import { UpdateChatRoomUserRoleDto } from "../dto/update-chat_room_user_role.dto";
@@ -1054,6 +1054,21 @@ export class ChatRoomHelper {
           .status(HttpStatus.OK)
           .json(dataRoomObjectUpdate);
       }
+    } catch (error) {
+      this.logger.log("findMemberByRoom Error: " + JSON.stringify(error));
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async findChatRoom(query: FindChatRoomDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const chatRoom = await this.chatRoomUserOptionService.findOne({
+        user_id: query.user_id,
+        partner_id: query.partner_id,
+      });
+      if (!chatRoom) throw new NotFoundException("Not found chatroom");
+
+      return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(chatRoom);
     } catch (error) {
       this.logger.log("findMemberByRoom Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);

@@ -4,4 +4,5 @@ export class SearchChatRoom {
   _id?: string;
   room_name?: string;
   room_type?: string;
+  partner_id?: string;
 }

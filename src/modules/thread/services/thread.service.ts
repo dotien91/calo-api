@@ -56,6 +56,14 @@ export class ThreadService {
       },
       {
         $lookup: {
+          from: "users",
+          localField: "assigned_user_ids",
+          foreignField: "_id",
+          as: "assigned_user_ids",
+        },
+      },
+      {
+        $lookup: {
           from: "media",
           localField: "attach_files",
           foreignField: "_id",
@@ -85,6 +93,37 @@ export class ThreadService {
         },
       },
       {
+        $lookup: {
+          from: "users",
+          localField: "thread_comments.user_id",
+          foreignField: "_id",
+          as: "thread_comments.user_id_array",
+          pipeline: [
+            {
+              $project: {
+                user_email: 1,
+                user_avatar: 1,
+                user_avatar_thumbnail: 1,
+                display_name: 1,
+                user_role: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          "thread_comments.user_id": {
+            $arrayElemAt: ["$thread_comments.user_id_array", 0],
+          },
+        },
+      },
+      {
+        $project: {
+          "thread_comments.user_id_array": 0,
+        },
+      },
+      {
         $group: {
           _id: "$_id",
           thread_comments: { $addToSet: "$thread_comments" },
@@ -93,6 +132,9 @@ export class ThreadService {
           },
           user_id: {
             $first: "$user_id",
+          },
+          assigned_user_ids: {
+            $first: "$assigned_user_ids",
           },
           thread_title: {
             $first: "$thread_title",

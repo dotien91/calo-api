@@ -134,16 +134,24 @@ export class ThreadHelper {
         const private_comment = thread.thread_comments.filter((elem) => {
           return (
             elem.type === ThreadCommentType.PRIVATE &&
-            (userId === elem.user_id.toString() ||
-              (courseClass.user_id.toString() === elem.user_id.toString() &&
-                elem.reply_to_user_id.toString() === userId))
+            (userId === elem.user_id._id.toString() ||
+              (courseClass.user_id.toString() === elem.user_id._id.toString() &&
+                elem.reply_to_user_id?.toString() === userId))
           );
         });
         const file_comment = thread.thread_comments.filter((elem) => {
-          return elem.type === ThreadCommentType.FILE && elem.user_id.toString() === userId;
+          return elem.type === ThreadCommentType.FILE && elem.user_id._id.toString() === userId;
         })[0];
+        const submitted_user_ids = thread.thread_comments.filter((elem) => {
+          return elem.type === ThreadCommentType.FILE;
+        });
+        const marked_user_ids = submitted_user_ids.filter((elem) => {
+          return elem.type === ThreadCommentType.FILE && elem.mark !== -1;
+        });
         const data = {
           ...thread,
+          submitted_user_ids,
+          marked_user_ids,
           thread_comments: {
             public_comment,
             private_comment,
@@ -167,6 +175,7 @@ export class ThreadHelper {
 
   isLateSubmit(expired: string, file_comment: any): boolean {
     if (!file_comment) return false;
+    if (!expired) return true;
     const submitTime = new Date(file_comment.createdAt);
     const expiredTime = new Date(expired);
 

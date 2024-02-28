@@ -55,7 +55,7 @@ export class ThreadComment {
   // should available when type = ThreadCommentType.PRIVATE
   @Prop({
     type: MongooseSchema.Types.Number,
-    default: 0,
+    default: -1,
     nullable: false,
     min: 0,
     max: 10,
