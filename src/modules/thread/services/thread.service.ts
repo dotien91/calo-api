@@ -71,7 +71,10 @@ export class ThreadService {
         },
       },
       {
-        $unwind: "$thread_comments",
+        $unwind: {
+          path: "$thread_comments",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
