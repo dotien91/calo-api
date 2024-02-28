@@ -2696,7 +2696,7 @@ export class CourseHelper {
             }),
             this.chatRoomUserOptionService.findOne({
               user_id: userObject._id.toString(),
-              partner_id: course.user_id._id.toString(),
+              partner_id: query.partner_id,
               room_type: "personal",
             }),
           ]);
