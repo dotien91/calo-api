@@ -34,4 +34,3 @@ export class GetOneOneTimeAvailableDto {
   @ApiProperty()
   course_id: string;
 }
-

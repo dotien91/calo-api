@@ -37,4 +37,3 @@ import { RedeemUserService } from "./services/redeem_user.service";
   exports: [RedeemService, RedeemHelper, RedeemMissionService, RedeemMissionHelper, RedeemUserService],
 })
 export class RedeemModule {}
-

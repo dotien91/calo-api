@@ -53,4 +53,3 @@ export class CourseClass {
 }
 
 export const CourseClassSchema = SchemaFactory.createForClass(CourseClass);
-

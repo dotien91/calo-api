@@ -9,4 +9,3 @@ export enum ReferralType {
   BUY_COURSE = "buy-course",
   COMPLETE_COURSE = "complete-course",
 }
-

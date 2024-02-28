@@ -106,4 +106,3 @@ export class Coupon {
 }
 
 export const CouponSchema = SchemaFactory.createForClass(Coupon);
-

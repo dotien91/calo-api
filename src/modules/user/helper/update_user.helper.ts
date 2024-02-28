@@ -164,7 +164,7 @@ export class UpdateUserHelper {
 
       const currentTime = new Date();
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         _id: userObject._id.toString(),
         user_active: Number(updateData.user_active),
         last_active: currentTime.toUTCString(),
@@ -402,7 +402,7 @@ export class UpdateUserHelper {
 
       //Query 03
       await this.userDisagreeService.removeOne(dataUpdate);
-      let dataReturn = await this.userFollowService.update(dataUpdate);
+      const dataReturn = await this.userFollowService.update(dataUpdate);
 
       if (isSendNotification) {
         await this.sendNotificationToPartner(dataFollow.partner_id.toString(), userObject, authCode, req);
@@ -830,7 +830,7 @@ export class UpdateUserHelper {
           //Update Follow User
           await this.appUserService.update(dataToUpdate);
         }
-        let dataReturn = null;
+        const dataReturn = null;
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

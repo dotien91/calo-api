@@ -12,4 +12,3 @@ import { ShopService } from "./services/shop.service";
   exports: [ShopService],
 })
 export class ShopModule {}
-

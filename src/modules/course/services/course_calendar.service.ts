@@ -60,7 +60,7 @@ export class CourseCalendarService {
    */
   async update(dataUpdate: UpdateCourseCalendarDto) {
     try {
-      let dataReturn = await this.courseCalendarModel.findOneAndUpdate(
+      const dataReturn = await this.courseCalendarModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -82,7 +82,7 @@ export class CourseCalendarService {
    */
   public count = async (filter: FilterCalendarCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseCalendarModel.estimatedDocumentCount();
       } else {
@@ -110,7 +110,7 @@ export class CourseCalendarService {
   }
 
   getCondition(filter: FilterCalendarCourseDto) {
-    let condition: any = {};
+    const condition: any = {};
 
     return condition;
   }
@@ -122,12 +122,12 @@ export class CourseCalendarService {
     limit: number,
     projection: any = {}
   ): Promise<CourseCalendar[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseCalendarModel
+    const dataReturn = await this.courseCalendarModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -136,4 +136,3 @@ export class CourseCalendarService {
     return dataReturn;
   }
 }
-

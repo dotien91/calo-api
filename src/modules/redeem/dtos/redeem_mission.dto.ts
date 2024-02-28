@@ -107,4 +107,3 @@ export class UpdateRedeemMissionDTO {
   @IsOptional()
   navigate?: string;
 }
-

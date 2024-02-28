@@ -49,4 +49,3 @@ export class RemoveMemberFromOrganizationDto {
   @IsDefined()
   user_ids?: string[];
 }
-

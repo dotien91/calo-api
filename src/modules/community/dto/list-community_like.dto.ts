@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsDateString, IsDefined, IsEmpty, IsIn, IsNumberString, IsOptional, IsString, ValidateIf } from "class-validator";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class ListCommunityLikeDto {
   @IsNumberString()

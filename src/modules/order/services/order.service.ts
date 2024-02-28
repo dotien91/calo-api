@@ -307,7 +307,7 @@ export class OrderService {
    */
   async update(dataUpdate: UpdateOrderDto) {
     try {
-      let objectId = new mongoose.Types.ObjectId(dataUpdate._id);
+      const objectId = new mongoose.Types.ObjectId(dataUpdate._id);
       if (!dataUpdate._id) {
         return null;
       }

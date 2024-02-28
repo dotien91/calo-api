@@ -5,7 +5,7 @@ export class UpdateCommunityDto {
   @IsString()
   @IsDefined()
   @ApiProperty()
-  _id: String;
+  _id: string;
 
   @IsString()
   @IsOptional(null)

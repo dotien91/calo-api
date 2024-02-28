@@ -101,4 +101,3 @@ export class ListProductDTO {
   @IsOptional()
   shop_id?: string;
 }
-

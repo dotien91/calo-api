@@ -17,4 +17,3 @@ export class ListCourseCalendarDto {
   @ApiPropertyOptional()
   order_by: "DESC" | "ASC";
 }
-

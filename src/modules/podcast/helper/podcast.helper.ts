@@ -14,7 +14,7 @@ import { UpdatePodcastDto } from "../dto/update-podcast.dto";
 import { UpdatePodcastCategoryDto } from "../dto/update-podcast_category.dto";
 import { PodcastService } from "../services/podcast.service";
 import { PodcastCategoryService } from "../services/podcast_category.service";
-let dataCrawl = `Other`;
+const dataCrawl = `Other`;
 
 /**
  * @author Tony Vu
@@ -32,12 +32,12 @@ export class PodcastHelper {
   ) {}
 
   async handleUpdateUser(userId: string) {
-    let dataCreate = {
+    const dataCreate = {
       user_id: userId,
     };
-    let dataUser = await this.userService.create(dataCreate);
+    const dataUser = await this.userService.create(dataCreate);
     if (dataUser) {
-      let dataUpdate = {
+      const dataUpdate = {
         _id: userId,
         user_option_id: dataUser._id.toString(),
       };
@@ -49,21 +49,21 @@ export class PodcastHelper {
   }
 
   async handleCategory() {
-    let dataCategory = await this.podcastCategoryService.filter({}, {}, 1, 100);
-    for (let dataCategoryItem of dataCategory) {
-      let dataToUpdate = {
+    const dataCategory = await this.podcastCategoryService.filter({}, {}, 1, 100);
+    for (const dataCategoryItem of dataCategory) {
+      const dataToUpdate = {
         version: 82,
         _id: dataCategoryItem?._id?.toString(),
       };
-      let dataUpdate = await this.podcastCategoryService.update(dataToUpdate);
+      const dataUpdate = await this.podcastCategoryService.update(dataToUpdate);
     }
   }
 
   async processCategory() {
     try {
-      let dataCrawlArray = dataCrawl.split("\n");
-      for (let itemData of dataCrawlArray) {
-        let dataToCreate = {
+      const dataCrawlArray = dataCrawl.split("\n");
+      for (const itemData of dataCrawlArray) {
+        const dataToCreate = {
           user_id: "642a49eb18acaeada350130e",
           category_language: "en",
           category_content: itemData,
@@ -85,11 +85,11 @@ export class PodcastHelper {
 
   async updatePodcast() {
     try {
-      let dataPodcast = await this.podcastService.filter({}, {}, 1, 1000);
-      for (let dataPodcastItem of dataPodcast) {
+      const dataPodcast = await this.podcastService.filter({}, {}, 1, 1000);
+      for (const dataPodcastItem of dataPodcast) {
         // console.log(dataPodcastItem);
-        let userObject = await this.userService.findById(dataPodcastItem?.user_id?._id?.toString(), {});
-        let dataToUpdate = {
+        const userObject = await this.userService.findById(dataPodcastItem?.user_id?._id?.toString(), {});
+        const dataToUpdate = {
           _id: dataPodcastItem?._id?.toString(),
           country: userObject?.country,
         };
@@ -113,8 +113,8 @@ export class PodcastHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
 
@@ -122,15 +122,15 @@ export class PodcastHelper {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
-      let dataReturn = await this.podcastService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.podcastService.filter(dataToFilter, orderByOBject, page, limit);
 
-      let dataCount = await this.podcastService.count(dataToFilter);
+      const dataCount = await this.podcastService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -151,18 +151,18 @@ export class PodcastHelper {
    */
   async createNewPodcast(createPodcastData: CreatePodcastDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createPodcastData.title);
+      const dataSlug = this.toSlug(createPodcastData.title);
       createPodcastData = {
         ...createPodcastData,
         ...{ podcast_slug: dataSlug, user_id: userObject._id.toString() },
       };
 
-      let userCountry = userObject?.country;
+      const userCountry = userObject?.country;
       createPodcastData = { ...createPodcastData, ...{ country: userCountry } };
 
       if (this.validateJson(createPodcastData?.attach_files)) {
@@ -181,11 +181,11 @@ export class PodcastHelper {
         };
       }
 
-      let dataCreate: any = await this.podcastService.create(createPodcastData);
-      let dataReturn = await this.podcastService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.podcastService.create(createPodcastData);
+      const dataReturn = await this.podcastService.findById(dataCreate?._id?.toString());
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_podcast: dataCreate?._id?.toString(),
       };
@@ -211,15 +211,15 @@ export class PodcastHelper {
    */
   async createCategory(createPodcastData: CreatePodcastCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createPodcastData.category_title);
+      const dataSlug = this.toSlug(createPodcastData.category_title);
       createPodcastData = { ...createPodcastData, ...{ category_slug: dataSlug, user_id: userObject._id.toString() } };
 
-      let dataCreate = await this.podcastCategoryService.create(createPodcastData);
+      const dataCreate = await this.podcastCategoryService.create(createPodcastData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -236,7 +236,7 @@ export class PodcastHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -311,7 +311,7 @@ export class PodcastHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
-      let dataReturn = await this.podcastCategoryService.findOne(dataToFilter);
+      const dataReturn = await this.podcastCategoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -337,7 +337,7 @@ export class PodcastHelper {
         dataUpdate = { ...dataUpdate, ...{ attach_files: JSON.parse(dataUpdate.attach_files) } };
       }
 
-      let dataReturn = await this.podcastService.update(dataUpdate);
+      const dataReturn = await this.podcastService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -356,7 +356,7 @@ export class PodcastHelper {
    */
   async handleUpdateCategory(dataUpdate: UpdatePodcastCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.podcastCategoryService.update(dataUpdate);
+      const dataReturn = await this.podcastCategoryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -375,7 +375,7 @@ export class PodcastHelper {
    */
   async handleDeletePodcast(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.podcastService.remove(id);
+      const dataReturn = await this.podcastService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -399,17 +399,17 @@ export class PodcastHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByOBject = {};
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.podcastCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.podcastCategoryService.count(dataToFilter);
+      const dataReturn = await this.podcastCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.podcastCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -428,7 +428,7 @@ export class PodcastHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let dataReturn = await this.podcastCategoryService.remove(id);
+      const dataReturn = await this.podcastCategoryService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

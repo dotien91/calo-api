@@ -232,7 +232,7 @@ export class TransactionHelper {
 
       //Only Admin Create Transaction
       //Check Admin
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
 
       //Check Transaction
       const dataFilter = {
@@ -423,7 +423,7 @@ export class TransactionHelper {
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -465,7 +465,7 @@ export class TransactionHelper {
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query, ...{ user_id: userId } };
+      const dataToFilter = { ...query, ...{ user_id: userId } };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -673,10 +673,10 @@ export class TransactionHelper {
     auth: string
   ) {
     try {
-      let dataFilterLastCoin = {
+      const dataFilterLastCoin = {
         user_id: userId,
       };
-      let dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
+      const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       let lastCoin = 0;
       if (dataTransactionLastCoinObject) {
         lastCoin = Number(dataTransactionLastCoinObject.current_coin);
@@ -685,7 +685,7 @@ export class TransactionHelper {
       let dataValue = 0;
       let newCoin = lastCoin;
       let noteTransaction = "";
-      let method = "plus";
+      const method = "plus";
       if (coinToUpdate) {
         dataValue = coinToUpdate;
         noteTransaction = `Transaction ${dataValue} coin for message at: ${new Date().toISOString()}.`;
@@ -693,7 +693,7 @@ export class TransactionHelper {
       }
 
       //Create New Transaction
-      let dataCreate = {
+      const dataCreate = {
         ref_id: refObject._id.toString(),
         ref_type: refType,
         method: method,

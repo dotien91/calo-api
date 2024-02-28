@@ -123,4 +123,3 @@ export class UpdateThreadDTO {
   @IsOptional()
   expired?: string;
 }
-

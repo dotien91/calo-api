@@ -54,9 +54,9 @@ export class LivestreamHelper {
    */
   async createNewLivestream(createLivestreamData: CreateLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authString = req?.auth_code;
-      let userId = req?.user_id;
+      const userObject = req?.user_object;
+      const authString = req?.auth_code;
+      const userId = req?.user_id;
 
       createLivestreamData = {
         ...createLivestreamData,
@@ -127,12 +127,12 @@ export class LivestreamHelper {
    */
   async updateLivestream(dataUpdate: UpdateLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
-      let authString = req?.auth_code;
+      const userObject = req?.user_object;
+      const authString = req?.auth_code;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let firstData = await this.livestreamService.findOne({ _id: dataUpdate?._id });
+      const firstData = await this.livestreamService.findOne({ _id: dataUpdate?._id });
 
       if (dataUpdate?.livestream_data) {
         try {
@@ -192,10 +192,10 @@ export class LivestreamHelper {
       if (dataPrepare?.input_type == "outside") {
         //Check Interval
         let dataCountFalse = 0;
-        let dataInterval = setInterval(async () => {
+        const dataInterval = setInterval(async () => {
           let dataCreate = await this.livestreamService.findOne({ _id: dataPrepare?._id?.toString() });
           //Check Status Cloud Flare
-          let urlCloudFlare = `https://customer-xmrvysjqwvfwuq70.cloudflarestream.com/${dataCreate?.cloudflare_stream_id}/lifecycle`;
+          const urlCloudFlare = `https://customer-xmrvysjqwvfwuq70.cloudflarestream.com/${dataCreate?.cloudflare_stream_id}/lifecycle`;
 
           // const params = new URLSearchParams(dataToUpdate);
           const config = {
@@ -205,7 +205,7 @@ export class LivestreamHelper {
             },
           };
           // console.log(config, 'config')
-          let dataLivestreamCloudflare = await axios
+          const dataLivestreamCloudflare = await axios
             .get(urlCloudFlare, config)
             .then((response: any) => {
               return response?.data;
@@ -222,7 +222,7 @@ export class LivestreamHelper {
               if (dataCreate?.livestream_status != "wait") {
                 //Send Emit offer
                 if (dataCreate?.ready_status === "disconnected") {
-                  let dataJsonToEmit = {
+                  const dataJsonToEmit = {
                     offer: {
                       payload: { status: "StartStreamSuccess" },
                       room_id: "livestream_" + dataCreate?._id?.toString(),
@@ -231,7 +231,7 @@ export class LivestreamHelper {
                   };
 
                   await this.handleSendEmitOffer(dataJsonToEmit, authString);
-                  let dataToUpdate = {
+                  const dataToUpdate = {
                     _id: dataCreate?._id?.toString(),
                     ready_status: "connected",
                   };
@@ -241,7 +241,7 @@ export class LivestreamHelper {
                 }
               } else {
                 //Update start Livestream
-                let dataToUpdate = {
+                const dataToUpdate = {
                   _id: dataCreate?._id?.toString(),
                   livestream_status: "live",
                   ready_status: "connected",
@@ -259,7 +259,7 @@ export class LivestreamHelper {
                 //Clear interval
                 clearInterval(dataInterval);
                 //Update status Livestream
-                let dataToUpdate = {
+                const dataToUpdate = {
                   _id: dataCreate?._id?.toString(),
                   ready_status: "disconnected",
                   livestream_status: "end",
@@ -270,7 +270,7 @@ export class LivestreamHelper {
                 await this.handleUpdateEndLivestream(dataCreate, authString);
               } else {
                 if (dataCreate?.livestream_status === "live" && dataCreate?.ready_status === "connected") {
-                  let dataToUpdate = {
+                  const dataToUpdate = {
                     _id: dataCreate?._id?.toString(),
                     ready_status: "disconnected",
                   };
@@ -292,7 +292,7 @@ export class LivestreamHelper {
 
   async old_handleCloudflareData(dataLivestream: Livestream) {
     try {
-      let urlCloudFlare =
+      const urlCloudFlare =
         "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs";
       // const params = new URLSearchParams(dataToUpdate);
       const config = {
@@ -302,13 +302,13 @@ export class LivestreamHelper {
         },
       };
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         meta: { name: dataLivestream?.title },
         recording: { mode: "automatic" },
         deleteRecordingAfterDays: null,
       };
       // console.log(config, 'config')
-      let dataLivestreamCloudflare = await axios
+      const dataLivestreamCloudflare = await axios
         .post(urlCloudFlare, dataToUpdate, config)
         .then((response) => {
           if (response?.data) {
@@ -328,12 +328,12 @@ export class LivestreamHelper {
         });
 
       if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
-        let whipData = dataLivestreamCloudflare?.result?.webRTC?.url || "";
-        let whepData = dataLivestreamCloudflare?.result?.webRTCPlayback?.url || "";
-        let cloudflareStreamId = dataLivestreamCloudflare?.result?.uid || "";
+        const whipData = dataLivestreamCloudflare?.result?.webRTC?.url || "";
+        const whepData = dataLivestreamCloudflare?.result?.webRTCPlayback?.url || "";
+        const cloudflareStreamId = dataLivestreamCloudflare?.result?.uid || "";
         let m3u8Url = dataLivestreamCloudflare?.result?.webRTCPlayback?.url;
         m3u8Url = m3u8Url.replace("webRTC/play", "manifest/video.m3u8");
-        let dataUpdate = {
+        const dataUpdate = {
           cloudflare_stream_id: cloudflareStreamId,
           whip_data: whipData,
           whep_data: whepData,
@@ -357,7 +357,7 @@ export class LivestreamHelper {
   async handleLiveStreamData(dataLivestream: Livestream) {
     const streamKey = makeRandom(20);
     try {
-      let dataUpdate = {
+      const dataUpdate = {
         livestream_data: {
           rtmp_url: process.env.RTMP_URL || "",
           m3u8_url: process.env.M3U8_URL.replace("[code]", streamKey) || "",
@@ -383,11 +383,11 @@ export class LivestreamHelper {
       if (!dataLivestream?.cloudflare_stream_id) {
         return dataLivestream;
       }
-      let urlCloudFlare =
+      const urlCloudFlare =
         "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/" +
         dataLivestream?.cloudflare_stream_id;
 
-      let dataToUpdate = {
+      const dataToUpdate = {
         meta: { name: dataLivestream?.title },
         recording: { mode: dataRecord },
         deleteRecordingAfterDays: null,
@@ -400,7 +400,7 @@ export class LivestreamHelper {
         },
       };
       // console.log(config, 'config')
-      let dataNotification = await axios
+      const dataNotification = await axios
         .put(urlCloudFlare, dataToUpdate, config)
         .then((response) => {
           if (response?.data) {
@@ -429,27 +429,27 @@ export class LivestreamHelper {
    */
   async getLivestreamListByAdmin(query: ListLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
+      const userId = userObject._id.toString();
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.livestreamService.count(dataToFilter);
+      const dataReturn = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.livestreamService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -468,7 +468,7 @@ export class LivestreamHelper {
    */
   async getLivestreamList(query: ListLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -477,18 +477,18 @@ export class LivestreamHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn: any = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturnFinal = [];
+      const dataReturn: any = await this.livestreamService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturnFinal = [];
       if (dataReturn && dataReturn.length) {
         // let videoIds: string[] = [];
         // for (let livestreamItem of dataReturn) {
@@ -575,14 +575,14 @@ export class LivestreamHelper {
    */
   async handleUpdateLivestreamByAdmin(dataUpdate: UpdateLivestreamDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let dataLivestream = await this.livestreamService.findById(dataUpdate._id.toString());
+      const userId = userObject._id.toString();
+      const dataLivestream = await this.livestreamService.findById(dataUpdate._id.toString());
       if (dataLivestream?.user_id?._id.toString() === userObject._id.toString()) {
-        let dataReturn = await this.livestreamService.update(dataUpdate);
+        const dataReturn = await this.livestreamService.update(dataUpdate);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -604,11 +604,11 @@ export class LivestreamHelper {
    */
   async handleDeleteLivestream(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
 
-      let dataLivestream = await this.livestreamService.findById(id.toString());
+      const dataLivestream = await this.livestreamService.findById(id.toString());
       if (dataLivestream?.user_id?._id.toString() === userObject?._id.toString()) {
-        let dataReturn = await this.livestreamService.remove(id);
+        const dataReturn = await this.livestreamService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -649,26 +649,26 @@ export class LivestreamHelper {
    */
   async processFollowUser(dataFollow: CreateLivestreamLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let authCode = req?.auth_code || "";
-      let videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
+      const authCode = req?.auth_code || "";
+      const videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         livestream_id: dataFollow.livestream_id.toString(),
         react_type: dataFollow?.react_type,
       };
-      let dataReturn = await this.livestreamLikeService.update(dataUpdate);
+      const dataReturn = await this.livestreamLikeService.update(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       let dataUpdateCount = {
@@ -699,7 +699,7 @@ export class LivestreamHelper {
       }
       await this.livestreamService.updateCount(dataUpdateFilter, dataUpdateCount);
 
-      let dataReturnFinal = await this.livestreamLikeService.findById(dataReturn?._id?.toString(), {});
+      const dataReturnFinal = await this.livestreamLikeService.findById(dataReturn?._id?.toString(), {});
       //Send to Socket
       await this.handleSendEmoji(dataReturnFinal, authCode);
       return res
@@ -721,24 +721,24 @@ export class LivestreamHelper {
    */
   async processViewUser(dataFollow: CreateLivestreamViewDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
-      let authCode = req?.auth_code;
+      const videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
+      const authCode = req?.auth_code;
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataFilterView = {
+      const dataFilterView = {
         user_id: userObject._id.toString(),
         livestream_id: dataFollow.livestream_id.toString(),
       };
       let isViewCount = false;
 
-      let dataView = await this.livestreamViewService.findOne(dataFilterView);
+      const dataView = await this.livestreamViewService.findOne(dataFilterView);
       if (!dataView) {
         isViewCount = true;
       }
@@ -756,12 +756,12 @@ export class LivestreamHelper {
       }
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       await this.livestreamService.updateCount(dataUpdateFilter, { view_number: dataFollow?.view_number || 0 });
 
-      let dataReturn = await this.livestreamViewService.update(dataUpdate);
+      const dataReturn = await this.livestreamViewService.update(dataUpdate);
       //Update when is New
 
       await this.handleSendView(dataReturn, authCode);
@@ -775,7 +775,7 @@ export class LivestreamHelper {
     }
   }
   async handleSendView(dataJson: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       view: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -787,7 +787,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-view", params, config)
       .then((response) => {
         if (response?.data) {
@@ -817,16 +817,16 @@ export class LivestreamHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       //Title
-      let titleNotification = "NGAY LÚC NÀY!!!";
+      const titleNotification = "NGAY LÚC NÀY!!!";
       let descriptionNotification = `${fromUserName} đang phát trực tiếp, truy cập ngay để không bỏ lỡ.`;
       if (descriptionNotification && descriptionNotification.length >= 255) {
         descriptionNotification = descriptionNotification.substring(0, 250) + "...";
       }
 
-      let userIdArray = [];
-      let emailArray = [];
+      const userIdArray = [];
+      const emailArray = [];
 
       // Send email
       // for (let emailItem of emailArray) {
@@ -851,13 +851,13 @@ export class LivestreamHelper {
       // }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataLivestream?._id?.toString(),
           // TODO: update path
           path: "/r/live-room/",
           data_id: dataLivestream?._id?.toString(),
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           title: titleNotification,
@@ -893,16 +893,16 @@ export class LivestreamHelper {
     req: ExpressRequestDto
   ) {
     try {
-      let fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
+      const fromUserName = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
       //Title
-      let titleNotification = "SỰ KIỆN ĐẶC BIỆT";
+      const titleNotification = "SỰ KIỆN ĐẶC BIỆT";
       let descriptionNotification = `${fromUserName} vừa thêm livestream ${dataLivestream?.title}. Click tham gia ngay để không bỏ lỡ! `;
       if (descriptionNotification && descriptionNotification.length >= 255) {
         descriptionNotification = descriptionNotification.substring(0, 250) + "...";
       }
 
-      let userIdArray = [];
-      let emailArray = [];
+      const userIdArray = [];
+      const emailArray = [];
 
       // for (let emailItem of emailArray) {
       //   await this.emailService
@@ -927,12 +927,12 @@ export class LivestreamHelper {
       // }
 
       if (userIdArray && userIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           request_id: dataLivestream?._id?.toString(),
           path: "/r/live-room/",
           data_id: dataLivestream?._id?.toString(),
         };
-        let dataNotification = {
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: userIdArray,
           title: titleNotification,
@@ -964,25 +964,25 @@ export class LivestreamHelper {
    */
   async processUnFollowUser(dataFollow: CreateLivestreamUnLikeDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
+      const videoObject = await this.livestreamService.findById(dataFollow.livestream_id);
 
       if (!videoObject) {
         throw new NotFoundException("Video not found");
       }
 
-      let dataUpdate = {
+      const dataUpdate = {
         user_id: userObject._id.toString(),
         livestream_id: dataFollow.livestream_id.toString(),
       };
 
-      let dataReturn = await this.livestreamLikeService.removeOne(dataUpdate);
+      const dataReturn = await this.livestreamLikeService.removeOne(dataUpdate);
 
       //Update count Video
-      let dataUpdateFilter = {
+      const dataUpdateFilter = {
         _id: videoObject._id.toString(),
       };
       await this.livestreamService.updateCount(dataUpdateFilter, { like_number: -1 });
@@ -1006,18 +1006,18 @@ export class LivestreamHelper {
     req: ExpressRequestDto,
     res: Response
   ) {
-    let currentTime = new Date();
-    let userObject = req?.user_object;
+    const currentTime = new Date();
+    const userObject = req?.user_object;
     if (!userObject) {
       throw new BadRequestException("User is not invalid");
     }
-    let authCode = req?.auth_code;
+    const authCode = req?.auth_code;
 
     //Validate Chat
 
     //Check Livestream
 
-    let dataLivestream = await this.livestreamService.findById(createLivestreamCommentDto.livestream_id);
+    const dataLivestream = await this.livestreamService.findById(createLivestreamCommentDto.livestream_id);
     if (!dataLivestream) {
       throw new BadRequestException("Livestream is not invalid");
     }
@@ -1034,14 +1034,14 @@ export class LivestreamHelper {
 
     if (createLivestreamCommentDto.media_data) {
       try {
-        let dataMediaArray = JSON.parse(createLivestreamCommentDto.media_data);
+        const dataMediaArray = JSON.parse(createLivestreamCommentDto.media_data);
         dataMediaResult = await this.handleMediaData(dataMediaArray, createLivestreamCommentDto.livestream_id);
       } catch (error) {
         throw new NotAcceptableException("Media data input not valid!");
       }
     }
-    let chatContent = createLivestreamCommentDto.chat_content ? createLivestreamCommentDto.chat_content : "";
-    let dataCreate = {
+    const chatContent = createLivestreamCommentDto.chat_content ? createLivestreamCommentDto.chat_content : "";
+    const dataCreate = {
       user_type: "customer",
       parent_id: createLivestreamCommentDto.parent_id ? createLivestreamCommentDto.parent_id : null,
       livestream_id: createLivestreamCommentDto.livestream_id,
@@ -1054,9 +1054,9 @@ export class LivestreamHelper {
       media_ids: dataMediaResult.media_array,
     };
 
-    let dataChat = await this.livestreamCommentService.create(dataCreate);
+    const dataChat = await this.livestreamCommentService.create(dataCreate);
 
-    let dataReturn = {
+    const dataReturn = {
       ...dataChat.toObject(),
       ...{ media_ids: dataMediaResult.data_object },
       ...{
@@ -1075,7 +1075,7 @@ export class LivestreamHelper {
   }
 
   async handleSendMessage(message: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -1087,7 +1087,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-comment", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1105,7 +1105,7 @@ export class LivestreamHelper {
   }
 
   async handleSendEmoji(dataJson: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       emoji: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -1117,7 +1117,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-emoji", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1135,7 +1135,7 @@ export class LivestreamHelper {
   }
 
   async handleSendEmitOffer(dataJson: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       data: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -1147,7 +1147,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/emit-offer", params, config)
       .then((response: any) => {
         if (response?.data) {
@@ -1165,7 +1165,7 @@ export class LivestreamHelper {
   }
 
   async old_handleUpdateEndLivestream(message: Livestream, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
     };
 
@@ -1173,7 +1173,7 @@ export class LivestreamHelper {
     //When in version 1.0.1 we not have this condition!
     if (message?.input_type === "outside") {
       //Check livestream
-      let urlCloudFlare = `https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/${message?.cloudflare_stream_id}/videos`;
+      const urlCloudFlare = `https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/${message?.cloudflare_stream_id}/videos`;
 
       // const params = new URLSearchParams(dataToUpdate);
       const configCloudflare = {
@@ -1183,7 +1183,7 @@ export class LivestreamHelper {
         },
       };
       // console.log(config, 'config')
-      let dataLivestreamCloudflare = await axios
+      const dataLivestreamCloudflare = await axios
         .get(urlCloudFlare, configCloudflare)
         .then((response: any) => {
           return response?.data;
@@ -1195,11 +1195,11 @@ export class LivestreamHelper {
       // console.log(dataLivestreamCloudflare, "dataLivestreamCloudflare");
       if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
         //Update livestream
-        let dataUpdate = {
+        const dataUpdate = {
           history_media: dataLivestreamCloudflare?.result,
           _id: message?._id?.toString(),
         };
-        let dataUdpateHistory = await this.livestreamService.update(dataUpdate);
+        const dataUdpateHistory = await this.livestreamService.update(dataUpdate);
         console.log(dataUdpateHistory, "dataUdpateHistory");
       }
     }
@@ -1213,7 +1213,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-end", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1231,7 +1231,7 @@ export class LivestreamHelper {
   }
 
   async handleUpdateEndLivestream(message: Livestream, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
     };
 
@@ -1244,7 +1244,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-end", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1262,7 +1262,7 @@ export class LivestreamHelper {
   }
 
   async handleUpdateLeaveRoomToClient(message: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       data: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -1274,7 +1274,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/leave-room-livestream", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1292,7 +1292,7 @@ export class LivestreamHelper {
   }
 
   async handleUpdateStartLivestream(message: any, auth: string) {
-    let dataToUpdate = {
+    const dataToUpdate = {
       message: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
@@ -1304,7 +1304,7 @@ export class LivestreamHelper {
     };
     const urlLogin = process.env.SOCKET_API;
 
-    let dataNotification = await axios
+    const dataNotification = await axios
       .post(urlLogin + "/livestream-start", params, config)
       .then((response) => {
         if (response?.data) {
@@ -1328,19 +1328,19 @@ export class LivestreamHelper {
    * @returns
    */
   async handleMediaData(dataMediaArray: any[], roomId: string) {
-    let dataIds = [];
-    for (let mediaItem of dataMediaArray) {
-      let mediaId = mediaItem.id;
+    const dataIds = [];
+    for (const mediaItem of dataMediaArray) {
+      const mediaId = mediaItem.id;
       dataIds.push(Number(mediaId));
     }
-    let dataFilter = {
+    const dataFilter = {
       ids: dataMediaArray,
       is_history: true,
     };
     let isCall: boolean = false;
 
-    let dataSortBy = {};
-    let projection = {
+    const dataSortBy = {};
+    const projection = {
       media_url_presign: false,
       chat_history_id: false,
       chat_room_id: false,
@@ -1348,10 +1348,10 @@ export class LivestreamHelper {
       createdAt: false,
       updatedAt: false,
     };
-    let mediaObjectArray = await this.mediaService.filter(dataFilter, dataSortBy, 100, 0, projection);
-    let mediaArray = [];
+    const mediaObjectArray = await this.mediaService.filter(dataFilter, dataSortBy, 100, 0, projection);
+    const mediaArray = [];
     if (mediaObjectArray) {
-      for (let mediaItem of mediaObjectArray) {
+      for (const mediaItem of mediaObjectArray) {
         if (mediaItem?.media_type?.indexOf("call") !== -1) {
           isCall = true;
         }
@@ -1375,30 +1375,30 @@ export class LivestreamHelper {
    */
   async getRoomDetail(req: ExpressRequestDto, res: Response, query: ListLivestreamCommentDto, id: string) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
-      let dataLivestream = await this.livestreamService.findById(id);
+      const dataLivestream = await this.livestreamService.findById(id);
       if (!dataLivestream) {
         throw new BadRequestException("Live stream not found!");
       }
 
-      let dataFilter = {
+      const dataFilter = {
         livestream_id: id,
         from_id: query.from_id,
         to_id: query.to_id,
         search: query?.search,
       };
-      let dataOrder = {
+      const dataOrder = {
         createdAt: query.order_by,
       };
 
-      let dataChat = await this.livestreamCommentService.filter(dataFilter, dataOrder, query.page, query.limit);
+      const dataChat = await this.livestreamCommentService.filter(dataFilter, dataOrder, query.page, query.limit);
       if (dataChat && dataChat.length) {
         //@ts-ignore
         //let dataCount = Number(dataUserOptionObject.chat_room_id?.chat_history_count);
-        let dataCount = await this.livestreamCommentService.count(dataFilter);
+        const dataCount = await this.livestreamCommentService.count(dataFilter);
         // let dataCount = 0;
         return res
           .set({

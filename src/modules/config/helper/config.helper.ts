@@ -100,8 +100,8 @@ export class ConfigHelper {
       const dataReturnConfig = await this.configService.findOne(dataToFilter);
 
       const dataAuth = await this.handleSession(req);
-      let userVersion = 0;
-      let channelVersion = 0;
+      const userVersion = 0;
+      const channelVersion = 0;
       if (dataAuth && dataAuth?._id) {
         const dataUser = await this.userService.findById(dataAuth?._id?.toString(), {});
       }

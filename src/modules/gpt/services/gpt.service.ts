@@ -9,7 +9,7 @@ export class GptService {
   constructor() {}
 
   async isValidCommunity(content: string) {
-    var data = JSON.stringify({
+    const data = JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -19,7 +19,7 @@ export class GptService {
       ],
     });
 
-    var config = {
+    const config = {
       method: "post",
       url: this.chatGPTUrl,
       headers: {
@@ -29,7 +29,7 @@ export class GptService {
       data: data,
     };
 
-    let dataReturn = await axios(config)
+    const dataReturn = await axios(config)
       .then(function (response) {
         return response?.data;
       })
@@ -41,4 +41,3 @@ export class GptService {
     return true;
   }
 }
-

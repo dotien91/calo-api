@@ -19,4 +19,3 @@ export enum CouponVisible {
   PRODUCT = "product",
   CODE = "code",
 }
-

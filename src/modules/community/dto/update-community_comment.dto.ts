@@ -7,5 +7,5 @@ export class UpdateCommunityCommentDto extends PartialType(CreateCommunityCommen
   @IsString()
   @IsDefined()
   @ApiPropertyOptional()
-  _id: String;
+  _id: string;
 }

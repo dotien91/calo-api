@@ -58,7 +58,7 @@ export class CouponUserService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.couponUserModel.findOneAndUpdate(
+      const dataReturn = await this.couponUserModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -80,7 +80,7 @@ export class CouponUserService {
    */
   public count = async (filter: FilterCouponUserDTO) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.couponUserModel.estimatedDocumentCount();
       } else {
@@ -108,7 +108,7 @@ export class CouponUserService {
   }
 
   getCondition(filter: FilterCouponUserDTO) {
-    let condition: any = {};
+    const condition: any = {};
 
     return condition;
   }
@@ -120,12 +120,12 @@ export class CouponUserService {
     limit: number,
     projection: any = {}
   ): Promise<CouponUser[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.couponUserModel
+    const dataReturn = await this.couponUserModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -134,4 +134,3 @@ export class CouponUserService {
     return dataReturn;
   }
 }
-

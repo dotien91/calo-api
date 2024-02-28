@@ -15,4 +15,3 @@ export enum EmailPattern {
   PENDING_ORDER = "pending-order",
   INVOICE_ORDER = "invoice-order",
 }
-

@@ -90,7 +90,7 @@ export class Order {
     default: null,
     ref: "Media",
   })
-  media_id: String;
+  media_id: string;
 
   @Prop({
     type: String,

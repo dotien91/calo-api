@@ -28,7 +28,7 @@ import { ContactFormService } from "./services/contact_form.service";
     ContactFormService,
     JwtHelperService,
     UserSessionService,
-    UserPermissionService
+    UserPermissionService,
   ],
 })
-export class ContactFormModule { }
+export class ContactFormModule {}

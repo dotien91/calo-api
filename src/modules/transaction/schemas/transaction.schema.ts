@@ -29,7 +29,7 @@ export class Transaction {
   transaction_bank: TransactionBank;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: String;
+  channel_id: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -64,7 +64,7 @@ export class Transaction {
     index: true,
     nullable: true,
   })
-  ref_avatar: String;
+  ref_avatar: string;
 
   @Prop({
     type: Number,

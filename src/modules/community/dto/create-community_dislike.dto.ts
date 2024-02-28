@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class CreateCommunityDisLikeDto {
-	@IsString()
+  @IsString()
   @ApiProperty()
-	community_id: string
+  community_id: string;
 }

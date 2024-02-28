@@ -29,4 +29,3 @@ export enum RedeemMissionActionTarget {
   TWITTER = "twitter",
   FACEBOOK = "facebook",
 }
-

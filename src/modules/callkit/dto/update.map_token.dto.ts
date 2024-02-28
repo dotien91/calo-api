@@ -4,5 +4,5 @@ import { IsString } from "class-validator";
 export class UpdateMapTokenDto {
   @IsString()
   @ApiProperty()
-  _id: string
+  _id: string;
 }

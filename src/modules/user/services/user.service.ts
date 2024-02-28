@@ -150,7 +150,7 @@ export class UserService {
    * @returns
    */
   getSort(sortBy: SortByUserDto) {
-    let sort = {};
+    const sort = {};
     if (sortBy.createdAt) {
       sort["createdAt"] = sortBy.createdAt === "DESC" ? -1 : 1;
     }

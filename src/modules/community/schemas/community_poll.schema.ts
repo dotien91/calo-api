@@ -31,7 +31,7 @@ export class CommunityPoll {
     nullable: false,
     index: true,
   })
-  question: String;
+  question: string;
 
   @Prop({
     type: Number,
@@ -39,7 +39,7 @@ export class CommunityPoll {
     nullable: false,
     index: true,
   })
-  number_choose: Number;
+  number_choose: number;
 
   @Prop({ type: MongooseSchema.Types.Array, ref: "User", index: true, default: [] })
   users_choose: User[];

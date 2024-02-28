@@ -39,7 +39,7 @@ import { OrderItemType, OrderPaymentMethod, PayloadType } from "../interfaces/or
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 
-let initHook = false;
+const initHook = false;
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -559,7 +559,7 @@ export class OrderHelper {
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
@@ -1403,12 +1403,12 @@ export class OrderHelper {
         let dataToAdd = null;
         let couponProduct = null;
         let orderPrice = 0;
-        let orderItems = [];
+        const orderItems = [];
 
         for (const planObject of planObjects) {
           const currentPlan = data.plan_objects.find((plan) => plan.plan_id === planObject._id.toString());
 
-          let item: any = {
+          const item: any = {
             service_name: planObject.handle,
             service_id: planObject.service_id,
             plan_id: planObject._id,

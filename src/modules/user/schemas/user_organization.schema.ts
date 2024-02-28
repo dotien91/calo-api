@@ -63,4 +63,3 @@ export class UserOrganization {
 }
 
 export const UserOrganizationSchema = SchemaFactory.createForClass(UserOrganization);
-

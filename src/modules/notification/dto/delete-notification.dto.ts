@@ -9,4 +9,3 @@ export class DeleteNotificationDto {
   @IsDefined(null)
   user_id: string;
 }
-

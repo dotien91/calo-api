@@ -97,4 +97,3 @@ export class RedeemUser {
 }
 
 export const RedeemUserSchema = SchemaFactory.createForClass(RedeemUser);
-

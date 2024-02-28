@@ -22,13 +22,6 @@ import { ReportService } from "./services/report.service";
     ]),
   ],
   controllers: [ReportController],
-  providers: [
-    UserService,
-    ReportHelper,
-    ReportService,
-    JwtHelperService,
-    UserSessionService,
-    UserPermissionService,
-  ],
+  providers: [UserService, ReportHelper, ReportService, JwtHelperService, UserSessionService, UserPermissionService],
 })
-export class ReportModule { }
+export class ReportModule {}

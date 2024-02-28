@@ -36,4 +36,3 @@ import { ReferralService } from "./services/referral.service";
   exports: [ReferralService],
 })
 export class ReferralModule {}
-

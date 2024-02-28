@@ -60,7 +60,7 @@ export class CourseReviewService {
    */
   async update(dataUpdate: UpdateCourseReviewDto) {
     try {
-      let dataReturn = await this.courseReviewModel.findOneAndUpdate(
+      const dataReturn = await this.courseReviewModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -82,7 +82,7 @@ export class CourseReviewService {
    */
   public count = async (filter: FilterReviewCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseReviewModel.estimatedDocumentCount();
       } else {
@@ -134,12 +134,12 @@ export class CourseReviewService {
     limit: number,
     projection: any = {}
   ): Promise<CourseReview[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseReviewModel
+    const dataReturn = await this.courseReviewModel
       .find(condition, projection)
       .populate({
         path: "user_id",
@@ -153,4 +153,3 @@ export class CourseReviewService {
     return dataReturn;
   }
 }
-

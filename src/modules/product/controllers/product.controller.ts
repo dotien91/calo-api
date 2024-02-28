@@ -70,4 +70,3 @@ export class ProductController {
     return await this.productReviewHelper.deleteReview(id, req, res);
   }
 }
-

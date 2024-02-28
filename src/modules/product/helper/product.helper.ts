@@ -25,21 +25,21 @@ export class ProductHelper {
         body.limit = 1000;
       }
 
-      let limit = body.limit ? body.limit : 1000;
-      let page = body.page ? body.page : 1;
+      const limit = body.limit ? body.limit : 1000;
+      const page = body.page ? body.page : 1;
 
-      let orderByObject = {};
+      const orderByObject = {};
       // if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
-      let dataToFilter = { ...body };
+      const dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       // delete dataToFilter.order_by;
       // delete dataToFilter.sort_by;
 
       //Check Video View
-      let dataReturn: any = await this.productService.filter(dataToFilter, orderByObject, page, limit);
-      let count: any = await this.productService.count(dataToFilter);
+      const dataReturn: any = await this.productService.filter(dataToFilter, orderByObject, page, limit);
+      const count: any = await this.productService.count(dataToFilter);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": count })
@@ -93,7 +93,7 @@ export class ProductHelper {
       const userId = req?.user_id;
       if (!userId) throw new Error("Invalid user");
 
-      let product = await this.productService.findOne({ _id: dataUpdate._id });
+      const product = await this.productService.findOne({ _id: dataUpdate._id });
       if (product?.user_id.toString() !== userId) throw new Error("You don't have permission to do this");
 
       let dataCreate: any = await this.productService.update(dataUpdate);
@@ -105,7 +105,7 @@ export class ProductHelper {
       }
       if (!Number(dataCreate?.price) && dataCreate?.service_id) {
         //Update service
-        let dataUpdate = {
+        const dataUpdate = {
           service_id: null,
           plan_id: null,
           _id: dataCreate?._id?.toString(),
@@ -130,7 +130,7 @@ export class ProductHelper {
       if (product?.user_id.toString() === userObject._id.toString())
         throw new Error("You don't have permission to do this");
 
-      let dataReturn = await this.productService.remove(id);
+      const dataReturn = await this.productService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -143,7 +143,7 @@ export class ProductHelper {
   async handleUpdateServiceProduct(productData: Product) {
     try {
       //Check Service
-      let dataServiceToAdd = {
+      const dataServiceToAdd = {
         handle: productData?._id?.toString(),
         title: productData?.name?.toString(),
         description: productData?.description?.toString(),
@@ -153,13 +153,13 @@ export class ProductHelper {
         is_show_side_bar: false,
         router_link: "r/product/view/" + productData?._id,
       };
-      let serviceData = await this.handleServiceService.create(dataServiceToAdd);
+      const serviceData = await this.handleServiceService.create(dataServiceToAdd);
       if (serviceData) {
         const price = productData?.coupon_id
           ? this.couponService.getPrice(Number(productData.price), productData.coupon_id as any)
           : Number(productData?.price);
 
-        let dataPlanCreate = {
+        const dataPlanCreate = {
           service_id: serviceData?._id?.toString(),
           name: productData?.name?.toString(),
           price,
@@ -175,15 +175,15 @@ export class ProductHelper {
           google_store_product_id: "",
           user_id: productData.user_id.toString(),
         };
-        let planService = await this.planService.create(dataPlanCreate);
+        const planService = await this.planService.create(dataPlanCreate);
 
         if (planService) {
-          let dataUpdate = {
+          const dataUpdate = {
             _id: productData?._id?.toString(),
             service_id: serviceData?._id?.toString(),
             plan_id: planService?._id?.toString(),
           };
-          let dataReturn = await this.productService.update(dataUpdate);
+          const dataReturn = await this.productService.update(dataUpdate);
           return dataReturn;
         }
       }
@@ -200,7 +200,7 @@ export class ProductHelper {
         ? this.couponService.getPrice(Number(productData.price), productData.coupon_id as any)
         : Number(productData?.price);
 
-      let dataPlanCreate = {
+      const dataPlanCreate = {
         _id: productData?.plan_id?.toString(),
         service_id: productData?.service_id.toString(),
         name: productData?.name?.toString(),
@@ -225,4 +225,3 @@ export class ProductHelper {
     }
   }
 }
-

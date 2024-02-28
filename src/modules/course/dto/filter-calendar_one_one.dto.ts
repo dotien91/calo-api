@@ -3,4 +3,3 @@ export class FilterCourseOneOneDto {
   course_id?: string;
   role?: string;
 }
-

@@ -58,7 +58,7 @@ export class ShopService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.couponModel.findOneAndUpdate(
+      const dataReturn = await this.couponModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -80,7 +80,7 @@ export class ShopService {
    */
   public count = async (filter: FilterShopDTO) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.couponModel.estimatedDocumentCount();
       } else {
@@ -132,12 +132,12 @@ export class ShopService {
   }
 
   async filter(filter: FilterShopDTO, sortBy: any, page: number, limit: number, projection: any = {}): Promise<Shop[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.couponModel
+    const dataReturn = await this.couponModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -146,4 +146,3 @@ export class ShopService {
     return dataReturn;
   }
 }
-

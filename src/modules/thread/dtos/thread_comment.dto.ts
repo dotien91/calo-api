@@ -98,4 +98,3 @@ export class UploadCommentDTO {
   @IsDefined()
   attach_files: string[];
 }
-

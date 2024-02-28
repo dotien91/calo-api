@@ -38,7 +38,7 @@ export class ShortService {
 
     if (filter.ref_id) {
       if (filter.ref_id?.indexOf(",") !== -1) {
-        let dataRefArray = filter.ref_id?.split(",");
+        const dataRefArray = filter.ref_id?.split(",");
         condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
@@ -46,7 +46,7 @@ export class ShortService {
     }
 
     if (filter.ids) {
-      let dataIds = filter.ids.split(",");
+      const dataIds = filter.ids.split(",");
       condition = Object.assign(condition, { _id: { $in: dataIds } });
     }
 
@@ -78,7 +78,7 @@ export class ShortService {
    * @returns
    */
   async filter(filter: SearchShortDto, sortBy: SortByShortDto, page: number, limit: number): Promise<Short[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -86,7 +86,7 @@ export class ShortService {
     let projection = {};
 
     if (Number(limit) == 1 && process.env.BRANCH_NAME === "live_video") {
-      let countData = await this.count(filter);
+      const countData = await this.count(filter);
       page = Math.floor(Math.random() * (countData - 1 + 1) + 1);
     }
 
@@ -95,7 +95,7 @@ export class ShortService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let dataReturn = await this.shortModel
+    const dataReturn = await this.shortModel
       .find(condition)
       .populate(
         "user_id",
@@ -119,13 +119,13 @@ export class ShortService {
    * @returns
    */
   async filterAdmin(filter: SearchShortDto, sortBy: SortByShortDto, page: number, limit: number): Promise<Short[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.shortModel
+    const projection = {};
+    const dataReturn = await this.shortModel
       .find(condition, projection)
       .populate("user_id")
       .populate("media_id")
@@ -144,7 +144,7 @@ export class ShortService {
    */
   public count = async (filter: SearchShortDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.shortModel.estimatedDocumentCount();
       } else {
@@ -162,7 +162,7 @@ export class ShortService {
    */
   async create(createUser: CreateShortDto) {
     const createdShort = new this.shortModel(createUser);
-    let dataCreate = await createdShort.save();
+    const dataCreate = await createdShort.save();
     return dataCreate;
   }
 
@@ -172,9 +172,9 @@ export class ShortService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -217,7 +217,7 @@ export class ShortService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -259,7 +259,7 @@ export class ShortService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.shortModel
+      const dataReturn = await this.shortModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: false })
         .populate(
           "user_id",

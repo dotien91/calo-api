@@ -39,10 +39,10 @@ export class Plan {
   user_id: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: String;
+  channel_id: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Course", index: true })
-  ref_id: String;
+  ref_id: string;
 
   @Prop({
     type: String,

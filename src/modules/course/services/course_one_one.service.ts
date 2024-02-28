@@ -59,7 +59,7 @@ export class CourseOneOneService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.courseOneOneModel.findOneAndUpdate(
+      const dataReturn = await this.courseOneOneModel.findOneAndUpdate(
         { _id: dataUpdate._id, role: dataUpdate.role },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -81,7 +81,7 @@ export class CourseOneOneService {
    */
   public count = async (filter: FilterCourseOneOneDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseOneOneModel.estimatedDocumentCount();
       } else {
@@ -133,12 +133,12 @@ export class CourseOneOneService {
     limit: number,
     projection: any = {}
   ): Promise<CourseOneOne[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseOneOneModel
+    const dataReturn = await this.courseOneOneModel
       .find(condition, projection)
       .populate({
         path: "time_available",
@@ -159,12 +159,12 @@ export class CourseOneOneService {
   }
 
   async getAllAssignedTimeInCourseOfStudent(courseId: string, oldAssignedTime?: any[]): Promise<any[]> {
-    let condition = {
+    const condition = {
       course_id: courseId,
       role: CourseOneOneRole.STUDENT,
     };
 
-    let dataReturn = await this.courseOneOneModel.find(condition).populate({
+    const dataReturn = await this.courseOneOneModel.find(condition).populate({
       path: "time_pick",
       options: { strictPopulate: false },
       select: "day time_start time_end",
@@ -177,11 +177,11 @@ export class CourseOneOneService {
   }
 
   async getAllAssignedTimeOfStudent(): Promise<any[]> {
-    let condition = {
+    const condition = {
       role: CourseOneOneRole.STUDENT,
     };
 
-    let dataReturn = await this.courseOneOneModel
+    const dataReturn = await this.courseOneOneModel
       .find(condition)
       .populate({
         path: "time_pick",
@@ -201,12 +201,12 @@ export class CourseOneOneService {
   }
 
   async getAllAssignedTimeInCourseOfTeacher(teacherId: string): Promise<any[]> {
-    let condition = {
+    const condition = {
       user_id: teacherId,
       role: CourseOneOneRole.TEACHER,
     };
 
-    let dataReturn = await this.courseOneOneModel.find(condition).populate({
+    const dataReturn = await this.courseOneOneModel.find(condition).populate({
       path: "time_available",
       options: { strictPopulate: false },
       select: "day time_start time_end",
@@ -215,4 +215,3 @@ export class CourseOneOneService {
     return dataReturn;
   }
 }
-

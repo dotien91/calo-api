@@ -26,9 +26,9 @@ export class ProductService {
   }
 
   async filter(filter: SearchProductParams, sortObject: any, page: number, limit: number): Promise<Product[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
 
-    let dataReturn = await this.productModel
+    const dataReturn = await this.productModel
       .find(condition)
       .populate("shop_id")
       .populate("media_id")
@@ -43,7 +43,7 @@ export class ProductService {
 
   async create(data: CreateProductDTO) {
     const createdData = new this.productModel(data);
-    let dataCreate = await createdData.save();
+    const dataCreate = await createdData.save();
     return dataCreate;
   }
 
@@ -52,7 +52,7 @@ export class ProductService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.productModel
+      const dataReturn = await this.productModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate("shop_id")
         .populate("media_id")
@@ -65,7 +65,7 @@ export class ProductService {
 
   public count = async (filter: SearchProductParams) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.productModel.estimatedDocumentCount();
       } else {

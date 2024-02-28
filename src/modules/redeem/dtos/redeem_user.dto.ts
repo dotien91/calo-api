@@ -50,4 +50,3 @@ export class UpdateRedeemUserDTO {
   @IsOptional()
   redeem_id?: string;
 }
-

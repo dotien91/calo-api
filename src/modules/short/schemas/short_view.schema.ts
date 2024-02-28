@@ -1,15 +1,15 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../user/schemas/user.schema';
-import { Short } from './short.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
+import { User } from "../../user/schemas/user.schema";
+import { Short } from "./short.schema";
 
 export type ShortViewDocument = ShortView & Document;
 
 @Schema({
   timestamps: {
     currentTime: () => Math.floor(Date.now()),
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   },
 })
 export class ShortView {
@@ -19,19 +19,19 @@ export class ShortView {
   })
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   user_id: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Short', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Short", index: true })
   video_id: Short;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
-    index: true
+    index: true,
   })
-  total_time: Number
+  total_time: number;
 }
 
 export const ShortViewSchema = SchemaFactory.createForClass(ShortView);

@@ -8,4 +8,3 @@ import { GptService } from "./services/gpt.service";
   exports: [GptService],
 })
 export class GptModule {}
-

@@ -61,4 +61,3 @@ export interface TimeAvailable {
   time_start: string;
   time_end: string;
 }
-

@@ -62,7 +62,7 @@ export class ThreadCommentService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.threadCommentModel.findOneAndUpdate(
+      const dataReturn = await this.threadCommentModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -84,7 +84,7 @@ export class ThreadCommentService {
    */
   public count = async (filter: FilterThreadCommentDTO) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.threadCommentModel.estimatedDocumentCount();
       } else {
@@ -145,12 +145,12 @@ export class ThreadCommentService {
     limit: number,
     projection: any = {}
   ): Promise<ThreadComment[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.threadCommentModel
+    const dataReturn = await this.threadCommentModel
       .find(condition, projection)
       .populate({
         path: "user_id",
@@ -178,4 +178,3 @@ export class ThreadCommentService {
     await this.threadCommentModel.findOneAndUpdate(query, update, options);
   }
 }
-

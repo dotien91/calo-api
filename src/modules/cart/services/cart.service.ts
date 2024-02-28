@@ -96,7 +96,7 @@ export class CartService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.cartModel.findOneAndUpdate(
+      const dataReturn = await this.cartModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -127,4 +127,3 @@ export class CartService {
     return sort;
   }
 }
-

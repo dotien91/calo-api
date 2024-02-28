@@ -24,7 +24,7 @@ export class ContactForm {
   partner_id: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, index: true, ref: "Post" })
-  entity_id: String;
+  entity_id: string;
 
   @Prop({
     type: String,

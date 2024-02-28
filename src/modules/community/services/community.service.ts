@@ -55,7 +55,7 @@ export class CommunityService {
 
     if (filter.data_json_type) {
       if (filter?.data_json_type?.indexOf(",") !== -1) {
-        let dataFilterJsonTypeArray = filter?.data_json_type?.split(",");
+        const dataFilterJsonTypeArray = filter?.data_json_type?.split(",");
         condition = Object.assign(condition, { data_json_type: { $in: dataFilterJsonTypeArray } });
       } else {
         condition = Object.assign(condition, { data_json_type: filter.data_json_type });
@@ -71,7 +71,7 @@ export class CommunityService {
 
     if (filter.post_category) {
       if (filter.post_category?.indexOf(",") !== -1) {
-        let dataRefArray = filter.post_category?.split(",");
+        const dataRefArray = filter.post_category?.split(",");
         condition = Object.assign(condition, { post_category: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { post_category: filter.post_category });
@@ -144,7 +144,7 @@ export class CommunityService {
    * @returns
    */
   async filter(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
 
     let sortObject: any;
     if (sortBy) {
@@ -162,7 +162,7 @@ export class CommunityService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-    let dataReturn = await this.communityModel
+    const dataReturn = await this.communityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -188,13 +188,13 @@ export class CommunityService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPostDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.communityModel
+    const projection = {};
+    const dataReturn = await this.communityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -218,7 +218,7 @@ export class CommunityService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       let sortObject = {};
       let projection = {};
       if (filter.search) {
@@ -242,7 +242,7 @@ export class CommunityService {
    */
   async create(createUser: CreateCommunityDto) {
     const createdPost = new this.communityModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -252,9 +252,9 @@ export class CommunityService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -299,7 +299,7 @@ export class CommunityService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -330,7 +330,7 @@ export class CommunityService {
   }
 
   async handleGetDataPopulatePoll(page: number, limit: number, sortObject: any) {
-    let dataSort = sortObject ? sortObject : { _id: -1 };
+    const dataSort = sortObject ? sortObject : { _id: -1 };
     delete dataSort.score;
     return {
       path: "poll_ids",

@@ -41,11 +41,11 @@ export class CommunityCommentService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        let objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        let objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
@@ -80,7 +80,7 @@ export class CommunityCommentService {
    * @returns
    */
   async filter(filter: SearchCommunityCommentDto, sortBy?: SortByCommunityCommentDto, page?: number, limit?: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -92,15 +92,15 @@ export class CommunityCommentService {
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
 
-    let limitChild = filter.limit_child ? filter.limit_child : 1000;
-    let pageChild = filter.page_child ? filter.page_child : 1;
+    const limitChild = filter.limit_child ? filter.limit_child : 1000;
+    const pageChild = filter.page_child ? filter.page_child : 1;
     let orderByOBjectChild = { _id: 1 };
 
     if (filter.order_by_child) {
       orderByOBjectChild = { ...orderByOBjectChild, ...{ _id: filter.order_by_child === "DESC" ? -1 : 1 } };
     }
 
-    let dataPopulateChild = {
+    const dataPopulateChild = {
       path: "child",
       options: {
         limit: limitChild,
@@ -113,7 +113,7 @@ export class CommunityCommentService {
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       },
     };
-    let dataReturn = await this.communityModel
+    const dataReturn = await this.communityModel
       .find(condition)
       .populate(
         "user_id",
@@ -136,14 +136,14 @@ export class CommunityCommentService {
    * @returns
    */
   async filterAdmin(filter: SearchCommunityCommentDto, sortBy: SortByCommunityCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataPopulateChild = {
+    const dataPopulateChild = {
       path: "child",
       options: {
         limit: limit,
@@ -156,7 +156,7 @@ export class CommunityCommentService {
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
       },
     };
-    let dataReturn = await this.communityModel
+    const dataReturn = await this.communityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -177,7 +177,7 @@ export class CommunityCommentService {
    */
   public count = async (filter: SearchCommunityCategoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityModel.estimatedDocumentCount();
       } else {
@@ -195,7 +195,7 @@ export class CommunityCommentService {
    */
   async create(createUser: CreateCommunityCommentDto) {
     const createdPost = new this.communityModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -205,9 +205,9 @@ export class CommunityCommentService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -248,7 +248,7 @@ export class CommunityCommentService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -270,7 +270,7 @@ export class CommunityCommentService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -339,7 +339,7 @@ export class CommunityCommentService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.communityModel.findOneAndUpdate(

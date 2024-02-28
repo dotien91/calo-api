@@ -8,4 +8,3 @@ export function makeRandom(length: number, pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZ
   }
   return result;
 }
-

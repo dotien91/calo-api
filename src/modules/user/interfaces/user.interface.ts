@@ -43,4 +43,3 @@ export enum UserPointHistory_EntityAction {
 export enum UserSortBy {
   POINT = "point",
 }
-

@@ -29,19 +29,19 @@ export class Callkit {
     nullable: false,
     index: true,
   })
-  room_name: String;
+  room_name: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  type_server: String;
+  type_server: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  call_type: String;
+  call_type: string;
 
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   first_ring: MongooseSchema.Types.Date;
@@ -58,75 +58,75 @@ export class Callkit {
     index: true,
     default: 0,
   })
-  call_time: Number;
+  call_time: number;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  token: String;
+  token: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  partner_token: String;
+  partner_token: string;
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  offer_candidates: String[];
+  offer_candidates: string[];
 
   @Prop({
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  answer_candidates: String[];
+  answer_candidates: string[];
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  offer: String;
+  offer: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: "",
   })
-  answer: String;
+  answer: string;
 
   @Prop({
     type: String,
     nullable: true,
     default: 1,
   })
-  version: Number;
+  version: number;
 
   @Prop({
     type: Boolean,
     nullable: true,
     default: true,
   })
-  is_mic: Boolean;
+  is_mic: boolean;
 
   @Prop({
     type: Boolean,
     nullable: true,
     default: true,
   })
-  is_camera: Boolean;
+  is_camera: boolean;
 
   @Prop({
     type: String,
     nullable: true,
     default: "front",
   })
-  camera_position: Boolean;
+  camera_position: boolean;
 }
 
 export const CallkitSchema = SchemaFactory.createForClass(Callkit);

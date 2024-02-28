@@ -23,4 +23,3 @@ import { CouponService } from "./services/coupon.service";
   exports: [CouponService, CouponUserService],
 })
 export class CouponModule {}
-

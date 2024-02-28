@@ -27,4 +27,3 @@ export class ListCourseReviewDto {
   @ApiPropertyOptional()
   user_id?: string;
 }
-

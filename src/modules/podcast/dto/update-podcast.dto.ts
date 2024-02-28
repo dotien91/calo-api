@@ -5,5 +5,5 @@ import { CreatePodcastDto } from "./create-podcast.dto";
 export class UpdatePodcastDto extends PartialType(CreatePodcastDto) {
   @IsString()
   @IsDefined()
-  _id: String;
+  _id: string;
 }

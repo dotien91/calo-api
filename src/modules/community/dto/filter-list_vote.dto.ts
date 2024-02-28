@@ -1,6 +1,5 @@
-import { IsDate, IsNumberString, IsEmpty, IsIn, IsDefined, ValidateIf, IsOptional, IsString, IsDateString } from "class-validator";
-import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class FilterListVote {
   @IsNumberString()

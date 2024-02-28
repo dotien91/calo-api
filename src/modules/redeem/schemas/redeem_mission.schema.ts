@@ -83,4 +83,3 @@ export class RedeemMission {
 }
 
 export const RedeemMissionSchema = SchemaFactory.createForClass(RedeemMission);
-

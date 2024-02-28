@@ -59,4 +59,4 @@ import { TransactionBankService } from "./services/transaction_bank.service";
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })
-export class TransactionModule { }
+export class TransactionModule {}

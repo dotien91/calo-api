@@ -8,4 +8,3 @@ export enum ThreadCommentType {
   PRIVATE = "private",
   FILE = "file",
 }
-

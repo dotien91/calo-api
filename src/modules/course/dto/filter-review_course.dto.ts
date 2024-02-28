@@ -3,4 +3,3 @@ export class FilterReviewCourseDto {
   rating?: number;
   user_id?: string;
 }
-

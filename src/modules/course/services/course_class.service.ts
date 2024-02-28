@@ -59,7 +59,7 @@ export class CourseClassService {
    */
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.courseClassModel.findOneAndUpdate(
+      const dataReturn = await this.courseClassModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -81,7 +81,7 @@ export class CourseClassService {
    */
   public count = async (filter: FilterClassCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseClassModel.estimatedDocumentCount();
       } else {
@@ -129,12 +129,12 @@ export class CourseClassService {
     limit?: number,
     projection: any = {}
   ): Promise<CourseClass[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseClassModel
+    const dataReturn = await this.courseClassModel
       .find(condition, projection)
       .populate({
         path: "course_calendar_ids",
@@ -152,11 +152,11 @@ export class CourseClassService {
   }
 
   async getAllAssignedTimeInCourse(courseId: string, oldAssignedTime?: any[]): Promise<any[]> {
-    let condition = {
+    const condition = {
       course_id: courseId,
     };
 
-    let dataReturn = await this.courseClassModel.find(condition).populate({
+    const dataReturn = await this.courseClassModel.find(condition).populate({
       path: "course_calendar_ids",
       options: { strictPopulate: false },
       select: "day time_start time_end",
@@ -165,4 +165,3 @@ export class CourseClassService {
     return dataReturn;
   }
 }
-

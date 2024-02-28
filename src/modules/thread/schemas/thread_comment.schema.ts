@@ -68,4 +68,3 @@ export class ThreadComment {
 }
 
 export const ThreadCommentSchema = SchemaFactory.createForClass(ThreadComment);
-

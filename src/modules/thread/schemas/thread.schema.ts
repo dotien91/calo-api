@@ -81,4 +81,3 @@ export class Thread {
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);
-

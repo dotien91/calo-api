@@ -67,7 +67,7 @@ export class CommunityLikeService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.communityLikeModel.findById(id, projection);
+    const dataReturn = await this.communityLikeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -98,7 +98,7 @@ export class CommunityLikeService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CommunityLike[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.communityLikeModel.find(condition, {}).exec();
   }
 
@@ -121,7 +121,7 @@ export class CommunityLikeService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityLikeModel.findOneAndUpdate(
+      const dataReturn = await this.communityLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -146,7 +146,7 @@ export class CommunityLikeService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityLikeModel.findOneAndUpdate(
+      const dataReturn = await this.communityLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate }
       );
@@ -167,7 +167,7 @@ export class CommunityLikeService {
    */
   public count = async (filter: FilterCommunityLikeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityLikeModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class CommunityLikeService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityLikeModel
+    const dataReturn = await this.communityLikeModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class CommunityLikeService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityLikeModel
+    const dataReturn = await this.communityLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -270,12 +270,12 @@ export class CommunityLikeService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "community_id",
       options: { strictPopulate: false },
       populate: [
@@ -287,7 +287,7 @@ export class CommunityLikeService {
         },
       ],
     };
-    let dataReturn: any = await this.communityLikeModel
+    const dataReturn: any = await this.communityLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -299,9 +299,9 @@ export class CommunityLikeService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
         delete dataItemToReturn.community_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -320,9 +320,9 @@ export class CommunityLikeService {
    * @returns
    */
   async filterWithId(filter: FilterCommunityLikeDto, page: number, limit: number): Promise<CommunityLike[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.communityLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.communityLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -340,12 +340,12 @@ export class CommunityLikeService {
    * @returns
    */
   async filterUser(filter: FilterCommunityLikeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityLikeModel
+    const dataReturn = await this.communityLikeModel
       .find(condition)
       .populate({
         path: "user_id",

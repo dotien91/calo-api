@@ -42,7 +42,7 @@ export class EventHookAdderService {
           // send update point socket to user
           const authCode = this.jwtHelperService.generateJwt(data.user_id, "", "");
 
-          let dataForSending = {
+          const dataForSending = {
             user_id: data.user_id,
             point: String(newUserData.point),
             is_level_up: String(newUserData.is_level_up),
@@ -54,7 +54,7 @@ export class EventHookAdderService {
               "X-Authorization": authCode,
             },
           };
-          let dataNotification = await axios
+          const dataNotification = await axios
             .post(process.env.SOCKET_API + "/update-point", params, config)
             .then((response) => {
               if (response?.data) {

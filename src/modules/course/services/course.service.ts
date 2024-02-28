@@ -53,7 +53,7 @@ export class CourseService {
 
     if (filter.ref_id) {
       if (filter.ref_id?.indexOf(",") !== -1) {
-        let dataRefArray = filter.ref_id?.split(",");
+        const dataRefArray = filter.ref_id?.split(",");
         condition = Object.assign(condition, { ref_id: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
@@ -61,7 +61,7 @@ export class CourseService {
     }
 
     if (filter.ids) {
-      let dataIds = filter.ids.split(",");
+      const dataIds = filter.ids.split(",");
       condition = Object.assign(condition, { _id: { $in: dataIds } });
     }
 
@@ -75,7 +75,7 @@ export class CourseService {
     }
 
     if (filter.levels && filter.levels.length) {
-      let levels = filter.levels;
+      const levels = filter.levels;
       condition = Object.assign(condition, { level: { $in: levels } });
     }
 
@@ -128,8 +128,8 @@ export class CourseService {
    * @returns
    */
   async filter(filter: SearchCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
-    let condition = await this.getCondition(filter);
-    let projection = {};
+    const condition = await this.getCondition(filter);
+    const projection = {};
 
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
@@ -181,7 +181,7 @@ export class CourseService {
       };
 
     // matching
-    var users = await this.userModel.aggregate([
+    let users = await this.userModel.aggregate([
       {
         $match: matchObject,
       },
@@ -299,8 +299,8 @@ export class CourseService {
   }
 
   async getAllFilter(filter: SearchCourseDto): Promise<number> {
-    let condition = await this.getCondition(filter);
-    let projection = {};
+    const condition = await this.getCondition(filter);
+    const projection = {};
 
     const matchObject = {};
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
@@ -331,9 +331,9 @@ export class CourseService {
    * @returns
    */
   async filterAdmin(filter: SearchCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
-    let condition = await this.getCondition(filter);
-    let projection = {};
-    let dataReturn = await this.courseModel
+    const condition = await this.getCondition(filter);
+    const projection = {};
+    const dataReturn = await this.courseModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -355,7 +355,7 @@ export class CourseService {
    */
   public count = async (filter: SearchCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseModel.estimatedDocumentCount();
       } else {
@@ -373,7 +373,7 @@ export class CourseService {
    */
   async create(createUser: CreateCourseDto) {
     const createdCourse = new this.courseModel(createUser);
-    let dataCreate = await createdCourse.save();
+    const dataCreate = await createdCourse.save();
     return dataCreate;
   }
 
@@ -383,9 +383,9 @@ export class CourseService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -469,7 +469,7 @@ export class CourseService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.courseModel
+      const dataReturn = await this.courseModel
         .findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true })
         .populate(
           "user_id",
@@ -544,8 +544,8 @@ export class CourseService {
   }
 
   async getSaleCourse(filter: SearchSaleCourseDto, sortObject: any, page: number, limit: number): Promise<Course[]> {
-    let projection = {};
-    let condition = await this.getSaleCondition(filter);
+    const projection = {};
+    const condition = await this.getSaleCondition(filter);
 
     let dataReturn = await this.courseModel
       .find(condition, projection)

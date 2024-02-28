@@ -22,4 +22,3 @@ import { ThreadCommentService } from "./services/thread_comment.service";
   exports: [ThreadService],
 })
 export class ThreadModule {}
-

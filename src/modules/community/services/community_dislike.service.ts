@@ -67,7 +67,7 @@ export class CommunityDisLikeService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.communityLikeModel.findById(id, projection);
+    const dataReturn = await this.communityLikeModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -98,7 +98,7 @@ export class CommunityDisLikeService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CommunityDisLike[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.communityLikeModel.find(condition, {}).exec();
   }
 
@@ -121,7 +121,7 @@ export class CommunityDisLikeService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityLikeModel.findOneAndUpdate(
+      const dataReturn = await this.communityLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -146,7 +146,7 @@ export class CommunityDisLikeService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityLikeModel.findOneAndUpdate(
+      const dataReturn = await this.communityLikeModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate }
       );
@@ -167,7 +167,7 @@ export class CommunityDisLikeService {
    */
   public count = async (filter: FilterCommunityDisLikeDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityLikeModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class CommunityDisLikeService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityDisLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityLikeModel
+    const dataReturn = await this.communityLikeModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class CommunityDisLikeService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityDisLike[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "community_id",
       options: { strictPopulate: false },
       populate: [
@@ -254,7 +254,7 @@ export class CommunityDisLikeService {
         },
       ],
     };
-    let dataReturn: any = await this.communityLikeModel
+    const dataReturn: any = await this.communityLikeModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -266,9 +266,9 @@ export class CommunityDisLikeService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
         delete dataItemToReturn.community_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -287,9 +287,9 @@ export class CommunityDisLikeService {
    * @returns
    */
   async filterWithId(filter: FilterCommunityDisLikeDto, page: number, limit: number): Promise<CommunityDisLike[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.communityLikeModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.communityLikeModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -307,12 +307,12 @@ export class CommunityDisLikeService {
    * @returns
    */
   async filterUser(filter: FilterCommunityDisLikeDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityLikeModel
+    const dataReturn = await this.communityLikeModel
       .find(condition)
       .populate({
         path: "user_id",

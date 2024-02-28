@@ -27,20 +27,20 @@ export class ProductReviewHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByObject = {};
       if (query.order_by) {
         orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
       }
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
 
       //Check Video View
-      let dataReturn: any = await this.productReviewService.filter(dataToFilter, orderByObject, page, limit);
-      let countProduct = await this.productReviewService.count(dataToFilter);
+      const dataReturn: any = await this.productReviewService.filter(dataToFilter, orderByObject, page, limit);
+      const countProduct = await this.productReviewService.count(dataToFilter);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": countProduct })
@@ -171,4 +171,3 @@ export class ProductReviewHelper {
     return totalRating / totalReview;
   }
 }
-

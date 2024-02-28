@@ -35,7 +35,7 @@ export class ThreadHelper {
 
       const dataReturn: any = await this.threadService.filter(dataToFilter, orderByOBject, page, limit);
 
-      for (let dataIndexItem in dataReturn) {
+      for (const dataIndexItem in dataReturn) {
         dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
       }
 
@@ -183,4 +183,3 @@ export class ThreadHelper {
     return false;
   }
 }
-

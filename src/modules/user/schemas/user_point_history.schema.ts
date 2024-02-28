@@ -28,21 +28,20 @@ export class UserPointHistory {
     type: String,
     nullable: false,
   })
-  entity_target: String;
+  entity_target: string;
 
   @Prop({
     type: String,
     nullable: false,
   })
-  entity_action: String;
+  entity_action: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  point: Number;
+  point: number;
 }
 
 export const UserPointHistorySchema = SchemaFactory.createForClass(UserPointHistory);
-

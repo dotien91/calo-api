@@ -23,14 +23,14 @@ import { ShortViewService } from "./services/short_view.service";
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema},
+      { name: User.name, schema: UserSchema },
       { name: Short.name, schema: ShortSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Media.name, schema: MediaSchema },
       { name: ShortLike.name, schema: ShortLikeSchema },
       { name: ShortView.name, schema: ShortViewSchema },
       { name: UserSession.name, schema: UserSessionSchema },
-      { name: ShortCategory.name, schema: ShortCategorySchema}
+      { name: ShortCategory.name, schema: ShortCategorySchema },
     ]),
   ],
   controllers: [ShortController],

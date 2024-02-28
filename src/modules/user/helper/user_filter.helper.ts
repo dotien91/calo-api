@@ -110,7 +110,7 @@ export class UserFilterHelper {
       const limit = query.limit ? query.limit : 1000;
       const page = query.page ? query.page : 1;
 
-      let orderByOBject = {};
+      const orderByOBject = {};
       if (query.sort_by) {
         orderByOBject[query.sort_by] = query.order_by || "DESC";
       } else {
@@ -169,7 +169,7 @@ export class UserFilterHelper {
       };
       const dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
 
-      let dataChannelPermission = [];
+      const dataChannelPermission = [];
       // //Get Data level
       // if (query?.channel_id) {
       //   const dataUserIds = dataReturn?.map((value) => {
@@ -265,7 +265,7 @@ export class UserFilterHelper {
    */
   async getListFollower(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -288,7 +288,7 @@ export class UserFilterHelper {
       };
       let dataReturn: any = await this.userFollowService.filterUser(dataToFilter, orderByOBject, page, limit);
 
-      let dataChannelPermission = [];
+      const dataChannelPermission = [];
       //Get Data level
       // if (query?.channel_id) {
       //   const dataUserIds = dataReturn?.map((value) => {
@@ -879,7 +879,7 @@ export class UserFilterHelper {
         user_email: false,
       };
 
-      let dataUser: any = await this.appUserService.findById(id, projection);
+      const dataUser: any = await this.appUserService.findById(id, projection);
 
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
@@ -913,7 +913,7 @@ export class UserFilterHelper {
       const userId = dataSession._id.toString();
 
       const projection = {};
-      let dataUser = await this.appUserService.findById(userId, projection);
+      const dataUser = await this.appUserService.findById(userId, projection);
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
       }
@@ -1001,7 +1001,7 @@ export class UserFilterHelper {
 
       console.log(query, "query");
       let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
@@ -1103,7 +1103,7 @@ export class UserFilterHelper {
         };
       }
 
-      let dataFinalReturn = [];
+      const dataFinalReturn = [];
       const dataUpdateSession = [];
 
       if (dataToFilter?.limit == 1) {
@@ -1221,7 +1221,7 @@ export class UserFilterHelper {
       const page = query.page ? query.page : 1;
 
       const users = await this.appUserService.findAllWithMinimumData();
-      for (let dataIndexCourse in users) {
+      for (const dataIndexCourse in users) {
         // @ts-ignore
         users[dataIndexCourse] = users[dataIndexCourse]?.toObject();
       }

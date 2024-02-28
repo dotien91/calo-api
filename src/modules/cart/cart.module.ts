@@ -12,4 +12,3 @@ import { CartService } from "./services/cart.service";
   exports: [CartService],
 })
 export class CartModule {}
-

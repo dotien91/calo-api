@@ -6,4 +6,3 @@ export enum ProductType {
   COURSE = "course",
   PRODUCT = "product",
 }
-

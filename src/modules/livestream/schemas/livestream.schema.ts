@@ -8,37 +8,37 @@ export class LivestreamReact extends Document {
   @Prop({
     type: Number,
   })
-  haha_value: Number;
+  haha_value: number;
 
   @Prop({
     type: Number,
   })
-  like_value: Number;
+  like_value: number;
 
   @Prop({
     type: Number,
   })
-  love_value: Number;
+  love_value: number;
 
   @Prop({
     type: Number,
   })
-  care_value: Number;
+  care_value: number;
 
   @Prop({
     type: Number,
   })
-  wow_value: Number;
+  wow_value: number;
 
   @Prop({
     type: Number,
   })
-  sad_value: Number;
+  sad_value: number;
 
   @Prop({
     type: Number,
   })
-  angry_value: Number;
+  angry_value: number;
 }
 export const LivestreamReactSchema = SchemaFactory.createForClass(LivestreamReact);
 
@@ -91,7 +91,7 @@ export class LivstreamData extends Document {
   @Prop({
     type: String,
   })
-  haha_value: Number;
+  haha_value: number;
 
   @Prop({
     type: String,
@@ -205,21 +205,21 @@ export class Livestream {
     default: 0,
     nullable: false,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  view_number: Number;
+  view_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  comment_number: Number;
+  comment_number: number;
 
   @Prop({
     type: String,

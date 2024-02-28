@@ -30,21 +30,21 @@ export class Course {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  long_description: String;
+  long_description: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -85,7 +85,7 @@ export class Course {
     default: "",
     nullable: false,
   })
-  slug: String;
+  slug: string;
 
   @Prop({
     type: String,
@@ -93,41 +93,41 @@ export class Course {
     nullable: false,
     index: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: String,
     default: "VN",
     nullable: false,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  version: String;
+  version: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  product_id: String;
+  product_id: string;
 
   @Prop({
     type: String,
     enum: [CoursePublicStatus],
   })
-  public_status: String;
+  public_status: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  rating: Number;
+  rating: number;
 
   @Prop({
     type: Number,
@@ -141,42 +141,42 @@ export class Course {
     default: 0,
     nullable: false,
   })
-  join_number: Number;
+  join_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  video_count: Number;
+  video_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  news_count: Number;
+  news_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  doc_count: Number;
+  doc_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  module_count: Number;
+  module_count: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  module_child_count: Number;
+  module_child_count: number;
 
   @Prop({
     type: Array,

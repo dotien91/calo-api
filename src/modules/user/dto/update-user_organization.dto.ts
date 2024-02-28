@@ -34,4 +34,3 @@ export class UpdateUserOrganizationDto {
   @ApiPropertyOptional()
   long_description?: string;
 }
-

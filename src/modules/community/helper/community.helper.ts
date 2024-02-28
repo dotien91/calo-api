@@ -76,16 +76,16 @@ export class CommunityHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let dataToFilter = { ...query };
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const dataToFilter = { ...query };
 
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataCommunity = await this.communityService.findOne({ _id: query?.community_id });
+      const dataCommunity = await this.communityService.findOne({ _id: query?.community_id });
       if (!dataCommunity) {
         throw new ForbiddenException("Community is invalid!");
       }
@@ -93,23 +93,23 @@ export class CommunityHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn: any = await this.communityLikeService.filterData(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.communityLikeService.filterData(dataToFilter, orderByOBject, page, limit);
 
       if (dataReturn) {
-        let dataLikeId = dataReturn?.map((value) => {
+        const dataLikeId = dataReturn?.map((value) => {
           return value?.user_id?._id.toString();
         });
-        let dataLikeFilter = {
+        const dataLikeFilter = {
           user_id: query?.auth_id,
           partner_ids: dataLikeId,
         };
-        let dataLikeArray = await this.userFollowService.filter(dataLikeFilter, {}, 1, limit);
-        let dataLikeIds = dataLikeArray?.map((value) => {
+        const dataLikeArray = await this.userFollowService.filter(dataLikeFilter, {}, 1, limit);
+        const dataLikeIds = dataLikeArray?.map((value) => {
           return value?.partner_id?._id?.toString();
         });
 
-        for (let dataReturnItem in dataReturn) {
-          let userIdCheck = dataReturn[dataReturnItem]?.user_id?._id?.toString();
+        for (const dataReturnItem in dataReturn) {
+          const userIdCheck = dataReturn[dataReturnItem]?.user_id?._id?.toString();
           if (dataLikeIds.indexOf(userIdCheck) !== -1) {
             dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem]?.toObject(), ...{ is_follow: true } };
           } else {
@@ -117,7 +117,7 @@ export class CommunityHelper {
           }
         }
       }
-      let dataCount = await this.communityLikeService.count(dataToFilter);
+      const dataCount = await this.communityLikeService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -136,15 +136,15 @@ export class CommunityHelper {
    */
   async createNewCommunityPoll(dataCreate: CreateCommunityPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataQuestion = JSON.parse(dataCreate.question);
-      let dataReturn = [];
-      let dataToUpdatePoll = [];
-      for (let dataQuestionItem of dataQuestion) {
+      const dataQuestion = JSON.parse(dataCreate.question);
+      const dataReturn = [];
+      const dataToUpdatePoll = [];
+      for (const dataQuestionItem of dataQuestion) {
         let dataCreateNew = {
           ...dataCreate,
           ...{ question: dataQuestionItem, created_by: userObject?._id?.toString() },
@@ -152,13 +152,13 @@ export class CommunityHelper {
         if (dataCreate?.community_id) {
           dataCreateNew = { ...dataCreateNew, ...{ community_id: dataCreate?.community_id } };
         }
-        let dataPollReturn = await this.communityPollService.create(dataCreateNew);
+        const dataPollReturn = await this.communityPollService.create(dataCreateNew);
         dataToUpdatePoll.push(dataPollReturn?._id?.toString());
         dataReturn.push(dataPollReturn);
       }
       if (dataCreate?.community_id) {
         //Update Community
-        let dataUpdate = {
+        const dataUpdate = {
           poll_ids: dataToUpdatePoll,
           _id: dataCreate?.community_id,
         };
@@ -182,29 +182,29 @@ export class CommunityHelper {
    */
   async unVoteCommunityPoll(dataCreate: CreateCommunityPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataChoose = await this.communityPollService.findById(dataCreate?.poll_id, {});
+      const dataChoose = await this.communityPollService.findById(dataCreate?.poll_id, {});
       if (dataChoose?.users_choose?.indexOf(userObject?._id) == -1) {
         //Not have
         throw new ForbiddenException("Not Vote");
       }
       if (dataCreate?.poll_id && dataCreate?.community_id) {
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataCreate?.poll_id,
           users_choose: userObject?._id?.toString(),
         };
 
         //Update
         //Update Number
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           number_choose: -1,
         };
         await this.communityPollService.updateCount({ _id: dataCreate?.poll_id }, dataUpdateCount);
-        let dataReturn = await this.communityPollService.updateArray(dataUpdate, true);
+        const dataReturn = await this.communityPollService.updateArray(dataUpdate, true);
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -227,43 +227,43 @@ export class CommunityHelper {
    */
   async voteCommunityPoll(dataCreate: CreateCommunityPollDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
 
       if (dataCreate?.poll_id && dataCreate?.community_id) {
         //ReUpdate
-        let dataPollArray = await this.communityPollService.filter(
+        const dataPollArray = await this.communityPollService.filter(
           { community_id: dataCreate?.community_id },
           {},
           1,
           1000
         );
-        for (let dataItemPool of dataPollArray) {
+        for (const dataItemPool of dataPollArray) {
           if (dataItemPool?.users_choose?.indexOf(userObject?._id) !== -1) {
             //Update
-            let dataUpdateCount = {
+            const dataUpdateCount = {
               number_choose: -1,
             };
             await this.communityPollService.updateCount({ _id: dataItemPool?._id }, dataUpdateCount);
-            let dataUpdateNew = {
+            const dataUpdateNew = {
               _id: dataItemPool?._id?.toString(),
               users_choose: userObject?._id?.toString(),
             };
             await this.communityPollService.updateArray(dataUpdateNew, true);
           }
         }
-        let dataUpdate = {
+        const dataUpdate = {
           _id: dataCreate?.poll_id,
           users_choose: userObject?._id?.toString(),
         };
 
         //Update
         //Update Number
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           number_choose: 1,
         };
         await this.communityPollService.updateCount({ _id: dataCreate?.poll_id }, dataUpdateCount);
 
-        let dataReturn = await this.communityPollService.updateArray(dataUpdate);
+        const dataReturn = await this.communityPollService.updateArray(dataUpdate);
 
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -290,15 +290,15 @@ export class CommunityHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataVote = await this.communityPollService.findOneWithLimit(query, limit, page, orderByOBject);
+      const dataVote = await this.communityPollService.findOneWithLimit(query, limit, page, orderByOBject);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -329,8 +329,8 @@ export class CommunityHelper {
         query = Object.assign(query, { user_id: { $in: followUsers } });
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
 
       let orderByOBject = {};
       if (query.order_by && (query.order_type == "time" || !query?.order_type)) {
@@ -353,19 +353,19 @@ export class CommunityHelper {
         orderByOBject = { ...orderByOBject, ...{ trending_number: query.order_by } };
       }
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.communityService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn = await this.communityService.filter(dataToFilter, orderByOBject, page, limit);
 
       if (dataReturn) {
-        let dataIds = [];
-        for (let itemReturn of dataReturn) {
+        const dataIds = [];
+        for (const itemReturn of dataReturn) {
           dataIds.push(itemReturn?._id);
         }
-        let dataLikeFilter = {
+        const dataLikeFilter = {
           user_id: query?.auth_id ? query?.auth_id : null,
           community_ids: dataIds,
         };
@@ -376,21 +376,21 @@ export class CommunityHelper {
           dataDisLikeArray = await this.communityDisLikeService.filter(dataLikeFilter, {}, 1, limit);
         }
 
-        let dataLikeId = [];
-        for (let dataLikeItem of dataLikeArray) {
+        const dataLikeId = [];
+        for (const dataLikeItem of dataLikeArray) {
           dataLikeId.push(dataLikeItem?.community_id.toString());
         }
-        for (let dataIndexItem in dataReturn) {
+        for (const dataIndexItem in dataReturn) {
           dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
         }
 
-        let dataDisLikeId = [];
-        for (let dataDisLikeItem of dataDisLikeArray) {
+        const dataDisLikeId = [];
+        for (const dataDisLikeItem of dataDisLikeArray) {
           dataDisLikeId.push(dataDisLikeItem?.community_id.toString());
         }
 
-        for (let dataReturnItem in dataReturn) {
-          let communityId = dataReturn[dataReturnItem]?._id?.toString();
+        for (const dataReturnItem in dataReturn) {
+          const communityId = dataReturn[dataReturnItem]?._id?.toString();
           if (dataLikeId.indexOf(communityId) !== -1) {
             dataReturn[dataReturnItem] = { ...dataReturn[dataReturnItem], ...{ is_like: true } };
           } else {
@@ -405,7 +405,7 @@ export class CommunityHelper {
         }
       }
 
-      let dataCount = await this.communityService.count(dataToFilter);
+      const dataCount = await this.communityService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -426,7 +426,7 @@ export class CommunityHelper {
    */
   async createNewCommunity(createCommunityData: CreateCommunityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
@@ -436,10 +436,10 @@ export class CommunityHelper {
       );
       if (!isValid) throw new Error("The community's content violates community standards");
 
-      let dataSlug = this.toSlug(createCommunityData.post_title);
+      const dataSlug = this.toSlug(createCommunityData.post_title);
       createCommunityData = { ...createCommunityData, ...{ post_slug: dataSlug, user_id: userObject._id.toString() } };
 
-      let userCountry = userObject?.country;
+      const userCountry = userObject?.country;
       createCommunityData = { ...createCommunityData, ...{ country: userCountry } };
 
       if (this.validateJson(createCommunityData?.attach_files)) {
@@ -479,11 +479,11 @@ export class CommunityHelper {
         ...{ popular_number: 10, trending_number: 10, post_status: "publish" },
       };
 
-      let dataCreate: any = await this.communityService.create(createCommunityData);
-      let dataReturn = await this.communityService.findById(dataCreate?._id?.toString());
+      const dataCreate: any = await this.communityService.create(createCommunityData);
+      const dataReturn = await this.communityService.findById(dataCreate?._id?.toString());
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_community: dataCreate?._id?.toString(),
       };
@@ -547,19 +547,19 @@ export class CommunityHelper {
 
       const userIdArray = [];
 
-      let communityComments = await this.communityCommentService.findAll({
+      const communityComments = await this.communityCommentService.findAll({
         community_id: dataCommunity?._id?.toString(),
       });
 
       // add commented user
-      for (let item of communityComments) {
+      for (const item of communityComments) {
         if (item?.user_id?.toString() !== fromUser?._id?.toString()) {
           userIdArray.push(item.user_id.toString());
         }
       }
 
       // filter duplicate
-      var finalUserIdArray = Array.from(new Set(userIdArray));
+      let finalUserIdArray = Array.from(new Set(userIdArray));
 
       // add author user
       if (fromUser?._id?.toString() !== dataCommunity.user_id.toString()) {
@@ -570,13 +570,13 @@ export class CommunityHelper {
       }
 
       if (finalUserIdArray && finalUserIdArray?.length) {
-        let dataToSendNotification = {
+        const dataToSendNotification = {
           community_id: dataCommunity?._id?.toString(),
           path: "/v/post/",
           data_id: dataCommunity?.post_slug?.toString(),
         };
-        let notificationContent = chatContentToSend;
-        let dataNotification = {
+        const notificationContent = chatContentToSend;
+        const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: finalUserIdArray,
           title: notificationTitle?.toString(),
@@ -608,20 +608,20 @@ export class CommunityHelper {
    */
   async createNewComment(createCommunityData: CreateCommunityCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let authCode = req?.auth_code;
+      const authCode = req?.auth_code;
 
-      let dataCommunityObject = await this.communityService.findById(createCommunityData?.community_id);
+      const dataCommunityObject = await this.communityService.findById(createCommunityData?.community_id);
 
-      let dataCountUserFilter = {
+      const dataCountUserFilter = {
         community_id: createCommunityData?.community_id,
         user_id: userObject?._id?.toString(),
       };
-      let dataCountUser = await this.communityCommentService.count(dataCountUserFilter);
+      const dataCountUser = await this.communityCommentService.count(dataCountUserFilter);
       if (!dataCommunityObject) {
         throw new ForbiddenException("Community not exist!");
       }
@@ -632,7 +632,7 @@ export class CommunityHelper {
 
       dataCreate = { ...dataCreate?.toObject(), ...{ user_id: userObject } };
       if (createCommunityData?.parent_id) {
-        let dataUpdate = {
+        const dataUpdate = {
           _id: createCommunityData?.parent_id,
           child: dataCreate?._id,
         };
@@ -640,25 +640,25 @@ export class CommunityHelper {
       }
 
       //Update Count
-      let dataUpdateCount = {
+      const dataUpdateCount = {
         _id: createCommunityData?.community_id,
       };
-      let dataUpdate = {
+      const dataUpdate = {
         comment_number: 1,
       };
-      let dataCommunity = await this.communityService.updateCount(dataUpdateCount, dataUpdate);
+      const dataCommunity = await this.communityService.updateCount(dataUpdateCount, dataUpdate);
 
       //Update child
 
       if (createCommunityData?.parent_id) {
-        let dataToUpdateArray = {
+        const dataToUpdateArray = {
           child_number: 1,
         };
         await this.communityCommentService.updateCount({ _id: createCommunityData?.parent_id }, dataToUpdateArray);
       }
 
       //Update Notification
-      let dataUpdateNotification = {
+      const dataUpdateNotification = {
         _id: userObject?._id?.toString(),
         notification_community: createCommunityData?.community_id,
       };
@@ -702,23 +702,23 @@ export class CommunityHelper {
    */
   async createLike(dataCreate: CreateCommunityLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataCommunityObject = await this.communityService.findById(dataCreate?.community_id);
+      const dataCommunityObject = await this.communityService.findById(dataCreate?.community_id);
       if (!dataCommunityObject) {
         throw new ForbiddenException("Community not exist!");
       }
 
-      let dataToCreate = {
+      const dataToCreate = {
         user_id: userObject?._id,
         community_id: dataCreate?.community_id,
       };
 
       //Check
-      let dataCheck = await this.communityLikeService.findOne(dataToCreate);
+      const dataCheck = await this.communityLikeService.findOne(dataToCreate);
 
       // update point for user
       const data: AddPointToUserData = {
@@ -739,11 +739,14 @@ export class CommunityHelper {
 
       if (dataCheck) {
         let dataRemove: any = await this.communityLikeService.removeOne(dataToCreate);
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.community_id,
         };
         //Like Number
-        let dataLikeNumber = await this.communityService.updateCount(dataFilter, { like_number: -1, vote_number: -1 });
+        const dataLikeNumber = await this.communityService.updateCount(dataFilter, {
+          like_number: -1,
+          vote_number: -1,
+        });
         dataRemove = dataRemove?.toObject();
         dataRemove = {
           ...dataRemove,
@@ -757,7 +760,7 @@ export class CommunityHelper {
           .json(dataRemove);
       } else {
         //Remove Dislike
-        let dataRemove = await this.communityDisLikeService.removeOne(dataToCreate);
+        const dataRemove = await this.communityDisLikeService.removeOne(dataToCreate);
         let dataReturn: any = await this.communityLikeService.create(dataToCreate);
 
         //Update like
@@ -769,11 +772,11 @@ export class CommunityHelper {
         if (dataRemove) {
           dataUpdate = { ...dataUpdate, ...{ vote_number: 2, dislike_number: -1 } };
         }
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.community_id,
         };
 
-        let dataLikeNumber = await this.communityService.updateCount(dataFilter, dataUpdate);
+        const dataLikeNumber = await this.communityService.updateCount(dataFilter, dataUpdate);
         dataReturn = dataReturn?.toObject();
         dataReturn = {
           ...dataReturn,
@@ -798,22 +801,22 @@ export class CommunityHelper {
    */
   async createDislike(dataCreate: CreateCommunityLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataToCreate = {
+      const dataToCreate = {
         user_id: userObject?._id,
         community_id: dataCreate?.community_id,
       };
 
       //Check
-      let dataCheck = await this.communityDisLikeService.findOne(dataToCreate);
+      const dataCheck = await this.communityDisLikeService.findOne(dataToCreate);
 
       if (dataCheck) {
-        let dataRemove = await this.communityDisLikeService.removeOne(dataToCreate);
-        let dataFilter = {
+        const dataRemove = await this.communityDisLikeService.removeOne(dataToCreate);
+        const dataFilter = {
           _id: dataCreate?.community_id,
         };
         await this.communityService.updateCount(dataFilter, { dislike_number: -1, vote_number: 1 });
@@ -823,14 +826,14 @@ export class CommunityHelper {
           .status(HttpStatus.OK)
           .json(dataRemove);
       } else {
-        let dataReturn = await this.communityDisLikeService.create(dataToCreate);
-        let dataRemove = await this.communityLikeService.removeOne(dataToCreate);
+        const dataReturn = await this.communityDisLikeService.create(dataToCreate);
+        const dataRemove = await this.communityLikeService.removeOne(dataToCreate);
         //Update like
         let dataUpdate = {
           vote_number: -1,
           dislike_number: 1,
         };
-        let dataFilter = {
+        const dataFilter = {
           _id: dataCreate?.community_id,
         };
 
@@ -857,13 +860,13 @@ export class CommunityHelper {
    */
   async createLikeComment(dataCreate: CreateCommunityCommentLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
       //CheckComment
-      let dataComment = await this.communityCommentService.findOne({ _id: dataCreate?.comment_id });
+      const dataComment = await this.communityCommentService.findOne({ _id: dataCreate?.comment_id });
 
       if (!dataComment) {
         throw new ForbiddenException("Comment does not exist!");
@@ -885,7 +888,7 @@ export class CommunityHelper {
         }
       }
       //remove or add Up-vote
-      let dataUpdateDownVote = {
+      const dataUpdateDownVote = {
         _id: dataCreate?.comment_id,
         up_vote: userObject?._id,
       };
@@ -893,7 +896,7 @@ export class CommunityHelper {
 
       if (isDownVoteBefore) {
         //Remove Downvote
-        let dataUpdateUpVote = {
+        const dataUpdateUpVote = {
           _id: dataCreate?.comment_id,
           down_vote: userObject?._id,
         };
@@ -935,12 +938,12 @@ export class CommunityHelper {
    */
   async createDislikeComment(dataCreate: CreateCommunityCommentLikeDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject: any = req?.user_object;
+      const userObject: any = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
       //CheckComment
-      let dataComment = await this.communityCommentService.findOne({ _id: dataCreate?.comment_id });
+      const dataComment = await this.communityCommentService.findOne({ _id: dataCreate?.comment_id });
 
       let isRemove = false;
       let isUpvoteBefore = false;
@@ -958,7 +961,7 @@ export class CommunityHelper {
         }
       }
       //Remove or add Downvote
-      let dataUpdateDownVote = {
+      const dataUpdateDownVote = {
         _id: dataCreate?.comment_id,
         down_vote: userObject?._id,
       };
@@ -977,7 +980,7 @@ export class CommunityHelper {
 
       if (isUpvoteBefore) {
         //Remove Downvote
-        let dataUpdateUpVote = {
+        const dataUpdateUpVote = {
           _id: dataCreate?.comment_id,
           up_vote: userObject?._id,
         };
@@ -1008,18 +1011,18 @@ export class CommunityHelper {
    */
   async createCategory(createCommunityData: CreateCommunityCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let dataSlug = this.toSlug(createCommunityData.category_title?.toString());
+      const dataSlug = this.toSlug(createCommunityData.category_title?.toString());
       createCommunityData = {
         ...createCommunityData,
         ...{ category_slug: dataSlug, user_id: userObject._id.toString() },
       };
 
-      let dataCreate = await this.communityCategoryService.create(createCommunityData);
+      const dataCreate = await this.communityCategoryService.create(createCommunityData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1043,17 +1046,17 @@ export class CommunityHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
       let orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       if (query.order_by) {
         orderByOBject = { ...orderByOBject, ...{ createdAt: query.order_by } };
       }
 
-      let dataCommunity = await this.communityService.findOne({ _id: query?.community_id });
+      const dataCommunity = await this.communityService.findOne({ _id: query?.community_id });
       if (!dataCommunity) {
         throw new ForbiddenException("Community is invalid");
       }
@@ -1061,44 +1064,44 @@ export class CommunityHelper {
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturnBefore = await this.communityCommentService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataReturn: any = [];
-      for (let itemBefore of dataReturnBefore) {
+      const dataReturnBefore = await this.communityCommentService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = [];
+      for (const itemBefore of dataReturnBefore) {
         dataReturn.push(itemBefore?.toObject());
       }
-      let dataCount = await this.communityCommentService.count(dataToFilter);
-      let dataReturnFinal = [];
+      const dataCount = await this.communityCommentService.count(dataToFilter);
+      const dataReturnFinal = [];
 
-      for (let dataItem of dataReturn) {
+      for (const dataItem of dataReturn) {
         let isLike = false;
         let isDislike = false;
-        let dataDisLike = dataItem?.down_vote;
-        let dataLike = dataItem?.up_vote;
+        const dataDisLike = dataItem?.down_vote;
+        const dataLike = dataItem?.up_vote;
 
-        let dataDisLikeArray = [];
-        for (let itemDislike of dataDisLike) {
+        const dataDisLikeArray = [];
+        for (const itemDislike of dataDisLike) {
           dataDisLikeArray.push(itemDislike?.toString());
         }
         if (dataDisLikeArray.indexOf(query?.auth_id) !== -1) {
           isDislike = true;
         }
 
-        let dataLikeArray = [];
-        for (let itemLike of dataLike) {
+        const dataLikeArray = [];
+        for (const itemLike of dataLike) {
           dataLikeArray.push(itemLike?.toString());
         }
         if (dataLikeArray.indexOf(query?.auth_id) !== -1) {
           isLike = true;
         }
-        let dataChild = [];
+        const dataChild = [];
         if (dataItem && dataItem?.child) {
-          for (let dataChildIndex in dataItem?.child) {
+          for (const dataChildIndex in dataItem?.child) {
             let dataItemChild = dataItem?.child[dataChildIndex];
 
             let isUpvoteChild = false;
-            let dataUpvoteChild = dataItemChild?.up_vote;
-            let dataUpvoteChildArray = [];
-            for (let itemDislikeChild of dataUpvoteChild) {
+            const dataUpvoteChild = dataItemChild?.up_vote;
+            const dataUpvoteChildArray = [];
+            for (const itemDislikeChild of dataUpvoteChild) {
               dataUpvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataUpvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -1106,9 +1109,9 @@ export class CommunityHelper {
             }
 
             let isDownVoteChild = false;
-            let dataDownVoteChild = dataItemChild?.down_vote;
-            let dataDownvoteChildArray = [];
-            for (let itemDislikeChild of dataDownVoteChild) {
+            const dataDownVoteChild = dataItemChild?.down_vote;
+            const dataDownvoteChildArray = [];
+            for (const itemDislikeChild of dataDownVoteChild) {
               dataDownvoteChildArray.push(itemDislikeChild?.toString());
             }
             if (dataDownvoteChildArray.indexOf(query?.auth_id) !== -1) {
@@ -1121,7 +1124,7 @@ export class CommunityHelper {
             dataChild.push(dataItemChild);
           }
         }
-        let dataToPush = { ...dataItem, ...{ is_like: isLike, is_dislike: isDislike, child: dataChild } };
+        const dataToPush = { ...dataItem, ...{ is_like: isLike, is_dislike: isDislike, child: dataChild } };
         dataReturnFinal.push(dataToPush);
       }
       return res
@@ -1140,7 +1143,7 @@ export class CommunityHelper {
    */
   validateJson(str: string) {
     try {
-      let dataJson = JSON.parse(str);
+      const dataJson = JSON.parse(str);
       if (dataJson?.length === 0) {
         return false;
       } else {
@@ -1181,8 +1184,8 @@ export class CommunityHelper {
       let dataReturn: any = await this.communityService.findOne(dataToFilter);
       dataReturn = { ...dataReturn?.toObject() };
 
-      let getDataLike = null;
-      let dataDisLike = null;
+      const getDataLike = null;
+      const dataDisLike = null;
 
       if (getDataLike) {
         dataReturn = { ...dataReturn, ...{ is_like: true } };
@@ -1231,7 +1234,7 @@ export class CommunityHelper {
       } else {
         dataToFilter = { ...dataToFilter, ...{ category_slug: id.toString() } };
       }
-      let dataReturn = await this.communityCategoryService.findOne(dataToFilter);
+      const dataReturn = await this.communityCategoryService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1265,7 +1268,7 @@ export class CommunityHelper {
       if (objectId) {
         dataToFilter = { ...dataToFilter, ...{ _id: objectId } };
       }
-      let dataReturn = await this.communityCommentService.findOne(dataToFilter);
+      const dataReturn = await this.communityCommentService.findOne(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1284,16 +1287,16 @@ export class CommunityHelper {
    */
   async handleUpdateCommunityByAdmin(dataUpdate: UpdateCommunityDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let communityObject = await this.communityService.findById(dataUpdate?._id?.toString());
+      const userId = userObject._id.toString();
+      const communityObject = await this.communityService.findById(dataUpdate?._id?.toString());
 
       let havePermission = false;
-      let canPin = false;
+      const canPin = false;
 
       if (communityObject?.user_id?._id?.toString() == userId) {
         havePermission = true;
@@ -1317,7 +1320,7 @@ export class CommunityHelper {
         dataUpdate = { ...dataUpdate, ...{ poll_ids: JSON.parse(dataUpdate.poll_ids) } };
       }
 
-      let dataReturn = await this.communityService.update(dataUpdate);
+      const dataReturn = await this.communityService.update(dataUpdate);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -1337,16 +1340,16 @@ export class CommunityHelper {
    */
   async handleUpdateCommunityComment(dataUpdate: UpdateCommunityCommentDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       //Check Comment ID
-      let commentObject = await this.communityCommentService.findById(dataUpdate?._id?.toString());
+      const commentObject = await this.communityCommentService.findById(dataUpdate?._id?.toString());
 
       //Check User create
       if (commentObject?.user_id?._id.toString() !== userObject?._id?.toString()) {
         throw new BadRequestException("You haven't permission for this Action!");
       }
 
-      let dataReturn = await this.communityCommentService.update(dataUpdate);
+      const dataReturn = await this.communityCommentService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1365,11 +1368,11 @@ export class CommunityHelper {
    */
   async handleUpdateCategory(dataUpdate: UpdateCommunityCategoryDto, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataReturn = await this.communityCategoryService.update(dataUpdate);
+      const dataReturn = await this.communityCategoryService.update(dataUpdate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -1388,13 +1391,13 @@ export class CommunityHelper {
    */
   async handleDeleteCommunity(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
 
-      let userId = userObject._id.toString();
-      let communityObject = await this.communityService.findById(id);
+      const userId = userObject._id.toString();
+      const communityObject = await this.communityService.findById(id);
       let havePermission = false;
       if (communityObject?.user_id?._id?.toString() == userId) {
         havePermission = true;
@@ -1402,7 +1405,7 @@ export class CommunityHelper {
 
       if (havePermission) {
         //Check Permission
-        let dataReturn = await this.communityService.remove(id);
+        const dataReturn = await this.communityService.remove(id);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
@@ -1429,17 +1432,17 @@ export class CommunityHelper {
         query.limit = 1000;
       }
 
-      let limit = query.limit ? query.limit : 1000;
-      let page = query.page ? query.page : 1;
-      let orderByOBject = {};
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      const orderByOBject = {};
 
-      let dataToFilter = { ...query };
+      const dataToFilter = { ...query };
 
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
-      let dataReturn = await this.communityCategoryService.filter(dataToFilter, orderByOBject, page, limit);
-      let dataCount = await this.communityCategoryService.count(dataToFilter);
+      const dataReturn = await this.communityCategoryService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataCount = await this.communityCategoryService.count(dataToFilter);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
@@ -1458,12 +1461,12 @@ export class CommunityHelper {
    */
   async handleDeleteComment(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let userId = userObject._id.toString();
-      let getCommentObject = await this.communityCommentService.findByIdPopulate(id);
+      const userId = userObject._id.toString();
+      const getCommentObject = await this.communityCommentService.findByIdPopulate(id);
       let havePermission = false;
 
       if (getCommentObject?.user_id?._id?.toString() == userId) {
@@ -1472,10 +1475,10 @@ export class CommunityHelper {
 
       if (havePermission) {
         //Check Permission
-        let dataReturn: any = await this.communityCommentService.remove(id);
+        const dataReturn: any = await this.communityCommentService.remove(id);
 
         if (dataReturn?.parent_id) {
-          let dataUpdateRemove = {
+          const dataUpdateRemove = {
             _id: dataReturn?.parent_id?.toString(),
             child: dataReturn?._id,
           };
@@ -1483,7 +1486,7 @@ export class CommunityHelper {
         }
 
         //check subcomment
-        let subcomments = await this.communityCommentService.filter(
+        const subcomments = await this.communityCommentService.filter(
           {
             parent_id: id,
           },
@@ -1493,17 +1496,17 @@ export class CommunityHelper {
         );
 
         //Update Count
-        let dataUpdateCount = {
+        const dataUpdateCount = {
           _id: getCommentObject?.community_id?._id?.toString(),
         };
-        let dataUpdate = {
+        const dataUpdate = {
           comment_number: -(subcomments.length + 1),
         };
         await this.communityService.updateCount(dataUpdateCount, dataUpdate);
 
         //Update child
         if (getCommentObject?.parent_id) {
-          let dataToUpdateArray = {
+          const dataToUpdateArray = {
             child_number: -(subcomments.length + 1),
           };
           await this.communityCommentService.updateCount(
@@ -1539,11 +1542,11 @@ export class CommunityHelper {
    */
   async handleDeleteCategory(id: string, res: Response, req: ExpressRequestDto) {
     try {
-      let userObject = req?.user_object;
+      const userObject = req?.user_object;
       if (!userObject || !id) {
         throw new ForbiddenException("User is invalid");
       }
-      let dataReturn = await this.communityCategoryService.remove(id);
+      const dataReturn = await this.communityCategoryService.remove(id);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)

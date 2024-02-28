@@ -39,4 +39,3 @@ export interface OrderItem {
   payload: object;
   type: OrderItemType;
 }
-

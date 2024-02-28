@@ -1,3 +1,3 @@
 export class SortByShortDto {
-  createdAt?: string
+  createdAt?: string;
 }

@@ -22,4 +22,3 @@ export class ListCourseClassDto {
   @ApiProperty()
   course_id: string;
 }
-

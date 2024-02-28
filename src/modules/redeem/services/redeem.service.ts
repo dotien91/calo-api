@@ -35,7 +35,7 @@ export class RedeemService {
 
   async update(dataUpdate: any) {
     try {
-      let dataReturn = await this.redeemModel.findOneAndUpdate(
+      const dataReturn = await this.redeemModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -52,7 +52,7 @@ export class RedeemService {
 
   public count = async (filter: FilterRedeemDTO) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.redeemModel.estimatedDocumentCount();
       } else {
@@ -96,12 +96,12 @@ export class RedeemService {
     limit: number,
     projection: any = {}
   ): Promise<Redeem[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.redeemModel
+    const dataReturn = await this.redeemModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -159,4 +159,3 @@ export class RedeemService {
     ]);
   }
 }
-

@@ -38,4 +38,3 @@ export class Referral {
 }
 
 export const ReferralSchema = SchemaFactory.createForClass(Referral);
-

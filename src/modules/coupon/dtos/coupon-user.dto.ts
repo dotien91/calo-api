@@ -11,4 +11,3 @@ export class CreateCouponUserDTO {
   @IsString()
   code?: string;
 }
-

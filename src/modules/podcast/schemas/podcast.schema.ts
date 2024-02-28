@@ -28,7 +28,7 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  podcast_language: String;
+  podcast_language: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "PodcastCategory", index: true })
   podcast_category: PodcastCategory;
@@ -38,21 +38,21 @@ export class Podcast {
     default: "",
     nullable: false,
   })
-  title: String;
+  title: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  content: String;
+  content: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  excerpt: String;
+  excerpt: string;
 
   @Prop({
     type: String,
@@ -60,7 +60,7 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  podcast_slug: String;
+  podcast_slug: string;
 
   @Prop({
     type: String,
@@ -68,14 +68,14 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  country: String;
+  country: string;
 
   @Prop({
     type: String,
     default: "open",
     nullable: false,
   })
-  podcast_status: String;
+  podcast_status: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -97,7 +97,7 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  podcast_type: String;
+  podcast_type: string;
 
   @Prop({
     type: Number,
@@ -105,7 +105,7 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  view_number: Number;
+  view_number: number;
 
   @Prop({
     type: Number,
@@ -113,7 +113,7 @@ export class Podcast {
     nullable: false,
     index: true,
   })
-  comment_number: Number;
+  comment_number: number;
 }
 
 export const PodcastSchema = SchemaFactory.createForClass(Podcast).index({

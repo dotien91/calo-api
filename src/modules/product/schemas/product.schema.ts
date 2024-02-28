@@ -32,21 +32,21 @@ export class Product {
     default: "",
     nullable: false,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
     default: "",
     nullable: false,
   })
-  long_description: String;
+  long_description: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -74,14 +74,14 @@ export class Product {
     default: 0,
     nullable: false,
   })
-  rating: Number;
+  rating: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  price: Number;
+  price: number;
 
   @Prop({
     type: Array,

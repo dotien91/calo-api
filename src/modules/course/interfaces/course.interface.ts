@@ -83,4 +83,3 @@ export enum CourseModuleType {
   FILE = "file",
   EXAM = "exam",
 }
-

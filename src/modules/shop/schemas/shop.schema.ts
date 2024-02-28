@@ -66,4 +66,3 @@ export class Shop {
 }
 
 export const ShopSchema = SchemaFactory.createForClass(Shop);
-

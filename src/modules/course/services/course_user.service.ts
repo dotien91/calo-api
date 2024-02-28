@@ -67,7 +67,7 @@ export class CourseUserService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.courseUserModel.findById(id, projection);
+    const dataReturn = await this.courseUserModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -98,7 +98,7 @@ export class CourseUserService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CourseUser[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.courseUserModel.find(condition, {}).exec();
   }
 
@@ -121,7 +121,7 @@ export class CourseUserService {
       if (!dataUpdate.user_id && !dataUpdate.course_id) {
         return null;
       }
-      let dataReturn = await this.courseUserModel.findOneAndUpdate(
+      const dataReturn = await this.courseUserModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, course_id: dataUpdate.course_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -146,7 +146,7 @@ export class CourseUserService {
       if (!dataUpdate.user_id && !dataUpdate.course_id) {
         return null;
       }
-      let dataReturn = await this.courseUserModel.findOneAndUpdate(
+      const dataReturn = await this.courseUserModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, course_id: dataUpdate.course_id },
         { $set: dataUpdate }
       );
@@ -167,7 +167,7 @@ export class CourseUserService {
    */
   public count = async (filter: FilterLikeCourseDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.courseUserModel.estimatedDocumentCount();
       } else {
@@ -208,12 +208,12 @@ export class CourseUserService {
     limit: number,
     projection: any = {}
   ): Promise<CourseUser[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseUserModel
+    const dataReturn = await this.courseUserModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -237,12 +237,12 @@ export class CourseUserService {
     limit: number,
     projection: any = {}
   ): Promise<CourseUser[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "course_id",
       options: { strictPopulate: false },
       populate: [
@@ -254,7 +254,7 @@ export class CourseUserService {
         },
       ],
     };
-    let dataReturn: any = await this.courseUserModel
+    const dataReturn: any = await this.courseUserModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -266,11 +266,11 @@ export class CourseUserService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
         delete dataItem.course_id?.user_id;
         if (dataItem.course_id?._id) {
-          let dataItemToReturn = {
+          const dataItemToReturn = {
             ...dataItem.course_id?.toObject(),
             ...dataItem?.toObject(),
             ...{ _id: dataItem.course_id?._id?.toString() },
@@ -294,9 +294,9 @@ export class CourseUserService {
    * @returns
    */
   async filterWithId(filter: FilterLikeCourseDto, page: number, limit: number): Promise<CourseUser[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.courseUserModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.courseUserModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -314,12 +314,12 @@ export class CourseUserService {
    * @returns
    */
   async filterUser(filter: FilterLikeCourseDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.courseUserModel
+    const dataReturn = await this.courseUserModel
       .find(condition)
       .populate({
         path: "user_id",

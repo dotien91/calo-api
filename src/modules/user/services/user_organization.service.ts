@@ -60,7 +60,7 @@ export class UserOrganizationService {
    */
   async update(dataUpdate: UpdateUserOrganizationDto) {
     try {
-      let dataReturn = await this.userOrganizationModel.findOneAndUpdate(
+      const dataReturn = await this.userOrganizationModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -82,7 +82,7 @@ export class UserOrganizationService {
    */
   public count = async (filter: FilterUserOrganizationDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.userOrganizationModel.estimatedDocumentCount();
       } else {
@@ -126,12 +126,12 @@ export class UserOrganizationService {
     limit: number,
     projection: any = {}
   ): Promise<UserOrganization[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.userOrganizationModel
+    const dataReturn = await this.userOrganizationModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -177,4 +177,3 @@ export class UserOrganizationService {
     return organization;
   }
 }
-

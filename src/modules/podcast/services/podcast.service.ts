@@ -44,7 +44,7 @@ export class PodcastService {
 
     if (filter.podcast_category) {
       if (filter.podcast_category?.indexOf(",") !== -1) {
-        let dataRefArray = filter.podcast_category?.split(",");
+        const dataRefArray = filter.podcast_category?.split(",");
         condition = Object.assign(condition, { podcast_category: { $in: dataRefArray } });
       } else {
         condition = Object.assign(condition, { podcast_category: filter.podcast_category });
@@ -94,7 +94,7 @@ export class PodcastService {
    * @returns
    */
   async filter(filter: SearchPostDto, sortBy: SortByPodcastDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
@@ -105,7 +105,7 @@ export class PodcastService {
       sortObject = { score: { $meta: "textScore" }, ...sortObject };
       projection = Object.assign(projection, { score: { $meta: "textScore" } });
     }
-    let dataReturn = await this.podcastModel
+    const dataReturn = await this.podcastModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -130,13 +130,13 @@ export class PodcastService {
    * @returns
    */
   async filterAdmin(filter: SearchPostDto, sortBy: SortByPodcastDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.podcastModel
+    const projection = {};
+    const dataReturn = await this.podcastModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -159,7 +159,7 @@ export class PodcastService {
    */
   public count = async (filter: SearchPostDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       let sortObject = {};
       let projection = {};
       if (filter.search) {
@@ -183,7 +183,7 @@ export class PodcastService {
    */
   async create(createUser: CreatePodcastDto) {
     const createdPost = new this.podcastModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -193,9 +193,9 @@ export class PodcastService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -239,7 +239,7 @@ export class PodcastService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

@@ -13,4 +13,3 @@ export interface AddCoinToUserData {
   refObject: any;
   refType: string;
 }
-

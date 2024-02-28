@@ -26,4 +26,3 @@ export class ListUserOrganizationDto {
   @ApiPropertyOptional()
   name?: string;
 }
-

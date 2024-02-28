@@ -3,4 +3,3 @@ export interface FilterReferralDTO {
   from_user_id?: string;
   type?: string;
 }
-

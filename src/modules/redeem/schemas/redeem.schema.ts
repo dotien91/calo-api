@@ -56,8 +56,7 @@ export class Redeem {
     type: MongooseSchema.Types.Number,
     default: 1,
   })
-  required_level: Number;
+  required_level: number;
 }
 
 export const RedeemSchema = SchemaFactory.createForClass(Redeem);
-

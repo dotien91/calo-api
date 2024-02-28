@@ -21,4 +21,3 @@ export class CreateUserPointHistoryDto {
   @IsDefined()
   point: number;
 }
-

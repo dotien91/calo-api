@@ -34,7 +34,7 @@ export class CommunityComment {
     default: "",
     nullable: false,
   })
-  content: String;
+  content: string;
 
   @Prop({
     type: String,
@@ -42,7 +42,7 @@ export class CommunityComment {
     nullable: false,
     index: true,
   })
-  ref_id: String;
+  ref_id: string;
 
   @Prop({
     type: String,
@@ -50,7 +50,7 @@ export class CommunityComment {
     nullable: false,
     index: true,
   })
-  ref_parent_id: String;
+  ref_parent_id: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "CommunityComment", default: null, index: true })
   parent_id: CommunityComment;
@@ -67,7 +67,7 @@ export class CommunityComment {
     default: 0,
     nullable: false,
   })
-  child_number: Number;
+  child_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,
@@ -81,7 +81,7 @@ export class CommunityComment {
     default: 0,
     nullable: false,
   })
-  vote_number: Number;
+  vote_number: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,

@@ -67,7 +67,7 @@ export class CommunityPollService {
     if (!id) {
       return null;
     }
-    let dataReturn = await this.communityPollModel.findById(id, projection);
+    const dataReturn = await this.communityPollModel.findById(id, projection);
     return dataReturn;
   }
 
@@ -104,7 +104,7 @@ export class CommunityPollService {
         sortObject = this.getSort(orderBy);
       }
 
-      let dataPopulate = {
+      const dataPopulate = {
         path: "users_choose",
         select:
           "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
@@ -126,7 +126,7 @@ export class CommunityPollService {
    * @returns
    */
   async filterByUserId(userId: string, userPartners: string[]): Promise<CommunityPoll[]> {
-    let condition = { user_id: userId, partner_id: { $in: userPartners } };
+    const condition = { user_id: userId, partner_id: { $in: userPartners } };
     return await this.communityPollModel.find(condition, {}).exec();
   }
 
@@ -149,7 +149,7 @@ export class CommunityPollService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityPollModel.findOneAndUpdate(
+      const dataReturn = await this.communityPollModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -174,7 +174,7 @@ export class CommunityPollService {
       if (!dataUpdate.user_id && !dataUpdate.community_id) {
         return null;
       }
-      let dataReturn = await this.communityPollModel.findOneAndUpdate(
+      const dataReturn = await this.communityPollModel.findOneAndUpdate(
         { user_id: dataUpdate.user_id, community_id: dataUpdate.community_id },
         { $set: dataUpdate }
       );
@@ -195,7 +195,7 @@ export class CommunityPollService {
    */
   public count = async (filter: FilterCommunityPollDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityPollModel.estimatedDocumentCount();
       } else {
@@ -236,12 +236,12 @@ export class CommunityPollService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityPoll[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityPollModel
+    const dataReturn = await this.communityPollModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -265,12 +265,12 @@ export class CommunityPollService {
     limit: number,
     projection: any = {}
   ): Promise<CommunityPoll[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataPopulate = {
+    const dataPopulate = {
       path: "community_id",
       options: { strictPopulate: false },
       populate: [
@@ -282,7 +282,7 @@ export class CommunityPollService {
         },
       ],
     };
-    let dataReturn: any = await this.communityPollModel
+    const dataReturn: any = await this.communityPollModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -294,9 +294,9 @@ export class CommunityPollService {
       .limit(limit)
       .exec();
     if (dataReturn && dataReturn?.length) {
-      let dataFinalToReturn = [];
-      for (let dataItem of dataReturn) {
-        let dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
+      const dataFinalToReturn = [];
+      for (const dataItem of dataReturn) {
+        const dataItemToReturn = { ...dataItem?.toObject(), ...dataItem.community_id?.toObject() };
         delete dataItemToReturn.community_id;
         dataFinalToReturn.push(dataItemToReturn);
       }
@@ -315,9 +315,9 @@ export class CommunityPollService {
    * @returns
    */
   async filterWithId(filter: FilterCommunityPollDto, page: number, limit: number): Promise<CommunityPoll[]> {
-    let condition = await this.getCondition(filter);
-    let sortObject: any = { _id: -1 };
-    let dataReturn = await this.communityPollModel
+    const condition = await this.getCondition(filter);
+    const sortObject: any = { _id: -1 };
+    const dataReturn = await this.communityPollModel
       .find(condition, { user_id: true })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -335,12 +335,12 @@ export class CommunityPollService {
    * @returns
    */
   async filterUser(filter: FilterCommunityPollDto, sortBy: any, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.communityPollModel
+    const dataReturn = await this.communityPollModel
       .find(condition)
       .populate({
         path: "user_id",
@@ -368,7 +368,7 @@ export class CommunityPollService {
       }
       let dataReturn = null;
       if (dataUpdate._id) {
-        let dataId = dataUpdate?._id;
+        const dataId = dataUpdate?._id;
         delete dataUpdate?._id;
         if (isPull) {
           dataReturn = await this.communityPollModel.findOneAndUpdate(

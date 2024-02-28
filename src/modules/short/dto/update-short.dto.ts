@@ -1,8 +1,8 @@
-import { IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class UpdateShortDto {
   @IsString()
-  _id: string
+  _id: string;
 
   @IsString()
   @IsOptional(null)
@@ -14,9 +14,9 @@ export class UpdateShortDto {
 
   @IsString()
   @IsOptional(null)
-  ref_id: string
+  ref_id: string;
 
   @IsString()
   @IsOptional(null)
-  short_category: string
+  short_category: string;
 }

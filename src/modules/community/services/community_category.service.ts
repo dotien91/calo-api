@@ -22,8 +22,8 @@ export class CommunityCategoryService {
   async getCondition(filter: SearchCommunityCategoryDto) {
     let condition: any = {};
     if (filter.search) {
-      let dataSearch = `${filter.search}`;
-      let dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataSearch = `${filter.search}`;
+      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
       // console.log(dataRegex);
       // condition = Object.assign(condition, { $text: { $search: dataRegex } });
       condition = Object.assign(condition, { $or: [{ category_title: dataRegex }, { category_content: dataRegex }] });
@@ -61,14 +61,14 @@ export class CommunityCategoryService {
    * @returns
    */
   async filter(filter: SearchCommunityCategoryDto, sortBy: SortByCommunityCommentDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
+    const projection = {};
 
-    let dataReturn = await this.communityModel
+    const dataReturn = await this.communityModel
       .find(condition)
       .populate(
         "user_id",
@@ -96,13 +96,13 @@ export class CommunityCategoryService {
     page: number,
     limit: number
   ) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let projection = {};
-    let dataReturn = await this.communityModel
+    const projection = {};
+    const dataReturn = await this.communityModel
       .find(condition, projection)
       .populate(
         "user_id",
@@ -123,7 +123,7 @@ export class CommunityCategoryService {
    */
   public count = async (filter: SearchCommunityCategoryDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityModel.estimatedDocumentCount();
       } else {
@@ -141,7 +141,7 @@ export class CommunityCategoryService {
    */
   async create(createUser: CreateCommunityCategoryDto) {
     const createdPost = new this.communityModel(createUser);
-    let dataCreate = await createdPost.save();
+    const dataCreate = await createdPost.save();
     return dataCreate;
   }
 
@@ -151,9 +151,9 @@ export class CommunityCategoryService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -195,7 +195,7 @@ export class CommunityCategoryService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }

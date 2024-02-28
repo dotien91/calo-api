@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateCallkitDto } from "../dto/create-callkit.dto";
-import { CallkitDocument, Callkit } from "../schemas/callkit.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { UpdateCallkitDto } from "../dto/update-callkit.dto";
+import { CreateCallkitDto } from "../dto/create-callkit.dto";
 import { SearchCallkitDto } from "../dto/search-callkit.dto";
 import { SortByCallkitDto } from "../dto/sort_by-callkit.dto";
+import { UpdateCallkitDto } from "../dto/update-callkit.dto";
+import { Callkit, CallkitDocument } from "../schemas/callkit.schema";
 
 @Injectable()
 export class CallkitService {
@@ -34,7 +34,7 @@ export class CallkitService {
       condition = Object.assign(condition, { $or: [{ partner_id: filter.from_id }, { user_id: filter.from_id }] });
     }
     if (filter.from_time) {
-      let dateFrom = new Date(filter.from_time);
+      const dateFrom = new Date(filter.from_time);
       condition = Object.assign(condition, { createdAt: { $gte: dateFrom } });
     }
     if (filter.start_time) {
@@ -68,12 +68,12 @@ export class CallkitService {
    * @returns
    */
   async filter(filter: SearchCallkitDto, sortBy: SortByCallkitDto, page: number, limit: number) {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.CallkitModel.find(condition)
+    const dataReturn = await this.CallkitModel.find(condition)
       .populate(
         "user_id",
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active"
@@ -96,7 +96,7 @@ export class CallkitService {
    */
   public count = async (filter: SearchCallkitDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.CallkitModel.estimatedDocumentCount();
       } else {
@@ -114,7 +114,7 @@ export class CallkitService {
    */
   async create(createUser: CreateCallkitDto) {
     const createdCallkit = new this.CallkitModel(createUser);
-    let dataCreate = await createdCallkit.save();
+    const dataCreate = await createdCallkit.save();
     return dataCreate;
   }
 
@@ -124,9 +124,9 @@ export class CallkitService {
    * @returns boolean
    */
   async isSuperAdmin(userId: string) {
-    let superAdmin = process.env.SUPER_ADMIN;
+    const superAdmin = process.env.SUPER_ADMIN;
     if (superAdmin) {
-      let superAdminArray = superAdmin.split(",");
+      const superAdminArray = superAdmin.split(",");
       if (superAdminArray.indexOf(userId) !== -1) {
         return true;
       }
@@ -160,7 +160,7 @@ export class CallkitService {
     if (!id) {
       return null;
     }
-    let objectId = new Types.ObjectId(id);
+    const objectId = new Types.ObjectId(id);
     if (!objectId) {
       return null;
     }
@@ -191,7 +191,7 @@ export class CallkitService {
       if (!dataUpdate._id) {
         return null;
       }
-      let dataReturn = await this.CallkitModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
+      const dataReturn = await this.CallkitModel.findByIdAndUpdate(dataUpdate._id, { $set: dataUpdate }, { new: true });
       return dataReturn;
     } catch (e) {
       return e;

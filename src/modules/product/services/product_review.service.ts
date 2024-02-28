@@ -62,7 +62,7 @@ export class ProductReviewService {
    */
   async update(dataUpdate: UpdateProductReviewDto) {
     try {
-      let dataReturn = await this.productReviewModel.findOneAndUpdate(
+      const dataReturn = await this.productReviewModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -84,7 +84,7 @@ export class ProductReviewService {
    */
   public count = async (filter: FilterReviewProductDto) => {
     try {
-      let condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.productReviewModel.estimatedDocumentCount();
       } else {
@@ -136,12 +136,12 @@ export class ProductReviewService {
     limit: number,
     projection: any = {}
   ): Promise<ProductReview[]> {
-    let condition = await this.getCondition(filter);
+    const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    let dataReturn = await this.productReviewModel
+    const dataReturn = await this.productReviewModel
       .find(condition, projection)
       .populate({
         path: "user_id",
@@ -155,4 +155,3 @@ export class ProductReviewService {
     return dataReturn;
   }
 }
-

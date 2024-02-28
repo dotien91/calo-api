@@ -30,4 +30,3 @@ export class UpdateCourseOneOneStudentDto {
   @ApiProperty()
   time_pick: CourseCalendar[];
 }
-

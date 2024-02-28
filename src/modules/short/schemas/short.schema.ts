@@ -28,7 +28,7 @@ export class Short {
     nullable: false,
     index: true,
   })
-  language: String;
+  language: string;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -56,35 +56,35 @@ export class Short {
     default: "",
     nullable: false,
   })
-  caption: String;
+  caption: string;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  like_number: Number;
+  like_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  view_number: Number;
+  view_number: number;
 
   @Prop({
     type: Number,
     default: 0,
     nullable: false,
   })
-  comment_number: Number;
+  comment_number: number;
 
   @Prop({
     type: Number,
     default: 1,
     nullable: false,
   })
-  short_status: Number;
+  short_status: number;
 
   @Prop({
     type: MongooseSchema.Types.Array,

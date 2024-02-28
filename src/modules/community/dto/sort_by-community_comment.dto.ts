@@ -1,3 +1,3 @@
 export class SortByCommunityCommentDto {
-  createdAt?: string
+  createdAt?: string;
 }
