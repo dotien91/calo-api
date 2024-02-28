@@ -57,8 +57,6 @@ export class ThreadComment {
     type: MongooseSchema.Types.Number,
     default: -1,
     nullable: false,
-    min: 0,
-    max: 10,
   })
   mark: number;
 
