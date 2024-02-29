@@ -24,7 +24,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { CallKitModule } from "./modules/callkit/call_kit";
+import { CallKitModule } from "./modules/callkit/call_kit.module";
 import { CartModule } from "./modules/cart/cart.module";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
@@ -39,6 +39,7 @@ import { ProductModule } from "./modules/product/product.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
+import { SocketModule } from "./modules/socket/socket.module";
 import { ThreadModule } from "./modules/thread/thread.module";
 import { UserModule } from "./modules/user/user.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
@@ -91,6 +92,7 @@ const dataImport = [
   CartModule,
   RedeemModule,
   ThreadModule,
+  SocketModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

@@ -25,6 +25,11 @@ export class TransactionController {
     return await this.transactionHelper.getTransactionListByUser(query, res, req);
   }
 
+  @Get("/filter")
+  async getFilterByUser(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.transactionHelper.getFilterByUser(res, req);
+  }
+
   @Get("/list-bank")
   async getListTransactionBank(
     @Query() query: ListTransactionBankDto,

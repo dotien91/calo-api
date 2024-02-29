@@ -6,7 +6,6 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import axios from "axios";
 import { createHash } from "crypto";
 import { Response } from "express";
 import * as _ from "lodash";
@@ -16,6 +15,8 @@ import { ConfigService } from "../../../modules/config/services/config.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { InvitationCodeBody } from "../dto/create-invitation-code.dto";
@@ -65,7 +66,8 @@ export class UpdateUserHelper {
     private userLocationService: UserLocationService,
     private userAnonymousService: UserAnonymousService,
     private chatRoomUserOptionService: ChatRoomUserOptionService,
-    private referralService: ReferralService
+    private referralService: ReferralService,
+    private socketService: SocketService
   ) {}
 
   private readonly logger = new Logger("call");
@@ -1139,15 +1141,12 @@ export class UpdateUserHelper {
           user_ids: JSON.stringify(userIds),
         };
         const params = new URLSearchParams(dataToUpdate);
-        const config = {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Authorization": auth,
-          },
+        const headers = {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": auth,
         };
-        const urlLogin = process.env.SOCKET_API;
-        const dataNotification = await axios
-          .post(urlLogin + "/change-location", params, config)
+        const dataNotification = await this.socketService
+          .send(SocketPath.CHANGE_LOCATION, headers, params)
           .then((response) => {
             if (response?.data) {
               this.logger.log("Send change location Successfully" + JSON.stringify(response.data));

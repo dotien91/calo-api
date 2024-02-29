@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import axios from "axios";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPointHistoryService } from "../../../modules/user/services/user_point_history.service";
@@ -14,7 +15,8 @@ export class EventHookAdderService {
     private readonly userService: UserService,
     private readonly userPointHistoryService: UserPointHistoryService,
     private readonly jwtHelperService: JwtHelperService,
-    private readonly transactionHelper: TransactionHelper
+    private readonly transactionHelper: TransactionHelper,
+    private readonly socketService: SocketService
   ) {
     if (alreadyWork !== true) {
       this.initHook();
@@ -48,14 +50,12 @@ export class EventHookAdderService {
             is_level_up: String(newUserData.is_level_up),
           };
           const params = new URLSearchParams(dataForSending);
-          const config = {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-Authorization": authCode,
-            },
+          const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Authorization": authCode,
           };
-          const dataNotification = await axios
-            .post(process.env.SOCKET_API + "/update-point", params, config)
+          const dataNotification = await this.socketService
+            .send(SocketPath.UPDATE_POINT, headers, params)
             .then((response) => {
               if (response?.data) {
                 return true;
@@ -92,21 +92,17 @@ export class EventHookAdderService {
 
   async sendSocket(dataToSendSocket: any, authCode: any) {
     //Send Socket
-    const urlLogin = process.env.SOCKET_API;
     if (authCode && dataToSendSocket) {
       const dataToObject = {
         redeem: JSON.stringify(dataToSendSocket),
       };
       const paramsRedeem = new URLSearchParams(dataToObject);
-      console.log(paramsRedeem, "paramsRedeem");
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": authCode,
-        },
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": authCode,
       };
-      const dataNotification = await axios
-        .post(urlLogin + "/update-redeem", paramsRedeem, config)
+      this.socketService
+        .send(SocketPath.UPDATE_REDEEM, headers, paramsRedeem)
         .then((response) => {
           if (response?.data) {
             return true;

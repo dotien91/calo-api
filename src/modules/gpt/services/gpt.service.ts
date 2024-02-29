@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import axios from "axios";
+import { HttpClientService } from "../../../base/http-client/http.base";
 
 @Injectable()
 export class GptService {
   chatGPTKey = process.env.CHAT_GPT_KEY;
   chatGPTUrl = process.env.CHAT_GPT_URL;
 
-  constructor() {}
+  constructor(private httpService: HttpClientService) {}
 
   async isValidCommunity(content: string) {
-    const data = JSON.stringify({
+    const body = JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -19,17 +19,13 @@ export class GptService {
       ],
     });
 
-    const config = {
-      method: "post",
-      url: this.chatGPTUrl,
-      headers: {
-        Authorization: `Bearer ${this.chatGPTKey}`,
-        "Content-Type": "application/json",
-      },
-      data: data,
+    const headers = {
+      Authorization: `Bearer ${this.chatGPTKey}`,
+      "Content-Type": "application/json",
     };
 
-    const dataReturn = await axios(config)
+    const dataReturn = await this.httpService
+      .post$(this.chatGPTUrl, body, headers)
       .then(function (response) {
         return response?.data;
       })

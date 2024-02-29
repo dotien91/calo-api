@@ -1,9 +1,16 @@
 import axios, { AxiosResponse } from "axios";
 
 export class HttpClientService {
+  private headers = {
+    "App-Name": process.env.APP_NAME,
+  };
+
   async get$(url: string, params: any): Promise<AxiosResponse> {
     return await axios
-      .get(url, params)
+      .get(url, {
+        params,
+        headers: this.headers,
+      })
       .then(function (response) {
         return response;
       })
@@ -13,9 +20,14 @@ export class HttpClientService {
       });
   }
 
-  async post$(url: string, body: any): Promise<AxiosResponse> {
+  async post$(url: string, body?: any, headers?: any): Promise<AxiosResponse> {
     return await axios
-      .post(url, body)
+      .post(url, body, {
+        headers: {
+          ...this.headers,
+          ...headers,
+        },
+      })
       .then(function (response) {
         return response;
       })
@@ -27,7 +39,9 @@ export class HttpClientService {
 
   async put$(url: string, body: any): Promise<AxiosResponse> {
     return await axios
-      .put(url, body)
+      .put(url, body, {
+        headers: this.headers,
+      })
       .then(function (response) {
         return response;
       })
@@ -39,7 +53,11 @@ export class HttpClientService {
 
   async patch$(url: string, body: any): Promise<AxiosResponse> {
     return await axios
-      .patch(url, body)
+      .patch(url, body, {
+        headers: {
+          ...this.headers,
+        },
+      })
       .then(function (response) {
         return response;
       })
@@ -51,7 +69,10 @@ export class HttpClientService {
 
   async delete$(url: string, body: any): Promise<AxiosResponse> {
     return await axios
-      .delete(url, body)
+      .delete(url, {
+        data: body,
+        headers: this.headers,
+      })
       .then(function (response) {
         return response;
       })

@@ -10,9 +10,10 @@ import axios from "axios";
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-// import { EmailService } from "../../../modules/email/services/email.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { makeRandom } from "../../../utils/utils";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
@@ -42,7 +43,8 @@ export class LivestreamHelper {
     private livestreamLikeService: LivestreamLikeService,
     private livestreamViewService: LivestreamViewService,
     private livestreamCommentService: LivestreamCommentService,
-    private notificationHelper: NotificationHelper // private emailService: EmailService
+    private notificationHelper: NotificationHelper,
+    private socketService: SocketService
   ) {}
 
   /**
@@ -780,16 +782,13 @@ export class LivestreamHelper {
       view: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
 
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-view", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_VIEW, headers, params)
       .then((response) => {
         if (response?.data) {
           //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
@@ -1080,26 +1079,21 @@ export class LivestreamHelper {
       message: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
 
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-comment", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_COMMENT, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1110,26 +1104,20 @@ export class LivestreamHelper {
       emoji: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
-
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-emoji", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_EMOJI, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1140,26 +1128,21 @@ export class LivestreamHelper {
       data: JSON.stringify(dataJson),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
 
-    const dataNotification = await axios
-      .post(urlLogin + "/emit-offer", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.EMIT_OFFER, headers, params)
       .then((response: any) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1206,26 +1189,20 @@ export class LivestreamHelper {
     }
 
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
-
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-end", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_END, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1237,26 +1214,20 @@ export class LivestreamHelper {
     };
 
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
-
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-end", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_END, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        // this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1267,26 +1238,20 @@ export class LivestreamHelper {
       data: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
-
-    const dataNotification = await axios
-      .post(urlLogin + "/leave-room-livestream", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LEAVE_ROOM_LIVESTREAM, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1297,26 +1262,20 @@ export class LivestreamHelper {
       message: JSON.stringify(message),
     };
     const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
     };
-    const urlLogin = process.env.SOCKET_API;
-
-    const dataNotification = await axios
-      .post(urlLogin + "/livestream-start", params, config)
+    const dataNotification = await this.socketService
+      .send(SocketPath.LIVESTREAM_START, headers, params)
       .then((response) => {
         if (response?.data) {
-          //this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
           return true;
         } else {
           return false;
         }
       })
       .catch((error) => {
-        //this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
         return false;
       });
     return dataNotification;
@@ -1431,16 +1390,12 @@ export class LivestreamHelper {
         }),
       };
       const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": req.auth_code,
-        },
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": req.auth_code,
       };
-      const urlLogin = process.env.SOCKET_API;
-
-      const dataNotification = await axios
-        .post(urlLogin + "/livestream-product", params, config)
+      await this.socketService
+        .send(SocketPath.LIVESTREAM_PRODUCT, headers, params)
         .then((response) => {
           if (response?.data) {
             return true;

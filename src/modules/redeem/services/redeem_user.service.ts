@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import axios from "axios";
 import { Model } from "mongoose";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { FilterRedeemUserDTO } from "../dtos/redeem_user.dto";
@@ -26,7 +27,8 @@ export class RedeemUserService {
     private redeemService: RedeemService,
     private redeemMissionService: RedeemMissionService,
     private eventHookWorkerService: EventHookWorkerService,
-    private jwtHelperService: JwtHelperService
+    private jwtHelperService: JwtHelperService,
+    private socketService: SocketService
   ) {}
 
   async create(createUser): Promise<RedeemUser> {
@@ -199,14 +201,12 @@ export class RedeemUserService {
             coin: targetMission.coin,
           };
           const params = new URLSearchParams(dataForSending);
-          const config = {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              "X-Authorization": this.jwtHelperService.generateJwt(user._id.toString(), "", ""),
-            },
+          const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Authorization": this.jwtHelperService.generateJwt(user._id.toString(), "", ""),
           };
-          await axios
-            .post(process.env.SOCKET_API + "/update-redeem", params, config)
+          await this.socketService
+            .send(SocketPath.UPDATE_REDEEM, headers, params)
             .then((response) => {
               if (response?.data) {
                 return true;

@@ -7,6 +7,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymous.schema";
 import { UserAnonymousSession, UserAnonymousSessionSchema } from "../user/schemas/user_anonymous_session.schema";
@@ -50,6 +51,7 @@ import { PodcastCategoryService } from "./services/podcast_category.service";
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
     ]),
+    SocketModule,
   ],
   controllers: [PodcastController],
   providers: [

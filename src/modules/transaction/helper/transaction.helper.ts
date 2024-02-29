@@ -6,7 +6,6 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import axios from "axios";
 import { Response } from "express";
 import * as momentBase from "moment";
 import * as moment from "moment-timezone";
@@ -14,6 +13,8 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
@@ -37,7 +38,8 @@ export class TransactionHelper {
     private transactionService: TransactionService,
     private transactionBankService: TransactionBankService,
     private userService: UserService,
-    private readonly eventHookNotificationService: EventHookNotificationService
+    private eventHookNotificationService: EventHookNotificationService,
+    private socketService: SocketService
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
@@ -534,11 +536,35 @@ export class TransactionHelper {
 
       const dataReturn: any = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
       const dataCount = await this.transactionService.count(dataToFilter);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getFilterByUser(res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new ForbiddenException("User is invalid");
+      }
+      const userId = userObject._id.toString();
+
+      const limit = 1000;
+      const page = 1;
+      let orderByOBject = {};
+      let dataToFilter = { user_id: userId, transaction_type: "output" };
+
+      const dataReturn: any = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
       for (const index in dataReturn) {
         dataReturn[index] = dataReturn[index]?.toObject();
       }
 
-      const filter = {
+      const finalDataReturn = {
         product_list: dataReturn
           .filter((transaction) =>
             [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type)
@@ -559,13 +585,8 @@ export class TransactionHelper {
           })),
       };
 
-      const finalDataReturn = {
-        transactions: dataReturn,
-        filter,
-      };
-
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(finalDataReturn);
     } catch (error) {
@@ -765,16 +786,12 @@ export class TransactionHelper {
       const dataUpdateUser = await this.userService.update(dataToUpdate);
 
       const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": authCode,
-        },
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": authCode,
       };
-      const urlLogin = process.env.SOCKET_API;
-
-      await axios
-        .post(urlLogin + "/update-coin", params, config)
+      await this.socketService
+        .send(SocketPath.UPDATE_COIN, headers, params)
         .then((response) => {
           if (response?.data) {
             this.logger.log("Send Message Successfully" + JSON.stringify(response.data));

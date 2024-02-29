@@ -21,6 +21,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
@@ -73,6 +74,7 @@ import { CallkitService } from "./services/callkit.service";
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
     ]),
+    SocketModule,
   ],
   controllers: [CallKitController],
   providers: [

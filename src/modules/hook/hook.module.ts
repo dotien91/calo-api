@@ -6,6 +6,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank } from "../transaction/schemas/transaction_bank.schema";
@@ -45,6 +46,7 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionSchema },
     ]),
+    SocketModule,
   ],
   providers: [
     EventHookNotificationService,

@@ -20,6 +20,8 @@ import * as _ from "lodash";
 import { Model, Types } from "mongoose";
 import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
@@ -40,7 +42,8 @@ export class NotificationHelper {
     private appUserService: UserService,
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
-    private jwtHelper: JwtHelperService
+    private jwtHelper: JwtHelperService,
+    private socketService: SocketService
   ) {}
   private readonly logger = new Logger("notification");
 
@@ -85,19 +88,12 @@ export class NotificationHelper {
         notification: JSON.stringify(dataNotificationObject),
       };
       const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": auth,
-        },
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": auth,
       };
-      this.logger.log(params, "params");
-      this.logger.log(config, "config");
-
-      const urlLogin = process.env.SOCKET_API;
-
-      const dataNotification = await axios
-        .post(urlLogin + "/notification", params, config)
+      const dataNotification = await this.socketService
+        .send(SocketPath.NOTIFICATION, headers, params)
         .then((response) => {
           if (response?.data) {
             this.logger.log("Send Notification Successfully" + JSON.stringify(response.data));

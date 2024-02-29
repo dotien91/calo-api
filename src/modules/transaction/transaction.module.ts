@@ -8,6 +8,7 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
@@ -41,6 +42,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
     ]),
+    SocketModule,
   ],
   controllers: [TransactionController],
   providers: [

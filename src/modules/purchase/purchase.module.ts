@@ -2,14 +2,13 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
+import { CouponModule } from "../coupon/coupon.module";
+import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
-// import { OrderHelper } from "../order/helper/OrderHelper";
-import { CouponModule } from "../coupon/coupon.module";
-import { EmailModule } from "../email/email.module";
 import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
@@ -18,6 +17,7 @@ import { Plan, PlanSchema } from "../plan/schemas/plan.schema";
 import { HandleServiceService } from "../plan/services/handle_service.service";
 import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
+import { SocketModule } from "../socket/socket.module";
 import { Subscribe, SubscribeSchema } from "../subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../subscribe/services/subscribe.service";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
@@ -70,6 +70,7 @@ import { PurchaseService } from "./services/purchase.service";
     ]),
     EmailModule,
     CouponModule,
+    SocketModule,
   ],
   controllers: [PurchaseController],
   providers: [

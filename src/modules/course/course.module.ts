@@ -19,6 +19,7 @@ import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
+import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
@@ -91,6 +92,7 @@ import { CourseViewService } from "./services/course_view.service";
     CouponModule,
     ReferralModule,
     RedeemModule,
+    SocketModule,
   ],
   controllers: [CourseController],
   providers: [

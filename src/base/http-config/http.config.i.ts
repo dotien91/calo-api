@@ -1,5 +1,6 @@
 export interface IHttpConfig {
   emailConfig: string;
+  socketConfig: string;
 }
 
 // export type IHttpConfigUrl = {

@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
+import { SocketModule } from "../socket/socket.module";
 import { TransactionModule } from "../transaction/transaction.module";
 import { UserModule } from "../user/user.module";
 import { RedeemController } from "./controllers/redeem.controller";
@@ -23,6 +24,7 @@ import { RedeemUserService } from "./services/redeem_user.service";
     ]),
     TransactionModule,
     UserModule,
+    SocketModule,
   ],
   controllers: [RedeemController],
   providers: [

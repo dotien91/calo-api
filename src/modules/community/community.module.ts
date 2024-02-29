@@ -10,6 +10,7 @@ import { Notification, NotificationSchema } from "../notification/schemas/notifi
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
+import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
 import { TransactionBank, TransactionBankSchema } from "../transaction/schemas/transaction_bank.schema";
@@ -74,6 +75,7 @@ import { CommunityPollService } from "./services/community_poll.service";
     ]),
     GptModule,
     RedeemModule,
+    SocketModule,
   ],
   controllers: [CommunityController],
   providers: [

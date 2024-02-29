@@ -6,6 +6,8 @@ import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.s
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { UserService } from "../../user/services/user.service";
@@ -24,7 +26,8 @@ export class ChatHistoryHelper {
     private readonly chatRoomUserOptionService: ChatRoomUserOptionService,
     private readonly chatRoomService: ChatRoomService,
     private readonly mediaService: MediaService,
-    private readonly notificationHelper: NotificationHelper
+    private readonly notificationHelper: NotificationHelper,
+    private readonly socketService: SocketService
   ) {}
 
   private readonly logger = new Logger("chat_history");
@@ -346,17 +349,15 @@ export class ChatHistoryHelper {
       messageForPartner: JSON.stringify(messageForPartner),
       partnerArray: JSON.stringify(partnerArray),
     };
-    const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
-    };
-    const urlLogin = process.env.SOCKET_API;
 
-    const dataNotification = await axios
-      .post(urlLogin + "/send-message", params, config)
+    // send socket
+    const params = new URLSearchParams(dataToUpdate);
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
+    };
+    const dataNotification = await this.socketService
+      .send(SocketPath.SEND_MESSAGE, headers, params)
       .then((response) => {
         if (response?.data) {
           this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
@@ -376,17 +377,15 @@ export class ChatHistoryHelper {
     const dataToUpdate = {
       message: JSON.stringify(message),
     };
-    const params = new URLSearchParams(dataToUpdate);
-    const config = {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      },
-    };
-    const urlLogin = process.env.SOCKET_API;
 
-    const dataNotification = await axios
-      .post(urlLogin + "/reply-room", params, config)
+    // send socket
+    const params = new URLSearchParams(dataToUpdate);
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Authorization": auth,
+    };
+    const dataNotification = await this.socketService
+      .send(SocketPath.REPLY_ROOM, headers, params)
       .then((response) => {
         if (response?.data) {
           this.logger.log("Send Message Successfully" + JSON.stringify(response.data));

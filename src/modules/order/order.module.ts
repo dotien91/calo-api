@@ -39,6 +39,7 @@ import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
+import { SocketModule } from "../socket/socket.module";
 import { UserModule } from "../user/user.module";
 import { OrderHelper } from "./helper/order.helper";
 import { Order, OrderSchema } from "./schemas/order.schema";
@@ -81,6 +82,7 @@ import { OrderService } from "./services/order.service";
     CouponModule,
     ReferralModule,
     RedeemModule,
+    SocketModule,
   ],
   controllers: [OrderController],
   providers: [

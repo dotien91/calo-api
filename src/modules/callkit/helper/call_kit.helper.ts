@@ -6,7 +6,6 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import axios from "axios";
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -15,6 +14,8 @@ import { ChatRoomHelper } from "../../../modules/chat_room/helpers/chat_room.hel
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { SocketService } from "../../../modules/socket/services/socket.service";
+import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserBlockService } from "../../../modules/user/services/user_block.service";
@@ -39,7 +40,8 @@ export class CallKitHelper {
     private readonly callkitService: CallkitService,
     private readonly userBlockService: UserBlockService,
     private readonly mediaService: MediaService,
-    private readonly chatHistoryHelper: ChatHistoryHelper
+    private readonly chatHistoryHelper: ChatHistoryHelper,
+    private readonly socketService: SocketService
   ) {}
   private readonly logger = new Logger("call");
 
@@ -241,18 +243,13 @@ export class CallKitHelper {
 
         const dataUpdateReturn = await this.callkitService.update(dataUpdateToDB);
         //Send Socket
-
         const params = new URLSearchParams(dataToUpdate);
-        const config = {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Authorization": auth,
-          },
-          timeout: 10000,
+        const headers = {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": auth,
         };
-        const urlLogin = process.env.SOCKET_API;
-        const dataNotification = await axios
-          .post(urlLogin + "/update-call", params, config)
+        this.socketService
+          .send(SocketPath.UPDATE_CALL, headers, params)
           .then((response) => {
             if (response?.data) {
               this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
@@ -758,17 +755,15 @@ export class CallKitHelper {
         answerCandidates: answer_candidates,
         offerCandidates: offer_candidates,
       };
+
+      // send socket
       const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": auth,
-        },
-        timeout: 10000,
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": auth,
       };
-      const urlLogin = process.env.SOCKET_API;
-      const dataNotification = await axios
-        .post(urlLogin + "/make-call", params, config)
+      const dataNotification = await this.socketService
+        .send(SocketPath.MAKE_CALL, params, headers)
         .then((response) => {
           if (response?.data) {
             this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
@@ -859,15 +854,12 @@ export class CallKitHelper {
         isExpired: isExpired ? "1" : "0",
       };
       const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": auth,
-        },
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": auth,
       };
-      const urlLogin = process.env.SOCKET_API;
-      const dataNotification = await axios
-        .post(urlLogin + "/end-call", params, config)
+      const dataNotification = await this.socketService
+        .send(SocketPath.END_CALL, headers, params)
         .then((response) => {
           if (response?.data) {
             this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
