@@ -56,14 +56,6 @@ export class ThreadService {
       },
       {
         $lookup: {
-          from: "users",
-          localField: "assigned_user_ids",
-          foreignField: "_id",
-          as: "assigned_user_ids",
-        },
-      },
-      {
-        $lookup: {
           from: "media",
           localField: "attach_files",
           foreignField: "_id",

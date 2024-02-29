@@ -44,12 +44,15 @@ export class CourseClassService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<CourseClass> {
-    if (isWithUser) {
-      return await this.courseClassModel.findOne(dataToSearch).populate("user_id").exec();
-    } else {
-      return await this.courseClassModel.findOne(dataToSearch).exec();
-    }
+  async findOne(dataToSearch: any): Promise<CourseClass> {
+    return await this.courseClassModel
+      .findOne(dataToSearch)
+      .populate({
+        path: "members",
+        select:
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+      })
+      .exec();
   }
 
   /**

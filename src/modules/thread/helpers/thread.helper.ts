@@ -150,11 +150,13 @@ export class ThreadHelper {
       const marked_user_ids = submitted_user_ids.filter((elem) => {
         return elem.type === ThreadCommentType.FILE && elem.mark !== -1;
       });
+      const assigned_user_ids = courseClass.members;
 
       const dataReturn = {
         ...thread,
         submitted_user_ids,
         marked_user_ids,
+        assigned_user_ids,
         thread_comments: {
           public_comment,
           private_comment,
