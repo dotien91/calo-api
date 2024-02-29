@@ -20,6 +20,7 @@ import {
 } from "../../../modules/redeem/interfaces/redeem.interface.i";
 import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
+import { makeRandom } from "../../../utils/utils";
 import { ConfigService } from "../../config/services/config.service";
 import { EmailService } from "../../email/services/email.service";
 import { EmailPattern } from "../../email/services/email.service.i";
@@ -446,7 +447,7 @@ export class UserLoginHelper {
       };
       let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
       if (userObject) {
-        throw new BadRequestException("This user has exist! Please Login!");
+        throw new BadRequestException("This user has already existed! Please Login!");
       }
 
       if (!(dataLogin.phone_number || dataLogin.user_email)) {
@@ -471,6 +472,7 @@ export class UserLoginHelper {
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
           country: dataIp.country,
           timezone: dataIp.timezone,
+          invitation_code: makeRandom(10),
         };
         userObject = await this.appUserService.create(dataToCreate);
 

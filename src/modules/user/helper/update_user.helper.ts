@@ -1396,7 +1396,7 @@ export class UpdateUserHelper {
   async enterInvitationCode(body: InvitationCodeBody, res: Response, req: ExpressRequestDto) {
     try {
       const userObject = req?.user_object;
-      if (userObject) throw new Error("Invalid user");
+      if (!userObject) throw new Error("Invalid user");
 
       const referralUser = await this.appUserService.findOne({ invitation_code: body.invitation_code });
       if (!referralUser) throw new Error("Invalid invitation code");
