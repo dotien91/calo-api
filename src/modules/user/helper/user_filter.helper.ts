@@ -918,7 +918,7 @@ export class UserFilterHelper {
       const projection = {};
       const dataUser = await this.appUserService.findById(userId, projection);
       const isReferral = await this.referralService.findOne({
-        from_user_id: userId,
+        user_id: userId,
         type: ReferralType.SIGN_UP,
       });
       if (!Number(dataUser?.user_status)) {

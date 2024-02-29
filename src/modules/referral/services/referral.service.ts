@@ -166,28 +166,40 @@ export class ReferralService {
   }
 
   async processSignUpBonusForReferralUser(invitationCode: string, userObject: User) {
-    const bonusCoin = 1;
-    const bonusPoint = 20;
-    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.SIGN_UP, (userId, entityId) => {
-      const data: AddPointToUserData = {
-        user_id: userId,
-        point: bonusPoint,
-        entity_id: entityId,
-        entity_target: UserPointHistory_EntityTarget.ACCOUNT,
-        entity_action: UserPointHistory_EntityAction.REFERRAL,
-      };
-      this.eventHookWorkerService.AddPointToUser(data);
-    });
+    try {
+      const bonusCoin = 1;
+      const bonusPoint = 20;
+      this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.SIGN_UP, (userId, entityId) => {
+        const data: AddPointToUserData = {
+          user_id: userId,
+          point: bonusPoint,
+          entity_id: entityId,
+          entity_target: UserPointHistory_EntityTarget.ACCOUNT,
+          entity_action: UserPointHistory_EntityAction.REFERRAL,
+        };
+        this.eventHookWorkerService.AddPointToUser(data);
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   async processBuyCourseBonusForReferralUser(invitationCode: string, userObject: User, price: number) {
-    const bonusCoin = 0.0008 * price;
-    this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+    try {
+      const bonusCoin = 0.0008 * price;
+      this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   async processCompletedCourseBonusForReferralUser(userObject: User, price: number) {
-    const bonusCoin = 0.0002 * price;
-    this.processReferral(userObject.invitation_code, userObject, bonusCoin, ReferralType.COMPLETE_COURSE);
+    try {
+      const bonusCoin = 0.0002 * price;
+      this.processReferral(userObject.invitation_code, userObject, bonusCoin, ReferralType.COMPLETE_COURSE);
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   private async processReferral(
@@ -197,24 +209,34 @@ export class ReferralService {
     referralType: string,
     processPoint?: (userId: string, entityId: string) => void
   ) {
-    const referralUser = await this.userService.findOne({
-      invitation_code: invitationCode,
-    });
-
-    if (referralUser) {
-      const params: CreateReferralDTO = {
-        user_id: userObject._id.toString(),
-        from_user_id: referralUser._id.toString(),
-        type: referralType,
-      };
-      const referralData = await this.create(params);
-      processPoint(referralUser._id.toString(), referralData?._id?.toString());
-      this.eventHookWorkerService.AddCoinToUser({
-        userId: referralUser._id.toString(),
-        coin,
-        refObject: referralData,
-        refType: TransactionRefType.REFERRAL,
+    try {
+      const referralUser = await this.userService.findOne({
+        invitation_code: invitationCode,
       });
+
+      if (referralUser) {
+        const referral = await this.findOne({
+          user_id: userObject._id.toString(),
+          from_user_id: referralUser._id.toString(),
+          type: referralType,
+        });
+        if (referral) throw new Error("User already do this referral");
+
+        const referralData = await this.create({
+          user_id: userObject._id.toString(),
+          from_user_id: referralUser._id.toString(),
+          type: referralType,
+        });
+        processPoint(referralUser._id.toString(), referralData?._id?.toString());
+        this.eventHookWorkerService.AddCoinToUser({
+          userId: referralUser._id.toString(),
+          coin,
+          refObject: referralData,
+          refType: TransactionRefType.REFERRAL,
+        });
+      }
+    } catch (e) {
+      console.log(e.message);
     }
   }
 }
