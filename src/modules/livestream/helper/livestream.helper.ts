@@ -16,6 +16,7 @@ import { NotificationHelper } from "../../../modules/notification/helper/notific
 import { User } from "../../../modules/user/schemas/user.schema";
 import { makeRandom } from "../../../utils/utils";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
+import { CreateLiveStreamProduct } from "../dto/create-livestream-product.dto";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
@@ -1418,6 +1419,45 @@ export class LivestreamHelper {
       }
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  async sendProduct(createLivestreamProductBody: CreateLiveStreamProduct, req: ExpressRequestDto, res: Response) {
+    try {
+      const dataToUpdate = {
+        message: JSON.stringify({
+          livestream_id: createLivestreamProductBody.livestream_id,
+          product_ids: createLivestreamProductBody.product_ids,
+        }),
+      };
+      const params = new URLSearchParams(dataToUpdate);
+      const config = {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": req.auth_code,
+        },
+      };
+      const urlLogin = process.env.SOCKET_API;
+
+      const dataNotification = await axios
+        .post(urlLogin + "/livestream-product", params, config)
+        .then((response) => {
+          if (response?.data) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch((error) => {
+          return false;
+        });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count, X-Is-Count" })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (e) {
+      throw new Error(e);
     }
   }
 }

@@ -17,6 +17,7 @@ import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ListChatHistoryDto } from "../../../modules/chat_history/dto/list-chat_history.dto";
 import { UserRoles } from "../../../modules/user/interfaces/user.interface";
+import { CreateLiveStreamProduct } from "../dto/create-livestream-product.dto";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { CreateLivestreamLikeDto, CreateLivestreamUnLikeDto } from "../dto/create-livestream_like.dto";
@@ -120,5 +121,15 @@ export class LivestreamController {
       //this.logger.log("findAll Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Post("/product")
+  @Permissions(UserRoles.TEACHER)
+  async sendProduct(
+    @Body() createLivestreamProductBody: CreateLiveStreamProduct,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.livestreamHelper.sendProduct(createLivestreamProductBody, req, res);
   }
 }
