@@ -45,6 +45,10 @@ export class CourseClassService {
    * @returns
    */
   async findOne(dataToSearch: any): Promise<CourseClass> {
+    return await this.courseClassModel.findOne(dataToSearch).exec();
+  }
+
+  async findOneWithMembers(dataToSearch: any): Promise<CourseClass> {
     return await this.courseClassModel
       .findOne(dataToSearch)
       .populate({

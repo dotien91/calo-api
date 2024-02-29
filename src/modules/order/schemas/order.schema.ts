@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-// import { Channel } from "../../../modules/channel/schemas/channel.schema";
-// import { Media } from "../../../modules/media/schemas/media.schema";
 import { HandleService } from "../../../modules/plan/schemas/handle_service.schema";
 import { Plan } from "../../../modules/plan/schemas/plan.schema";
+import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { OrderItemType, OrderStatus, PayloadType } from "../interfaces/order.interface";
+import { OrderStatus, PayloadType } from "../interfaces/order.interface";
 
 export type OrderDocument = Order & Document;
 
@@ -50,9 +49,9 @@ export class OrderItem {
   @Prop({
     type: String,
     nullable: false,
-    enum: OrderItemType,
+    enum: TransactionRefType,
   })
-  type: OrderItemType;
+  type: TransactionRefType;
 
   @Prop({
     type: String,

@@ -28,14 +28,14 @@ export class TransactionService {
     if (filter.user_ids) {
       condition = Object.assign(condition, { from_user: { $in: filter.user_ids } });
     }
+    if (filter.from_user_ids?.length) {
+      condition = Object.assign(condition, { from_user: { $in: filter.from_user_ids.split(",") } });
+    }
     if (filter.status) {
       condition = Object.assign(condition, { status: filter.status });
     }
     if (filter.method) {
       condition = Object.assign(condition, { method: filter.method });
-    }
-    if (filter.channel_id) {
-      condition = Object.assign(condition, { channel_id: filter.channel_id });
     }
     if (filter?.transaction_type) {
       condition = Object.assign(condition, { transaction_type: filter.transaction_type });
@@ -47,6 +47,9 @@ export class TransactionService {
       } else {
         condition = Object.assign(condition, { ref_id: filter.ref_id });
       }
+    }
+    if (filter.ref_ids?.length) {
+      condition = Object.assign(condition, { ref_id: { $in: filter.ref_ids.split(",") } });
     }
     if (filter.ref_type) {
       condition = Object.assign(condition, { ref_type: filter.ref_type });
@@ -125,6 +128,10 @@ export class TransactionService {
       )
       .populate(
         "from_user",
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+      )
+      .populate(
+        "referral_user",
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")

@@ -21,11 +21,13 @@ import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
+import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
 import {
   UserPointHistory_EntityAction,
   UserPointHistory_EntityTarget,
 } from "../../../modules/user/interfaces/user.interface";
+import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { CourseHelper } from "../../course/helper/course.helper";
 import { EmailPattern } from "../../email/services/email.service.i";
@@ -34,7 +36,7 @@ import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
-import { OrderItemType, OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
+import { OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 
@@ -811,7 +813,8 @@ export class OrderHelper {
             orderItem.plan_id.user_id.toString(),
             orderItem.amount_of_package * orderItem.plan_id.price,
             orderItem.plan_id.ref_id.toString(),
-            orderItem.type
+            orderItem.type,
+            orderObject.invitation_code
           );
 
           //Check if service is Extension
@@ -836,7 +839,7 @@ export class OrderHelper {
           }
 
           // send notification to user who own the course
-          if (orderItem.type === OrderItemType.COURSE) {
+          if (orderItem.type === TransactionRefType.COURSE) {
             const planCourseData = await this.planService.getCourseByPlanId(orderItem.plan_id?._id.toString());
             this.eventHookNotificationService.sendNotiNMailOrderSuccess({
               user_id: planCourseData[0]?.course[0]?.user_id.toString(),
@@ -857,7 +860,7 @@ export class OrderHelper {
 
           // update point for user
           // update coin for referral user
-          if (orderItem.type === OrderItemType.COURSE) {
+          if (orderItem.type === TransactionRefType.COURSE) {
             // update point for user
             const data: AddPointToUserData = {
               user_id: orderObject.user_id._id.toString(),
@@ -973,7 +976,7 @@ export class OrderHelper {
   async handleUpdateCourseAfter(orderObject: Order) {
     try {
       for (const orderItem of orderObject.items) {
-        if (orderItem.type === OrderItemType.COURSE) {
+        if (orderItem.type === TransactionRefType.COURSE) {
           const dataUpdate = {
             user_id: orderObject?.user_id?._id.toString(),
             course_id: orderItem?.service_id?.handle?.toString(),
@@ -1418,7 +1421,7 @@ export class OrderHelper {
             amount_of_package: currentPlan.amount_of_package,
           };
 
-          if (currentPlan.type === OrderItemType.COURSE) {
+          if (currentPlan.type === TransactionRefType.COURSE) {
             item.payload = currentPlan.payload;
           }
 
@@ -1510,9 +1513,11 @@ export class OrderHelper {
     targetUserId: string,
     tokenValue: number,
     refId: string,
-    refType: string
+    refType: string,
+    invitationCode?: string
   ) {
     try {
+      let referralUser: User = undefined;
       const dataFilter = {
         user_id: targetUserId,
       };
@@ -1523,8 +1528,13 @@ export class OrderHelper {
         lastToken = Number(oldDataTransaction.current_token);
         lastCoin = Number(oldDataTransaction.current_coin);
       }
+      if (invitationCode) {
+        referralUser = await this.userService.findOne({ invitation_code: invitationCode });
+      }
       const newDataCreate = {
         user_id: targetUserId,
+        from_user: fromUserId,
+        referral_user: referralUser?._id?.toString(),
         current_coin: lastCoin,
         last_coin: lastCoin,
         current_token: lastToken + tokenValue,
@@ -1532,12 +1542,12 @@ export class OrderHelper {
         note: `Withdrawal ${tokenValue} token from System ID: ${targetUserId}`,
         billing_on: new Date(),
         processing_on: new Date(),
+        successfully_on: new Date(),
         method: "plus",
         trans_id: "",
         ref_id: refId,
         ref_type: refType,
         status: "done",
-        from_user: fromUserId,
       };
       await this.transactionService.create(newDataCreate);
     } catch (e) {

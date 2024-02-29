@@ -5,70 +5,80 @@ export class ListTransactionDto {
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  page: number;
+  page?: number;
 
   @IsNumberString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  limit: number;
+  limit?: number;
 
   @IsIn(["DESC", "ASC"])
   @IsOptional(null)
   @ApiPropertyOptional()
-  order_by: "DESC" | "ASC";
+  order_by?: "DESC" | "ASC";
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  status: string;
+  status?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  method: string;
+  method?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id: string;
+  user_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ref_id: string;
+  ref_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ref_type: string;
+  ref_type?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  ref_url: string;
+  ref_url?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  from: string;
+  from?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  to: string;
+  to?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  channel_id: string;
+  channel_id?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  type_system: string;
+  type_system?: string;
 
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  search: string;
+  search?: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  from_user_ids?: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  ref_ids?: string;
 }

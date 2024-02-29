@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { OrderItemType } from "../../../modules/order/interfaces/order.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
+import { TransactionRefType } from "../interfaces/transaction.interface";
 import { TransactionBank } from "./transaction_bank.schema";
 
 export type TransactionDocument = Transaction & Document;
@@ -26,6 +26,9 @@ export class Transaction {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
   from_user: User;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", index: true })
+  referral_user: User;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "TransactionBank", index: true })
   transaction_bank: TransactionBank;
 
@@ -43,10 +46,9 @@ export class Transaction {
   @Prop({
     type: String,
     nullable: true,
-    default: "",
-    enum: OrderItemType,
+    enum: TransactionRefType,
   })
-  ref_type: OrderItemType;
+  ref_type: TransactionRefType;
 
   @Prop({
     type: String,

@@ -1,6 +1,8 @@
 export class SearchTransactionDto {
   user_id?: string;
   user_ids?: string;
+  from_user_ids?: string;
+  ref_ids?: string;
   status?: string;
   status_array?: string[];
   method?: string;
@@ -10,6 +12,5 @@ export class SearchTransactionDto {
   search?: string;
   from?: string;
   to?: string;
-  channel_id?: string;
   transaction_type?: string;
 }

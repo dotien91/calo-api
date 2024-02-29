@@ -5,7 +5,6 @@ import { Model } from "mongoose";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
-import { TransactionHelper } from "../../../modules/transaction/helper/transaction.helper";
 import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { FilterRedeemUserDTO } from "../dtos/redeem_user.dto";
@@ -27,7 +26,6 @@ export class RedeemUserService {
     private redeemService: RedeemService,
     private redeemMissionService: RedeemMissionService,
     private eventHookWorkerService: EventHookWorkerService,
-    private transactionHelper: TransactionHelper,
     private jwtHelperService: JwtHelperService
   ) {}
 
@@ -189,13 +187,7 @@ export class RedeemUserService {
               refType: TransactionRefType.REDEEM_MISSION,
             };
 
-            await this.transactionHelper.handleProcessUpdateCoinHook(
-              data.userId,
-              data.coin,
-              data.refObject,
-              data.refType,
-              String(this.jwtHelperService.generateJwt(data.userId, "", ""))
-            );
+            this.eventHookWorkerService.AddCoinToUser(data);
           }
 
           // send socket

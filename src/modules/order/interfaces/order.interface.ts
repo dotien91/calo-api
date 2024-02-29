@@ -1,3 +1,5 @@
+import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
+
 export enum OrderPaymentMethod {
   VNPAY = "vn_pay",
   TRANSFER = "transfer",
@@ -26,17 +28,11 @@ export enum PayloadType {
   ONE_ONE = "oneone",
 }
 
-export enum OrderItemType {
-  COURSE = "Course",
-  PRODUCT = "Product",
-  ORDER = "Order", // private, not show this to frontend
-}
-
 export interface OrderItem {
   service_name: string;
   service_id: any;
   plan_id: any;
   plan_type: string;
   payload: object;
-  type: OrderItemType;
+  type: TransactionRefType;
 }

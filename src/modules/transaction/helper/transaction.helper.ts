@@ -24,6 +24,7 @@ import { ListTransactionBankDto } from "../dto/list-transaction_bank.dto";
 import { ListUserIncomeDto } from "../dto/list-user-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transactions.dto";
 import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
+import { TransactionRefType } from "../interfaces/transaction.interface";
 import { TransactionService } from "../services/transaction.service";
 import { TransactionBankService } from "../services/transaction_bank.service";
 /**
@@ -531,12 +532,42 @@ export class TransactionHelper {
         }
       }
 
-      const dataReturn = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.transactionService.filter(dataToFilter, orderByOBject, page, limit);
       const dataCount = await this.transactionService.count(dataToFilter);
+      for (const index in dataReturn) {
+        dataReturn[index] = dataReturn[index]?.toObject();
+      }
+
+      const filter = {
+        product_list: dataReturn
+          .filter((transaction) =>
+            [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type)
+          )
+          .map((transaction: any) => ({
+            _id: transaction.ref_id._id,
+            name: transaction.ref_id.title || transaction.ref_id.name,
+          })),
+        referral_user_list: dataReturn
+          .filter(
+            (transaction) =>
+              [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type) &&
+              transaction.referral_user
+          )
+          .map((transaction: any) => ({
+            _id: transaction.referral_user?._id,
+            name: transaction.referral_user?.display_name,
+          })),
+      };
+
+      const finalDataReturn = {
+        transactions: dataReturn,
+        filter,
+      };
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
         .status(HttpStatus.OK)
-        .json(dataReturn);
+        .json(finalDataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

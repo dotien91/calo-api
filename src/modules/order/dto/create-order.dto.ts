@@ -9,7 +9,8 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { OrderItemType, PayloadType } from "../interfaces/order.interface";
+import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
+import { PayloadType } from "../interfaces/order.interface";
 
 export class PayloadParams {
   @IsEnum(PayloadType)
@@ -83,8 +84,8 @@ export class PlanObject {
 
   @IsString()
   @IsDefined()
-  @IsEnum(OrderItemType)
-  type: OrderItemType;
+  @IsEnum(TransactionRefType)
+  type: TransactionRefType;
 
   @IsObject()
   @IsOptional()

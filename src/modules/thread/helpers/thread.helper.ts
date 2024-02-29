@@ -129,7 +129,7 @@ export class ThreadHelper {
       const thread = await this.threadService.findById(id);
       if (!thread) throw new NotFoundException("Thread not found");
 
-      const courseClass = await this.courseClassService.findOne({ _id: thread.class_id });
+      const courseClass = await this.courseClassService.findOneWithMembers({ _id: thread.class_id });
       if (!courseClass) throw new NotFoundException("Class not found");
 
       const public_comment = thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC);
@@ -144,17 +144,17 @@ export class ThreadHelper {
       const file_comment = thread.thread_comments.filter((elem) => {
         return elem.type === ThreadCommentType.FILE && elem.user_id._id.toString() === userId;
       })[0];
-      const submitted_user_ids = thread.thread_comments.filter((elem) => {
-        return elem.type === ThreadCommentType.FILE;
+      const handed_in_user_ids = thread.thread_comments.filter((elem) => {
+        return elem.type === ThreadCommentType.FILE && elem.mark === -1;
       });
-      const marked_user_ids = submitted_user_ids.filter((elem) => {
+      const marked_user_ids = thread.thread_comments.filter((elem) => {
         return elem.type === ThreadCommentType.FILE && elem.mark !== -1;
       });
       const assigned_user_ids = courseClass.members;
 
       const dataReturn = {
         ...thread,
-        submitted_user_ids,
+        handed_in_user_ids,
         marked_user_ids,
         assigned_user_ids,
         thread_comments: {
