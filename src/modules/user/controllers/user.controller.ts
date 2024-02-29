@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
+import { InvitationCodeBody } from "../dto/create-invitation-code.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto, IgnoreFollowerDTO } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -511,5 +512,10 @@ export class UserController {
   @Get("ranking")
   async getRankingBoard(@Query() query: GetRankingBoardParams, @Req() req: ExpressRequestDto, @Res() res: Response) {
     return await this.userFilterHelper.getRankingBoard(query, req, res);
+  }
+
+  @Post("invitation-code")
+  enterInvitationCode(@Body() data: InvitationCodeBody, @Res() res: Response, @Req() req: Request) {
+    return this.updateUserHelper.enterInvitationCode(data, res, req);
   }
 }

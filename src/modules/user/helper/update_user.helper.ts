@@ -11,12 +11,14 @@ import { createHash } from "crypto";
 import { Response } from "express";
 import * as _ from "lodash";
 import mongoose from "mongoose";
+import { ReferralService } from "src/modules/referral/services/referral.service";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
+import { InvitationCodeBody } from "../dto/create-invitation-code.dto";
 import { CreateUserAnonymousDto } from "../dto/create-user_anonymous.dto";
 import { CreateUserBlockDto, IgnoreFollowerDTO } from "../dto/create-user_block.dto";
 import { CreateUserFollowDto } from "../dto/create-user_follow.dto";
@@ -62,7 +64,8 @@ export class UpdateUserHelper {
     private configService: ConfigService,
     private userLocationService: UserLocationService,
     private userAnonymousService: UserAnonymousService,
-    private readonly chatRoomUserOptionService: ChatRoomUserOptionService
+    private chatRoomUserOptionService: ChatRoomUserOptionService,
+    private referralService: ReferralService
   ) {}
 
   private readonly logger = new Logger("call");
@@ -1385,6 +1388,25 @@ export class UpdateUserHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async enterInvitationCode(body: InvitationCodeBody, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (userObject) throw new Error("Invalid user");
+
+      const referralUser = await this.appUserService.findOne({ invitation_code: body.invitation_code });
+      if (!referralUser) throw new Error("Invalid invitation code");
+
+      this.referralService.processSignUpBonusForReferralUser(body.invitation_code, userObject);
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json();
     } catch (error) {
       throw new NotFoundException(error.message);
     }
