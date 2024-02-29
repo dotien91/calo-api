@@ -48,7 +48,7 @@ export class ThreadService {
   }
 
   async findById(id: string): Promise<any> {
-    return await this.threadModel.aggregate([
+    const data = await this.threadModel.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(id),
@@ -163,6 +163,8 @@ export class ThreadService {
         },
       },
     ]);
+
+    return data[0];
   }
 
   /**

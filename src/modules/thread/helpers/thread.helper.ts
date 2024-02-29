@@ -126,48 +126,47 @@ export class ThreadHelper {
       const userId = req?.user_id;
       if (!userId) throw new Error("Invalid user");
 
-      const dataReturn = await this.threadService.findById(id);
-      const courseClass = await this.courseClassService.findOne({ _id: dataReturn.class_id });
+      const thread = await this.threadService.findById(id);
+      if (!thread) throw new NotFoundException("Thread not found");
 
-      const finalDataReturn = dataReturn.map((thread) => {
-        const public_comment = thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC);
-        const private_comment = thread.thread_comments.filter((elem) => {
-          return (
-            elem.type === ThreadCommentType.PRIVATE &&
-            (userId === elem.user_id._id.toString() ||
-              (courseClass.user_id.toString() === elem.user_id._id.toString() &&
-                elem.reply_to_user_id?.toString() === userId))
-          );
-        });
-        const file_comment = thread.thread_comments.filter((elem) => {
-          return elem.type === ThreadCommentType.FILE && elem.user_id._id.toString() === userId;
-        })[0];
-        const submitted_user_ids = thread.thread_comments.filter((elem) => {
-          return elem.type === ThreadCommentType.FILE;
-        });
-        const marked_user_ids = submitted_user_ids.filter((elem) => {
-          return elem.type === ThreadCommentType.FILE && elem.mark !== -1;
-        });
-        const data = {
-          ...thread,
-          submitted_user_ids,
-          marked_user_ids,
-          thread_comments: {
-            public_comment,
-            private_comment,
-            file_comment: file_comment || null,
-          },
-        };
-        return {
-          ...data,
-          is_late_submit: this.isLateSubmit(thread.expired, data.thread_comments.file_comment),
-        };
+      const courseClass = await this.courseClassService.findOne({ _id: thread.class_id });
+      if (!courseClass) throw new NotFoundException("Class not found");
+
+      const public_comment = thread.thread_comments.filter((elem) => elem.type === ThreadCommentType.PUBLIC);
+      const private_comment = thread.thread_comments.filter((elem) => {
+        return (
+          elem.type === ThreadCommentType.PRIVATE &&
+          (userId === elem.user_id._id.toString() ||
+            (courseClass.user_id.toString() === elem.user_id._id.toString() &&
+              elem.reply_to_user_id?.toString() === userId))
+        );
+      });
+      const file_comment = thread.thread_comments.filter((elem) => {
+        return elem.type === ThreadCommentType.FILE && elem.user_id._id.toString() === userId;
       })[0];
+      const submitted_user_ids = thread.thread_comments.filter((elem) => {
+        return elem.type === ThreadCommentType.FILE;
+      });
+      const marked_user_ids = submitted_user_ids.filter((elem) => {
+        return elem.type === ThreadCommentType.FILE && elem.mark !== -1;
+      });
+
+      const dataReturn = {
+        ...thread,
+        submitted_user_ids,
+        marked_user_ids,
+        thread_comments: {
+          public_comment,
+          private_comment,
+          file_comment: file_comment || null,
+        },
+        is_late_submit: this.isLateSubmit(thread.expired, thread.thread_comments.file_comment),
+      };
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
-        .json(finalDataReturn);
+        .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
