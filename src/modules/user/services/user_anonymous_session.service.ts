@@ -124,7 +124,7 @@ export class UserAnonymousSessionService {
    * @param id
    * @returns
    */
-  async removeByUserId(id: string) {
+  async removeByUserId(id: string): Promise<any> {
     return await this.userAnonymousSession.deleteMany({ user_id: id }).exec();
   }
 
@@ -158,7 +158,7 @@ export class UserAnonymousSessionService {
    * @param id
    * @returns
    */
-  async removeByAppleSignature(appleSignature: string, sessionId: string) {
+  async removeByAppleSignature(appleSignature: string, sessionId: string): Promise<any> {
     return await this.userAnonymousSession
       .deleteMany({ apple_signature: appleSignature, _id: { $ne: sessionId } })
       .exec();
@@ -169,7 +169,7 @@ export class UserAnonymousSessionService {
    * @param id
    * @returns
    */
-  async removeByAppleNotification(appleNotification: string, sessionId: string) {
+  async removeByAppleNotification(appleNotification: string, sessionId: string): Promise<any> {
     return await this.userAnonymousSession
       .deleteMany({ apple_notification: appleNotification, _id: { $ne: sessionId } })
       .exec();

@@ -209,7 +209,7 @@ export class NotificationService {
    * @param id
    * @returns
    */
-  async remove(pattern: any) {
+  async remove(pattern: any): Promise<any> {
     return await this.NotificationModel.deleteMany(pattern).exec();
   }
 

@@ -325,7 +325,7 @@ export class CommunityService {
     return await this.communityModel.findByIdAndDelete(id).exec();
   }
 
-  async removeOne(dataRemove: any) {
+  async removeOne(dataRemove: any): Promise<any> {
     return await this.communityModel.deleteOne(dataRemove);
   }
 

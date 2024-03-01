@@ -292,7 +292,7 @@ export class CommunityCommentService {
     return await this.communityModel.findByIdAndDelete(id).exec();
   }
 
-  async deleteManyByIds(ids: string[]) {
+  async deleteManyByIds(ids: string[]): Promise<any> {
     return await this.communityModel
       .deleteMany({
         _id: {
