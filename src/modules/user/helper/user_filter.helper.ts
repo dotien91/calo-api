@@ -1073,14 +1073,6 @@ export class UserFilterHelper {
         dataToFilter = { ...dataToFilter, ...{ unset: dataUnsetNew } };
       }
 
-      if (userObject?.country && !dataToFilter?.distance) {
-        const countryArrayString: any = process?.env?.OPEN_COUNTRY;
-        const countryArray = countryArrayString?.split(",");
-        if (countryArray.indexOf(userObject?.country.toString()) !== -1) {
-          dataToFilter = { ...dataToFilter, ...{ distance: Number(process?.env?.DISTANCE_COUNTRY) } };
-        }
-      }
-
       const dataWithIn = [];
       if (checkPage == 1) {
         const dataToFilter = {
