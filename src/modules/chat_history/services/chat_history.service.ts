@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { ObjectId } from "mongodb";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { CreateChatHistoryDto } from "../dto/create-chat_history.dto";
 import { FilterChatHistoryDto } from "../dto/filter-chat_history.dto";
 import { SortByChatHistoryDto } from "../dto/sort-by_chat_history.dto";
@@ -34,11 +33,11 @@ export class ChatHistoryService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        const objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new mongoose.Types.ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        const objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new mongoose.Types.ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });

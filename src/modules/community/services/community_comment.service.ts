@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { ObjectId } from "mongodb";
 import { Model, Types } from "mongoose";
 import { CreateCommunityCommentDto } from "../dto/create-community_comment.dto";
 import { SearchCommunityCategoryDto } from "../dto/search-community_category.dto";
@@ -41,11 +40,11 @@ export class CommunityCommentService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        const objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new Types.ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        const objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new Types.ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lte: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });

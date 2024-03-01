@@ -6,7 +6,6 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from "@nestjs/common";
-import axios from "axios";
 import { Response } from "express";
 import { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -189,173 +188,173 @@ export class LivestreamHelper {
   /**
    * @author Tony Vu
    */
-  async old_handleCheckLivestream(dataPrepare: Livestream, authString: string) {
-    try {
-      //Check if dataCreate.input_type == outside
-      if (dataPrepare?.input_type == "outside") {
-        //Check Interval
-        let dataCountFalse = 0;
-        const dataInterval = setInterval(async () => {
-          let dataCreate = await this.livestreamService.findOne({ _id: dataPrepare?._id?.toString() });
-          //Check Status Cloud Flare
-          const urlCloudFlare = `https://customer-xmrvysjqwvfwuq70.cloudflarestream.com/${dataCreate?.cloudflare_stream_id}/lifecycle`;
+  // async old_handleCheckLivestream(dataPrepare: Livestream, authString: string) {
+  //   try {
+  //     //Check if dataCreate.input_type == outside
+  //     if (dataPrepare?.input_type == "outside") {
+  //       //Check Interval
+  //       let dataCountFalse = 0;
+  //       const dataInterval = setInterval(async () => {
+  //         let dataCreate = await this.livestreamService.findOne({ _id: dataPrepare?._id?.toString() });
+  //         //Check Status Cloud Flare
+  //         const urlCloudFlare = `https://customer-xmrvysjqwvfwuq70.cloudflarestream.com/${dataCreate?.cloudflare_stream_id}/lifecycle`;
 
-          // const params = new URLSearchParams(dataToUpdate);
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
-            },
-          };
-          // console.log(config, 'config')
-          const dataLivestreamCloudflare = await axios
-            .get(urlCloudFlare, config)
-            .then((response: any) => {
-              return response?.data;
-            })
-            .catch((error) => {
-              console.log(error);
-              return null;
-            });
-          console.log(dataLivestreamCloudflare, "dataLivestreamCloudflare");
-          if (dataLivestreamCloudflare) {
-            //Check data
-            if (dataLivestreamCloudflare?.live == true) {
-              //Check current live_status
-              if (dataCreate?.livestream_status != "wait") {
-                //Send Emit offer
-                if (dataCreate?.ready_status === "disconnected") {
-                  const dataJsonToEmit = {
-                    offer: {
-                      payload: { status: "StartStreamSuccess" },
-                      room_id: "livestream_" + dataCreate?._id?.toString(),
-                    },
-                    data_livestream: dataCreate,
-                  };
+  //         // const params = new URLSearchParams(dataToUpdate);
+  //         const config = {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
+  //           },
+  //         };
+  //         // console.log(config, 'config')
+  //         const dataLivestreamCloudflare = await axios
+  //           .get(urlCloudFlare, config)
+  //           .then((response: any) => {
+  //             return response?.data;
+  //           })
+  //           .catch((error) => {
+  //             console.log(error);
+  //             return null;
+  //           });
+  //         console.log(dataLivestreamCloudflare, "dataLivestreamCloudflare");
+  //         if (dataLivestreamCloudflare) {
+  //           //Check data
+  //           if (dataLivestreamCloudflare?.live == true) {
+  //             //Check current live_status
+  //             if (dataCreate?.livestream_status != "wait") {
+  //               //Send Emit offer
+  //               if (dataCreate?.ready_status === "disconnected") {
+  //                 const dataJsonToEmit = {
+  //                   offer: {
+  //                     payload: { status: "StartStreamSuccess" },
+  //                     room_id: "livestream_" + dataCreate?._id?.toString(),
+  //                   },
+  //                   data_livestream: dataCreate,
+  //                 };
 
-                  await this.handleSendEmitOffer(dataJsonToEmit, authString);
-                  const dataToUpdate = {
-                    _id: dataCreate?._id?.toString(),
-                    ready_status: "connected",
-                  };
-                  console.log(dataToUpdate, "dataToUpdate");
-                  //Udpate readystatus to connected
-                  await this.livestreamService.update(dataToUpdate);
-                }
-              } else {
-                //Update start Livestream
-                const dataToUpdate = {
-                  _id: dataCreate?._id?.toString(),
-                  livestream_status: "live",
-                  ready_status: "connected",
-                };
-                console.log(dataToUpdate, "dataToUpdate");
-                //Udpate readystatus to connected
-                dataCreate = await this.livestreamService.update(dataToUpdate);
-                await this.handleUpdateStartLivestream(dataCreate, authString);
-              }
-              dataCountFalse = 0;
-            } else {
-              dataCountFalse++;
-              console.log(dataCountFalse, "dataCountFalse");
-              if (dataCountFalse >= 50) {
-                //Clear interval
-                clearInterval(dataInterval);
-                //Update status Livestream
-                const dataToUpdate = {
-                  _id: dataCreate?._id?.toString(),
-                  ready_status: "disconnected",
-                  livestream_status: "end",
-                };
-                console.log(dataToUpdate, "dataToUpdate");
-                //Udpate readystatus to connected
-                dataCreate = await this.livestreamService.update(dataToUpdate);
-                await this.handleUpdateEndLivestream(dataCreate, authString);
-              } else {
-                if (dataCreate?.livestream_status === "live" && dataCreate?.ready_status === "connected") {
-                  const dataToUpdate = {
-                    _id: dataCreate?._id?.toString(),
-                    ready_status: "disconnected",
-                  };
-                  console.log(dataToUpdate, "dataToUpdate");
-                  //Udpate readystatus to connected
-                  dataCreate = await this.livestreamService.update(dataToUpdate);
-                  await this.handleUpdateLeaveRoomToClient(dataCreate, authString);
-                }
-              }
-            }
-          }
-        }, 5000);
-      }
-    } catch (error) {
-      //Error when update Livestream
-      return null;
-    }
-  }
+  //                 await this.handleSendEmitOffer(dataJsonToEmit, authString);
+  //                 const dataToUpdate = {
+  //                   _id: dataCreate?._id?.toString(),
+  //                   ready_status: "connected",
+  //                 };
+  //                 console.log(dataToUpdate, "dataToUpdate");
+  //                 //Udpate readystatus to connected
+  //                 await this.livestreamService.update(dataToUpdate);
+  //               }
+  //             } else {
+  //               //Update start Livestream
+  //               const dataToUpdate = {
+  //                 _id: dataCreate?._id?.toString(),
+  //                 livestream_status: "live",
+  //                 ready_status: "connected",
+  //               };
+  //               console.log(dataToUpdate, "dataToUpdate");
+  //               //Udpate readystatus to connected
+  //               dataCreate = await this.livestreamService.update(dataToUpdate);
+  //               await this.handleUpdateStartLivestream(dataCreate, authString);
+  //             }
+  //             dataCountFalse = 0;
+  //           } else {
+  //             dataCountFalse++;
+  //             console.log(dataCountFalse, "dataCountFalse");
+  //             if (dataCountFalse >= 50) {
+  //               //Clear interval
+  //               clearInterval(dataInterval);
+  //               //Update status Livestream
+  //               const dataToUpdate = {
+  //                 _id: dataCreate?._id?.toString(),
+  //                 ready_status: "disconnected",
+  //                 livestream_status: "end",
+  //               };
+  //               console.log(dataToUpdate, "dataToUpdate");
+  //               //Udpate readystatus to connected
+  //               dataCreate = await this.livestreamService.update(dataToUpdate);
+  //               await this.handleUpdateEndLivestream(dataCreate, authString);
+  //             } else {
+  //               if (dataCreate?.livestream_status === "live" && dataCreate?.ready_status === "connected") {
+  //                 const dataToUpdate = {
+  //                   _id: dataCreate?._id?.toString(),
+  //                   ready_status: "disconnected",
+  //                 };
+  //                 console.log(dataToUpdate, "dataToUpdate");
+  //                 //Udpate readystatus to connected
+  //                 dataCreate = await this.livestreamService.update(dataToUpdate);
+  //                 await this.handleUpdateLeaveRoomToClient(dataCreate, authString);
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }, 5000);
+  //     }
+  //   } catch (error) {
+  //     //Error when update Livestream
+  //     return null;
+  //   }
+  // }
 
-  async old_handleCloudflareData(dataLivestream: Livestream) {
-    try {
-      const urlCloudFlare =
-        "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs";
-      // const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
-        },
-      };
+  // async old_handleCloudflareData(dataLivestream: Livestream) {
+  //   try {
+  //     const urlCloudFlare =
+  //       "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs";
+  //     // const params = new URLSearchParams(dataToUpdate);
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
+  //       },
+  //     };
 
-      const dataToUpdate = {
-        meta: { name: dataLivestream?.title },
-        recording: { mode: "automatic" },
-        deleteRecordingAfterDays: null,
-      };
-      // console.log(config, 'config')
-      const dataLivestreamCloudflare = await axios
-        .post(urlCloudFlare, dataToUpdate, config)
-        .then((response) => {
-          if (response?.data) {
-            // console.log(response?.data, "response?.data");
-            return response?.data;
-            return true;
-          } else {
-            return null;
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
-          // console.log(error.response.data, 'data error');
-          // this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
-          console.log(error, "error");
-          return null;
-        });
+  //     const dataToUpdate = {
+  //       meta: { name: dataLivestream?.title },
+  //       recording: { mode: "automatic" },
+  //       deleteRecordingAfterDays: null,
+  //     };
+  //     // console.log(config, 'config')
+  //     const dataLivestreamCloudflare = await axios
+  //       .post(urlCloudFlare, dataToUpdate, config)
+  //       .then((response) => {
+  //         if (response?.data) {
+  //           // console.log(response?.data, "response?.data");
+  //           return response?.data;
+  //           return true;
+  //         } else {
+  //           return null;
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         // console.log(error);
+  //         // console.log(error.response.data, 'data error');
+  //         // this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
+  //         console.log(error, "error");
+  //         return null;
+  //       });
 
-      if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
-        const whipData = dataLivestreamCloudflare?.result?.webRTC?.url || "";
-        const whepData = dataLivestreamCloudflare?.result?.webRTCPlayback?.url || "";
-        const cloudflareStreamId = dataLivestreamCloudflare?.result?.uid || "";
-        let m3u8Url = dataLivestreamCloudflare?.result?.webRTCPlayback?.url;
-        m3u8Url = m3u8Url.replace("webRTC/play", "manifest/video.m3u8");
-        const dataUpdate = {
-          cloudflare_stream_id: cloudflareStreamId,
-          whip_data: whipData,
-          whep_data: whepData,
-          livestream_data: {
-            rtmp_url: dataLivestreamCloudflare?.result?.rtmps?.url || "",
-            m3u8_url: m3u8Url || "",
-            ingest_endpoint: "",
-            stream_key: dataLivestreamCloudflare?.result?.rtmps?.streamKey || "",
-          },
-          _id: dataLivestream?._id?.toString(),
-        };
-        return await this.livestreamService.update(dataUpdate);
-      }
-      return dataLivestream;
-    } catch (error) {
-      console.log(error);
-      return dataLivestream;
-    }
-  }
+  //     if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
+  //       const whipData = dataLivestreamCloudflare?.result?.webRTC?.url || "";
+  //       const whepData = dataLivestreamCloudflare?.result?.webRTCPlayback?.url || "";
+  //       const cloudflareStreamId = dataLivestreamCloudflare?.result?.uid || "";
+  //       let m3u8Url = dataLivestreamCloudflare?.result?.webRTCPlayback?.url;
+  //       m3u8Url = m3u8Url.replace("webRTC/play", "manifest/video.m3u8");
+  //       const dataUpdate = {
+  //         cloudflare_stream_id: cloudflareStreamId,
+  //         whip_data: whipData,
+  //         whep_data: whepData,
+  //         livestream_data: {
+  //           rtmp_url: dataLivestreamCloudflare?.result?.rtmps?.url || "",
+  //           m3u8_url: m3u8Url || "",
+  //           ingest_endpoint: "",
+  //           stream_key: dataLivestreamCloudflare?.result?.rtmps?.streamKey || "",
+  //         },
+  //         _id: dataLivestream?._id?.toString(),
+  //       };
+  //       return await this.livestreamService.update(dataUpdate);
+  //     }
+  //     return dataLivestream;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return dataLivestream;
+  //   }
+  // }
 
   async handleLiveStreamData(dataLivestream: Livestream) {
     const streamKey = makeRandom(20);
@@ -381,47 +380,47 @@ export class LivestreamHelper {
    * @param dataLivestream
    * @returns
    */
-  async old_handleUpdateCloudflareData(dataLivestream: Livestream, dataRecord: string) {
-    try {
-      if (!dataLivestream?.cloudflare_stream_id) {
-        return dataLivestream;
-      }
-      const urlCloudFlare =
-        "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/" +
-        dataLivestream?.cloudflare_stream_id;
+  // async old_handleUpdateCloudflareData(dataLivestream: Livestream, dataRecord: string) {
+  //   try {
+  //     if (!dataLivestream?.cloudflare_stream_id) {
+  //       return dataLivestream;
+  //     }
+  //     const urlCloudFlare =
+  //       "https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/" +
+  //       dataLivestream?.cloudflare_stream_id;
 
-      const dataToUpdate = {
-        meta: { name: dataLivestream?.title },
-        recording: { mode: dataRecord },
-        deleteRecordingAfterDays: null,
-      };
-      // const params = new URLSearchParams(dataToUpdate);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
-        },
-      };
-      // console.log(config, 'config')
-      const dataNotification = await axios
-        .put(urlCloudFlare, dataToUpdate, config)
-        .then((response) => {
-          if (response?.data) {
-            // console.log(response?.data, "response?.data");
-            return response?.data;
-            return true;
-          } else {
-            return null;
-          }
-        })
-        .catch((error) => {
-          return null;
-        });
-      return dataLivestream;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     const dataToUpdate = {
+  //       meta: { name: dataLivestream?.title },
+  //       recording: { mode: dataRecord },
+  //       deleteRecordingAfterDays: null,
+  //     };
+  //     // const params = new URLSearchParams(dataToUpdate);
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
+  //       },
+  //     };
+  //     // console.log(config, 'config')
+  //     const dataNotification = await axios
+  //       .put(urlCloudFlare, dataToUpdate, config)
+  //       .then((response) => {
+  //         if (response?.data) {
+  //           // console.log(response?.data, "response?.data");
+  //           return response?.data;
+  //           return true;
+  //         } else {
+  //           return null;
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         return null;
+  //       });
+  //     return dataLivestream;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   /**
    * @author Tony Vu
    * @param query
@@ -1148,65 +1147,65 @@ export class LivestreamHelper {
     return dataNotification;
   }
 
-  async old_handleUpdateEndLivestream(message: Livestream, auth: string) {
-    const dataToUpdate = {
-      message: JSON.stringify(message),
-    };
+  // async old_handleUpdateEndLivestream(message: Livestream, auth: string) {
+  //   const dataToUpdate = {
+  //     message: JSON.stringify(message),
+  //   };
 
-    //Update Save Video in version 1.0.0
-    //When in version 1.0.1 we not have this condition!
-    if (message?.input_type === "outside") {
-      //Check livestream
-      const urlCloudFlare = `https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/${message?.cloudflare_stream_id}/videos`;
+  //   //Update Save Video in version 1.0.0
+  //   //When in version 1.0.1 we not have this condition!
+  //   if (message?.input_type === "outside") {
+  //     //Check livestream
+  //     const urlCloudFlare = `https://api.cloudflare.com/client/v4/accounts/2cd5df15a97f55e0045d3e45eb0e62e9/stream/live_inputs/${message?.cloudflare_stream_id}/videos`;
 
-      // const params = new URLSearchParams(dataToUpdate);
-      const configCloudflare = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
-        },
-      };
-      // console.log(config, 'config')
-      const dataLivestreamCloudflare = await axios
-        .get(urlCloudFlare, configCloudflare)
-        .then((response: any) => {
-          return response?.data;
-        })
-        .catch((error) => {
-          console.log(error);
-          return null;
-        });
-      // console.log(dataLivestreamCloudflare, "dataLivestreamCloudflare");
-      if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
-        //Update livestream
-        const dataUpdate = {
-          history_media: dataLivestreamCloudflare?.result,
-          _id: message?._id?.toString(),
-        };
-        const dataUdpateHistory = await this.livestreamService.update(dataUpdate);
-        console.log(dataUdpateHistory, "dataUdpateHistory");
-      }
-    }
+  //     // const params = new URLSearchParams(dataToUpdate);
+  //     const configCloudflare = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: "Bearer " + process.env.CLOUDFLARE_TOKEN,
+  //       },
+  //     };
+  //     // console.log(config, 'config')
+  //     const dataLivestreamCloudflare = await axios
+  //       .get(urlCloudFlare, configCloudflare)
+  //       .then((response: any) => {
+  //         return response?.data;
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         return null;
+  //       });
+  //     // console.log(dataLivestreamCloudflare, "dataLivestreamCloudflare");
+  //     if (dataLivestreamCloudflare && dataLivestreamCloudflare?.result) {
+  //       //Update livestream
+  //       const dataUpdate = {
+  //         history_media: dataLivestreamCloudflare?.result,
+  //         _id: message?._id?.toString(),
+  //       };
+  //       const dataUdpateHistory = await this.livestreamService.update(dataUpdate);
+  //       console.log(dataUdpateHistory, "dataUdpateHistory");
+  //     }
+  //   }
 
-    const params = new URLSearchParams(dataToUpdate);
-    const headers = {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "X-Authorization": auth,
-    };
-    const dataNotification = await this.socketService
-      .send(SocketPath.LIVESTREAM_END, headers, params)
-      .then((response) => {
-        if (response?.data) {
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch((error) => {
-        return false;
-      });
-    return dataNotification;
-  }
+  //   const params = new URLSearchParams(dataToUpdate);
+  //   const headers = {
+  //     "Content-Type": "application/x-www-form-urlencoded",
+  //     "X-Authorization": auth,
+  //   };
+  //   const dataNotification = await this.socketService
+  //     .send(SocketPath.LIVESTREAM_END, headers, params)
+  //     .then((response) => {
+  //       if (response?.data) {
+  //         return true;
+  //       } else {
+  //         return false;
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       return false;
+  //     });
+  //   return dataNotification;
+  // }
 
   async handleUpdateEndLivestream(message: Livestream, auth: string) {
     const dataToUpdate = {

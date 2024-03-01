@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { ObjectId } from "mongodb";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { CreateLivestreamCommentWithMediaDto } from "../dto/create-livestream_comment.dto";
 import { FilterLivestreamCommentDto } from "../dto/filter-comment_livestream.dto";
 import { UpdateLivestreamCommentDto } from "../dto/update-livestream_comment.dto";
@@ -40,11 +39,11 @@ export class LivestreamCommentService {
     if (filter.from_id || filter.to_id) {
       let dataFilter = {};
       if (filter.from_id) {
-        const objectIdFrom = new ObjectId(filter?.from_id);
+        const objectIdFrom = new mongoose.Types.ObjectId(filter?.from_id);
         dataFilter = { ...dataFilter, ...{ $gt: objectIdFrom } };
       }
       if (filter.to_id) {
-        const objectIdTo = new ObjectId(filter?.to_id);
+        const objectIdTo = new mongoose.Types.ObjectId(filter?.to_id);
         dataFilter = { ...dataFilter, ...{ $lt: objectIdTo } };
       }
       condition = Object.assign(condition, { _id: dataFilter });
