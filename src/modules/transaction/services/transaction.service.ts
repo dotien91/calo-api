@@ -137,8 +137,10 @@ export class TransactionService {
       .populate("transaction_bank")
       .populate({
         path: "ref_id",
+        options: { strictPopulate: false },
         populate: {
           path: "media_id",
+          options: { strictPopulate: false },
         },
       })
       .sort(sortObject)

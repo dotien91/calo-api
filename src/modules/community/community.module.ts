@@ -20,11 +20,13 @@ import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymous.schema";
 import { UserAnonymousSession, UserAnonymousSessionSchema } from "../user/schemas/user_anonymous_session.schema";
 import { UserFollow, UserFollowSchema } from "../user/schemas/user_follow.schema";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
 import { UserAnonymousService } from "../user/services/user_anonymous.service";
 import { UserAnonymousSessionService } from "../user/services/user_anonymous_session.service";
 import { UserFollowService } from "../user/services/user_follow.service";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -72,6 +74,7 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     GptModule,
     RedeemModule,
@@ -102,6 +105,7 @@ import { CommunityPollService } from "./services/community_poll.service";
     EventHookNotificationService,
     TransactionService,
     TransactionBankService,
+    UserPointHistoryService,
   ],
   exports: [
     CommunityHelper,

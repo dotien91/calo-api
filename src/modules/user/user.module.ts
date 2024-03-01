@@ -63,6 +63,8 @@ import { UserOrganizationService } from "./services/user_organization.service";
 import { UserQuestionService } from "./services/user_question.service";
 import { UserSessionService } from "./services/user_session.service";
 import { UserViewService } from "./services/user_view.service";
+import { UserPointHistoryService } from "./services/user_point_history.service";
+import { UserPointHistory, UserPointHistorySchema } from "./schemas/user_point_history.schema";
 
 @Module({
   imports: [
@@ -102,6 +104,7 @@ import { UserViewService } from "./services/user_view.service";
       { name: Course.name, schema: CourseSchema },
       { name: CourseUser.name, schema: CourseUserSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     EmailModule,
     CouponModule,
@@ -143,6 +146,7 @@ import { UserViewService } from "./services/user_view.service";
     UserOrganizationHelper,
     CourseService,
     CourseUserService,
+    UserPointHistoryService
   ],
   exports: [
     UserFilterHelper,

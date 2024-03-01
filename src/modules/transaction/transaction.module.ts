@@ -10,8 +10,10 @@ import { NotificationService } from "../notification/services/notification.servi
 import { QueueService } from "../queue/queue.service";
 import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -41,6 +43,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     SocketModule,
   ],
@@ -58,6 +61,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     JwtHelperService,
     NotificationService,
     UserSessionService,
+    UserPointHistoryService,
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })

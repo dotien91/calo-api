@@ -10,13 +10,17 @@ import { Response } from "express";
 import * as momentBase from "moment";
 import * as moment from "moment-timezone";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
+import { UserPointHistoryService } from "../../../modules/user/services/user_point_history.service";
 import { filterDuplicateObject } from "../../../utils/utils";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
@@ -40,7 +44,10 @@ export class TransactionHelper {
     private transactionBankService: TransactionBankService,
     private userService: UserService,
     private eventHookNotificationService: EventHookNotificationService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private notificationHelper: NotificationHelper,
+    private notificationService: NotificationService,
+    private userPointHistoryService: UserPointHistoryService
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
@@ -111,7 +118,7 @@ export class TransactionHelper {
       const userToUpdate = await this.userService.findById(createTransactionData.user_id, {});
 
       //@ts-ignore
-      await this.handleProcessUpdateCoin(userToUpdate?._id?.toString(), currentCoin, lastToken, authCode);
+      await this.sendSocketUpdateCoin(userToUpdate?._id?.toString(), currentCoin, lastToken, authCode);
 
       const dataCreate = await this.transactionService.create(createTransactionData);
       return res
@@ -280,7 +287,7 @@ export class TransactionHelper {
         },
       };
 
-      await this.handleProcessUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
+      await this.sendSocketUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
       //Send Notification
 
       // const channel = await this.channelService.findById(channelId);
@@ -712,7 +719,7 @@ export class TransactionHelper {
             billing_on: new Date(),
           };
 
-          await this.handleProcessUpdateCoin(userObject?._id?.toString(), newCoin, currentToken, auth);
+          await this.sendSocketUpdateCoin(userObject?._id?.toString(), newCoin, currentToken, auth);
           await this.transactionService.create(dataCreate);
         }
         return null;
@@ -726,16 +733,10 @@ export class TransactionHelper {
     }
   }
 
-  async handleProcessUpdateCoinHook(
-    userId: string,
-    coinToUpdate: number,
-    refObject: any,
-    refType: string,
-    auth: string
-  ) {
+  async handleProcessUpdateCoinHook(data: AddCoinToUserData, auth: string) {
     try {
       const dataFilterLastCoin = {
-        user_id: userId,
+        user_id: data.userId,
       };
       const dataTransactionLastCoinObject = await this.transactionService.findOne(dataFilterLastCoin);
       let lastCoin = 0;
@@ -747,34 +748,74 @@ export class TransactionHelper {
       let newCoin = lastCoin;
       let noteTransaction = "";
       const method = "plus";
-      if (coinToUpdate) {
-        dataValue = coinToUpdate;
+      if (data.coin) {
+        dataValue = data.coin;
         noteTransaction = `Transaction ${dataValue} coin for message at: ${new Date().toISOString()}.`;
         newCoin = lastCoin + dataValue;
       }
 
       //Create New Transaction
       const dataCreate = {
-        ref_id: refObject._id.toString(),
-        ref_type: refType,
+        ref_id: data.refObject._id.toString(),
+        ref_type: data.refType,
         method: method,
         current_coin: newCoin,
         last_coin: lastCoin,
         transaction_value: dataValue,
         transaction_value_type: TransactionValueType.COIN,
-        user_id: userId,
+        user_id: data.userId,
         note: noteTransaction,
         status: "done",
         data_payment: "",
-        trans_id: refObject._id.toString(),
+        trans_id: data.refObject._id.toString(),
         successfully_on: new Date(),
         billing_on: new Date(),
       };
 
-      await this.handleProcessUpdateCoin(userId, newCoin, 0, auth);
+      await this.sendSocketUpdateCoin(data.userId, newCoin, 0, auth);
       await this.transactionService.create(dataCreate);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async handleProcessUpdatePointHook(data: AddPointToUserData, authCode: string) {
+    const isSameAction = await this.userPointHistoryService.findOne({
+      user_id: data.user_id,
+      entity_id: data.entity_id,
+      entity_target: data.entity_target,
+      entity_action: data.entity_action,
+    });
+    if (isSameAction) throw new Error("User already earned point from this action");
+    else {
+      const [, newUserData] = await Promise.all([
+        this.userPointHistoryService.create(data),
+        this.userService.updateUserPoint(data.user_id, data.point),
+      ]);
+      const dataForSending = {
+        user_id: data.user_id,
+        point: String(newUserData.point),
+        is_level_up: String(newUserData.is_level_up),
+      };
+      const params = new URLSearchParams(dataForSending);
+      const headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Authorization": authCode,
+      };
+
+      const dataNotification = await this.socketService
+        .send(SocketPath.UPDATE_POINT, headers, params)
+        .then((response) => {
+          if (response?.data) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .catch((error) => {
+          return false;
+        });
+      return dataNotification;
     }
   }
 
@@ -786,7 +827,7 @@ export class TransactionHelper {
    * @param authCode
    * @returns
    */
-  async handleProcessUpdateCoin(userId: string, coinNumber: number, tokenNumber: number, authCode: string) {
+  async sendSocketUpdateCoin(userId: string, coinNumber: number, tokenNumber: number, authCode: string) {
     try {
       const dataToUpdate: any = {
         user_id: userId,
@@ -814,7 +855,16 @@ export class TransactionHelper {
           this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
           return false;
         });
-      //Send Socket
+
+      const notification = await this.notificationService.create({
+        title: "Account Balance Notification",
+        user_id: userId,
+        content: `Your current balance ${coinNumber} coin - ${tokenNumber} - token`,
+        image: "",
+        type_action: "link",
+      });
+      this.notificationHelper.handleSendNotificationToSession(notification);
+
       return dataUpdateUser;
     } catch (error) {
       console.log(error);

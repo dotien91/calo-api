@@ -40,6 +40,8 @@ import { EmailModule } from "../email/email.module";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
 import { SocketModule } from "../socket/socket.module";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserModule } from "../user/user.module";
 import { OrderHelper } from "./helper/order.helper";
 import { Order, OrderSchema } from "./schemas/order.schema";
@@ -75,6 +77,7 @@ import { OrderService } from "./services/order.service";
       { name: CourseUser.name, schema: CourseUserSchema },
       { name: Course.name, schema: CourseSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     EmailModule,
     UserModule,
@@ -107,6 +110,7 @@ import { OrderService } from "./services/order.service";
     CourseUserService,
     CourseService,
     UserService,
+    UserPointHistoryService,
   ],
   exports: [OrderService],
 })

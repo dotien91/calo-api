@@ -27,10 +27,12 @@ import { TransactionBankService } from "../transaction/services/transaction_bank
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymous.schema";
 import { UserFollow, UserFollowSchema } from "../user/schemas/user_follow.schema";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
 import { UserAnonymousService } from "../user/services/user_anonymous.service";
 import { UserFollowService } from "../user/services/user_follow.service";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -63,6 +65,7 @@ import { ChatHistory, ChatHistorySchema } from "./schemas/chat_history.schema";
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     SocketModule,
   ],
@@ -88,6 +91,7 @@ import { ChatHistory, ChatHistorySchema } from "./schemas/chat_history.schema";
     QueueService,
     EventHookWorkerService,
     EventHookNotificationService,
+    UserPointHistoryService,
   ],
   exports: [ChatHistoryHelper, ChatHistoryService],
 })

@@ -27,9 +27,11 @@ import { TransactionService } from "../transaction/services/transaction.service"
 import { TransactionBankService } from "../transaction/services/transaction_bank.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserOrganization, UserOrganizationSchema } from "../user/schemas/user_organization.schema";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
 import { UserOrganizationService } from "../user/services/user_organization.service";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserModule } from "../user/user.module";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
@@ -85,6 +87,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     ChatRoomModule,
     UserModule,
@@ -121,6 +124,7 @@ import { CourseViewService } from "./services/course_view.service";
     TransactionBankService,
     UserOrganizationService,
     ChatRoomUserOptionService,
+    UserPointHistoryService,
   ],
   exports: [
     CourseHelper,

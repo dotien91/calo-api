@@ -32,11 +32,13 @@ import { UserAnonymous, UserAnonymousSchema } from "../user/schemas/user_anonymo
 import { UserBlock, UserBlockSchema } from "../user/schemas/user_block.schema";
 import { UserFollow, UserFollowSchema } from "../user/schemas/user_follow.schema";
 import { UserMood, UserMoodSchema } from "../user/schemas/user_mood.schema";
+import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
 import { UserService } from "../user/services/user.service";
 import { UserAnonymousService } from "../user/services/user_anonymous.service";
 import { UserBlockService } from "../user/services/user_block.service";
 import { UserFollowService } from "../user/services/user_follow.service";
+import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
@@ -73,6 +75,7 @@ import { CallkitService } from "./services/callkit.service";
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
+      { name: UserPointHistory.name, schema: UserPointHistorySchema },
     ]),
     SocketModule,
   ],
@@ -101,6 +104,7 @@ import { CallkitService } from "./services/callkit.service";
     QueueService,
     EventHookWorkerService,
     EventHookNotificationService,
+    UserPointHistoryService,
   ],
   exports: [CallKitHelper, CallkitService],
 })
