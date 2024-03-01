@@ -5,3 +5,8 @@ export enum TransactionRefType {
   REDEEM_MISSION = "RedeemMission",
   REFERRAL = "Referral",
 }
+
+export enum TransactionValueType {
+  COIN = "coin",
+  TOKEN = "token",
+}

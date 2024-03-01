@@ -17,6 +17,7 @@ import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
+import { filterDuplicateObject } from "../../../utils/utils";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
 import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
@@ -25,7 +26,7 @@ import { ListTransactionBankDto } from "../dto/list-transaction_bank.dto";
 import { ListUserIncomeDto } from "../dto/list-user-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transactions.dto";
 import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
-import { TransactionRefType } from "../interfaces/transaction.interface";
+import { TransactionRefType, TransactionValueType } from "../interfaces/transaction.interface";
 import { TransactionService } from "../services/transaction.service";
 import { TransactionBankService } from "../services/transaction_bank.service";
 /**
@@ -102,6 +103,8 @@ export class TransactionHelper {
           successfully_on: new Date(),
           last_token: lastToken,
           current_token: lastToken,
+          transaction_value: createTransactionData.transaction_value,
+          transaction_value_type: TransactionValueType.COIN,
         },
       };
 
@@ -272,6 +275,8 @@ export class TransactionHelper {
           method: "minus",
           status: "processing",
           trans_id: "",
+          transaction_value: createTransactionData.transaction_value,
+          transaction_value_type: TransactionValueType.TOKEN,
         },
       };
 
@@ -386,11 +391,11 @@ export class TransactionHelper {
       filterLastMonth = { ...filterLastMonth, ...query };
       const lastMonthCount = await this.transactionService.getUserIncome(filterLastMonth, {}, 1, 1);
       const dataReturn = {
-        today: todayCount[0] || { sum: 0 },
-        yesterday: yesterdayCount[0] || { sum: 0 },
-        current_week: currentWeekCount[0] || { sum: 0 },
-        current_month: currentMonthCount[0] || { sum: 0 },
-        last_month: lastMonthCount[0] || { sum: 0 },
+        today: todayCount[0] || { sum: 0, total_coin: 0, total_token: 0 },
+        yesterday: yesterdayCount[0] || { sum: 0, total_coin: 0, total_token: 0 },
+        current_week: currentWeekCount[0] || { sum: 0, total_coin: 0, total_token: 0 },
+        current_month: currentMonthCount[0] || { sum: 0, total_coin: 0, total_token: 0 },
+        last_month: lastMonthCount[0] || { sum: 0, total_coin: 0, total_token: 0 },
       };
       const dataCount = 0;
       return res
@@ -564,25 +569,28 @@ export class TransactionHelper {
         dataReturn[index] = dataReturn[index]?.toObject();
       }
 
+      const product_list = dataReturn
+        .filter((transaction) => [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type))
+        .map((transaction: any) => ({
+          _id: transaction.ref_id._id,
+          name: transaction.ref_id.title || transaction.ref_id.name,
+          url: transaction.ref_id.media_id.media_thumbnail || transaction.ref_id.media_id.media_url,
+        }));
+
+      const referral_user_list = dataReturn
+        .filter(
+          (transaction) =>
+            [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type) &&
+            transaction.referral_user
+        )
+        .map((transaction: any) => ({
+          _id: transaction.referral_user?._id,
+          name: transaction.referral_user?.display_name,
+        }));
+
       const finalDataReturn = {
-        product_list: dataReturn
-          .filter((transaction) =>
-            [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type)
-          )
-          .map((transaction: any) => ({
-            _id: transaction.ref_id._id,
-            name: transaction.ref_id.title || transaction.ref_id.name,
-          })),
-        referral_user_list: dataReturn
-          .filter(
-            (transaction) =>
-              [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type) &&
-              transaction.referral_user
-          )
-          .map((transaction: any) => ({
-            _id: transaction.referral_user?._id,
-            name: transaction.referral_user?.display_name,
-          })),
+        product_list: filterDuplicateObject(product_list),
+        referral_user_list: filterDuplicateObject(referral_user_list),
       };
 
       return res
@@ -694,6 +702,7 @@ export class TransactionHelper {
             current_coin: newCoin,
             last_coin: lastCoin,
             transaction_value: dataValue,
+            transaction_value_type: TransactionValueType.COIN,
             user_id: userObject._id.toString(),
             note: noteTransaction,
             status: "done",
@@ -752,6 +761,7 @@ export class TransactionHelper {
         current_coin: newCoin,
         last_coin: lastCoin,
         transaction_value: dataValue,
+        transaction_value_type: TransactionValueType.COIN,
         user_id: userId,
         note: noteTransaction,
         status: "done",

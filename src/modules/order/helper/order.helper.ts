@@ -21,7 +21,10 @@ import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
-import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
+import {
+  TransactionRefType,
+  TransactionValueType,
+} from "../../../modules/transaction/interfaces/transaction.interface";
 import { TransactionService } from "../../../modules/transaction/services/transaction.service";
 import {
   UserPointHistory_EntityAction,
@@ -1548,8 +1551,11 @@ export class OrderHelper {
         ref_id: refId,
         ref_type: refType,
         status: "done",
+        transaction_value: tokenValue,
+        transaction_value_type: TransactionValueType.TOKEN,
       };
-      await this.transactionService.create(newDataCreate);
+      this.transactionService.create(newDataCreate);
+      this.userService.update({ _id: targetUserId, current_token: newDataCreate.current_token });
     } catch (e) {
       throw new Error(e.message);
     }

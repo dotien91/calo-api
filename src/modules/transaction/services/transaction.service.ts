@@ -135,7 +135,12 @@ export class TransactionService {
         "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
       )
       .populate("transaction_bank")
-      .populate("ref_id")
+      .populate({
+        path: "ref_id",
+        populate: {
+          path: "media_id",
+        },
+      })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -155,7 +160,16 @@ export class TransactionService {
       .match(condition)
       .group({
         _id: { user_id: "$user_id" },
-        sum: { $sum: "$transaction_value" },
+        total_token: {
+          $sum: {
+            $cond: [{ $eq: ["$transaction_value_type", "token"] }, "$transaction_value", 0],
+          },
+        },
+        total_coin: {
+          $sum: {
+            $cond: [{ $eq: ["$transaction_value_type", "coin"] }, "$transaction_value", 0],
+          },
+        },
         count: { $sum: 1 },
       })
       .exec();

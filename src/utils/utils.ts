@@ -12,3 +12,16 @@ export function makeRandom(length: number, pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZ
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function filterDuplicateObject(product_list: any[]) {
+  const uniqueProductsMap = new Map();
+
+  for (const product of product_list) {
+    const _id = product["_id"];
+    if (!uniqueProductsMap.has(_id)) {
+      uniqueProductsMap.set(_id, product);
+    }
+  }
+
+  return Array.from(uniqueProductsMap.values());
+}

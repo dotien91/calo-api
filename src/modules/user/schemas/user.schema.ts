@@ -283,6 +283,12 @@ export class User {
     default: 0,
   })
   current_coin: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  current_token: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

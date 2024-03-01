@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { TransactionRefType } from "../interfaces/transaction.interface";
+import { TransactionRefType, TransactionValueType } from "../interfaces/transaction.interface";
 import { TransactionBank } from "./transaction_bank.schema";
 
 export type TransactionDocument = Transaction & Document;
@@ -100,6 +100,13 @@ export class Transaction {
     default: 0,
   })
   transaction_value: number;
+
+  @Prop({
+    type: String,
+    nullable: false,
+    enum: TransactionValueType,
+  })
+  transaction_value_type: string;
 
   @Prop({
     type: Number,
