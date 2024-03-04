@@ -209,6 +209,13 @@ export class TransactionHelper {
         throw new ForbiddenException("User is invalid");
       }
 
+      const transactionBank = await this.transactionBankService.findOne({
+        bank_name: createTransactionData.bank_name,
+        bank_number: createTransactionData.bank_number,
+        bank_account_name: createTransactionData.bank_account_name,
+      });
+      if (transactionBank) throw new Error("Duplicate Transaction Bank");
+
       createTransactionData = { ...createTransactionData, ...{ user_id: userObject?._id?.toString() } };
       const dataCreate = await this.transactionBankService.create(createTransactionData);
       return res
@@ -287,10 +294,11 @@ export class TransactionHelper {
         },
       };
 
-      await this.sendSocketUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
       //Send Notification
+      this.sendSocketUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
 
-      // const channel = await this.channelService.findById(channelId);
+      // Update request user token
+      this.userService.update({ _id: userObject?._id?.toString(), current_token: currentToken });
 
       const adminUser = await this.userService.findOne({ user_role: "admin" });
       this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
