@@ -830,7 +830,7 @@ export class OrderHelper {
             orderObject = await this.orderService.update(dataUpdate);
           }
 
-          // check order payload
+          // check order payload to add member to class
           if (orderItem.payload) {
             if (orderItem.payload.type === PayloadType.CLASS) {
               const data = orderItem.payload.data;
