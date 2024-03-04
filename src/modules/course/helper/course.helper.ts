@@ -2707,10 +2707,7 @@ export class CourseHelper {
         }
         case CourseType.CALL_GROUP: {
           const room = await this.courseClassService.findOne({
-            members: {
-              $in: [new mongoose.Types.ObjectId(query.user_id)],
-            },
-            course_id: new mongoose.Types.ObjectId(query.course_id),
+            _id: query.class_id,
           });
           const chatroom = await this.chatRoomService.findOneRoom({
             room_type: "class",

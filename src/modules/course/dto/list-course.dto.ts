@@ -127,4 +127,9 @@ export class GetCourseRoomParams {
   @IsDefined()
   @ApiProperty()
   course_id: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  class_id?: string;
 }
