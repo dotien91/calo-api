@@ -30,6 +30,12 @@ export class RedeemHelper {
             redeem_id: redeem._id,
           });
         }
+
+        for (const mission of redeem.missions) {
+          let counter = 0;
+          if (redeemUser) counter = redeemUser[`${mission.action_type}_${mission.action_target}_counter`];
+          mission["action_counter"] = counter > mission.action_amount ? mission.action_amount : counter;
+        }
       }
 
       return res

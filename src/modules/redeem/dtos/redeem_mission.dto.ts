@@ -36,6 +36,10 @@ export class CreateRedeemMissionDTO {
   title: string;
 
   @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
   @IsDefined()
   redeem_id: string;
 
@@ -75,6 +79,10 @@ export class UpdateRedeemMissionDTO {
   @IsString()
   @IsOptional()
   title?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
 
   @IsString()
   @IsOptional()

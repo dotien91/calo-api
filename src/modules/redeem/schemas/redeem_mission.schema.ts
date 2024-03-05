@@ -40,6 +40,11 @@ export class RedeemMission {
   title: string;
 
   @Prop({
+    type: MongooseSchema.Types.String,
+  })
+  description: string;
+
+  @Prop({
     type: MongooseSchema.Types.Number,
     default: 0,
   })
