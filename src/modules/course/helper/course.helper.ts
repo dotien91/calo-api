@@ -633,9 +633,6 @@ export class CourseHelper {
 
   async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
-      const userId = req.user_id;
-      if (!userId) throw new Error("Invalid user");
-
       if (Number(body.limit) > 1000) {
         body.limit = 1000;
       }
@@ -646,7 +643,7 @@ export class CourseHelper {
       const orderByObject = {};
       if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
-      const dataToFilter = { ...body, user_id: userId };
+      const dataToFilter = { ...body };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -711,12 +708,12 @@ export class CourseHelper {
         dataReturn = dataReturn.filter((elem: any) => elem.is_join);
       }
 
-      if (userId) {
+      if (body.user_id) {
         const courseIds = dataReturn.filter((elem) => {
           if (elem.type === CourseType.CALL_GROUP) return elem._id.toString();
         });
         const classes = await this.courseClassService.findAll({ course_id: { $in: courseIds } });
-        this.mergeClassInfoIntoCourseInfo(userId, dataReturn, classes);
+        this.mergeClassInfoIntoCourseInfo(body.user_id, dataReturn, classes);
       }
 
       return res
