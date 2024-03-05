@@ -4,6 +4,7 @@ import * as moment from "moment";
 import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -63,6 +64,7 @@ import {
 } from "../interfaces/course.interface";
 import { Course } from "../schemas/course.schema";
 import { CourseClass } from "../schemas/course_class.schema";
+import { CourseOneOne } from "../schemas/course_one_one.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
@@ -100,7 +102,8 @@ export class CourseHelper {
     private readonly emailService: EmailService,
     private readonly couponService: CouponService,
     private readonly referralService: ReferralService,
-    private readonly redeemUserService: RedeemUserService
+    private readonly redeemUserService: RedeemUserService,
+    private readonly chatRoomUserOptionService: ChatRoomUserOptionService
   ) {
     setTimeout(async () => {
       //await this.handleProcessModuleCount()
@@ -633,6 +636,9 @@ export class CourseHelper {
 
   async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
+      const userId = req?.user_id;
+      if (!userId) throw new Error("Invalid user");
+
       if (Number(body.limit) > 1000) {
         body.limit = 1000;
       }
@@ -643,7 +649,7 @@ export class CourseHelper {
       const orderByObject = {};
       if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
-      const dataToFilter = { ...body };
+      const dataToFilter = { ...body, user_id: body.created_user_id };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -708,13 +714,29 @@ export class CourseHelper {
         dataReturn = dataReturn.filter((elem: any) => elem.is_join);
       }
 
-      if (body.user_id) {
-        const courseIds = dataReturn.filter((elem) => {
-          if (elem.type === CourseType.CALL_GROUP) return elem._id.toString();
-        });
-        const classes = await this.courseClassService.findAll({ course_id: { $in: courseIds } });
-        this.mergeClassInfoIntoCourseInfo(body.user_id, dataReturn, classes);
-      }
+      // get all class of course class
+      const callGroupCourseIds = dataReturn
+        .filter((elem) => {
+          if (elem.type === CourseType.CALL_GROUP) return elem;
+        })
+        .map((elem) => elem._id.toString());
+      const callGroupClasses = await this.courseClassService.findAll({ course_id: { $in: callGroupCourseIds } });
+      this.mergeClassInfoIntoCourseInfo(userId, dataReturn, callGroupClasses);
+
+      // get all class of course one one
+      const oneOneCourseIds = dataReturn
+        .filter((elem) => {
+          if (elem.type === CourseType.CALL_ONE_ONE) return elem;
+        })
+        .map((elem) => elem._id.toString());
+      const oneOneClasses = await this.courseOneOneService.findAll(
+        {
+          course_id: { $in: oneOneCourseIds },
+          role: CourseOneOneRole.STUDENT,
+        },
+        true
+      );
+      this.mergeOneOneInfoIntoCourseInfo(userId, dataReturn, oneOneClasses);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
@@ -2702,14 +2724,26 @@ export class CourseHelper {
         case CourseType.CALL_ONE_ONE: {
           const [room] = await Promise.all([
             this.courseOneOneService.findOne({
-              user_id: course.user_id._id.toString(),
-              role: CourseOneOneRole.TEACHER,
+              _id: query.one_one_id,
             }),
           ]);
 
-          if (room) {
+          let chatRoom: any = null;
+          chatRoom = await this.chatRoomUserOptionService.findOne({
+            user_id: course.user_id._id.toString(),
+            partner_id: room.user_id.toString(),
+          });
+          if (!chatRoom) {
+            const userObject =
+              req.user_id.toString() === room.user_id.toString()
+                ? await this.userService.findOne({ _id: course.user_id._id.toString() })
+                : req.user_object;
+            chatRoom = await this.chatRoomHelper.handleCreateRoom(userObject, room.user_id.toString(), "personal");
+          }
+
+          if (room && chatRoom) {
             redirect_url = `/room/class/${room?._id.toString()}`;
-            chat_room_id = null;
+            chat_room_id = chatRoom.chat_room_id._id.toString().toString();
           } else throw new BadRequestException();
 
           break;
@@ -2789,7 +2823,22 @@ export class CourseHelper {
           );
         }
       });
-      courseData[i]["classes"] = courseClass;
+
+      if (courseClass.length) courseData[i]["classes"] = courseClass;
+    }
+  }
+
+  private mergeOneOneInfoIntoCourseInfo(userId: string, courseData: any[], classes: CourseOneOne[]) {
+    for (let i = 0; i < courseData.length; i++) {
+      const isTeacher = courseData[i].user_id !== userId;
+      const courseClass = classes.filter((_class) => {
+        if (isTeacher) return _class.course_id.toString() === courseData[i]._id.toString();
+        else {
+          return _class.course_id.toString() === courseData[i]._id.toString() && _class.user_id.toString() === userId;
+        }
+      });
+
+      if (courseClass.length) courseData[i]["classes"] = courseClass;
     }
   }
 }

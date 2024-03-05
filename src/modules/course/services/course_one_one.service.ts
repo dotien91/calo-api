@@ -35,8 +35,17 @@ export class CourseOneOneService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(pattern?: any): Promise<CourseOneOne[]> {
-    return this.courseOneOneModel.find(pattern).exec();
+  async findAll(pattern?: any, isPopulate = false): Promise<CourseOneOne[]> {
+    if (isPopulate) {
+      return this.courseOneOneModel
+        .find(pattern)
+        .populate({
+          path: "user_id",
+          select:
+            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+        })
+        .exec();
+    } else return this.courseOneOneModel.find(pattern).exec();
   }
 
   /**

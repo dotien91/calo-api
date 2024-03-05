@@ -84,7 +84,7 @@ export class ListCourseDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  user_id?: string;
+  created_user_id?: string;
 }
 
 export class ListSaleCourseDto {
@@ -132,4 +132,9 @@ export class GetCourseRoomParams {
   @IsOptional()
   @ApiPropertyOptional()
   class_id?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  one_one_id?: string;
 }
