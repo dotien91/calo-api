@@ -296,7 +296,7 @@ export class OrderHelper {
 
       let dataRedirect = "https://ieltshunter.io" + "/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
-        dataRedirect = dataOrder?.deep_link + dataOrder?._id?.toString();
+        dataRedirect = dataOrder?.deep_link;
       }
 
       if (dataOrder) {
