@@ -19,6 +19,8 @@ import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
+import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
+import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -88,6 +90,7 @@ import { CourseViewService } from "./services/course_view.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
+      { name: Referral.name, schema: ReferralSchema },
     ]),
     ChatRoomModule,
     UserModule,
@@ -125,6 +128,7 @@ import { CourseViewService } from "./services/course_view.service";
     UserOrganizationService,
     ChatRoomUserOptionService,
     UserPointHistoryService,
+    ReferralService,
   ],
   exports: [
     CourseHelper,

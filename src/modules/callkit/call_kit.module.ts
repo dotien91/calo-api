@@ -21,6 +21,8 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
+import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -76,6 +78,7 @@ import { CallkitService } from "./services/callkit.service";
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
+      { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
   ],
@@ -105,6 +108,7 @@ import { CallkitService } from "./services/callkit.service";
     EventHookWorkerService,
     EventHookNotificationService,
     UserPointHistoryService,
+    ReferralService,
   ],
   exports: [CallKitHelper, CallkitService],
 })

@@ -18,7 +18,7 @@ import { Referral, ReferralDocument } from "../schemas/referral.schema";
 export class ReferralService {
   constructor(
     @InjectModel(Referral.name)
-    private couponModel: Model<ReferralDocument>,
+    private referralModel: Model<ReferralDocument>,
 
     private userService: UserService,
     private eventHookWorkerService: EventHookWorkerService
@@ -30,7 +30,7 @@ export class ReferralService {
    * @returns
    */
   async create(createUser: CreateReferralDTO): Promise<Referral> {
-    const createdUser = new this.couponModel(createUser);
+    const createdUser = new this.referralModel(createUser);
     return createdUser.save();
   }
 
@@ -40,15 +40,17 @@ export class ReferralService {
    * @returns
    */
   async remove(dataToSearch: any): Promise<any> {
-    await this.couponModel.deleteMany(dataToSearch);
+    await this.referralModel.deleteMany(dataToSearch);
   }
 
   /**
    * @author Tony Vu
    * @returns
    */
-  async findAll(pattern?: any): Promise<Referral[]> {
-    return this.couponModel.find(pattern).exec();
+  async findAll(pattern?: any, isPopulate: boolean = false): Promise<Referral[]> {
+    if (isPopulate) {
+      return this.referralModel.find(pattern).populate("user_id").populate("from_user_id").exec();
+    } else return this.referralModel.find(pattern).exec();
   }
 
   /**
@@ -58,9 +60,9 @@ export class ReferralService {
    */
   async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<Referral> {
     if (isWithUser) {
-      return await this.couponModel.findOne(dataToSearch).exec();
+      return await this.referralModel.findOne(dataToSearch).exec();
     } else {
-      return await this.couponModel.findOne(dataToSearch).exec();
+      return await this.referralModel.findOne(dataToSearch).exec();
     }
   }
 
@@ -71,7 +73,7 @@ export class ReferralService {
    */
   async update(dataUpdate: any) {
     try {
-      const dataReturn = await this.couponModel.findOneAndUpdate(
+      const dataReturn = await this.referralModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -95,9 +97,9 @@ export class ReferralService {
     try {
       const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.couponModel.estimatedDocumentCount();
+        return this.referralModel.estimatedDocumentCount();
       } else {
-        return this.couponModel.countDocuments(condition);
+        return this.referralModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -156,7 +158,7 @@ export class ReferralService {
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    const dataReturn = await this.couponModel
+    const dataReturn = await this.referralModel
       .find(condition, projection)
       .sort(sortObject)
       .skip(limit * (page - 1))

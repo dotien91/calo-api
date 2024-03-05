@@ -39,6 +39,8 @@ import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
+import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
+import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserPointHistoryService } from "../user/services/user_point_history.service";
@@ -78,6 +80,7 @@ import { OrderService } from "./services/order.service";
       { name: Course.name, schema: CourseSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
+      { name: Referral.name, schema: ReferralSchema },
     ]),
     EmailModule,
     UserModule,
@@ -111,6 +114,7 @@ import { OrderService } from "./services/order.service";
     CourseService,
     UserService,
     UserPointHistoryService,
+    ReferralService,
   ],
   exports: [OrderService],
 })

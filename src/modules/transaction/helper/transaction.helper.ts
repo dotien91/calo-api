@@ -16,6 +16,7 @@ import { NotificationHelper } from "../../../modules/notification/helper/notific
 import { NotificationService } from "../../../modules/notification/services/notification.service";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { Purchase } from "../../../modules/purchase/schemas/purchase.schema";
+import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
@@ -47,7 +48,8 @@ export class TransactionHelper {
     private socketService: SocketService,
     private notificationHelper: NotificationHelper,
     private notificationService: NotificationService,
-    private userPointHistoryService: UserPointHistoryService
+    private userPointHistoryService: UserPointHistoryService,
+    private referralService: ReferralService
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
@@ -592,7 +594,7 @@ export class TransactionHelper {
           url: transaction.ref_id.media_id.media_thumbnail || transaction.ref_id.media_id.media_url,
         }));
 
-      const referral_user_list = dataReturn
+      const order_referral_user_list = dataReturn
         .filter(
           (transaction) =>
             [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type) &&
@@ -602,10 +604,16 @@ export class TransactionHelper {
           _id: transaction.referral_user?._id,
           name: transaction.referral_user?.display_name,
         }));
+      const sign_up_referral_user_list = (await this.referralService.findAll({ from_user_id: userId })).map(
+        (referralData: any) => ({
+          _id: referralData.from_user_id._id,
+          name: referralData.from_user_id.display_name,
+        })
+      );
 
       const finalDataReturn = {
         product_list: filterDuplicateObject(product_list),
-        referral_user_list: filterDuplicateObject(referral_user_list),
+        referral_user_list: filterDuplicateObject([...sign_up_referral_user_list, ...order_referral_user_list]),
       };
 
       return res

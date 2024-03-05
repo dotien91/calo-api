@@ -8,6 +8,8 @@ import { NotificationHelper } from "../notification/helper/notification.helper";
 import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
 import { NotificationService } from "../notification/services/notification.service";
 import { QueueService } from "../queue/queue.service";
+import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
+import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
@@ -44,6 +46,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
+      { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
   ],
@@ -62,6 +65,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     NotificationService,
     UserSessionService,
     UserPointHistoryService,
+    ReferralService,
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })

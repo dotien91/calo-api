@@ -24,6 +24,8 @@ import { OrderService } from "../order/services/order.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
+import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
+import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -47,6 +49,7 @@ import { UserInterest, UserInterestSchema } from "./schemas/user_interest.schema
 import { UserLocationHistory, UserLocationHistorySchema } from "./schemas/user_location_history.schema";
 import { UserMood, UserMoodSchema } from "./schemas/user_mood.schema";
 import { UserOrganization, UserOrganizationSchema } from "./schemas/user_organization.schema";
+import { UserPointHistory, UserPointHistorySchema } from "./schemas/user_point_history.schema";
 import { UserQuestion, UserQuestionSchema } from "./schemas/user_question.schema";
 import { UserSession, UserSessionSchema } from "./schemas/user_session.schema";
 import { UserView, UserViewSchema } from "./schemas/user_view.schema";
@@ -60,11 +63,10 @@ import { UserInterestService } from "./services/user_interest.service";
 import { UserLocationService } from "./services/user_location.service";
 import { UserMoodService } from "./services/user_mood.service";
 import { UserOrganizationService } from "./services/user_organization.service";
+import { UserPointHistoryService } from "./services/user_point_history.service";
 import { UserQuestionService } from "./services/user_question.service";
 import { UserSessionService } from "./services/user_session.service";
 import { UserViewService } from "./services/user_view.service";
-import { UserPointHistoryService } from "./services/user_point_history.service";
-import { UserPointHistory, UserPointHistorySchema } from "./schemas/user_point_history.schema";
 
 @Module({
   imports: [
@@ -105,6 +107,7 @@ import { UserPointHistory, UserPointHistorySchema } from "./schemas/user_point_h
       { name: CourseUser.name, schema: CourseUserSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
+      { name: Referral.name, schema: ReferralSchema },
     ]),
     EmailModule,
     CouponModule,
@@ -146,7 +149,8 @@ import { UserPointHistory, UserPointHistorySchema } from "./schemas/user_point_h
     UserOrganizationHelper,
     CourseService,
     CourseUserService,
-    UserPointHistoryService
+    UserPointHistoryService,
+    ReferralService,
   ],
   exports: [
     UserFilterHelper,
