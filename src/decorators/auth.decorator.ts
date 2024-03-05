@@ -29,6 +29,7 @@ export class PermissionGuard implements CanActivate {
       user: 0,
       teacher: 1,
       admin: 2,
+      "super-admin": 3,
     };
 
     if (!userObject) throw new UnauthorizedException("Require Token!");

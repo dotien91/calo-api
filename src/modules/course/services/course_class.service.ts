@@ -35,8 +35,8 @@ export class CourseClassService {
    * @author Tony Vu
    * @returns
    */
-  async findAll(): Promise<CourseClass[]> {
-    return this.courseClassModel.find().exec();
+  async findAll(searchPattern?: any): Promise<CourseClass[]> {
+    return this.courseClassModel.find(searchPattern).exec();
   }
 
   /**

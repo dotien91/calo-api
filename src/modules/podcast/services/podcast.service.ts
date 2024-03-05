@@ -189,22 +189,6 @@ export class PodcastService {
 
   /**
    * @author Tony Vu
-   * @param userId
-   * @returns boolean
-   */
-  async isSuperAdmin(userId: string) {
-    const superAdmin = process.env.SUPER_ADMIN;
-    if (superAdmin) {
-      const superAdminArray = superAdmin.split(",");
-      if (superAdminArray.indexOf(userId) !== -1) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * @author Tony Vu
    * @returns
    */
   async findAll(): Promise<Podcast[]> {

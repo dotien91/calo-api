@@ -62,6 +62,7 @@ import {
   TutorTimeAvailAble,
 } from "../interfaces/course.interface";
 import { Course } from "../schemas/course.schema";
+import { CourseClass } from "../schemas/course_class.schema";
 import { CourseUser } from "../schemas/course_user.schema";
 import { CourseView } from "../schemas/course_view.schema";
 import { CourseService } from "../services/course.service";
@@ -632,6 +633,9 @@ export class CourseHelper {
 
   async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
+      const userId = req.user_id;
+      if (!userId) throw new Error("Invalid user");
+
       if (Number(body.limit) > 1000) {
         body.limit = 1000;
       }
@@ -642,7 +646,7 @@ export class CourseHelper {
       const orderByObject = {};
       if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
 
-      const dataToFilter = { ...body };
+      const dataToFilter = { ...body, user_id: userId };
       delete dataToFilter.page;
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
@@ -705,6 +709,14 @@ export class CourseHelper {
         }
 
         dataReturn = dataReturn.filter((elem: any) => elem.is_join);
+      }
+
+      if (userId) {
+        const courseIds = dataReturn.filter((elem) => {
+          if (elem.type === CourseType.CALL_GROUP) return elem._id.toString();
+        });
+        const classes = await this.courseClassService.findAll({ course_id: { $in: courseIds } });
+        this.mergeClassInfoIntoCourseInfo(userId, dataReturn, classes);
       }
 
       return res
@@ -2765,6 +2777,22 @@ export class CourseHelper {
         .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
+    }
+  }
+
+  private mergeClassInfoIntoCourseInfo(userId: string, courseData: any[], classes: CourseClass[]) {
+    for (let i = 0; i < courseData.length; i++) {
+      const isTeacher = courseData[i].user_id !== userId;
+      const courseClass = classes.filter((_class) => {
+        if (isTeacher) return _class.course_id.toString() === courseData[i]._id.toString();
+        else {
+          return (
+            _class.course_id.toString() === courseData[i]._id.toString() &&
+            _class.members.map((member) => member.toString()).includes(userId)
+          );
+        }
+      });
+      courseData[i]["classes"] = courseClass;
     }
   }
 }

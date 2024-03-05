@@ -80,11 +80,6 @@ export class ListCourseDto {
   @IsOptional()
   @ApiPropertyOptional()
   onlyEnglishNativeSpeakers?: boolean;
-
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
-  user_id?: string;
 }
 
 export class ListSaleCourseDto {

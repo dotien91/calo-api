@@ -116,7 +116,7 @@ export class OrderController {
   }
 
   @Post("/admin-update")
-  @Permissions(UserRoles.ADMIN)
+  @Permissions(UserRoles.SUPER_ADMIN)
   async updateByAdmin(@Body() dataUpdate: UpdateOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.orderHelper.handleUpdateOrderByAdmin(dataUpdate, res, req);
   }
