@@ -3,9 +3,16 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import axios from "axios";
 import { Model } from "mongoose";
+import { HttpClientService } from "../../../base/http-client/http.base";
 import { GptService } from "../../../modules/gpt/services/gpt.service";
 import { FilterTestUserDTO, UpdateTestUserDTO, UserAnswer } from "../dtos/test_user.dto";
-import { SpeakingResult, TestQuestionPart, TestStatus, WritingResult } from "../interfaces/test.interface.i";
+import {
+  Junbro1016ResponseData,
+  SpeakingResult,
+  TestQuestionPart,
+  TestStatus,
+  WritingResult,
+} from "../interfaces/test.interface.i";
 import { TestQuestion } from "../schemas/test_question.schema";
 import { TestUser, TestUserDocument } from "../schemas/test_user.schema";
 import { TestQuestionService } from "./test_question.service";
@@ -17,7 +24,8 @@ export class TestUserService {
     private testUserModel: Model<TestUserDocument>,
 
     private testQuestionService: TestQuestionService,
-    private gptService: GptService
+    private gptService: GptService,
+    private httpService: HttpClientService
   ) {}
 
   /**
@@ -175,7 +183,7 @@ export class TestUserService {
     const listeningPoint = this.getListeningBand(userAnswers, listeningQuestions);
     const readingPoint = this.getReadingBand(userAnswers, readingQuestions);
     const writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
-    const speakingPoint = await this.getSpeakingBank(userAnswers, speakingQuestions);
+    const speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
 
     const averageBand = (listeningPoint + readingPoint + writingPoint + speakingPoint) / 4;
     const band = this.getIELTSBandScore(averageBand);
@@ -301,14 +309,25 @@ export class TestUserService {
     return this.getIELTSBandScore(totalBand / data.length);
   }
 
-  private async getSpeakingBank(userAnswers: UserAnswer[], questions: TestQuestion[]): Promise<number> {
+  private async getSpeakingBand(userAnswers: UserAnswer[], questions: TestQuestion[]): Promise<number> {
     let result: SpeakingResult[] = [];
     for (const userAnswer of userAnswers) {
       const question = questions.find((question) => question.index === userAnswer.index);
       if (!question) continue;
 
       const userSpeechText = await this.getTextFromSpeech(userAnswer.answer);
-      const data = await this.gptService.getSpeakingBandScore(question.question, userSpeechText);
+      const [lexical_and_grammatical_object, pronunciation, fluency_and_coherence] = await Promise.all([
+        this.gptService.getSpeakingLexialResourceAndGrammaticalRangeCriteria(question.question, userSpeechText),
+        this.getSpeakingPronounceCriteria(userAnswer.answer),
+        this.getSpeakingFluencyAndCoherenceCriteria(userAnswer.answer),
+      ]);
+
+      let data: SpeakingResult = {
+        lexical_resource: lexical_and_grammatical_object.lexical_resource,
+        grammatical_range_and_accuracy: lexical_and_grammatical_object.grammatical_range_and_accuracy,
+        pronunciation: pronunciation,
+        fluency_and_coherence: fluency_and_coherence,
+      };
 
       userAnswer.correct_answer = data;
       result.push(data);
@@ -331,6 +350,62 @@ export class TestUserService {
     }
 
     return this.getIELTSBandScore(totalBand / data.length);
+  }
+
+  private async getSpeakingFluencyAndCoherenceCriteria(audioUrl: string): Promise<number> {
+    try {
+      const bufferData = await fetch(audioUrl).then((response) => {
+        return response.arrayBuffer();
+      });
+      const headers = { Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}` };
+      const band = await this.httpService
+        .post$(process.env.JUNBRO1016_PRONUNCIATION_SCORING_FLUENCY, bufferData, headers)
+        .then((response) => {
+          const data: Junbro1016ResponseData = response.data;
+          return this.calculateJunbro1016Score(data);
+        });
+
+      return band;
+    } catch (e) {
+      console.log(e.message);
+      return 5;
+    }
+  }
+
+  private async getSpeakingPronounceCriteria(audioUrl: string): Promise<number> {
+    try {
+      const bufferData = await fetch(audioUrl).then((response) => {
+        return response.arrayBuffer();
+      });
+      const headers = { Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}` };
+      const band = await this.httpService
+        .post$(process.env.JUNBRO1016_PRONUNCIATION_SCORING_COMPLETENESS, bufferData, headers)
+        .then((response) => {
+          const data: Junbro1016ResponseData = response.data;
+          return this.calculateJunbro1016Score(data);
+        });
+
+      return band;
+    } catch (e) {
+      console.log(e.message);
+      return 5;
+    }
+  }
+
+  private async calculateJunbro1016Score(data: Junbro1016ResponseData) {
+    let score = 0;
+
+    data.forEach((item) => {
+      if (item.label === "good") {
+        score += item.score * 9;
+      } else if (item.label === "normal") {
+        score += item.score * 6;
+      } else if (item.label === "bad") {
+        score += item.score * 3;
+      }
+    });
+
+    return this.getIELTSBandScore(score);
   }
 
   private async getTextFromSpeech(audioUrl: string) {

@@ -32,3 +32,7 @@ export interface SpeakingResult {
   pronunciation: number;
 }
 
+export type Junbro1016ResponseData = Array<{
+  score: number;
+  label: string;
+}>;

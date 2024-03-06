@@ -78,7 +78,7 @@ export class GptService {
     return null;
   }
 
-  async getSpeakingBandScore(topic: string, essay: string): Promise<SpeakingResult> {
+  async getSpeakingLexialResourceAndGrammaticalRangeCriteria(topic: string, essay: string): Promise<SpeakingResult> {
     const body = JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: [
@@ -90,10 +90,10 @@ export class GptService {
           My speech: ${essay}
           Please return your review in json stringify of json below
           {
-            fluency_and_coherence: number
+            fluency_and_coherence: 0 (const)
             lexical_resource: number
             grammatical_range_and_accuracy: number
-            pronunciation: number
+            pronunciation: 0 (const)
           }
           `,
         },
