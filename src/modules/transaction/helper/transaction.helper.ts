@@ -79,7 +79,6 @@ export class TransactionHelper {
         throw new BadRequestException("Error while Transaction!");
       }
 
-      // TODO: only admin
       const userId = userObject._id.toString();
 
       const dataFilter = {

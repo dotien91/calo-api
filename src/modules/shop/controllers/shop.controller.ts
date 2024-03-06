@@ -10,27 +10,27 @@ export class ShopController {
 
   // shop apis
   @Get("/list")
-  async listCoupon(@Query() query: ListShopDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async listShop(@Query() query: ListShopDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shopHelper.list(query, res, req);
   }
 
   @Post("/create")
-  async createNewCoupon(@Body() createCouponData: CreateShopDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.shopHelper.createShop(createCouponData, res, req);
+  async createNewShop(@Body() createShopData: CreateShopDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.shopHelper.createShop(createShopData, res, req);
   }
 
   @Patch("/update")
-  async updateCoupon(@Body() updateCouponData: UpdateShopDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.shopHelper.updateShop(updateCouponData, res, req);
+  async updateShop(@Body() updateShopData: UpdateShopDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.shopHelper.updateShop(updateShopData, res, req);
   }
 
   @Delete("delete/:id")
-  async removeCoupon(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async removeShop(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shopHelper.removeShop(id, res, req);
   }
 
   @Get("detail/:id")
-  async handleGetDetailCoupon(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
+  async handleGetDetailShop(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.shopHelper.handleGetDetailShop(id, res, req);
   }
 }

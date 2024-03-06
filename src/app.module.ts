@@ -40,6 +40,7 @@ import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
+import { TestModule } from "./modules/test/test.module";
 import { ThreadModule } from "./modules/thread/thread.module";
 import { UserModule } from "./modules/user/user.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
@@ -93,6 +94,7 @@ const dataImport = [
   RedeemModule,
   ThreadModule,
   SocketModule,
+  TestModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
