@@ -160,6 +160,16 @@ export class ReferralService {
     }
     const dataReturn = await this.referralModel
       .find(condition, projection)
+      .populate({
+        path: "user_id",
+        select:
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+      })
+      .populate({
+        path: "from_user_id",
+        select:
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+      })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)

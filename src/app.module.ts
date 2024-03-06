@@ -37,6 +37,7 @@ import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ProductModule } from "./modules/product/product.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
+import { ReferralModule } from "./modules/referral/referral.module";
 import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
@@ -93,6 +94,7 @@ const dataImport = [
   RedeemModule,
   ThreadModule,
   SocketModule,
+  ReferralModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,
