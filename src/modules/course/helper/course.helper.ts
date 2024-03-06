@@ -739,7 +739,10 @@ export class CourseHelper {
       this.mergeOneOneInfoIntoCourseInfo(userId, dataReturn, oneOneClasses);
 
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+          "X-Total-Count": Number(dataReturn.length),
+        })
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
