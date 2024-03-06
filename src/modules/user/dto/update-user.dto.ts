@@ -168,6 +168,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @ApiPropertyOptional()
   user_payment_address?: string[];
+
+  @IsNumber()
+  @IsOptional()
+  @ApiPropertyOptional()
+  taught_time?: number;
 }
 
 export interface UserCertificate {

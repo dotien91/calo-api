@@ -76,7 +76,7 @@ export class UserService {
     if (!id) {
       return null;
     }
-    projection = { ...projection, ...{ __v: false } };
+    projection = { ...projection, ...{ __v: false, user_password: false } };
     const dataReturn = await this.appUserModel.findById(id, projection).exec();
     return dataReturn;
   }
@@ -353,6 +353,18 @@ export class UserService {
       }
     } catch (e) {
       return e;
+    }
+  }
+
+  async updateTeacherTaughtTime(userId: string, taughtTime: number) {
+    try {
+      return this.appUserModel.updateMany(
+        { _id: userId },
+        { $inc: { taught_time: taughtTime }, last_updated: Date.now() },
+        { new: true }
+      );
+    } catch (e) {
+      return null;
     }
   }
 

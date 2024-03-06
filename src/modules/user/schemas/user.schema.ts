@@ -289,6 +289,12 @@ export class User {
     default: 0,
   })
   current_token: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  taught_time: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({
