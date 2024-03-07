@@ -2,6 +2,7 @@ export class SearchTransactionDto {
   user_id?: string;
   user_ids?: string;
   from_user_ids?: string;
+  referral_user?: string;
   ref_ids?: string;
   status?: string;
   status_array?: string[];

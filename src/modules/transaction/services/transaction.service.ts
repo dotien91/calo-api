@@ -28,6 +28,9 @@ export class TransactionService {
     if (filter.user_ids) {
       condition = Object.assign(condition, { from_user: { $in: filter.user_ids } });
     }
+    if (filter.referral_user) {
+      condition = Object.assign(condition, { referral_user: { $in: filter.referral_user } });
+    }
     if (filter.from_user_ids?.length) {
       condition = Object.assign(condition, { from_user: { $in: filter.from_user_ids.split(",") } });
     }
@@ -124,15 +127,15 @@ export class TransactionService {
       .find(condition)
       .populate(
         "user_id",
-        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+        "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status level"
       )
       .populate(
         "from_user",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status level"
       )
       .populate(
         "referral_user",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status level"
       )
       .populate("transaction_bank")
       .populate({

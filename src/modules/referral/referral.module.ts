@@ -10,6 +10,8 @@ import { UserService } from "../user/services/user.service";
 import { UserSessionService } from "../user/services/user_session.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
+import { ReferralController } from "./controllers/referral.controller";
+import { ReferralHelper } from "./helpers/referral.helper";
 import { Referral, ReferralSchema } from "./schemas/referral.schema";
 import { ReferralService } from "./services/referral.service";
 
@@ -24,15 +26,16 @@ import { ReferralService } from "./services/referral.service";
     TransactionModule,
     NotificationModule,
   ],
-  controllers: [],
+  controllers: [ReferralController],
   providers: [
     ReferralService,
+    ReferralHelper,
     UserService,
     EventHookWorkerService,
     EventHookNotificationService,
     UserPermissionService,
     UserSessionService,
   ],
-  exports: [ReferralService],
+  exports: [ReferralService, ReferralHelper],
 })
 export class ReferralModule {}

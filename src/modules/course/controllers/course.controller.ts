@@ -6,6 +6,7 @@ import * as moment from "moment-timezone";
 import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserRoles } from "../../../modules/user/interfaces/user.interface";
+import { UserService } from "../../../modules/user/services/user.service";
 import { NotificationHelper } from "../../notification/helper/notification.helper";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { UserLoginHelper } from "../../user/helper/user_login.helper";
@@ -45,7 +46,8 @@ export class CourseController {
   constructor(
     private readonly courseHelper: CourseHelper,
     private readonly notificationHelper: NotificationHelper,
-    private readonly userLoginHelper: UserLoginHelper
+    private readonly userLoginHelper: UserLoginHelper,
+    private readonly userService: UserService
   ) {
     const jwt = this.userLoginHelper.generateJwt(process.env.INFO_SESSION, true);
     if (typeof jwt !== "boolean") {
@@ -68,7 +70,7 @@ export class CourseController {
       const classId = _class._id;
       for (const calendar of calendars) {
         for (const member of _class.members) {
-          const { day, time_start } = calendar as any;
+          const { day, time_start, time_end } = calendar as any;
           const memberTimezone = (member as any).timezone || "UTC";
           const memberId = (member as any)._id.toString();
           const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
@@ -106,6 +108,22 @@ export class CourseController {
                 click_action: "",
                 image: "",
               };
+
+              // plus taught_time for teacher
+              (async () => {
+                const course = await this.courseHelper.getCourse({
+                  _id: _class.course_id.toString(),
+                });
+                if (course) {
+                  this.userService.updateTeacherTaughtTime(
+                    course.user_id._id.toString(),
+                    this.courseHelper.hourDifference(time_start, time_end)
+                  );
+                } else {
+                  console.log("Error: Teacher's taught time - Not found course");
+                }
+              })();
+
               this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
             }
           } else {
@@ -126,7 +144,7 @@ export class CourseController {
       const classId = _class._id.toString();
       const calendars = _class.time_pick;
       for (const calendar of calendars) {
-        const { day, time_start } = calendar as any;
+        const { day, time_start, time_end } = calendar as any;
         const memberTimezone = _class.user_id.timezone || "UTC";
         const memberId = _class.user_id._id.toString();
         const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
@@ -163,6 +181,22 @@ export class CourseController {
               click_action: "",
               image: "",
             };
+
+            // plus taught_time for teacher
+            (async () => {
+              const course = await this.courseHelper.getCourse({
+                _id: _class.course_id.toString(),
+              });
+              if (course) {
+                this.userService.updateTeacherTaughtTime(
+                  course.user_id._id.toString(),
+                  this.courseHelper.hourDifference(time_start, time_end)
+                );
+              } else {
+                console.log("Error: Teacher's taught time - Not found course");
+              }
+            })();
+
             this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
           }
         } else {

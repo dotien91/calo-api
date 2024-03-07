@@ -739,7 +739,10 @@ export class CourseHelper {
       this.mergeOneOneInfoIntoCourseInfo(userId, dataReturn, oneOneClasses);
 
       return res
-        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+          "X-Total-Count": Number(dataReturn.length),
+        })
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
@@ -2840,5 +2843,23 @@ export class CourseHelper {
 
       if (courseClass.length) courseData[i]["classes"] = courseClass;
     }
+  }
+
+  async getCourse(searchPattern: any) {
+    try {
+      return await this.courseService.findOne(searchPattern);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  hourDifference(startTime, endTime) {
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+
+    const totalStartMinutes = startHour * 60 + startMinute;
+    const totalEndMinutes = endHour * 60 + endMinute;
+
+    return (totalEndMinutes - totalStartMinutes) / 60;
   }
 }

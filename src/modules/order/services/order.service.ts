@@ -495,6 +495,9 @@ export class OrderService {
           address: {
             $first: "$address",
           },
+          invitation_code: {
+            $first: "$invitation_code",
+          },
         },
       },
     ];

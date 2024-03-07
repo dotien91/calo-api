@@ -221,7 +221,6 @@ export class Order {
 
   @Prop({
     type: String,
-    nullable: false,
   })
   invitation_code: string;
 }
