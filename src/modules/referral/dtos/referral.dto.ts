@@ -18,4 +18,8 @@ export class ListReferralDto {
   @IsIn(["DESC", "ASC"])
   @IsOptional()
   order_by?: "DESC" | "ASC";
+
+  @IsIn(["time", "price"])
+  @IsOptional()
+  sort_by?: "time" | "price";
 }

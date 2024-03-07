@@ -7,8 +7,11 @@ export class CreateTransactionDto {
 
   @IsString()
   @ApiPropertyOptional()
-  @ApiPropertyOptional()
   from_user?: string;
+
+  @IsString()
+  @ApiPropertyOptional()
+  referral_user?: string;
 
   @IsString()
   @IsOptional(null)

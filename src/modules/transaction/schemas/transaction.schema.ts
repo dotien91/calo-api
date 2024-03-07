@@ -32,9 +32,6 @@ export class Transaction {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: "TransactionBank", index: true })
   transaction_bank: TransactionBank;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Channel", index: true })
-  channel_id: string;
-
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     index: true,
