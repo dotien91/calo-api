@@ -11,7 +11,12 @@ import {
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { FilterReferralDTO } from "../dtos/referral.dto";
-import { CreateReferralDTO, ReferralType } from "../interfaces/referral.interface.i";
+import {
+  CreateReferralDTO,
+  ReferralBonusType,
+  ReferralRefType,
+  ReferralType,
+} from "../interfaces/referral.interface.i";
 import { Referral, ReferralDocument } from "../schemas/referral.schema";
 
 @Injectable()
@@ -170,6 +175,9 @@ export class ReferralService {
         select:
           "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status level",
       })
+      .populate({
+        path: "ref_id",
+      })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)
@@ -181,25 +189,45 @@ export class ReferralService {
     try {
       const bonusCoin = 1;
       const bonusPoint = 20;
-      this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.SIGN_UP, (userId, entityId) => {
-        const data: AddPointToUserData = {
-          user_id: userId,
-          point: bonusPoint,
-          entity_id: entityId,
-          entity_target: UserPointHistory_EntityTarget.ACCOUNT,
-          entity_action: UserPointHistory_EntityAction.REFERRAL,
-        };
-        this.eventHookWorkerService.AddPointToUser(data);
-      });
+      this.processReferral(
+        invitationCode,
+        userObject,
+        bonusCoin,
+        ReferralType.SIGN_UP,
+        null,
+        null,
+        (userId, entityId) => {
+          const data: AddPointToUserData = {
+            user_id: userId,
+            point: bonusPoint,
+            entity_id: entityId,
+            entity_target: UserPointHistory_EntityTarget.ACCOUNT,
+            entity_action: UserPointHistory_EntityAction.REFERRAL,
+          };
+          this.eventHookWorkerService.AddPointToUser(data);
+        }
+      );
     } catch (e) {
       console.log(e.message);
     }
   }
 
-  async processBuyCourseBonusForReferralUser(invitationCode: string, userObject: User, price: number) {
+  async processBuyProductBonusForReferralUser(
+    invitationCode: string,
+    userObject: User,
+    price: number,
+    orderId: string
+  ) {
     try {
-      const bonusCoin = 0.0008 * price;
-      this.processReferral(invitationCode, userObject, bonusCoin, ReferralType.BUY_COURSE);
+      const bonusCoin = 0.00008 * price;
+      this.processReferral(
+        invitationCode,
+        userObject,
+        bonusCoin,
+        ReferralType.BUY_PRODUCT,
+        orderId,
+        ReferralRefType.ORDER
+      );
     } catch (e) {
       console.log(e.message);
     }
@@ -208,7 +236,7 @@ export class ReferralService {
   async processCompletedCourseBonusForReferralUser(userObject: User, price: number) {
     try {
       const bonusCoin = 0.0002 * price;
-      this.processReferral(userObject.invitation_code, userObject, bonusCoin, ReferralType.COMPLETE_COURSE);
+      this.processReferral(userObject.invitation_code, userObject, bonusCoin, ReferralType.COMPLETE_COURSE, null, null);
     } catch (e) {
       console.log(e.message);
     }
@@ -219,6 +247,8 @@ export class ReferralService {
     userObject: User,
     coin: number,
     referralType: string,
+    refId: string,
+    refType: ReferralRefType,
     processPoint?: (userId: string, entityId: string) => void
   ) {
     try {
@@ -227,17 +257,14 @@ export class ReferralService {
       });
 
       if (referralUser) {
-        const referral = await this.findOne({
-          user_id: userObject._id.toString(),
-          from_user_id: referralUser._id.toString(),
-          type: referralType,
-        });
-        if (referral) throw new Error("User already do this referral");
-
         const referralData = await this.create({
           user_id: userObject._id.toString(),
           from_user_id: referralUser._id.toString(),
           type: referralType,
+          bonus_type: ReferralBonusType.COIN,
+          bonus_value: coin,
+          ref_id: refId,
+          ref_type: refType,
         });
         processPoint(referralUser._id.toString(), referralData?._id?.toString());
         this.eventHookWorkerService.AddCoinToUser({

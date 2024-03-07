@@ -54,9 +54,13 @@ export class TransactionService {
     if (filter.ref_ids?.length) {
       condition = Object.assign(condition, { ref_id: { $in: filter.ref_ids.split(",") } });
     }
-    if (filter.ref_type) {
+
+    if (typeof filter.ref_type === "object") {
+      condition = Object.assign(condition, { ref_type: { $in: filter.ref_type } });
+    } else if (typeof filter.ref_type === "string") {
       condition = Object.assign(condition, { ref_type: filter.ref_type });
     }
+
     if (filter.type_system) {
       condition = Object.assign(condition, { type_system: filter.type_system });
     }

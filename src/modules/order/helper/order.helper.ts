@@ -863,32 +863,38 @@ export class OrderHelper {
 
           // update point for user
           // update coin for referral user
-          if (orderItem.type === TransactionRefType.COURSE) {
+          if ([TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(orderItem.type)) {
+            const entityTarget =
+              orderItem.type === TransactionRefType.COURSE
+                ? UserPointHistory_EntityTarget.COURSE
+                : UserPointHistory_EntityTarget.PRODUCT;
+            const redeemTarget =
+              orderItem.type === TransactionRefType.COURSE
+                ? RedeemMissionActionTarget.COURSE
+                : RedeemMissionActionTarget.PRODUCT;
+
             // update point for user
             const data: AddPointToUserData = {
               user_id: orderObject.user_id._id.toString(),
               point: orderObject.payment_method === "free" ? 10 : Math.floor(orderObject.price / 10000),
               entity_id: orderItem?.plan_id._id?.toString(),
-              entity_target: UserPointHistory_EntityTarget.COURSE,
+              entity_target: entityTarget,
               entity_action: UserPointHistory_EntityAction.BUY,
             };
             this.eventHookWorkerService.AddPointToUser(data);
 
             // update redeem for user
-            this.redeemUserService.updateUserRedeem(
-              orderObject.user_id,
-              RedeemMissionActionType.BUY,
-              RedeemMissionActionTarget.COURSE
-            );
+            this.redeemUserService.updateUserRedeem(orderObject.user_id, RedeemMissionActionType.BUY, redeemTarget);
 
             // update coin for referral user
             // update redeem mission for user
             if (orderObject.invitation_code) {
               // update coin for referral user
-              this.referralService.processBuyCourseBonusForReferralUser(
+              this.referralService.processBuyProductBonusForReferralUser(
                 orderObject.invitation_code,
                 orderObject.user_id,
-                orderObject.price
+                orderObject.price,
+                orderObject._id.toString()
               );
 
               // update redeem mission for user
@@ -896,11 +902,7 @@ export class OrderHelper {
                 invitation_code: orderObject.invitation_code,
               });
               if (referralUser)
-                this.redeemUserService.updateUserRedeem(
-                  referralUser,
-                  RedeemMissionActionType.BUY,
-                  RedeemMissionActionTarget.COURSE
-                );
+                this.redeemUserService.updateUserRedeem(referralUser, RedeemMissionActionType.BUY, redeemTarget);
             }
           }
         }
