@@ -58,7 +58,6 @@ export class Referral {
   @Prop({
     type: String,
     nullable: true,
-    enum: ReferralRefType,
   })
   ref_type: ReferralRefType;
 }
