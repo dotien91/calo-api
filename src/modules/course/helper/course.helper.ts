@@ -859,6 +859,9 @@ export class CourseHelper {
    */
   async handleGetDetailCourse(query: ListCourseDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
+      const userId = req?.user_id;
+      if (!userId) throw new Error("Invalid user");
+
       if (!id) {
         throw new ForbiddenException("Id is not invalid");
       }
@@ -921,6 +924,30 @@ export class CourseHelper {
               ...dataReturn,
               ...{ is_join: true },
             };
+          }
+        }
+
+        switch (dataReturn.type) {
+          case CourseType.CALL_GROUP: {
+            // get all class of course class
+            const callGroupCourseIds = [dataReturn._id.toString()];
+            const callGroupClasses = await this.courseClassService.findAll({ course_id: { $in: callGroupCourseIds } });
+            this.mergeClassInfoIntoCourseInfo(userId, [dataReturn], callGroupClasses);
+            break;
+          }
+          case CourseType.CALL_ONE_ONE: {
+            // get all class of course one one
+            const oneOneCourseIds = [dataReturn._id.toString()];
+            const oneOneClasses = await this.courseOneOneService.findAll(
+              {
+                course_id: { $in: oneOneCourseIds },
+                role: CourseOneOneRole.STUDENT,
+              },
+              true
+            );
+            this.mergeOneOneInfoIntoCourseInfo(userId, [dataReturn], oneOneClasses);
+
+            break;
           }
         }
 
@@ -2816,7 +2843,7 @@ export class CourseHelper {
 
   private mergeClassInfoIntoCourseInfo(userId: string, courseData: any[], classes: CourseClass[]) {
     for (let i = 0; i < courseData.length; i++) {
-      const isTeacher = courseData[i].user_id !== userId;
+      const isTeacher = courseData[i].user_id._id.toString() === userId;
       const courseClass = classes.filter((_class) => {
         if (isTeacher) return _class.course_id.toString() === courseData[i]._id.toString();
         else {
