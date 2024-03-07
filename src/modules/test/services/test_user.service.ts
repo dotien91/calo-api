@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import axios from "axios";
 import { Model } from "mongoose";
-import { HttpClientService } from "../../../base/http-client/http.base";
+import { BotService } from "../../../modules/bot/services/bot.service";
 import { GptService } from "../../../modules/gpt/services/gpt.service";
 import { FilterTestUserDTO, UpdateTestUserDTO, UserAnswer } from "../dtos/test_user.dto";
 import {
@@ -25,7 +25,7 @@ export class TestUserService {
 
     private testQuestionService: TestQuestionService,
     private gptService: GptService,
-    private httpService: HttpClientService
+    private botService: BotService
   ) {}
 
   /**
@@ -357,15 +357,11 @@ export class TestUserService {
       const bufferData = await fetch(audioUrl).then((response) => {
         return response.arrayBuffer();
       });
-      const headers = { Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}` };
-      const band = await this.httpService
-        .post$(process.env.JUNBRO1016_PRONUNCIATION_SCORING_FLUENCY, bufferData, headers)
-        .then((response) => {
-          const data: Junbro1016ResponseData = response.data;
-          return this.calculateJunbro1016Score(data);
-        });
+      const data = await this.botService.getFluencyScore({
+        audio_buffer: bufferData,
+      });
 
-      return band;
+      return this.calculateJunbro1016Score(data as any);
     } catch (e) {
       console.log(e.message);
       return 5;
@@ -377,15 +373,11 @@ export class TestUserService {
       const bufferData = await fetch(audioUrl).then((response) => {
         return response.arrayBuffer();
       });
-      const headers = { Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}` };
-      const band = await this.httpService
-        .post$(process.env.JUNBRO1016_PRONUNCIATION_SCORING_COMPLETENESS, bufferData, headers)
-        .then((response) => {
-          const data: Junbro1016ResponseData = response.data;
-          return this.calculateJunbro1016Score(data);
-        });
+      const data = await this.botService.getPronounceScore({
+        audio_buffer: bufferData,
+      });
 
-      return band;
+      return this.calculateJunbro1016Score(data as any);
     } catch (e) {
       console.log(e.message);
       return 5;

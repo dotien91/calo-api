@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { HttpClientService } from "../../base/http-client/http.base";
+import { BotModule } from "../bot/bot.module";
 import { GptService } from "../gpt/services/gpt.service";
 import { TestController } from "./controllers/test.controller";
 import { TestHelper } from "./helpers/test.helper";
@@ -20,6 +20,7 @@ import { TestUserService } from "./services/test_user.service";
       { name: TestQuestion.name, schema: TestQuestionSchema },
       { name: TestUser.name, schema: TestUserSchema },
     ]),
+    BotModule,
   ],
   controllers: [TestController],
   providers: [
@@ -30,7 +31,6 @@ import { TestUserService } from "./services/test_user.service";
     TestQuestionService,
     TestQuestionHelper,
     GptService,
-    HttpClientService,
   ],
   exports: [TestService, TestHelper, TestUserService, TestUserHelper, TestQuestionService, TestQuestionHelper],
 })
