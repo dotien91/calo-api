@@ -2591,38 +2591,12 @@ export class CourseHelper {
         ],
       };
 
-      // check if the student time pick is on range of teacher time available
-      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
-        course.user_id._id.toString()
-      );
-      for (const courseClass of courseClasses_Teacher) {
-        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
-          day: courseCalendar.day,
-          time_start: courseCalendar.time_start,
-          time_end: courseCalendar.time_end,
-        }));
+      for (const DAY of DAY_OF_WEEK) {
+        const dayTemplate = structuredClone(TEMPLATE);
+        dayTemplate.value = DAY.value;
+        dayTemplate.label = DAY.label;
 
-        for (const DAY of DAY_OF_WEEK) {
-          const dayTemplate = structuredClone(TEMPLATE);
-          dayTemplate.value = DAY.value;
-          dayTemplate.label = DAY.label;
-
-          for (const time of dayTemplate.times) {
-            for (const _time of time.times_in_utc) {
-              const time_start = this.formatHoursToHHmm(_time.time_start);
-              const incomingTime = [
-                {
-                  day: dayTemplate.value,
-                  time_start: time_start,
-                  time_end: this.addDurationToTime(time_start, time.time_duration),
-                },
-              ];
-              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
-            }
-          }
-
-          result.push({ ...dayTemplate });
-        }
+        result.push({ ...dayTemplate });
       }
 
       // check if the student time pick is conflict with other student or not
@@ -2646,6 +2620,34 @@ export class CourseHelper {
                 },
               ];
               _time.is_picked = this.hasTimeAndDayConflict(incomingTime, signedTimes);
+            }
+          }
+        }
+      }
+
+      // check if the student time pick is on range of teacher time available
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+        course.user_id._id.toString()
+      );
+      for (const courseClass of courseClasses_Teacher) {
+        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        for (const DAY of result) {
+          for (const time of DAY.times) {
+            for (const _time of time.times_in_utc) {
+              const time_start = this.formatHoursToHHmm(_time.time_start);
+              const incomingTime = [
+                {
+                  day: DAY.value,
+                  time_start: time_start,
+                  time_end: this.addDurationToTime(time_start, time.time_duration),
+                },
+              ];
+              _time.is_picked = !this.hasTimeAndDayConflict(incomingTime, signedTimes);
             }
           }
         }
