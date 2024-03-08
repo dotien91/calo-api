@@ -467,7 +467,7 @@ export class UserLoginHelper {
         const dataToCreate = {
           user_login: userLogin,
           user_email: dataLogin.user_email,
-          user_avtar: dataUrl,
+          user_avatar: dataUrl,
           user_avatar_thumbnail: dataUrl,
           user_password: await this.handleProcessPassword(dataLogin.user_password),
           display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
