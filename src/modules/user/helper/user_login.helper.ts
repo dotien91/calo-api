@@ -103,6 +103,7 @@ export class UserLoginHelper {
             user_avatar: dataAvtar,
             user_avatar_thumbnail: dataAvtar,
             user_status: 1,
+            invitation_code: makeRandom(10),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -285,6 +286,7 @@ export class UserLoginHelper {
             user_email: userData?.email,
             display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
             user_status: 1,
+            invitation_code: makeRandom(10),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -352,6 +354,7 @@ export class UserLoginHelper {
             user_avatar: userAvatar,
             user_avatar_thumbnail: userAvatar,
             user_status: 1,
+            invitation_code: makeRandom(10),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }

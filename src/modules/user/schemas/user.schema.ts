@@ -273,13 +273,13 @@ export class User {
 
   @Prop({
     type: String,
+    unique: true,
     nullable: false,
   })
   invitation_code: string;
 
   @Prop({
     type: String,
-    nullable: false,
   })
   ref_invitation_code: string;
 
