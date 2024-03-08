@@ -1845,12 +1845,6 @@ export class CourseHelper {
       });
       if (!courseClass) throw new Error("Not found your class");
 
-      const isUserBoughtCourse = await this.courseUserService.findOne({
-        user_id: dataFollow.user_id,
-        course_id: courseClass.course_id,
-      });
-      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
-
       if (courseClass.limit_member === courseClass.members.length)
         throw new Error("The class has been full of members");
 
@@ -2235,12 +2229,6 @@ export class CourseHelper {
         role: CourseOneOneRole.STUDENT,
       });
       if (isExist) throw new Error("The student already created time available, try update");
-
-      const isUserBoughtCourse = await this.courseUserService.findOne({
-        user_id: dataFollow.user_id,
-        course_id: dataFollow.course_id,
-      });
-      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
 
       // check if the student time pick is conflict with other student or not
       const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
