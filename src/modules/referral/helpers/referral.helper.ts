@@ -134,9 +134,27 @@ export class ReferralHelper {
           "X-Total-Count": Number(dataCount),
         })
         .status(HttpStatus.OK)
-        .json(finalDataReturn);
+        .json(this.groupListUserBuyProduct(finalDataReturn));
     } catch (error) {
       throw new NotFoundException(error.message);
     }
+  }
+
+  groupListUserBuyProduct(data: any) {
+    const groupedData = data.reduce((acc, obj) => {
+      const { user_id, ref_id } = obj;
+      if (!acc[user_id._id]) {
+        acc[user_id._id] = { ...obj, ref_ids: [] };
+      }
+      acc[user_id._id].ref_ids.push(ref_id);
+
+      delete acc[user_id._id].ref_id;
+
+      return acc;
+    }, {});
+
+    const result = Object.values(groupedData);
+
+    return result;
   }
 }

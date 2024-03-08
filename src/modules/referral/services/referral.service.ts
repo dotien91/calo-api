@@ -177,6 +177,14 @@ export class ReferralService {
       })
       .populate({
         path: "ref_id",
+        options: { strictPopulate: false },
+        populate: [
+          {
+            path: "avatar",
+            select: "media_url media_thumbnail",
+            options: { strictPopulate: false },
+          },
+        ],
       })
       .sort(sortObject)
       .skip(limit * (page - 1))
@@ -216,7 +224,7 @@ export class ReferralService {
     invitationCode: string,
     userObject: User,
     price: number,
-    orderId: string
+    productId: string
   ) {
     try {
       const bonusCoin = 0.00008 * price;
@@ -225,8 +233,8 @@ export class ReferralService {
         userObject,
         bonusCoin,
         ReferralType.BUY_PRODUCT,
-        orderId,
-        ReferralRefType.ORDER
+        productId,
+        ReferralRefType.COURSE
       );
     } catch (e) {
       console.log(e.message);

@@ -16,6 +16,8 @@ export enum ReferralType {
 
 export enum ReferralRefType {
   ORDER = "Order",
+  PRODUCT = "Product",
+  COURSE = "Course",
 }
 
 export enum ReferralBonusType {
