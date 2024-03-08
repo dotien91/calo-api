@@ -154,10 +154,10 @@ export class CourseService {
     return dataReturn;
   }
 
-  async filterTutor(filter: SearchTutorDto, sortObject: any, page: number, limit: number): Promise<any> {
+  getTutorCondition(filter: SearchTutorDto) {
     const matchObject = {};
+    const matchCourseObject = {};
 
-    // search filter
     matchObject["user_role"] = UserRoles.TEACHER;
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
     if (filter.levelOfTutor?.length)
@@ -170,7 +170,6 @@ export class CourseService {
         $options: "i",
       };
 
-    const matchCourseObject = {};
     if (filter.types?.length)
       matchCourseObject["courses.type"] = {
         $in: filter.types,
@@ -180,7 +179,15 @@ export class CourseService {
         $in: filter.skills,
       };
 
-    // matching
+    return {
+      matchObject,
+      matchCourseObject,
+    };
+  }
+
+  async filterTutor(filter: SearchTutorDto, sortObject: any, page: number, limit: number): Promise<any> {
+    const { matchObject, matchCourseObject } = this.getTutorCondition(filter);
+
     let users = await this.userModel.aggregate([
       {
         $match: matchObject,
@@ -235,12 +242,13 @@ export class CourseService {
           createdAt: {
             $first: "$createdAt",
           },
-          course_count: { $count: {} },
+          course_container: { $push: "$courses" },
           student_count: { $sum: "$courses.join_number" },
         },
       },
     ]);
 
+    // check filter time available of tutor
     if (filter.timeAvailable?.length) {
       const validUserIds = [];
 
@@ -288,6 +296,17 @@ export class CourseService {
       users = users.filter((user) => finalUserIds.includes(user._id.toString()));
     }
 
+    // modify users, should return course_count
+    users = users.map((user) => {
+      const newUser = {
+        ...user,
+        course_count: user.course_container.length,
+      };
+      delete newUser.course_container;
+      return newUser;
+    });
+
+    // return with custom sort
     return {
       data: users.slice((page - 1) * limit, (page - 1) * limit + limit).sort((a, b) => {
         if (sortObject?.levelOfTutor)
