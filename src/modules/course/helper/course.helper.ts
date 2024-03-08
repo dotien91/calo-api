@@ -1783,24 +1783,24 @@ export class CourseHelper {
       const courseClass = await this.courseClassService.findOne({
         _id: dataFollow.class_id,
       });
-      if (!courseClass) throw new Error("Not found your class");
+      // if (!courseClass) throw new Error("Not found your class");
 
-      if (req) {
-        const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
-        if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
-      }
+      // if (req) {
+      //   const isValidUser = await this.checkUserCoursePermission(courseClass.course_id.toString(), req, res);
+      //   if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
+      // }
 
-      const isUserBoughtCourse = await this.courseUserService.findOne({
-        user_id: dataFollow.user_id,
-        course_id: courseClass.course_id,
-      });
-      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
+      // const isUserBoughtCourse = await this.courseUserService.findOne({
+      //   user_id: dataFollow.user_id,
+      //   course_id: courseClass.course_id,
+      // });
+      // if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
 
-      if (courseClass.limit_member === courseClass.members.length)
-        throw new Error("The class has been full of members");
+      // if (courseClass.limit_member === courseClass.members.length)
+      //   throw new Error("The class has been full of members");
 
-      if (courseClass.members.find((memberId) => memberId.toString() === dataFollow.user_id))
-        throw new Error("The user already assigned to class");
+      // if (courseClass.members.find((memberId) => memberId.toString() === dataFollow.user_id))
+      //   throw new Error("The user already assigned to class");
 
       await this.courseClassService.update({
         _id: courseClass._id,
@@ -1833,6 +1833,34 @@ export class CourseHelper {
           .status(HttpStatus.OK)
           .send();
       }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async checkMemberToClass(dataFollow: AddMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const courseClass = await this.courseClassService.findOne({
+        _id: dataFollow.class_id,
+      });
+      if (!courseClass) throw new Error("Not found your class");
+
+      const isUserBoughtCourse = await this.courseUserService.findOne({
+        user_id: dataFollow.user_id,
+        course_id: courseClass.course_id,
+      });
+      if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
+
+      if (courseClass.limit_member === courseClass.members.length)
+        throw new Error("The class has been full of members");
+
+      if (courseClass.members.find((memberId) => memberId.toString() === dataFollow.user_id))
+        throw new Error("The user already assigned to class");
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .send();
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -2092,6 +2120,114 @@ export class CourseHelper {
 
   async createCourseCalendarStudent(dataFollow: CreateCourseOneOneStudentDto, req: ExpressRequestDto, res: Response) {
     try {
+      // if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
+
+      // const isExist = await this.courseOneOneService.findOne({
+      //   user_id: dataFollow.user_id,
+      //   role: CourseOneOneRole.STUDENT,
+      // });
+      // if (isExist) throw new Error("The student already created time available, try update");
+
+      // const isUserBoughtCourse = await this.courseUserService.findOne({
+      //   user_id: dataFollow.user_id,
+      //   course_id: dataFollow.course_id,
+      // });
+      // if (!isUserBoughtCourse) throw new Error("Cannot add to the class due to this user has not buy the course yet");
+
+      // // check if the student time pick is conflict with other student or not
+      // const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
+      //   dataFollow.course_id
+      // );
+      // for (const courseClass of courseClasses_Student) {
+      //   const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
+      //     day: courseCalendar.day,
+      //     time_start: courseCalendar.time_start,
+      //     time_end: courseCalendar.time_end,
+      //   }));
+
+      //   const incomingTimes = dataFollow.time_pick.map((courseCalendar) => ({
+      //     day: courseCalendar.day,
+      //     time_start: courseCalendar.time_start,
+      //     time_end: courseCalendar.time_end,
+      //   }));
+
+      //   if (this.hasTimeAndDayConflict(incomingTimes, signedTimes))
+      //     throw new Error("There is already student that assigned the same time");
+      // }
+
+      // // check if the student time pick is on range of teacher time available
+      const course = await this.courseService.findOne({ _id: dataFollow.course_id });
+      // const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+      //   course.user_id._id.toString()
+      // );
+      // for (const courseClass of courseClasses_Teacher) {
+      //   const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+      //     day: courseCalendar.day,
+      //     time_start: courseCalendar.time_start,
+      //     time_end: courseCalendar.time_end,
+      //   }));
+
+      //   const incomingTimes = dataFollow.time_pick.map((courseCalendar) => ({
+      //     day: courseCalendar.day,
+      //     time_start: courseCalendar.time_start,
+      //     time_end: courseCalendar.time_end,
+      //   }));
+
+      //   if (!this.areAllInRanges(incomingTimes, signedTimes))
+      //     throw new Error("The teacher has no activity in that signed time");
+      // }
+
+      const calendarIds = [];
+      for (const calendar of dataFollow.time_pick) {
+        const params: any = {
+          day: calendar.day,
+          time_start: calendar.time_start,
+          time_end: calendar.time_end,
+          course_type: CourseClassType.ONE_ONE,
+        };
+        const newCalendar = await this.courseCalendarService.create(params);
+        calendarIds.push(newCalendar._id);
+      }
+
+      // create time pick
+      const createParams = {
+        course_id: dataFollow.course_id,
+        user_id: dataFollow.user_id,
+        time_pick: calendarIds,
+        role: CourseOneOneRole.STUDENT,
+      };
+      const courseCalendarTeacher = await this.courseOneOneService.create(createParams);
+
+      // create chatroom for one-one
+      (async () => {
+        try {
+          const user = await this.userService.findOne({ _id: dataFollow.user_id });
+          await this.chatRoomHelper.handleCreateRoom(
+            user,
+            course.user_id._id.toString(),
+            "personal",
+            undefined,
+            false,
+            req
+          );
+        } catch (e) {
+          console.log(e);
+        }
+      })();
+
+      if (res) {
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .json(courseCalendarTeacher);
+      }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async checkCourseCalendarStudent(dataFollow: CreateCourseOneOneStudentDto, req: ExpressRequestDto, res: Response) {
+    try {
       if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
 
       const isExist = await this.courseOneOneService.findOne({
@@ -2149,50 +2285,10 @@ export class CourseHelper {
           throw new Error("The teacher has no activity in that signed time");
       }
 
-      const calendarIds = [];
-      for (const calendar of dataFollow.time_pick) {
-        const params: any = {
-          day: calendar.day,
-          time_start: calendar.time_start,
-          time_end: calendar.time_end,
-          course_type: CourseClassType.ONE_ONE,
-        };
-        const newCalendar = await this.courseCalendarService.create(params);
-        calendarIds.push(newCalendar._id);
-      }
-
-      // create time pick
-      const createParams = {
-        course_id: dataFollow.course_id,
-        user_id: dataFollow.user_id,
-        time_pick: calendarIds,
-        role: CourseOneOneRole.STUDENT,
-      };
-      const courseCalendarTeacher = await this.courseOneOneService.create(createParams);
-
-      // create chatroom for one-one
-      (async () => {
-        try {
-          const user = await this.userService.findOne({ _id: dataFollow.user_id });
-          await this.chatRoomHelper.handleCreateRoom(
-            user,
-            course.user_id._id.toString(),
-            "personal",
-            undefined,
-            false,
-            req
-          );
-        } catch (e) {
-          console.log(e);
-        }
-      })();
-
-      if (res) {
-        return res
-          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-          .status(HttpStatus.OK)
-          .json(courseCalendarTeacher);
-      }
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json();
     } catch (error) {
       throw new BadRequestException(error.message);
     }
