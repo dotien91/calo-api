@@ -606,9 +606,9 @@ export class TransactionHelper {
         }));
       const sign_up_referral_user_list = (await this.referralService.findAll({ from_user_id: userId }, true)).map(
         (referralData: any) => ({
-          _id: referralData.from_user_id._id,
-          name: referralData.from_user_id.display_name,
-          avatar: referralData.from_user_id.user_avatar_thumbnail || referralData.from_user_id.user_avatar,
+          _id: referralData.user_id._id,
+          name: referralData.user_id.display_name,
+          avatar: referralData.user_id.user_avatar_thumbnail || referralData.user_id.user_avatar,
         })
       );
 
