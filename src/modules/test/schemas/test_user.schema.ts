@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { TestStatus, TestType } from "../interfaces/test.interface.i";
+import { BandDetail, TestStatus, TestType } from "../interfaces/test.interface.i";
 
 export type TestUserDocument = TestUser & Document;
 
@@ -42,6 +42,11 @@ export class TestUser {
     type: MongooseSchema.Types.Number,
   })
   band: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  band_detail: BandDetail;
 
   @Prop({
     type: MongooseSchema.Types.Number,

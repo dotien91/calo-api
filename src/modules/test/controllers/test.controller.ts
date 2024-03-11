@@ -20,7 +20,7 @@ export class TestController {
     private readonly testUserHelper: TestUserHelper
   ) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async checkUserTestSubmit() {
     try {
       const tests = await this.testUserHelper.getTestByStatus(TestStatus.PENDING);
@@ -119,5 +119,10 @@ export class TestController {
   @Post("/user/submit")
   async submitTest(@Body() body: CreateTestUserDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.testUserHelper.submit(body, res, req);
+  }
+
+  @Get("/user/stats")
+  async getUserStats(@Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.testUserHelper.getUserStats(res, req);
   }
 }

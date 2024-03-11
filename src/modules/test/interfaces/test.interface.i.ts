@@ -46,3 +46,11 @@ export enum TestType {
   SPEAKING = "speaking",
 }
 
+export interface BandDetail {
+  listening_point: number;
+  reading_point: number;
+  writing_point: number;
+  speaking_point: number;
+}
+
+export const MAX_BAND = 9;

@@ -66,12 +66,15 @@ export class TestUserService {
       {
         $group: {
           _id: { user_id: "$user_id", test_id: "$test_id" },
+          band_detail: {
+            $first: "$band_detail",
+          },
           count: { $sum: 1 },
         },
       },
       {
         $match: {
-          count: { $gt: 1 },
+          count: { $gte: 1 },
         },
       },
     ]);
@@ -238,13 +241,25 @@ export class TestUserService {
     ).length;
     let averageBand = 0;
     if (totalPoint > 0) {
-      averageBand = (listeningPoint + readingPoint + writingPoint + speakingPoint) / totalPoint;
+      let totalBand = 0;
+      listeningPoint && (totalBand += listeningPoint);
+      readingPoint && (totalBand += readingPoint);
+      writingPoint && (totalBand += writingPoint);
+      speakingPoint && (totalBand += speakingPoint);
+
+      averageBand = totalBand / totalPoint;
     }
 
     const band = this.getIELTSBandScore(averageBand);
     await this.update({
       _id: data._id,
       band,
+      band_detail: {
+        listening_point: listeningPoint,
+        reading_point: readingPoint,
+        writing_point: writingPoint,
+        speaking_point: speakingPoint,
+      },
       status: TestStatus.DONE,
     });
   }
