@@ -2,6 +2,8 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
+import { AddMemberCourseClassDto } from "src/modules/course/dto/create-course_class.dto";
+import { CreateCourseOneOneStudentDto } from "src/modules/course/dto/create-course_one_one.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
@@ -35,7 +37,7 @@ import { UserService } from "../../../modules/user/services/user.service";
 import { CourseHelper } from "../../course/helper/course.helper";
 import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationRouter } from "../../notification/interfaces/notification.interface";
-import { CreateOrderDto } from "../dto/create-order.dto";
+import { CreateOrderDto, PlanObject } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
@@ -1389,6 +1391,13 @@ export class OrderHelper {
       }
       const userId = userObject._id.toString();
 
+      // check order payload
+      try {
+        await this.checkOrderPayload(data.plan_objects);
+      } catch (e) {
+        throw new BadRequestException(e.message);
+      }
+
       if (data.coupon_product_id) {
         const coupon = await this.couponService.findOne({ _id: data.coupon_product_id });
         if (!this.couponService.isUsedAble(coupon)) throw new Error("Coupon is expired or not available yet");
@@ -1511,6 +1520,29 @@ export class OrderHelper {
     } catch (error) {
       throw new NotFoundException(error.message);
     }
+  }
+
+  async checkOrderPayload(plan_objects: PlanObject[]) {
+    let isValid = false;
+    for (const planObject of plan_objects) {
+      switch (planObject.payload.type) {
+        case PayloadType.CLASS: {
+          isValid = await this.courseHelper.checkMemberToClassV2(planObject.payload.data as AddMemberCourseClassDto);
+          break;
+        }
+        case PayloadType.ONE_ONE: {
+          isValid = await this.courseHelper.checkCourseCalendarStudentV2(
+            planObject.payload.data as CreateCourseOneOneStudentDto
+          );
+          break;
+        }
+        default: {
+          isValid = true;
+          break;
+        }
+      }
+    }
+    return isValid;
   }
 
   async handleUpdateOrderAfterTransaction(

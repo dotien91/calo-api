@@ -1860,6 +1860,25 @@ export class CourseHelper {
     }
   }
 
+  async checkMemberToClassV2(dataFollow: AddMemberCourseClassDto) {
+    try {
+      const courseClass = await this.courseClassService.findOne({
+        _id: dataFollow.class_id,
+      });
+      if (!courseClass) throw new Error("Not found your class");
+
+      if (courseClass.limit_member === courseClass.members.length)
+        throw new Error("The class has been full of members");
+
+      if (courseClass.members.find((memberId) => memberId.toString() === dataFollow.user_id))
+        throw new Error("The user already assigned to class");
+
+      return true;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
   async removeMemberFromClass(dataFollow: RemoveMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
     try {
       const courseClass = await this.courseClassService.findOne({
@@ -2277,6 +2296,64 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async checkCourseCalendarStudentV2(dataFollow: CreateCourseOneOneStudentDto) {
+    try {
+      if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
+
+      const isExist = await this.courseOneOneService.findOne({
+        user_id: dataFollow.user_id,
+        role: CourseOneOneRole.STUDENT,
+      });
+      if (isExist) throw new Error("The student already created time available, try update");
+
+      // check if the student time pick is conflict with other student or not
+      const courseClasses_Student = await this.courseOneOneService.getAllAssignedTimeInCourseOfStudent(
+        dataFollow.course_id
+      );
+      for (const courseClass of courseClasses_Student) {
+        const signedTimes = courseClass.time_pick.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        const incomingTimes = dataFollow.time_pick.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        if (this.hasTimeAndDayConflict(incomingTimes, signedTimes))
+          throw new Error("There is already student that assigned the same time");
+      }
+
+      // check if the student time pick is on range of teacher time available
+      const course = await this.courseService.findOne({ _id: dataFollow.course_id });
+      const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
+        course.user_id._id.toString()
+      );
+      for (const courseClass of courseClasses_Teacher) {
+        const signedTimes = courseClass.time_available.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        const incomingTimes = dataFollow.time_pick.map((courseCalendar) => ({
+          day: courseCalendar.day,
+          time_start: courseCalendar.time_start,
+          time_end: courseCalendar.time_end,
+        }));
+
+        if (!this.areAllInRanges(incomingTimes, signedTimes))
+          throw new Error("The teacher has no activity in that signed time");
+      }
+      return true;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
