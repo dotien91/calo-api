@@ -67,7 +67,7 @@ export class CreateTestQuestion {
 
   @IsString()
   @IsOptional()
-  question: string;
+  question?: string;
 
   // this is defined by frontend developer
   @IsString()
@@ -76,20 +76,20 @@ export class CreateTestQuestion {
 
   // this is defined by frontend developer
   @IsEnum(TestQuestionType)
-  @IsDefined()
-  type: TestQuestionType;
+  @IsOptional()
+  type?: TestQuestionType;
 
   @IsEnum(TestQuestionPart)
   @IsDefined()
   part: TestQuestionPart;
 
   @IsNumber()
-  @IsDefined()
-  index: number;
+  @IsOptional()
+  index?: number;
 
   @IsString()
-  @IsDefined()
-  answer: string;
+  @IsOptional()
+  answer?: string;
 }
 
 export class CreateTestQuestionDTO {
