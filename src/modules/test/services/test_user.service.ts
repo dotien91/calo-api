@@ -2,7 +2,7 @@ import { SpeechClient } from "@google-cloud/speech";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import axios from "axios";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { BotService } from "../../../modules/bot/services/bot.service";
 import { GptService } from "../../../modules/gpt/services/gpt.service";
 import { FilterTestUserDTO, UpdateTestUserDTO, UserAnswer } from "../dtos/test_user.dto";
@@ -54,6 +54,27 @@ export class TestUserService {
    */
   async findAll(pattern?: any): Promise<TestUser[]> {
     return this.testUserModel.find(pattern).exec();
+  }
+
+  async findUniqueTestByUser(userId: string): Promise<any[]> {
+    return this.testUserModel.aggregate([
+      {
+        $match: {
+          user_id: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $group: {
+          _id: { user_id: "$user_id", test_id: "$test_id" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
   }
 
   /**

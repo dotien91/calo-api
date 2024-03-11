@@ -4,13 +4,17 @@ import mongoose from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateTestDTO, ListTestDto, UpdateTestDTO } from "../dtos/test.dto";
 import { TestService } from "../services/test.service";
+import { TestUserService } from "../services/test_user.service";
 
 @Injectable()
 export class TestHelper {
-  constructor(private testService: TestService) {}
+  constructor(private testService: TestService, private testUserService: TestUserService) {}
 
   async list(query: ListTestDto, res: Response, req: ExpressRequestDto) {
     try {
+      const userId = req?.user_id;
+      if (!userId) throw new Error("Invalid user");
+
       let dataToFilter = {};
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
@@ -28,8 +32,24 @@ export class TestHelper {
       delete dataToFilterBefore.order_by;
       dataToFilter = { ...dataToFilterBefore, ...dataToFilter };
 
-      const dataReturn = await this.testService.filter(dataToFilter, orderByOBject, page, limit);
+      const dataReturn: any = await this.testService.filter(dataToFilter, orderByOBject, page, limit);
       const dataCount = await this.testService.count(dataToFilter);
+      for (const dataIndexItem in dataReturn) {
+        dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
+      }
+
+      const testsDoneByUser = await this.testUserService.findUniqueTestByUser(userId);
+      const finalDataReturn = dataReturn.map((test) => ({
+        ...test,
+        is_done: testsDoneByUser.find((testDoneByUser) => {
+          return (
+            testDoneByUser._id.user_id.toString() === userId &&
+            testDoneByUser._id.test_id.toString() === test._id.toString()
+          );
+        })
+          ? true
+          : false,
+      }));
 
       return res
         .set({
@@ -37,7 +57,7 @@ export class TestHelper {
           "X-Total-Count": Number(dataCount),
         })
         .status(HttpStatus.OK)
-        .json(dataReturn);
+        .json(finalDataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

@@ -163,7 +163,7 @@ export class OrderHelper {
       const signData = querystring.stringify(vnp_Params, { encode: false });
       const crypto = require("crypto");
       const hmac = crypto.createHmac("sha512", secretKey);
-      const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+      const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
       const paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
       //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
@@ -290,7 +290,7 @@ export class OrderHelper {
       const signData = querystring.stringify(vnp_Params, { encode: false });
       const crypto = require("crypto");
       const hmac = crypto.createHmac("sha512", secretKey);
-      const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+      const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
@@ -937,7 +937,7 @@ export class OrderHelper {
             .toString()}`,
         });
 
-        // send email to user who bought the course
+        // send success_order email to user who bought the course
         this.emailService.send({
           eventName: EmailPattern.SUCCESS_ORDER,
           email: orderObject.user_id.user_email,
@@ -945,12 +945,16 @@ export class OrderHelper {
           replacePattern: {
             display_name: orderObject.user_id.display_name,
             course_name: orderObject.items.map((item) => item.service_name).toString(),
-            course_start_time: moment(dataToCreate.start_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
-            course_end_time: moment(dataToCreate.end_at.toString()).tz(orderObject.user_id.timezone || "UTC"),
+            course_start_time: moment(dataToCreate.start_at.toString())
+              .tz(orderObject.user_id.timezone || "UTC")
+              .format("DD-MM-YYYY HH:mm"),
+            course_end_time: moment(dataToCreate.end_at.toString())
+              .tz(orderObject.user_id.timezone || "UTC")
+              .format("DD-MM-YYYY HH:mm"),
           },
         });
 
-        // send email to user who bought the course
+        // send invoice_order email to user who bought the course
         this.emailService.send({
           eventName: EmailPattern.INVOICE_ORDER,
           email: orderObject.user_id.user_email,
@@ -1361,7 +1365,7 @@ export class OrderHelper {
     const signData = querystring.stringify(vnp_Params, { encode: false });
     const crypto = require("crypto");
     const hmac = crypto.createHmac("sha512", secretKey);
-    const signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
     vnp_Params["vnp_SecureHash"] = signed;
     vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
     return vnpUrl;
@@ -1427,7 +1431,7 @@ export class OrderHelper {
           const currentPlan = data.plan_objects.find((plan) => plan.plan_id === planObject._id.toString());
 
           const item: any = {
-            service_name: planObject.handle,
+            service_name: planObject.name,
             service_id: planObject.service_id,
             plan_id: planObject._id,
             plan_type: planObject.type,
