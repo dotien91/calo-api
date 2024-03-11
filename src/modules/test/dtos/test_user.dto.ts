@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import {
   IsArray,
   IsDefined,
+  IsEnum,
   IsIn,
   IsNumber,
   IsNumberString,
@@ -9,6 +10,7 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
+import { TestType } from "../interfaces/test.interface.i";
 
 export interface FilterTestUserDTO {
   user_id?: string;
@@ -66,6 +68,10 @@ export class CreateTestUserDTO {
   @IsNumber()
   @IsDefined()
   finished_time: number;
+
+  @IsEnum(TestType)
+  @IsDefined()
+  type: TestType;
 }
 
 export class UpdateTestUserDTO {
@@ -86,4 +92,8 @@ export class UpdateTestUserDTO {
   @IsNumber()
   @IsOptional()
   finished_time?: number;
+
+  @IsEnum(TestType)
+  @IsOptional()
+  type?: TestType;
 }

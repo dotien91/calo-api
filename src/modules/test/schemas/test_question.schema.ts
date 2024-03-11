@@ -40,6 +40,11 @@ export class TestQuestion {
   @Prop({
     type: MongooseSchema.Types.String,
   })
+  title: string;
+
+  @Prop({
+    type: MongooseSchema.Types.String,
+  })
   question: string;
 
   @Prop({

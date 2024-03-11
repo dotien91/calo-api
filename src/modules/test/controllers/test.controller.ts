@@ -20,7 +20,7 @@ export class TestController {
     private readonly testUserHelper: TestUserHelper
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async checkUserTestSubmit() {
     try {
       const tests = await this.testUserHelper.getTestByStatus(TestStatus.PENDING);
@@ -30,8 +30,9 @@ export class TestController {
           answers: test.answers,
           finished_time: test.finished_time,
           test_id: test.test_id.toString(),
+          type: test.type,
         };
-        await this.testUserHelper.checkUserTestSubmit(test.user_id.toString(), data);
+        await this.testUserHelper.checkUserTestSubmit(data);
       }
     } catch (e) {
       console.log(e.message);
@@ -67,11 +68,6 @@ export class TestController {
     return await this.testHelper.handleGetDetailTest(id, res, req);
   }
 
-  @Post("submit")
-  async submitTest(@Body() body: CreateTestUserDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.testUserHelper.submit(body, res, req);
-  }
-
   // test question apis
   @Get("/question/list")
   async listTestQuestion(@Query() query: ListTestQuestionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
@@ -81,11 +77,6 @@ export class TestController {
   @Get("/question/detail/:id")
   async getDetailTestQuestions(@Param() id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.testQuestionHelper.handleGetDetailTestQuestion(id, res, req);
-  }
-
-  @Get("/question/create")
-  async getTestQuestions(@Query() query: ListTestQuestionDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.testQuestionHelper.list(query, res, req);
   }
 
   @Post("/question/create")
@@ -123,5 +114,10 @@ export class TestController {
   @Get("/user/detail/:id")
   async detailTestUser(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.testUserHelper.handleGetDetailTestUser(id, res, req);
+  }
+
+  @Post("/user/submit")
+  async submitTest(@Body() body: CreateTestUserDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.testUserHelper.submit(body, res, req);
   }
 }

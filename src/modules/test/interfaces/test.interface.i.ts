@@ -4,6 +4,7 @@ export enum TestQuestionType {
   CHECK_BOX = "checkbox",
   AUDIO = "audio",
   WRAPPER = "wrapper",
+  FILL = "fill",
 }
 
 export enum TestQuestionPart {
@@ -36,3 +37,12 @@ export type Junbro1016ResponseData = Array<{
   score: number;
   label: string;
 }>;
+
+export enum TestType {
+  EXAM = "exam",
+  LISTENING = "listening",
+  READING = "reading",
+  WRITING = "writing",
+  SPEAKING = "speaking",
+}
+

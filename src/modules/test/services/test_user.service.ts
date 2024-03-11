@@ -11,6 +11,7 @@ import {
   SpeakingResult,
   TestQuestionPart,
   TestStatus,
+  TestType,
   WritingResult,
 } from "../interfaces/test.interface.i";
 import { TestQuestion } from "../schemas/test_question.schema";
@@ -171,7 +172,7 @@ export class TestUserService {
     return dataReturn;
   }
 
-  async calculateUserBand(userId: string, data: UpdateTestUserDTO): Promise<any> {
+  async calculateUserBand(data: UpdateTestUserDTO): Promise<any> {
     const testQuestions = await this.testQuestionService.findAll({ test_id: data.test_id });
     const userAnswers = data.answers;
 
@@ -180,14 +181,46 @@ export class TestUserService {
     const writingQuestions = testQuestions.filter((question) => question.part === TestQuestionPart.WRITING);
     const speakingQuestions = testQuestions.filter((question) => question.part === TestQuestionPart.SPEAKING);
 
-    const listeningPoint = this.getListeningBand(userAnswers, listeningQuestions);
-    const readingPoint = this.getReadingBand(userAnswers, readingQuestions);
-    const writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
-    const speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
+    let listeningPoint = undefined;
+    let readingPoint = undefined;
+    let writingPoint = undefined;
+    let speakingPoint = undefined;
 
-    const averageBand = (listeningPoint + readingPoint + writingPoint + speakingPoint) / 4;
+    switch (data.type) {
+      case TestType.LISTENING: {
+        listeningPoint = this.getListeningBand(userAnswers, listeningQuestions);
+        break;
+      }
+      case TestType.READING: {
+        readingPoint = this.getReadingBand(userAnswers, readingQuestions);
+        break;
+      }
+      case TestType.WRITING: {
+        writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
+        break;
+      }
+      case TestType.SPEAKING: {
+        speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
+        break;
+      }
+      case TestType.EXAM: {
+        listeningPoint = this.getListeningBand(userAnswers, listeningQuestions);
+        readingPoint = this.getReadingBand(userAnswers, readingQuestions);
+        writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
+        speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
+        break;
+      }
+    }
+
+    const totalPoint = [listeningPoint, readingPoint, writingPoint, speakingPoint].filter(
+      (point) => point !== undefined
+    ).length;
+    let averageBand = 0;
+    if (totalPoint > 0) {
+      averageBand = (listeningPoint + readingPoint + writingPoint + speakingPoint) / totalPoint;
+    }
+
     const band = this.getIELTSBandScore(averageBand);
-
     await this.update({
       _id: data._id,
       band,

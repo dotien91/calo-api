@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { TestType } from "../interfaces/test.interface.i";
 
 export type TestDocument = Test & Document;
 
@@ -16,6 +17,13 @@ export class Test {
     auto: true,
   })
   _id: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    nullable: true,
+    ref: "Test",
+  })
+  parent_id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -52,6 +60,12 @@ export class Test {
     nullable: false,
   })
   end_time: string;
+
+  @Prop({
+    type: MongooseSchema.Types.String,
+    enum: TestType,
+  })
+  type: TestType;
 }
 
 export const TestSchema = SchemaFactory.createForClass(Test);

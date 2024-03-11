@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { TestStatus } from "../interfaces/test.interface.i";
+import { TestStatus, TestType } from "../interfaces/test.interface.i";
 
 export type TestUserDocument = TestUser & Document;
 
@@ -54,6 +54,12 @@ export class TestUser {
     default: TestStatus.PENDING,
   })
   status: TestStatus;
+
+  @Prop({
+    type: MongooseSchema.Types.String,
+    enum: TestType,
+  })
+  type: TestType;
 }
 
 export const TestUserSchema = SchemaFactory.createForClass(TestUser);

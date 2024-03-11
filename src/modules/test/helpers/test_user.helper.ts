@@ -91,9 +91,9 @@ export class TestUserHelper {
     }
   }
 
-  async checkUserTestSubmit(userId: string, data: UpdateTestUserDTO) {
+  async checkUserTestSubmit(data: UpdateTestUserDTO) {
     try {
-      await this.testUserService.calculateUserBand(userId, data);
+      await this.testUserService.calculateUserBand(data);
     } catch (e) {
       throw new Error(`Error when check user test submit: ${e.message}`);
     }

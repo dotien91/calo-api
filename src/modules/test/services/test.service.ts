@@ -130,6 +130,10 @@ export class TestService {
       condition = Object.assign(condition, { created_user_id: filter.created_user_id });
     }
 
+    if (filter.type) {
+      condition = Object.assign(condition, { type: filter.type });
+    }
+
     return condition;
   }
 

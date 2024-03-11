@@ -63,12 +63,18 @@ export class CreateTestQuestion {
 
   @IsString()
   @IsDefined()
-  question: string;
+  title: string;
 
   @IsString()
-  @IsDefined()
-  content: string;
+  @IsOptional()
+  question: string;
 
+  // this is defined by frontend developer
+  @IsString()
+  @IsOptional()
+  content?: string;
+
+  // this is defined by frontend developer
   @IsEnum(TestQuestionType)
   @IsDefined()
   type: TestQuestionType;
@@ -101,27 +107,31 @@ export class UpdateTestQuestionDTO {
 
   @IsString()
   @IsOptional()
-  question: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
-  content: string;
+  question?: string;
+
+  @IsString()
+  @IsOptional()
+  content?: string;
 
   @IsEnum(TestQuestionType)
   @IsOptional()
-  type: TestQuestionType;
+  type?: TestQuestionType;
 
   @IsEnum(TestQuestionPart)
   @IsOptional()
-  part: TestQuestionPart;
+  part?: TestQuestionPart;
 
   @IsNumber()
   @IsOptional()
-  index: number;
+  index?: number;
 
   @IsString()
   @IsOptional()
-  answer: string;
+  answer?: string;
 
   @IsString()
   @IsOptional()
