@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { FilterShopDTO } from "../dtos/shop.dto";
-import { Shop, ShopDocument } from "../schemas/shop.schema";
+import { FilterTestQuestionDTO } from "../dtos/test_question.dto";
+import { TestQuestion, TestQuestionDocument } from "../schemas/test_question.schema";
 
 @Injectable()
-export class ShopService {
+export class TestQuestionService {
   constructor(
-    @InjectModel(Shop.name)
-    private shopModel: Model<ShopDocument>
+    @InjectModel(TestQuestion.name)
+    private testQuestionModel: Model<TestQuestionDocument>
   ) {}
 
   /**
@@ -16,9 +16,14 @@ export class ShopService {
    * @param createUser
    * @returns
    */
-  async create(createUser): Promise<Shop> {
-    const createdUser = new this.shopModel(createUser);
+  async create(createUser): Promise<TestQuestion> {
+    const createdUser = new this.testQuestionModel(createUser);
     return createdUser.save();
+  }
+
+  async createMultipleData(createUser: any): Promise<any> {
+    const data = await this.testQuestionModel.create(createUser);
+    return data;
   }
 
   /**
@@ -27,15 +32,15 @@ export class ShopService {
    * @returns
    */
   async remove(dataToSearch: any): Promise<any> {
-    await this.shopModel.deleteMany(dataToSearch);
+    await this.testQuestionModel.deleteMany(dataToSearch);
   }
 
   /**
    * @author Tony Vu
    * @returns
    */
-  async findAll(pattern?: any): Promise<Shop[]> {
-    return this.shopModel.find(pattern).exec();
+  async findAll(pattern?: any): Promise<TestQuestion[]> {
+    return this.testQuestionModel.find(pattern).exec();
   }
 
   /**
@@ -43,11 +48,11 @@ export class ShopService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<Shop> {
+  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<TestQuestion> {
     if (isWithUser) {
-      return await this.shopModel.findOne(dataToSearch).exec();
+      return await this.testQuestionModel.findOne(dataToSearch).exec();
     } else {
-      return await this.shopModel.findOne(dataToSearch).exec();
+      return await this.testQuestionModel.findOne(dataToSearch).exec();
     }
   }
 
@@ -58,7 +63,7 @@ export class ShopService {
    */
   async update(dataUpdate: any) {
     try {
-      const dataReturn = await this.shopModel.findOneAndUpdate(
+      const dataReturn = await this.testQuestionModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -78,13 +83,13 @@ export class ShopService {
    * @param filter
    * @returns
    */
-  public count = async (filter: FilterShopDTO) => {
+  public count = async (filter: FilterTestQuestionDTO) => {
     try {
       const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.shopModel.estimatedDocumentCount();
+        return this.testQuestionModel.estimatedDocumentCount();
       } else {
-        return this.shopModel.countDocuments(condition);
+        return this.testQuestionModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -107,38 +112,39 @@ export class ShopService {
     return sort;
   }
 
-  getCondition(filter: FilterShopDTO) {
+  getCondition(filter: FilterTestQuestionDTO) {
     let condition: any = {};
 
-    if (filter.name) {
-      condition = Object.assign(condition, {
-        name: {
-          $regex: filter.name,
-          $options: "i",
-        },
-      });
+    if (filter.parent_id) {
+      condition = Object.assign(condition, { parent_id: filter.parent_id });
     }
 
-    if (filter.rating) {
-      condition = Object.assign(condition, {
-        rating: {
-          $gte: filter.rating,
-          $lt: filter.rating + 1,
-        },
-      });
+    if (filter.part) {
+      condition = Object.assign(condition, { part: filter.part });
+    }
+
+    if (filter.type) {
+      condition = Object.assign(condition, { type: filter.type });
     }
 
     return condition;
   }
 
-  async filter(filter: FilterShopDTO, sortBy: any, page: number, limit: number, projection: any = {}): Promise<Shop[]> {
+  async filter(
+    filter: FilterTestQuestionDTO,
+    sortBy: any,
+    page: number,
+    limit: number,
+    projection: any = {}
+  ): Promise<TestQuestion[]> {
     const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    const dataReturn = await this.shopModel
+    const dataReturn = await this.testQuestionModel
       .find(condition, projection)
+      .populate("media_id")
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)

@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { FilterShopDTO } from "../dtos/shop.dto";
-import { Shop, ShopDocument } from "../schemas/shop.schema";
+import { FilterTestDTO } from "../dtos/test.dto";
+import { Test, TestDocument } from "../schemas/test.schema";
 
 @Injectable()
-export class ShopService {
+export class TestService {
   constructor(
-    @InjectModel(Shop.name)
-    private shopModel: Model<ShopDocument>
+    @InjectModel(Test.name)
+    private testModel: Model<TestDocument>
   ) {}
 
   /**
@@ -16,8 +16,8 @@ export class ShopService {
    * @param createUser
    * @returns
    */
-  async create(createUser): Promise<Shop> {
-    const createdUser = new this.shopModel(createUser);
+  async create(createUser): Promise<Test> {
+    const createdUser = new this.testModel(createUser);
     return createdUser.save();
   }
 
@@ -27,15 +27,15 @@ export class ShopService {
    * @returns
    */
   async remove(dataToSearch: any): Promise<any> {
-    await this.shopModel.deleteMany(dataToSearch);
+    await this.testModel.deleteMany(dataToSearch);
   }
 
   /**
    * @author Tony Vu
    * @returns
    */
-  async findAll(pattern?: any): Promise<Shop[]> {
-    return this.shopModel.find(pattern).exec();
+  async findAll(pattern?: any): Promise<Test[]> {
+    return this.testModel.find(pattern).exec();
   }
 
   /**
@@ -43,11 +43,18 @@ export class ShopService {
    * @param dataToSearch
    * @returns
    */
-  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<Shop> {
+  async findOne(dataToSearch: any, isWithUser: boolean = false): Promise<Test> {
     if (isWithUser) {
-      return await this.shopModel.findOne(dataToSearch).exec();
+      return await this.testModel
+        .findOne(dataToSearch)
+        .populate({
+          path: "created_user_id",
+          select:
+            "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+        })
+        .exec();
     } else {
-      return await this.shopModel.findOne(dataToSearch).exec();
+      return await this.testModel.findOne(dataToSearch).exec();
     }
   }
 
@@ -58,7 +65,7 @@ export class ShopService {
    */
   async update(dataUpdate: any) {
     try {
-      const dataReturn = await this.shopModel.findOneAndUpdate(
+      const dataReturn = await this.testModel.findOneAndUpdate(
         { _id: dataUpdate._id },
         { $set: dataUpdate },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -78,13 +85,13 @@ export class ShopService {
    * @param filter
    * @returns
    */
-  public count = async (filter: FilterShopDTO) => {
+  public count = async (filter: FilterTestDTO) => {
     try {
       const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
-        return this.shopModel.estimatedDocumentCount();
+        return this.testModel.estimatedDocumentCount();
       } else {
-        return this.shopModel.countDocuments(condition);
+        return this.testModel.countDocuments(condition);
       }
     } catch (e) {
       return 0;
@@ -107,38 +114,42 @@ export class ShopService {
     return sort;
   }
 
-  getCondition(filter: FilterShopDTO) {
+  getCondition(filter: FilterTestDTO) {
     let condition: any = {};
 
-    if (filter.name) {
+    if (filter.title) {
       condition = Object.assign(condition, {
-        name: {
-          $regex: filter.name,
+        title: {
+          $regex: filter.title,
           $options: "i",
         },
       });
     }
 
-    if (filter.rating) {
-      condition = Object.assign(condition, {
-        rating: {
-          $gte: filter.rating,
-          $lt: filter.rating + 1,
-        },
-      });
+    if (filter.created_user_id) {
+      condition = Object.assign(condition, { created_user_id: filter.created_user_id });
+    }
+
+    if (filter.type) {
+      condition = Object.assign(condition, { type: filter.type });
     }
 
     return condition;
   }
 
-  async filter(filter: FilterShopDTO, sortBy: any, page: number, limit: number, projection: any = {}): Promise<Shop[]> {
+  async filter(filter: FilterTestDTO, sortBy: any, page: number, limit: number, projection: any = {}): Promise<Test[]> {
     const condition = await this.getCondition(filter);
     let sortObject: any;
     if (sortBy) {
       sortObject = this.getSort(sortBy);
     }
-    const dataReturn = await this.shopModel
+    const dataReturn = await this.testModel
       .find(condition, projection)
+      .populate({
+        path: "created_user_id",
+        select:
+          "_id user_login display_name user_role user_status user_avatar user_avatar_thumbnail user_avatar_square last_active user_active official_status",
+      })
       .sort(sortObject)
       .skip(limit * (page - 1))
       .limit(limit)

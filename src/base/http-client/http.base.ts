@@ -81,4 +81,26 @@ export class HttpClientService {
         return error;
       });
   }
+
+  async postBinary$(url: string, data: ArrayBuffer): Promise<AxiosResponse> {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url,
+      headers: {
+        "Content-Type": "audio/mpeg",
+      },
+      data: data,
+    };
+
+    return await axios
+      .request(config)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error;
+      });
+  }
 }

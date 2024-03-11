@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { HttpClientService } from "../../../base/http-client/http.base";
+import { SpeakingResult, WritingResult } from "../../../modules/test/interfaces/test.interface.i";
 
 @Injectable()
 export class GptService {
@@ -35,5 +36,85 @@ export class GptService {
 
     if (dataReturn) return dataReturn?.choices[0]?.message?.content === "Không";
     return true;
+  }
+
+  async getWritingBandScore(topic: string, essay: string): Promise<WritingResult> {
+    const body = JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: `
+          You're examiner of IELTS Writing Contest, please review my essay below
+          The topic: ${topic}
+          My essay: ${essay}
+          Please return your review in json stringify of json below
+          {
+            task_response: number
+            coherence_and_cohesion: number
+            lexical_resource: number
+            grammatical_range_and_accuracy: number
+          }
+          `,
+        },
+      ],
+    });
+
+    const headers = {
+      Authorization: `Bearer ${this.chatGPTKey}`,
+      "Content-Type": "application/json",
+    };
+
+    const dataReturn = await this.httpService
+      .post$(this.chatGPTUrl, body, headers)
+      .then(function (response) {
+        return response?.data;
+      })
+      .catch(function (error) {
+        return null;
+      });
+
+    if (dataReturn) return JSON.parse(dataReturn?.choices[0]?.message?.content);
+    return null;
+  }
+
+  async getSpeakingLexialResourceAndGrammaticalRangeCriteria(topic: string, essay: string): Promise<SpeakingResult> {
+    const body = JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: `
+          You're examiner of IELTS Speaking Contest, please review my essay below
+          The topic: ${topic}
+          My speech: ${essay}
+          Please return your review in json stringify of json below
+          {
+            fluency_and_coherence: 0 (const)
+            lexical_resource: number
+            grammatical_range_and_accuracy: number
+            pronunciation: 0 (const)
+          }
+          `,
+        },
+      ],
+    });
+
+    const headers = {
+      Authorization: `Bearer ${this.chatGPTKey}`,
+      "Content-Type": "application/json",
+    };
+
+    const dataReturn = await this.httpService
+      .post$(this.chatGPTUrl, body, headers)
+      .then(function (response) {
+        return response?.data;
+      })
+      .catch(function (error) {
+        return null;
+      });
+
+    if (dataReturn) return JSON.parse(dataReturn?.choices[0]?.message?.content);
+    return null;
   }
 }
