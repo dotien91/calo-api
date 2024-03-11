@@ -146,7 +146,7 @@ export class TransactionService {
         path: "ref_id",
         options: { strictPopulate: false },
         populate: {
-          path: "media_id",
+          path: "avatar",
           options: { strictPopulate: false },
         },
       })

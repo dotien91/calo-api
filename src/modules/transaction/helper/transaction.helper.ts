@@ -588,9 +588,9 @@ export class TransactionHelper {
       const product_list = dataReturn
         .filter((transaction) => [TransactionRefType.COURSE, TransactionRefType.PRODUCT].includes(transaction.ref_type))
         .map((transaction: any) => ({
-          _id: transaction.ref_id._id,
-          name: transaction.ref_id.title || transaction.ref_id.name,
-          url: transaction.ref_id.media_id.media_thumbnail || transaction.ref_id.media_id.media_url,
+          _id: transaction.ref_id?._id,
+          name: transaction.ref_id?.title || transaction.ref_id?.name,
+          url: transaction.ref_id?.avatar?.media_thumbnail || transaction.ref_id?.avatar?.media_url,
         }));
 
       const order_referral_user_list = dataReturn
