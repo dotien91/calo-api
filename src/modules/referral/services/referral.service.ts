@@ -277,6 +277,7 @@ export class ReferralService {
         processPoint(referralUser._id.toString(), referralData?._id?.toString());
         this.eventHookWorkerService.AddCoinToUser({
           userId: referralUser._id.toString(),
+          fromUserId: userObject._id.toString(),
           coin,
           refObject: referralData,
           refType: TransactionRefType.REFERRAL,

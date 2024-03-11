@@ -781,6 +781,7 @@ export class TransactionHelper {
         transaction_value: dataValue,
         transaction_value_type: TransactionValueType.COIN,
         user_id: data.userId,
+        from_user: data.fromUserId,
         note: noteTransaction,
         status: "done",
         data_payment: "",

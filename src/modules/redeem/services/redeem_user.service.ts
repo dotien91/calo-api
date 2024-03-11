@@ -184,6 +184,7 @@ export class RedeemUserService {
           if (targetMission.coin) {
             const data: AddCoinToUserData = {
               userId,
+              fromUserId: null,
               coin: targetMission.coin,
               refObject: targetMission,
               refType: TransactionRefType.REDEEM_MISSION,

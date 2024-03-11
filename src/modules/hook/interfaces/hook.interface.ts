@@ -9,6 +9,7 @@ export interface AddPointToUserData {
 
 export interface AddCoinToUserData {
   userId: string;
+  fromUserId: string;
   coin: number;
   refObject: any;
   refType: string;
