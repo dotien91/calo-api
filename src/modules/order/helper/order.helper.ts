@@ -894,7 +894,7 @@ export class OrderHelper {
                 orderObject.invitation_code,
                 orderObject.user_id,
                 orderObject.price,
-                orderObject._id.toString()
+                orderItem.plan_id.ref_id.toString()
               );
 
               // update redeem mission for user

@@ -1,4 +1,4 @@
-import { IsIn, IsNumberString, IsOptional } from "class-validator";
+import { IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export interface FilterReferralDTO {
   user_id?: string;
@@ -22,4 +22,8 @@ export class ListReferralDto {
   @IsIn(["time", "price"])
   @IsOptional()
   sort_by?: "time" | "price";
+
+  @IsString()
+  @IsOptional()
+  user_id?: string;
 }

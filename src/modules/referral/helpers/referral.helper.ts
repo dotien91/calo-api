@@ -104,7 +104,13 @@ export class ReferralHelper {
       delete dataToFilterBefore.page;
       delete dataToFilterBefore.limit;
       delete dataToFilterBefore.order_by;
-      dataToFilter = { ...dataToFilterBefore, ...dataToFilter, from_user_id: userId, type: ReferralType.BUY_PRODUCT };
+      dataToFilter = {
+        ...dataToFilterBefore,
+        ...dataToFilter,
+        user_id: query.user_id,
+        from_user_id: userId,
+        type: ReferralType.BUY_PRODUCT,
+      };
 
       const dataReturn: any = await this.referralService.filter(dataToFilter, orderByOBject, page, limit);
       const dataCount = await this.referralService.count(dataToFilter);
