@@ -1,9 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsDefined, IsNumber, IsString, ValidateNested } from "class-validator";
 
-export interface CourseCalendar {
+export class CourseCalendar {
+  @IsNumber()
+  @IsDefined()
   day: number;
+
+  @IsString()
+  @IsDefined()
   time_start: string;
+
+  @IsString()
+  @IsDefined()
   time_end: string;
 }
 
@@ -28,5 +37,7 @@ export class CreateCourseOneOneStudentDto {
 
   @IsArray()
   @ApiProperty()
+  @ValidateNested({ each: true })
+  @Type(() => CourseCalendar)
   time_pick: CourseCalendar[];
 }

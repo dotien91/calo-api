@@ -14,13 +14,13 @@ export class ReferralController {
     return await this.referralHelper.listUserReferredByMe(query, res, req);
   }
 
+  @Get("/me/product")
+  async listProductReferredByMe(@Query() query: ListReferralDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.referralHelper.listProductReferredByMe(query, res, req);
+  }
+
   @Get("/user")
   async listUserReferralMe(@Query() query: ListReferralDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.referralHelper.listUserReferralMe(query, res, req);
-  }
-
-  @Get("/user/product")
-  async listProductReferredByMe(@Query() query: ListReferralDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
-    return await this.referralHelper.listProductReferredByMe(query, res, req);
   }
 }

@@ -279,6 +279,11 @@ export class User {
   invitation_code: string;
 
   @Prop({
+    type: String,
+  })
+  ref_invitation_code: string;
+
+  @Prop({
     type: Number,
     default: 0,
   })

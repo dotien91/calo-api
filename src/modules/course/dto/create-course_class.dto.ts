@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNumber, IsString } from "class-validator";
+import { IsArray, IsDefined, IsNumber, IsString } from "class-validator";
 
 export interface CourseCalendar {
   time_duration: number;
@@ -35,10 +35,12 @@ export class CreateCourseClassDto {
 
 export class AddMemberCourseClassDto {
   @IsString()
+  @IsDefined()
   @ApiProperty()
   class_id: string;
 
   @IsString()
+  @IsDefined()
   @ApiProperty()
   user_id: string;
 }

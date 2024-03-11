@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import { ReferralType } from "../interfaces/referral.interface.i";
+import { ReferralBonusType, ReferralRefType, ReferralType } from "../interfaces/referral.interface.i";
 
 export type ReferralDocument = Referral & Document;
 
@@ -35,6 +35,31 @@ export class Referral {
     enum: ReferralType,
   })
   type: ReferralType;
+
+  @Prop({
+    type: String,
+    enum: ReferralBonusType,
+  })
+  bonus_type: ReferralBonusType;
+
+  @Prop({
+    type: MongooseSchema.Types.Number,
+  })
+  bonus_value: number;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    index: true,
+    nullable: true,
+    refPath: "ref_type",
+  })
+  ref_id: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: String,
+    nullable: true,
+  })
+  ref_type: ReferralRefType;
 }
 
 export const ReferralSchema = SchemaFactory.createForClass(Referral);

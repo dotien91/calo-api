@@ -8,7 +8,7 @@ export class SearchTransactionDto {
   status_array?: string[];
   method?: string;
   ref_id?: string;
-  ref_type?: string;
+  ref_type?: string | string[];
   type_system?: string;
   search?: string;
   from?: string;
