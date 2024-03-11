@@ -602,11 +602,13 @@ export class TransactionHelper {
         .map((transaction: any) => ({
           _id: transaction.referral_user?._id,
           name: transaction.referral_user?.display_name,
+          avatar: transaction.referral_user?.user_avatar_thumbnail || transaction.referral_user?.user_avatar,
         }));
-      const sign_up_referral_user_list = (await this.referralService.findAll({ from_user_id: userId })).map(
+      const sign_up_referral_user_list = (await this.referralService.findAll({ from_user_id: userId }, true)).map(
         (referralData: any) => ({
           _id: referralData.from_user_id._id,
           name: referralData.from_user_id.display_name,
+          avatar: referralData.from_user_id.user_avatar_thumbnail || referralData.from_user_id.user_avatar,
         })
       );
 
