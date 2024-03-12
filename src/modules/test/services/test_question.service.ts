@@ -115,6 +115,10 @@ export class TestQuestionService {
   getCondition(filter: FilterTestQuestionDTO) {
     let condition: any = {};
 
+    if (filter.test_id) {
+      condition = Object.assign(condition, { _id: filter.test_id });
+    }
+
     if (filter.parent_id) {
       condition = Object.assign(condition, { parent_id: filter.parent_id });
     }

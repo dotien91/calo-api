@@ -16,6 +16,7 @@ export interface FilterTestQuestionDTO {
   type?: TestQuestionType;
   part?: TestQuestionPart;
   parent_id?: string;
+  test_id?: string;
 }
 
 export class ListTestQuestionDto {
