@@ -116,7 +116,7 @@ export class TestQuestionService {
     let condition: any = {};
 
     if (filter.test_id) {
-      condition = Object.assign(condition, { _id: filter.test_id });
+      condition = Object.assign(condition, { test_id: filter.test_id });
     }
 
     if (filter.parent_id) {
