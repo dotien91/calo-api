@@ -1864,6 +1864,8 @@ export class CourseHelper {
 
   async checkMemberToClassV2(dataFollow: AddMemberCourseClassDto) {
     try {
+      if (!dataFollow.user_id || !dataFollow.class_id) throw new Error("Bad request exception");
+
       const courseClass = await this.courseClassService.findOne({
         _id: dataFollow.class_id,
       });
@@ -2305,6 +2307,9 @@ export class CourseHelper {
 
   async checkCourseCalendarStudentV2(dataFollow: CreateCourseOneOneStudentDto) {
     try {
+      if (!dataFollow.user_id || !dataFollow.course_id || dataFollow.time_pick.length === 0)
+        throw new Error("Bad request exception");
+
       if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
 
       const isExist = await this.courseOneOneService.findOne({

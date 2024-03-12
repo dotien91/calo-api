@@ -10,8 +10,11 @@ export enum EmailPattern {
   LIVESTREAM_NOW = "livestream-now",
   LIVESTREAM_CREATE = "livestream-create",
   REGISTER = "register",
+  REGISTER_TUTOR = "register-tutor",
   CLOSE_ORDER = "close-order",
   SUCCESS_ORDER = "success-order",
   PENDING_ORDER = "pending-order",
   INVOICE_ORDER = "invoice-order",
+  APPROVE_TUTOR = "approve-tutor",
+  REJECT_TUTOR = "reject-tutor",
 }

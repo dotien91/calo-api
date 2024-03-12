@@ -30,6 +30,10 @@ export class CourseService {
    */
   async getCondition(filter: SearchCourseDto) {
     let condition: any = {};
+
+    // should get none expired course
+    condition = Object.assign(condition, { end_time: { $gte: new Date() } });
+
     if (filter.language) {
       condition = Object.assign(condition, { language: filter.language });
     }

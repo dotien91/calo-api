@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsBooleanString,
   IsDate,
+  IsDefined,
   IsIn,
   IsNumber,
   IsNumberString,
@@ -186,4 +187,16 @@ export interface UserEducation {
   name: string;
   start_time: string;
   end_time: string;
+}
+
+export class ApproveTutorPayload {
+  @IsString()
+  @IsDefined()
+  _id: string;
+}
+
+export class RejectTutorPayload {
+  @IsString()
+  @IsDefined()
+  _id: string;
 }

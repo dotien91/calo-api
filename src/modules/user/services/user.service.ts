@@ -30,7 +30,23 @@ export class UserService {
    * @returns
    */
   async findAll(dataToSearch?: any): Promise<User[]> {
-    return await this.appUserModel.find(dataToSearch).exec();
+    return await this.appUserModel
+      .find(dataToSearch)
+      .select(
+        `
+      user_avatar
+      user_avatar_thumbnail
+      display_name
+      user_role
+      country
+      educations
+      certificates
+      badge
+      point
+      level
+      `
+      )
+      .exec();
   }
 
   async findAllWithMinimumData(dataToSearch?: any): Promise<User[]> {

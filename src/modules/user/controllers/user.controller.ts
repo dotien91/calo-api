@@ -32,7 +32,7 @@ import { SearchUserInterestDto } from "../dto/search-user_interest.dto";
 import { SearchUserMoodDto } from "../dto/search-user_mood.dto";
 import { SendPhoneDto } from "../dto/send-phone.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
+import { ApproveTutorPayload, UpdateUserDto } from "../dto/update-user.dto";
 import { UpdateUserActiveDto } from "../dto/update-user_active.dto";
 import { UpdateUserInterestDto } from "../dto/update-user_interest.dto";
 import { UpdateUserOrganizationDto } from "../dto/update-user_organization.dto";
@@ -517,5 +517,25 @@ export class UserController {
   @Post("invitation-code")
   enterInvitationCode(@Body() data: InvitationCodeBody, @Res() res: Response, @Req() req: Request) {
     return this.updateUserHelper.enterInvitationCode(data, res, req);
+  }
+
+  @Post("tutor/sign-up")
+  becameTutor(@Body() loginData: RegisterUserDto, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.becameTutor(loginData, res, req);
+  }
+
+  @Get("tutor/list/pending")
+  getListPendingBecameTutor(@Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.getListPendingBecameTutor(res, req);
+  }
+
+  @Patch("tutor/approve")
+  approveTutor(@Body() body: ApproveTutorPayload, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.approveTutor(body, res, req);
+  }
+
+  @Patch("tutor/reject")
+  rejectTutor(@Body() body: ApproveTutorPayload, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.rejectTutor(body, res, req);
   }
 }

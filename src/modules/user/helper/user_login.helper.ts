@@ -31,8 +31,10 @@ import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
 import { SendPhoneDto } from "../dto/send-phone.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
+import { ApproveTutorPayload, RejectTutorPayload } from "../dto/update-user.dto";
 import { ValidatePhoneDto } from "../dto/validate-phone.dto";
 import { VerifyCodeDto } from "../dto/verify-code.dto";
+import { UserRoles } from "../interfaces/user.interface";
 import { User } from "../schemas/user.schema";
 import { UserService } from "../services/user.service";
 import { UserAnonymousSessionService } from "../services/user_anonymous_session.service";
@@ -534,6 +536,85 @@ export class UserLoginHelper {
       throw new BadRequestException(error.message);
     }
   }
+
+  async becameTutor(dataLogin: RegisterUserDto, res: Response, req: Request) {
+    try {
+      //Process User Email
+      const userLogin = dataLogin.user_email?.replace("@", "_");
+      const dataToSearch = {
+        user_login: userLogin,
+      };
+      let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
+      if (userObject) {
+        this.appUserService.update({
+          _id: userObject._id.toString(),
+          is_pending_to_became_teacher: true,
+        });
+      }
+
+      if (!(dataLogin.phone_number || dataLogin.user_email)) {
+        throw new BadRequestException("Missing user's phone/email");
+      }
+
+      if (!userObject || (userObject && !userObject._id)) {
+        const [dataUrl, dataIp] = await Promise.all([
+          this.handleGetUserAvatarRandom(),
+          this.configService.getIpInfo(req),
+        ]);
+
+        //Create New User
+        const dataToCreate = {
+          user_login: userLogin,
+          user_email: dataLogin.user_email,
+          user_avatar: dataUrl,
+          user_avatar_thumbnail: dataUrl,
+          user_password: await this.handleProcessPassword(dataLogin.user_password),
+          display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
+          user_status: 1,
+          phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
+          country: dataIp.country,
+          timezone: dataIp.timezone,
+          invitation_code: makeRandom(10),
+          is_pending_to_became_teacher: true,
+        };
+        userObject = await this.appUserService.create(dataToCreate);
+      }
+      if (userObject && userObject._id) {
+        const dataSession = await this.handleUserSession(req, userObject, dataLogin);
+        let sessionGenerator = "";
+        if (dataSession && dataSession._id) {
+          sessionGenerator = dataSession._id.toString();
+        }
+        const tokenReturn = this.jwtHelper.generateJwt(
+          userObject?._id.toString(),
+          userObject?.user_email.toString(),
+          sessionGenerator,
+          true
+        );
+
+        this.emailService.send({
+          eventName: EmailPattern.REGISTER_TUTOR,
+          email: userObject.email,
+          language: userObject.default_language,
+          replacePattern: {
+            display_name: userObject.display_name,
+            user_email: userObject.user_email,
+          },
+        });
+
+        return res
+          .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
+          .status(HttpStatus.OK)
+          .json(userObject);
+      } else {
+        throw new BadRequestException("Have an Error while register account.");
+      }
+    } catch (error) {
+      this.logger.log("Login with Password Error: " + JSON.stringify(error));
+      throw new BadRequestException(error.message);
+    }
+  }
+
   handleUpdateGeoIP(
     req: Request<
       import("express-serve-static-core").ParamsDictionary,
@@ -1151,6 +1232,72 @@ export class UserLoginHelper {
       }
     } catch (error) {
       throw new NotFoundException(error.message);
+    }
+  }
+
+  async getListPendingBecameTutor(res: Response, req: ExpressRequestDto) {
+    try {
+      const pendingTutors = await this.appUserService.findAll({ is_pending_to_became_teacher: true });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(pendingTutors);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async approveTutor(body: ApproveTutorPayload, res: Response, req: ExpressRequestDto) {
+    try {
+      const tutor = await this.appUserService.update({
+        _id: body._id,
+        is_pending_to_became_teacher: false,
+        user_role: UserRoles.TEACHER,
+      });
+
+      this.emailService.send({
+        eventName: EmailPattern.APPROVE_TUTOR,
+        email: tutor.email,
+        language: tutor.default_language,
+        replacePattern: {
+          display_name: tutor.display_name,
+          user_email: tutor.user_email,
+        },
+      });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async rejectTutor(body: RejectTutorPayload, res: Response, req: ExpressRequestDto) {
+    try {
+      const tutor = await this.appUserService.update({
+        _id: body._id,
+        is_pending_to_became_teacher: false,
+      });
+
+      this.emailService.send({
+        eventName: EmailPattern.APPROVE_TUTOR,
+        email: tutor.email,
+        language: tutor.default_language,
+        replacePattern: {
+          display_name: tutor.display_name,
+          user_email: tutor.user_email,
+        },
+      });
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

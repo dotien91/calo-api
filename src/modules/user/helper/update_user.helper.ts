@@ -14,6 +14,11 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ConfigService } from "../../../modules/config/services/config.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { NotificationService } from "../../../modules/notification/services/notification.service";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
@@ -67,7 +72,8 @@ export class UpdateUserHelper {
     private userAnonymousService: UserAnonymousService,
     private chatRoomUserOptionService: ChatRoomUserOptionService,
     private referralService: ReferralService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private redeemUserService: RedeemUserService
   ) {}
 
   private readonly logger = new Logger("call");
@@ -1406,6 +1412,14 @@ export class UpdateUserHelper {
       });
 
       this.referralService.processSignUpBonusForReferralUser(body.invitation_code, userObject);
+
+      // update redeem mission for user
+      if (referralUser)
+        this.redeemUserService.updateUserRedeem(
+          referralUser,
+          RedeemMissionActionType.REFERRAL,
+          RedeemMissionActionTarget.ACCOUNT
+        );
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

@@ -2,11 +2,11 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
-import { AddMemberCourseClassDto } from "src/modules/course/dto/create-course_class.dto";
-import { CreateCourseOneOneStudentDto } from "src/modules/course/dto/create-course_one_one.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
+import { AddMemberCourseClassDto } from "../../../modules/course/dto/create-course_class.dto";
+import { CreateCourseOneOneStudentDto } from "../../../modules/course/dto/create-course_one_one.dto";
 import { CourseService } from "../../../modules/course/services/course.service";
 import { CourseUserService } from "../../../modules/course/services/course_user.service";
 import { EmailService } from "../../../modules/email/services/email.service";

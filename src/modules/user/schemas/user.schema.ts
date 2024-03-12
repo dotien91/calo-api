@@ -300,6 +300,12 @@ export class User {
     default: 0,
   })
   taught_time: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Boolean,
+    default: false,
+  })
+  is_pending_to_became_teacher: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({
