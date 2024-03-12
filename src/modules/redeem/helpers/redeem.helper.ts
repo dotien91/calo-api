@@ -202,7 +202,12 @@ export class RedeemHelper {
       const userObject = req?.user_object;
       if (!userObject) throw new Error("Invalid user");
 
-      await this.redeemUserService.updateUserRedeem(userObject, body.action_type, body.action_target);
+      await this.redeemUserService.updateUserRedeem(
+        userObject,
+        body.action_type,
+        body.action_target,
+        body.social_links
+      );
 
       return res
         .set({

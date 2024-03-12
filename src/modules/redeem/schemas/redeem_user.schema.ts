@@ -94,6 +94,39 @@ export class RedeemUser {
     default: 0,
   })
   referral_course_counter: number;
+
+  // share
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  share_tiktok_counter: number;
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  share_instagram_counter: number;
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  share_telegram_counter: number;
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  share_twitter_counter: number;
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    default: 0,
+  })
+  share_facebook_counter: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+  })
+  share_link_container: string[];
 }
 
 export const RedeemUserSchema = SchemaFactory.createForClass(RedeemUser);

@@ -1262,7 +1262,6 @@ export class UserLoginHelper {
         language: tutor.default_language,
         replacePattern: {
           display_name: tutor.display_name,
-          user_email: tutor.user_email,
         },
       });
 
@@ -1288,7 +1287,6 @@ export class UserLoginHelper {
         language: tutor.default_language,
         replacePattern: {
           display_name: tutor.display_name,
-          user_email: tutor.user_email,
         },
       });
 

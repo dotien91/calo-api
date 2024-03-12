@@ -128,11 +128,18 @@ export class RedeemUserService {
     return dataReturn;
   }
 
-  async updateUserRedeem(user: User, action_type: RedeemMissionActionType, action_target: RedeemMissionActionTarget) {
+  async updateUserRedeem(
+    user: User,
+    action_type: RedeemMissionActionType,
+    action_target: RedeemMissionActionTarget,
+    social_links?: string[]
+  ) {
     const counter = `${action_type}_${action_target}_counter`;
 
-    const updateObject = { $inc: {} };
+    const updateObject = { $inc: {}, $push: {} };
     updateObject.$inc[counter] = 1;
+    updateObject.$push["share_link_container"] = {};
+    updateObject.$push["share_link_container"]["$each"] = social_links;
 
     // update counter
     await this.redeemUserModel.updateMany({ user_id: user._id.toString() }, updateObject);
