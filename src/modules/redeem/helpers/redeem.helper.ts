@@ -2,8 +2,10 @@ import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import mongoose from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserService } from "../../../modules/user/services/user.service";
 import {
   CreateRedeemDTO,
+  HandleCheckUserSocialActionDTO,
   HandleUpdateSocialLinkAction,
   HandleUpdateUserRedeemDTO,
   ListRedeemDto,
@@ -15,7 +17,11 @@ import { RedeemUserService } from "../services/redeem_user.service";
 
 @Injectable()
 export class RedeemHelper {
-  constructor(private redeemService: RedeemService, private redeemUserService: RedeemUserService) {}
+  constructor(
+    private redeemService: RedeemService,
+    private redeemUserService: RedeemUserService,
+    private userService: UserService
+  ) {}
 
   async getUserRedeem(res: Response, req: ExpressRequestDto) {
     try {
@@ -227,6 +233,23 @@ export class RedeemHelper {
       if (!userObject) throw new Error("Invalid user");
 
       await this.redeemUserService.updateShareLinkAction(userObject, body);
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleCheckingSocialLinkAction(body: HandleCheckUserSocialActionDTO, res: Response, req: ExpressRequestDto) {
+    try {
+      const user = await this.userService.findOne({ _id: body.user_id });
+      if (!user) throw new Error("Invalid user");
+
+      await this.redeemUserService.checkRedeemUserProcessSocialLink(user, body.redeem_mission_ids);
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",

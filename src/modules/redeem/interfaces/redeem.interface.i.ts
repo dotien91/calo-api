@@ -1,8 +1,3 @@
-export enum RedeemMissionStatus {
-  PROCESS = "process",
-  DONE = "done",
-}
-
 export enum RedeemMissionActionType {
   LIKE = "like",
   POST = "post",
@@ -29,6 +24,7 @@ export enum RedeemMissionActionTarget {
   TIKTOK = "tiktok",
   TWITTER = "twitter",
   FACEBOOK = "facebook",
+  YOUTUBE = "youtube",
 }
 
 export interface ShareLinkObject {

@@ -1,10 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
-import {
-  RedeemMissionActionTarget,
-  RedeemMissionActionType,
-  RedeemMissionStatus,
-} from "../interfaces/redeem.interface.i";
+import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
 
 export type RedeemMissionDocument = RedeemMission & Document;
 
@@ -78,13 +74,6 @@ export class RedeemMission {
     type: MongooseSchema.Types.String,
   })
   navigate: string;
-
-  @Prop({
-    type: MongooseSchema.Types.String,
-    enum: RedeemMissionStatus,
-    default: RedeemMissionStatus.PROCESS,
-  })
-  status: RedeemMissionStatus;
 }
 
 export const RedeemMissionSchema = SchemaFactory.createForClass(RedeemMission);

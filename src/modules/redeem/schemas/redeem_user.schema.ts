@@ -30,6 +30,13 @@ export class RedeemUser {
   })
   redeem_id: MongooseSchema.Types.ObjectId;
 
+  @Prop({
+    type: MongooseSchema.Types.Array,
+    default: [],
+    ref: "RedeemMission",
+  })
+  done_redeem_mission_ids: MongooseSchema.Types.ObjectId[];
+
   // like
   @Prop({
     type: MongooseSchema.Types.Number,

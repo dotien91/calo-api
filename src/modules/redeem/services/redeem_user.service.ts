@@ -10,11 +10,7 @@ import { TransactionRefType } from "../../../modules/transaction/interfaces/tran
 import { User } from "../../../modules/user/schemas/user.schema";
 import { HandleUpdateSocialLinkAction } from "../dtos/redeem.dto";
 import { FilterRedeemUserDTO } from "../dtos/redeem_user.dto";
-import {
-  RedeemMissionActionTarget,
-  RedeemMissionActionType,
-  RedeemMissionStatus,
-} from "../interfaces/redeem.interface.i";
+import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
 import { RedeemUser, RedeemUserDocument } from "../schemas/redeem_user.schema";
 import { RedeemService } from "./redeem.service";
 import { RedeemMissionService } from "./redeem_mission.service";
@@ -168,6 +164,7 @@ export class RedeemUserService {
       const currentCheckingRedeem = redeemMissions.find(
         (redeem) => redeem._id.toString() === redeemHistory.redeem_id.toString()
       );
+      const doneMissionIds = redeemHistory.done_redeem_mission_ids.map((id) => id.toString());
 
       const [action_type, action_target] = counter.split("_");
 
@@ -175,16 +172,15 @@ export class RedeemUserService {
         return (
           mission.action_type === action_type &&
           mission.action_target === action_target &&
-          mission.status === RedeemMissionStatus.PROCESS
+          !doneMissionIds.includes(mission._id.toString())
         );
       });
 
       for (const targetMission of targetMissions) {
         if (targetMission.action_amount <= redeemHistory[counter]) {
-          await this.redeemMissionService.update({
-            _id: targetMission._id.toString(),
-            status: RedeemMissionStatus.DONE,
-          });
+          const updateObject = { $push: {} };
+          updateObject.$push["done_redeem_mission_ids"] = new mongoose.Types.ObjectId(targetMission._id.toString());
+          await this.redeemUserModel.updateOne({ _id: redeemHistory._id.toString() }, updateObject);
 
           // add point to user
           if (targetMission.point) {
@@ -194,6 +190,85 @@ export class RedeemUserService {
               entity_id: targetMission._id,
               entity_action: action_type,
               entity_target: action_target,
+            };
+            this.eventHookWorkerService.AddPointToUser(data);
+          }
+
+          // add coin to user
+          if (targetMission.coin) {
+            const data: AddCoinToUserData = {
+              userId,
+              fromUserId: null,
+              coin: targetMission.coin,
+              refObject: targetMission,
+              refType: TransactionRefType.REDEEM_MISSION,
+            };
+
+            this.eventHookWorkerService.AddCoinToUser(data);
+          }
+
+          // send socket
+          const dataForSending = {
+            user_id: user._id.toString(),
+            mission_id: targetMission._id,
+            mission_name: targetMission.title,
+            point: targetMission.point,
+            coin: targetMission.coin,
+          };
+          const params = new URLSearchParams(dataForSending);
+          const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Authorization": this.jwtHelperService.generateJwt(user._id.toString(), "", ""),
+          };
+          await this.socketService
+            .send(SocketPath.UPDATE_REDEEM, headers, params)
+            .then((response) => {
+              if (response?.data) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            .catch((error) => {
+              return false;
+            });
+        }
+      }
+    }
+  }
+
+  async checkRedeemUserProcessSocialLink(user: User, redeemMissionIds: string[]) {
+    const userId = user._id.toString();
+    const assignedRedeems = await this.findAll({ user_id: userId });
+    const redeemMissions = await this.redeemService.getListMissionOfRedeemsByUser(user);
+
+    for (const redeemHistory of assignedRedeems) {
+      const currentCheckingRedeem = redeemMissions.find(
+        (redeem) => redeem._id.toString() === redeemHistory.redeem_id.toString()
+      );
+      const checkingMissionIds = redeemMissionIds;
+
+      const targetMissions = currentCheckingRedeem.missions.filter((mission) => {
+        return checkingMissionIds.includes(mission._id.toString());
+      });
+
+      for (const targetMission of targetMissions) {
+        const currentLinkRedeem = redeemHistory.share_link_container.find(
+          (link) => link.redeem_mission_id.toString() === targetMission._id.toString()
+        );
+        if (targetMission.action_amount <= currentLinkRedeem[targetMission.action_type + "_counter"]) {
+          const updateObject = { $push: {} };
+          updateObject.$push["done_redeem_mission_ids"] = new mongoose.Types.ObjectId(targetMission._id.toString());
+          await this.redeemUserModel.updateOne({ _id: redeemHistory._id.toString() }, updateObject);
+
+          // add point to user
+          if (targetMission.point) {
+            const data: AddPointToUserData = {
+              user_id: userId,
+              point: targetMission.point,
+              entity_id: targetMission._id,
+              entity_action: targetMission.action_type,
+              entity_target: targetMission.action_target,
             };
             this.eventHookWorkerService.AddPointToUser(data);
           }

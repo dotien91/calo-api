@@ -3,6 +3,7 @@ import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import {
   CreateRedeemDTO,
+  HandleCheckUserSocialActionDTO,
   HandleUpdateSocialLinkAction,
   HandleUpdateUserRedeemDTO,
   ListRedeemDto,
@@ -63,6 +64,15 @@ export class RedeemController {
     @Req() req: ExpressRequestDto
   ) {
     return await this.redeemHelper.handleUpdateUserRedeem(data, res, req);
+  }
+
+  @Post("checking-social-link")
+  async handleCheckingSocialLinkAction(
+    @Body() data: HandleCheckUserSocialActionDTO,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.redeemHelper.handleCheckingSocialLinkAction(data, res, req);
   }
 
   @Post("link")
