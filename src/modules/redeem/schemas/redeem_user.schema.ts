@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { ShareLinkObject } from "../interfaces/redeem.interface.i";
 
 export type RedeemUserDocument = RedeemUser & Document;
 
@@ -126,7 +127,7 @@ export class RedeemUser {
     type: MongooseSchema.Types.Array,
     default: [],
   })
-  share_link_container: string[];
+  share_link_container: Array<ShareLinkObject>;
 }
 
 export const RedeemUserSchema = SchemaFactory.createForClass(RedeemUser);

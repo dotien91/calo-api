@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -8,6 +8,7 @@ import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
+import { HandleUpdateSocialLinkAction } from "../dtos/redeem.dto";
 import { FilterRedeemUserDTO } from "../dtos/redeem_user.dto";
 import {
   RedeemMissionActionTarget,
@@ -128,22 +129,32 @@ export class RedeemUserService {
     return dataReturn;
   }
 
-  async updateUserRedeem(
-    user: User,
-    action_type: RedeemMissionActionType,
-    action_target: RedeemMissionActionTarget,
-    social_links?: string[]
-  ) {
+  async updateUserRedeem(user: User, action_type: RedeemMissionActionType, action_target: RedeemMissionActionTarget) {
     const counter = `${action_type}_${action_target}_counter`;
 
-    const updateObject = { $inc: {}, $push: {} };
+    const updateObject = { $inc: {} };
     updateObject.$inc[counter] = 1;
-    updateObject.$push["share_link_container"] = {};
-    updateObject.$push["share_link_container"]["$each"] = social_links;
 
     // update counter
     await this.redeemUserModel.updateMany({ user_id: user._id.toString() }, updateObject);
     await this.checkRedeemUserProcess(user, counter);
+
+    return null;
+  }
+
+  async updateShareLinkAction(user: User, body: HandleUpdateSocialLinkAction) {
+    const updateObject = { $push: {} };
+    updateObject.$push["share_link_container"] = {
+      redeem_mission_id: new mongoose.Types.ObjectId(body.redeem_mission_id),
+      social_link: body.social_link,
+      view_counter: 0,
+      like_counter: 0,
+      comment_counter: 0,
+      share_counter: 0,
+    };
+
+    // update counter
+    await this.redeemUserModel.updateOne({ user_id: user._id.toString(), redeem_id: body.redeem_id }, updateObject);
 
     return null;
   }

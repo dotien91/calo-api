@@ -13,6 +13,7 @@ export enum RedeemMissionActionType {
   REFERRAL = "referral",
   WATCH = "watch",
   SHARE = "share",
+  VIEW = "view",
 }
 
 export enum RedeemMissionActionTarget {
@@ -28,4 +29,13 @@ export enum RedeemMissionActionTarget {
   TIKTOK = "tiktok",
   TWITTER = "twitter",
   FACEBOOK = "facebook",
+}
+
+export interface ShareLinkObject {
+  redeem_mission_id: string;
+  social_link: string;
+  view_counter?: number;
+  like_counter?: number;
+  comment_counter?: number;
+  share_counter?: number;
 }

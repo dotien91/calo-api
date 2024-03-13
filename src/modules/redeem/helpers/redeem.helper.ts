@@ -2,7 +2,13 @@ import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import mongoose from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateRedeemDTO, HandleUpdateUserRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
+import {
+  CreateRedeemDTO,
+  HandleUpdateSocialLinkAction,
+  HandleUpdateUserRedeemDTO,
+  ListRedeemDto,
+  UpdateRedeemDTO,
+} from "../dtos/redeem.dto";
 import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
 import { RedeemService } from "../services/redeem.service";
 import { RedeemUserService } from "../services/redeem_user.service";
@@ -202,13 +208,25 @@ export class RedeemHelper {
       const userObject = req?.user_object;
       if (!userObject) throw new Error("Invalid user");
 
-      await this.redeemUserService.updateUserRedeem(
-        userObject,
-        body.action_type,
-        body.action_target,
-        body.social_links
-      );
+      await this.redeemUserService.updateUserRedeem(userObject, body.action_type, body.action_target);
 
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleUpdateSocialLinkAction(body: HandleUpdateSocialLinkAction, res: Response, req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
+      await this.redeemUserService.updateShareLinkAction(userObject, body);
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",

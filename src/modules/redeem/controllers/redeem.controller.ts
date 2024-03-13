@@ -1,7 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CreateRedeemDTO, HandleUpdateUserRedeemDTO, ListRedeemDto, UpdateRedeemDTO } from "../dtos/redeem.dto";
+import {
+  CreateRedeemDTO,
+  HandleUpdateSocialLinkAction,
+  HandleUpdateUserRedeemDTO,
+  ListRedeemDto,
+  UpdateRedeemDTO,
+} from "../dtos/redeem.dto";
 import { CreateRedeemMissionDTO, ListRedeemMissionDto, UpdateRedeemMissionDTO } from "../dtos/redeem_mission.dto";
 import { RedeemHelper } from "../helpers/redeem.helper";
 import { RedeemMissionHelper } from "../helpers/redeem_mission.helper";
@@ -57,6 +63,15 @@ export class RedeemController {
     @Req() req: ExpressRequestDto
   ) {
     return await this.redeemHelper.handleUpdateUserRedeem(data, res, req);
+  }
+
+  @Post("link")
+  async handleUpdateSocialLinkAction(
+    @Body() data: HandleUpdateSocialLinkAction,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.redeemHelper.handleUpdateSocialLinkAction(data, res, req);
   }
 
   // redeem mission apis
