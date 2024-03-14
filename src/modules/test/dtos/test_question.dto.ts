@@ -91,6 +91,10 @@ export class CreateTestQuestion {
   @IsString()
   @IsOptional()
   answer?: string;
+
+  @IsNumber()
+  @IsOptional()
+  amount_of_option?: number;
 }
 
 export class CreateTestQuestionDTO {
@@ -117,6 +121,10 @@ export class UpdateTestQuestionDTO {
   @IsString()
   @IsOptional()
   content?: string;
+
+  @IsNumber()
+  @IsOptional()
+  amount_of_option?: number;
 
   @IsEnum(TestQuestionType)
   @IsOptional()

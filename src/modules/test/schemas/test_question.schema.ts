@@ -53,6 +53,11 @@ export class TestQuestion {
   content: string;
 
   @Prop({
+    type: MongooseSchema.Types.Number,
+  })
+  amount_of_option: number;
+
+  @Prop({
     type: MongooseSchema.Types.String,
     enum: TestQuestionType,
   })
