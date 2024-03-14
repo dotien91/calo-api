@@ -23,7 +23,7 @@ export class PodcastCategoryService {
     let condition: any = {};
     if (filter.search) {
       const dataSearch = `${filter.search}`;
-      const dataRegex = new RegExp("^" + dataSearch.toLowerCase(), "i");
+      const dataRegex = new RegExp(dataSearch.toLowerCase(), "i");
       // console.log(dataRegex);
       // condition = Object.assign(condition, { $text: { $search: dataRegex } });
       condition = Object.assign(condition, { $or: [{ category_title: dataRegex }, { category_content: dataRegex }] });

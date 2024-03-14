@@ -83,11 +83,12 @@ export class TestQuestionHelper {
       //Check Permission
       const userId = req?.user_id?.toString();
       if (!userId) throw new Error("Invalid user");
+      const objectId = new mongoose.Types.ObjectId(id);
 
-      const testQuestion = await this.testQuestionService.findOne({ _id: id });
+      const testQuestion = await this.testQuestionService.findOne({ _id: objectId });
       if (!testQuestion) throw new Error("Not found test question");
 
-      await Promise.all([this.testQuestionService.remove({ _id: new mongoose.Types.ObjectId(id) })]);
+      await Promise.all([this.testQuestionService.remove({ _id: objectId })]);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

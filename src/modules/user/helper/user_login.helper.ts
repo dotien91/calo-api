@@ -105,7 +105,7 @@ export class UserLoginHelper {
             user_avatar: dataAvtar,
             user_avatar_thumbnail: dataAvtar,
             user_status: 1,
-            invitation_code: makeRandom(10),
+            invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -286,9 +286,9 @@ export class UserLoginHelper {
             user_avatar_thumbnail: dataUrl,
             user_login: userLogin,
             user_email: userData?.email,
-            display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
+            display_name: "IH-" + makeRandom(8, "0123456789"),
             user_status: 1,
-            invitation_code: makeRandom(10),
+            invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -356,7 +356,7 @@ export class UserLoginHelper {
             user_avatar: userAvatar,
             user_avatar_thumbnail: userAvatar,
             user_status: 1,
-            invitation_code: makeRandom(10),
+            invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -477,7 +477,7 @@ export class UserLoginHelper {
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
           country: dataIp.country,
           timezone: dataIp.timezone,
-          invitation_code: makeRandom(10),
+          invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
         };
         userObject = await this.appUserService.create(dataToCreate);
 
@@ -574,7 +574,7 @@ export class UserLoginHelper {
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
           country: dataIp.country,
           timezone: dataIp.timezone,
-          invitation_code: makeRandom(10),
+          invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
           is_pending_to_became_teacher: true,
         };
         userObject = await this.appUserService.create(dataToCreate);
