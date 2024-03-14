@@ -40,6 +40,7 @@ import { CreateCourseOneOneStudentDto, CreateCourseOneOneTeacherDto } from "../d
 import { CreateCourseReviewDto } from "../dto/create-course_review.dto";
 import { CreateCourseUserDto } from "../dto/create-course_user.dto";
 import { CreateCourseViewDto } from "../dto/create-course_view.dto";
+import { FilterClassCourseDto } from "../dto/filter-class_course.dto";
 import { GetCourseRoomParams, ListCourseDto, ListSaleCourseDto } from "../dto/list-course.dto";
 import { ListCourseClassDto } from "../dto/list-course_class.dto";
 import { ListCourseModuleDto } from "../dto/list-course_module.dto";
@@ -56,6 +57,7 @@ import {
   CourseClassType,
   CourseLevel,
   CourseOneOneRole,
+  CoursePublicStatus,
   CourseSkill,
   CourseSortByFrontEnd,
   CourseType,
@@ -142,7 +144,11 @@ export class CourseHelper {
         if (!organization) throw new Error("Not found Organization");
       }
 
-      createCourseData = { ...createCourseData, ...{ user_id: req.user_object._id.toString() } };
+      createCourseData = {
+        ...createCourseData,
+        ...{ user_id: req.user_object._id.toString() },
+        public_status: CoursePublicStatus.PENDING,
+      };
       const dataCreate: any = await this.courseService.create(createCourseData);
       let dataReturn: any = await this.courseService.findById(dataCreate?._id?.toString());
       if (dataReturn?.price) {
@@ -323,6 +329,30 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataCreate);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async updateCourseNoReq(dataUpdate: UpdateCourseDto) {
+    try {
+      let dataCreate: any = await this.courseService.update(dataUpdate);
+      if (dataCreate?.price && !dataCreate?.service_id) {
+        dataCreate = await this.handleUpdateServiceCourse(dataCreate);
+      }
+      if (dataCreate?.price && dataCreate?.service_id) {
+        await this.handleUpdatePlan(dataCreate);
+      }
+      if (!Number(dataCreate?.price) && dataCreate?.service_id) {
+        //Update service
+        const dataUpdate = {
+          service_id: null,
+          plan_id: null,
+          _id: dataCreate?._id?.toString(),
+        };
+        await this.courseService.update(dataUpdate);
+      }
+      return dataCreate;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -634,6 +664,88 @@ export class CourseHelper {
     }
   }
 
+  async getCourseListNoReq(body: ListCourseDto) {
+    try {
+      if (Number(body.limit) > 1000) {
+        body.limit = 1000;
+      }
+
+      const limit = body.limit ? body.limit : 1000;
+      const page = body.page ? body.page : 1;
+
+      const orderByObject = {};
+      if (body.sort_by) orderByObject[body.sort_by] = body.order_by || "ASC";
+
+      const dataToFilter = { ...body };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+      delete dataToFilter.sort_by;
+
+      //Check Video View
+      const dataReturn: any = await this.courseService.filter(dataToFilter, orderByObject, page, limit);
+      const countCourse: any = await this.courseService.getAllFilter(dataToFilter);
+
+      const dataCourseIds = dataReturn?.map((value) => {
+        return value?._id?.toString();
+      });
+
+      for (const dataIndexCourse in dataReturn) {
+        dataReturn[dataIndexCourse] = dataReturn[dataIndexCourse]?.toObject();
+      }
+
+      if (body?.auth_id) {
+        //Process total View
+        const dataFilterView = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        const dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+
+        const dataFilterJoin = {
+          course_ids: dataCourseIds,
+          user_id: body.auth_id,
+        };
+        const dataJoin: CourseUser[] = await this.courseUserService.filter(dataFilterJoin, {}, 1, 1000);
+
+        for (const dataIndexCourse in dataReturn) {
+          const dataObjectByCourse = dataView?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.module_id?.toString();
+            }
+          });
+
+          const dataObjectJoinCourse = dataJoin?.filter((value) => {
+            if (value?.course_id?.toString() == dataReturn[dataIndexCourse]?._id?.toString()) {
+              return value?.course_id?.toString();
+            }
+          });
+
+          if (dataObjectJoinCourse?.length) {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: true },
+            };
+          } else {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse],
+              ...{ is_join: false },
+            };
+          }
+
+          dataReturn[dataIndexCourse] = {
+            ...dataReturn[dataIndexCourse],
+            ...{ total_view: dataObjectByCourse?.length, module_view: dataObjectByCourse },
+          };
+        }
+      }
+
+      return dataReturn;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   async getMyCourse(body: ListCourseDto, res: Response, req: ExpressRequestDto) {
     try {
       const userId = req?.user_id;
@@ -845,6 +957,65 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(finalDataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getCourseModuleListNoReq(query: ListCourseModuleDto) {
+    try {
+      if (Number(query.limit) > 1000) {
+        query.limit = 1000;
+      }
+
+      const limit = query.limit ? query.limit : 1000;
+      const page = query.page ? query.page : 1;
+      let orderByObject = {};
+      if (query.order_by) {
+        orderByObject = { ...orderByObject, ...{ createdAt: query.order_by } };
+      }
+      const dataToFilter = { ...query };
+      delete dataToFilter.page;
+      delete dataToFilter.limit;
+      delete dataToFilter.order_by;
+
+      //Check Video View
+      const dataReturn: any = await this.courseModuleService.filter(dataToFilter, orderByObject, page, limit);
+
+      const dataModuleIds = dataReturn?.map((value) => {
+        return value?._id?.toString();
+      });
+
+      if (query?.auth_id) {
+        //Process total View
+        const dataFilterView = {
+          module_ids: dataModuleIds,
+          user_id: query?.auth_id,
+        };
+        const dataView: CourseView[] = await this.courseViewService.filter(dataFilterView, {}, 1, 1000);
+        const dataModuleIdsView = dataView?.map((value) => {
+          return value?.module_id?.toString();
+        });
+
+        for (const dataIndexCourse in dataReturn) {
+          //Check Is View
+          if (dataModuleIdsView.indexOf(dataReturn[dataIndexCourse]?._id?.toString()) != -1) {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse]?.toObject(),
+              ...{ is_view: true },
+            };
+          } else {
+            dataReturn[dataIndexCourse] = {
+              ...dataReturn[dataIndexCourse]?.toObject(),
+              ...{ is_view: false },
+            };
+          }
+        }
+      }
+
+      // because the above logic already use toObject() so this will skip it
+      const finalDataReturn = this.courseModuleService.buildHierarchy(dataReturn);
+      return finalDataReturn;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -1554,9 +1725,9 @@ export class CourseHelper {
     }
   }
 
-  async getAllCourseClassList() {
+  async getAllCourseClassList(searchPattern?: FilterClassCourseDto) {
     try {
-      const dataReturn = await this.courseClassService.filter();
+      const dataReturn = await this.courseClassService.filter(searchPattern);
       return dataReturn;
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -2016,6 +2187,20 @@ export class CourseHelper {
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async getCourseCalendarTeacherListNoReq(query: ListCourseOneOneDto) {
+    try {
+      //Check Video View
+      const dataReturn: any = await this.courseOneOneService.findOne({
+        user_id: query.user_id,
+        role: CourseOneOneRole.TEACHER,
+      });
+
+      return dataReturn;
     } catch (error) {
       throw new NotFoundException(error.message);
     }

@@ -34,6 +34,7 @@ import { UpdateCourseModuleDto } from "../dto/update-course_module.dto";
 import { UpdateCourseOneOneStudentDto, UpdateCourseOneOneTeacherDto } from "../dto/update-course_one_one.dto";
 import { UpdateCourseReviewDto } from "../dto/update-course_review.dto";
 import { CourseHelper } from "../helper/course.helper";
+import { CoursePublicStatus, CourseType } from "../interfaces/course.interface";
 
 @Controller("course")
 @ApiTags("course")
@@ -202,6 +203,48 @@ export class CourseController {
         } else {
           // do nothing
         }
+      }
+    }
+  }
+
+  @Cron(CronExpression.EVERY_2_HOURS)
+  async checkPendingCourse() {
+    const pendingCourses = await this.courseHelper.getCourseListNoReq({ public_status: CoursePublicStatus.PENDING });
+    for (const pendingCourse of pendingCourses) {
+      const pendingCourseId = pendingCourse._id.toString();
+      let isValidCourse = false;
+
+      switch (pendingCourse.type) {
+        case CourseType.CALL_GROUP: {
+          const courseClasses = await this.courseHelper.getAllCourseClassList({
+            course_id: pendingCourseId,
+          });
+          if (courseClasses?.length > 0) isValidCourse = true;
+          break;
+        }
+        case CourseType.SELF_LEARNING: {
+          const courseModules = await this.courseHelper.getCourseModuleListNoReq({
+            course_id: pendingCourseId,
+          });
+          if (courseModules?.length > 0) isValidCourse = true;
+          break;
+        }
+        case CourseType.CALL_ONE_ONE: {
+          const teacherTimeAvailable = await this.courseHelper.getCourseCalendarTeacherListNoReq({
+            user_id: pendingCourse.user_id._id.toString(),
+          });
+          if (teacherTimeAvailable) isValidCourse = true;
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      if (isValidCourse) {
+        await this.courseHelper.updateCourseNoReq({
+          _id: pendingCourseId,
+          public_status: CoursePublicStatus.ACTIVE,
+        });
       }
     }
   }

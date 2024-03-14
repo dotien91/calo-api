@@ -42,8 +42,8 @@ export class CourseService {
       condition = Object.assign(condition, { user_id: filter.user_id });
     }
 
-    if (filter.course_status) {
-      condition = Object.assign(condition, { course_status: filter.course_status });
+    if (filter.public_status) {
+      condition = Object.assign(condition, { public_status: filter.public_status });
     }
 
     if (filter.max_price) {

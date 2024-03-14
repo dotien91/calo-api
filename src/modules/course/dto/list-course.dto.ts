@@ -10,7 +10,7 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
-import { CourseLevel, CourseSkill, CourseSortBy, CourseType } from "../interfaces/course.interface";
+import { CourseLevel, CoursePublicStatus, CourseSkill, CourseSortBy, CourseType } from "../interfaces/course.interface";
 
 export class ListCourseDto {
   @IsNumberString()
@@ -85,6 +85,11 @@ export class ListCourseDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   created_user_id?: string;
+
+  @IsEnum(CoursePublicStatus)
+  @IsOptional()
+  @ApiPropertyOptional()
+  public_status?: CoursePublicStatus;
 }
 
 export class ListSaleCourseDto {

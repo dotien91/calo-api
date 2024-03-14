@@ -1,7 +1,7 @@
 export class SearchCourseDto {
   user_id?: string;
   search?: string;
-  course_status?: string;
+  public_status?: string;
   language?: string;
   country?: string;
   ids?: string;
