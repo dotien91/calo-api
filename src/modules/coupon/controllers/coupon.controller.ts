@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from "@nestjs/common";
 import { Response } from "express";
+import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { CreateCouponUserDTO } from "../dtos/coupon-user.dto";
 import { CreateCouponDTO, ListCouponDto, UpdateCouponDTO } from "../dtos/coupon.dto";
 import { CouponUserHelper } from "../helpers/coupon-user.helper";
@@ -17,6 +19,7 @@ export class CouponController {
   }
 
   @Post("create")
+  @Permissions(UserRoles.TEACHER)
   async createNewCoupon(
     @Body() createCouponData: CreateCouponDTO,
     @Res() res: Response,
@@ -26,6 +29,7 @@ export class CouponController {
   }
 
   @Patch("update")
+  @Permissions(UserRoles.TEACHER)
   async updateCoupon(@Body() updateCouponData: UpdateCouponDTO, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.updateCoupon(updateCouponData, res, req);
   }
@@ -36,6 +40,7 @@ export class CouponController {
   }
 
   @Delete("delete/:id")
+  @Permissions(UserRoles.TEACHER)
   async removeCoupon(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.couponHelper.removeCoupon(id, res, req);
   }

@@ -8,6 +8,7 @@ import { GptService } from "../../../modules/gpt/services/gpt.service";
 import { FilterTestUserDTO, UpdateTestUserDTO, UserAnswer } from "../dtos/test_user.dto";
 import {
   Junbro1016ResponseData,
+  MAX_BAND,
   SpeakingResult,
   TestQuestionPart,
   TestStatus,
@@ -212,19 +213,47 @@ export class TestUserService {
 
     switch (data.type) {
       case TestType.LISTENING: {
-        listeningPoint = this.getListeningBand(userAnswers, listeningQuestions);
+        listeningPoint = this.getListeningNoneBand(userAnswers, listeningQuestions);
+        await this.update({
+          _id: data._id,
+          band_detail: {
+            listening_point: listeningPoint,
+          },
+          status: TestStatus.DONE,
+        });
         break;
       }
       case TestType.READING: {
-        readingPoint = this.getReadingBand(userAnswers, readingQuestions);
+        readingPoint = this.getReadingNoneBand(userAnswers, readingQuestions);
+        await this.update({
+          _id: data._id,
+          band_detail: {
+            reading_point: readingPoint,
+          },
+          status: TestStatus.DONE,
+        });
         break;
       }
       case TestType.WRITING: {
         writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
+        await this.update({
+          _id: data._id,
+          band_detail: {
+            writing_point: `${writingPoint}/${MAX_BAND}`,
+          },
+          status: TestStatus.DONE,
+        });
         break;
       }
       case TestType.SPEAKING: {
         speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
+        await this.update({
+          _id: data._id,
+          band_detail: {
+            speaking_point: `${speakingPoint}/${MAX_BAND}`,
+          },
+          status: TestStatus.DONE,
+        });
         break;
       }
       case TestType.EXAM: {
@@ -232,36 +261,38 @@ export class TestUserService {
         readingPoint = this.getReadingBand(userAnswers, readingQuestions);
         writingPoint = await this.getWritingBand(userAnswers, writingQuestions);
         speakingPoint = await this.getSpeakingBand(userAnswers, speakingQuestions);
+
+        let averageBand = (listeningPoint + readingPoint + writingPoint + speakingPoint) / 4;
+        const band = this.getIELTSBandScore(averageBand);
+        await this.update({
+          _id: data._id,
+          band,
+          band_detail: {
+            listening_point: listeningPoint,
+            reading_point: readingPoint,
+            writing_point: writingPoint,
+            speaking_point: speakingPoint,
+          },
+          status: TestStatus.DONE,
+        });
         break;
       }
     }
+  }
 
-    const totalPoint = [listeningPoint, readingPoint, writingPoint, speakingPoint].filter(
-      (point) => point !== undefined
-    ).length;
-    let averageBand = 0;
-    if (totalPoint > 0) {
-      let totalBand = 0;
-      listeningPoint && (totalBand += listeningPoint);
-      readingPoint && (totalBand += readingPoint);
-      writingPoint && (totalBand += writingPoint);
-      speakingPoint && (totalBand += speakingPoint);
+  private getListeningNoneBand(userAnswers: UserAnswer[], questions: TestQuestion[]): string {
+    let amountOfCorrect = 0;
+    for (const userAnswer of userAnswers) {
+      const question = questions.find((question) => question.index === userAnswer.index);
+      if (!question) continue;
 
-      averageBand = totalBand / totalPoint;
+      if (question.answer === userAnswer.answer) {
+        amountOfCorrect = amountOfCorrect + 1;
+      }
+      userAnswer.correct_answer = question.answer;
     }
 
-    const band = this.getIELTSBandScore(averageBand);
-    await this.update({
-      _id: data._id,
-      band,
-      band_detail: {
-        listening_point: listeningPoint,
-        reading_point: readingPoint,
-        writing_point: writingPoint,
-        speaking_point: speakingPoint,
-      },
-      status: TestStatus.DONE,
-    });
+    return `${amountOfCorrect}/${questions.length}`;
   }
 
   private getListeningBand(userAnswers: UserAnswer[], questions: TestQuestion[]): number {
@@ -303,6 +334,20 @@ export class TestUserService {
         return bandScores[i].band;
       }
     }
+  }
+
+  private getReadingNoneBand(userAnswers: UserAnswer[], questions: TestQuestion[]): string {
+    let amountOfCorrect = 0;
+    for (const userAnswer of userAnswers) {
+      const question = questions.find((question) => question.index === userAnswer.index);
+      if (!question) continue;
+
+      if (question.answer === userAnswer.answer) {
+        amountOfCorrect = amountOfCorrect + 1;
+      }
+      userAnswer.correct_answer = question.answer;
+    }
+    return `${amountOfCorrect}/${questions.length}`;
   }
 
   private getReadingBand(userAnswers: UserAnswer[], questions: TestQuestion[]): number {
