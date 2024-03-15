@@ -5,7 +5,6 @@ import { UserRoles } from "../../user/interfaces/user.interface";
 import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto, SearchSaleCourseDto, SearchTutorDto } from "../dto/search-course.dto";
-import { UpdateCourseDto } from "../dto/update-course.dto";
 import { CourseOneOneRole, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
 import { CourseOneOne, CourseOneOneDocument } from "../schemas/course_one_one.schema";
@@ -419,7 +418,7 @@ export class CourseService {
       .sort({ _id: -1 })
       .populate(
         "user_id",
-        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status certificates educations"
+        "_id user_login display_name bio description user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status certificates educations rating"
       )
       .populate("media_id")
       .populate("avatar")
@@ -471,7 +470,7 @@ export class CourseService {
    * @param dataUpdate
    * @returns
    */
-  async update(dataUpdate: UpdateCourseDto) {
+  async update(dataUpdate: any) {
     try {
       if (!dataUpdate._id) {
         return null;

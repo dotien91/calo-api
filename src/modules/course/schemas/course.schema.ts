@@ -169,6 +169,13 @@ export class Course {
     default: 0,
     nullable: false,
   })
+  review_count: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    nullable: false,
+  })
   module_count: number;
 
   @Prop({

@@ -3083,6 +3083,9 @@ export class CourseHelper {
       await this.courseService.update({
         _id: courseId,
         rating: newCourseRating,
+        $inc: {
+          review_count: 1,
+        },
       });
 
       const course = await this.courseService.findOne({ _id: courseId });
