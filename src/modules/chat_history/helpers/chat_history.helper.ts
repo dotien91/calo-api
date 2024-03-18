@@ -412,6 +412,8 @@ export class ChatHistoryHelper {
   async getRoomDetail(req: ExpressRequestDto, res: Response, query: ListChatHistoryDto, id: string) {
     try {
       const userObject = req?.user_object;
+      if (!userObject) throw new Error("Invalid user");
+
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
