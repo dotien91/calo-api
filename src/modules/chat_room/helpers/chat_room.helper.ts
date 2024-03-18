@@ -570,7 +570,8 @@ export class ChatRoomHelper {
             userRole,
             updateChatRoomDto.user_permission,
             // @ts-ignore
-            datum.chat_room_id
+            datum.chat_room_id,
+            updateChatRoomDto.room_type
           );
         } else {
           throw new BadRequestException(`Failed to add user to room ${datum._id}`);
@@ -602,7 +603,8 @@ export class ChatRoomHelper {
     roomId: string,
     userRole: string,
     userPermission: string,
-    roomObject: ChatRoom
+    roomObject: ChatRoom,
+    roomType: string = "group"
   ) {
     const dataPartnerToAdd = [];
     for (const userItem of dataPartner) {
@@ -627,7 +629,7 @@ export class ChatRoomHelper {
           group_partners: dataPartnerToAdd,
           room_title: "",
           room_image: "",
-          room_type: "group",
+          room_type: roomType,
         };
         await this.chatRoomUserOptionService.create(dataOptionUser);
       }

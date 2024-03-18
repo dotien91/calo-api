@@ -1751,7 +1751,7 @@ export class CourseHelper {
       const course = await this.courseService.findOne({ _id: dataReturn[0].course_id.toString() });
       const chatRoom = await this.chatRoomService.findOneRoom({
         user_id: course.user_id._id.toString(),
-        room_type: "group",
+        room_type: "class",
         room_name: dataReturn[0].name,
       });
 
@@ -1986,7 +1986,7 @@ export class CourseHelper {
           const course = await this.courseService.findOne({ _id: courseClass.course_id });
           const chatRoom = await this.chatRoomService.findOneRoom({
             user_id: course.user_id._id.toString(),
-            room_type: "group",
+            room_type: "class",
             room_name: courseClass.name,
           });
           await this.chatRoomHelper.addUserRole(undefined, req, {
@@ -1994,6 +1994,7 @@ export class CourseHelper {
             chat_room_id: chatRoom._id.toString(),
             user_permission: "write",
             role: "user",
+            room_type: "class",
           });
         } catch (e) {
           console.log(e);
@@ -2079,7 +2080,7 @@ export class CourseHelper {
           const course = await this.courseService.findOne({ _id: courseClass.course_id });
           const chatRoom = await this.chatRoomService.findOneRoom({
             user_id: course.user_id._id.toString(),
-            room_type: "group",
+            room_type: "class",
             room_name: courseClass.name,
           });
           await this.chatRoomHelper.removeUserRole(undefined, req, {

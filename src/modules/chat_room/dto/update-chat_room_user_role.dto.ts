@@ -12,4 +12,7 @@ export class UpdateChatRoomUserRoleDto {
 
   @IsIn(["user", "admin"])
   role: string;
+
+  @IsString()
+  room_type: string;
 }
