@@ -1030,9 +1030,6 @@ export class CourseHelper {
    */
   async handleGetDetailCourse(query: ListCourseDto, id: string, res: Response, req: ExpressRequestDto) {
     try {
-      const userId = req?.user_id;
-      if (!userId) throw new Error("Invalid user");
-
       if (!id) {
         throw new ForbiddenException("Id is not invalid");
       }
@@ -1098,27 +1095,32 @@ export class CourseHelper {
           }
         }
 
-        switch (dataReturn.type) {
-          case CourseType.CALL_GROUP: {
-            // get all class of course class
-            const callGroupCourseIds = [dataReturn._id.toString()];
-            const callGroupClasses = await this.courseClassService.findAll({ course_id: { $in: callGroupCourseIds } });
-            this.mergeClassInfoIntoCourseInfo(userId, [dataReturn], callGroupClasses);
-            break;
-          }
-          case CourseType.CALL_ONE_ONE: {
-            // get all class of course one one
-            const oneOneCourseIds = [dataReturn._id.toString()];
-            const oneOneClasses = await this.courseOneOneService.findAll(
-              {
-                course_id: { $in: oneOneCourseIds },
-                role: CourseOneOneRole.STUDENT,
-              },
-              true
-            );
-            this.mergeOneOneInfoIntoCourseInfo(userId, [dataReturn], oneOneClasses);
+        const userId = req?.user_id;
+        if (userId) {
+          switch (dataReturn.type) {
+            case CourseType.CALL_GROUP: {
+              // get all class of course class
+              const callGroupCourseIds = [dataReturn._id.toString()];
+              const callGroupClasses = await this.courseClassService.findAll({
+                course_id: { $in: callGroupCourseIds },
+              });
+              this.mergeClassInfoIntoCourseInfo(userId, [dataReturn], callGroupClasses);
+              break;
+            }
+            case CourseType.CALL_ONE_ONE: {
+              // get all class of course one one
+              const oneOneCourseIds = [dataReturn._id.toString()];
+              const oneOneClasses = await this.courseOneOneService.findAll(
+                {
+                  course_id: { $in: oneOneCourseIds },
+                  role: CourseOneOneRole.STUDENT,
+                },
+                true
+              );
+              this.mergeOneOneInfoIntoCourseInfo(userId, [dataReturn], oneOneClasses);
 
-            break;
+              break;
+            }
           }
         }
 
