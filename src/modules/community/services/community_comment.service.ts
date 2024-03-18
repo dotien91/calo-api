@@ -109,14 +109,14 @@ export class CommunityCommentService {
       populate: {
         path: "user_id",
         select:
-          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status",
+          "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status level",
       },
     };
     const dataReturn = await this.communityModel
       .find(condition)
       .populate(
         "user_id",
-        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status"
+        "user_login display_name user_role user_status user_avatar user_avatar_thumbnail last_active user_active official_status level"
       )
       .populate(dataPopulateChild)
       .sort(sortObject)
