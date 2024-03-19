@@ -121,7 +121,6 @@ export class CourseController {
                     this.courseHelper.hourDifference(time_start, time_end)
                   );
                 } else {
-                  console.log("Error: Teacher's taught time - Not found course");
                 }
               })();
 
@@ -194,7 +193,6 @@ export class CourseController {
                   this.courseHelper.hourDifference(time_start, time_end)
                 );
               } else {
-                console.log("Error: Teacher's taught time - Not found course");
               }
             })();
 

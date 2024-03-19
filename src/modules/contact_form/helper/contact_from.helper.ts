@@ -288,7 +288,6 @@ export class ContactFormHelper {
       //   _id: dataReturn?.entity_id?.toString(),
       //   user_entity: userEntity,
       // };
-      // console.log(dataUpdate, 'dataUpdate')
       //Update Entity
       // await this.postService.update(dataUpdate);
 

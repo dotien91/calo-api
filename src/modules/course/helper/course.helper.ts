@@ -200,7 +200,6 @@ export class CourseHelper {
           user_id: courseData.user_id._id.toString(),
         };
         const planService = await this.planService.create(dataPlanCreate);
-        // console.log(planService, 'planService')
 
         if (planService) {
           const dataUpdate = {
@@ -209,7 +208,6 @@ export class CourseHelper {
             plan_id: planService?._id?.toString(),
           };
           const dataReturn = await this.courseService.update(dataUpdate);
-          // console.log(dataReturn, 'dataReturn')
           return dataReturn;
         }
       }

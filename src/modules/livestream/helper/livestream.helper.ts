@@ -325,7 +325,6 @@ export class LivestreamHelper {
   //         // console.log(error);
   //         // console.log(error.response.data, 'data error');
   //         // this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
-  //         console.log(error, "error");
   //         return null;
   //       });
 
@@ -709,7 +708,6 @@ export class LivestreamHelper {
         .status(HttpStatus.OK)
         .json(dataReturnFinal);
     } catch (error) {
-      console.log(error, "error");
       throw new BadRequestException(error.message);
     }
   }
@@ -874,7 +872,6 @@ export class LivestreamHelper {
 
       return true;
     } catch (error) {
-      console.log(error, "error");
       return false;
     }
   }
@@ -949,7 +946,6 @@ export class LivestreamHelper {
 
       return true;
     } catch (error) {
-      console.log(error, "error");
       return false;
     }
   }

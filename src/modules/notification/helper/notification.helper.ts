@@ -107,9 +107,7 @@ export class NotificationHelper {
           return false;
         });
       return dataNotification;
-    } catch (error) {
-      console.log(error, "error");
-    }
+    } catch (error) {}
   }
 
   /**

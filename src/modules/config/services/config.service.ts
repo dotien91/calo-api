@@ -204,7 +204,6 @@ export class ConfigService {
           }
         })
         .catch((error) => {
-          console.log(error);
           return null;
         });
 

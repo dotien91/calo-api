@@ -15,7 +15,6 @@ export class HttpClientService {
         return response;
       })
       .catch(function (error) {
-        console.log(error.message);
         return error;
       });
   }
@@ -32,7 +31,6 @@ export class HttpClientService {
         return response;
       })
       .catch(function (error) {
-        console.log(error.message);
         return error;
       });
   }
@@ -46,7 +44,6 @@ export class HttpClientService {
         return response;
       })
       .catch(function (error) {
-        console.log(error.message);
         return error;
       });
   }
@@ -62,7 +59,6 @@ export class HttpClientService {
         return response;
       })
       .catch(function (error) {
-        console.log(error.message);
         return error;
       });
   }
@@ -77,7 +73,6 @@ export class HttpClientService {
         return response;
       })
       .catch(function (error) {
-        console.log(error.message);
         return error;
       });
   }
@@ -99,7 +94,6 @@ export class HttpClientService {
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
         return error;
       });
   }

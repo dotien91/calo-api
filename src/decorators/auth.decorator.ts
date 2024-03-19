@@ -41,8 +41,7 @@ export class PermissionGuard implements CanActivate {
         return true;
       return false;
     } catch (e) {
-      console.log(e);
-      throw new ForbiddenException();
+      throw new ForbiddenException(e.message);
     }
   }
 }

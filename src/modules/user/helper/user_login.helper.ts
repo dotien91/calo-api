@@ -239,7 +239,6 @@ export class UserLoginHelper {
             return response;
           })
           .catch((error) => {
-            console.log(error, "error");
             return null;
           });
 

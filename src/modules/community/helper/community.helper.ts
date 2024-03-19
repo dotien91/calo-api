@@ -325,7 +325,7 @@ export class CommunityHelper {
 
       // should get only posts by people who followed
       if (query.is_following_list === "true") {
-        const followUsers = req.user_object.follow_users;
+        const followUsers = req?.user_object?.follow_users || [];
         query = Object.assign(query, { user_id: { $in: followUsers } });
       }
 
@@ -411,7 +411,6 @@ export class CommunityHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }
@@ -511,7 +510,6 @@ export class CommunityHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }

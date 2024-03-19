@@ -471,7 +471,6 @@ export class ChatHistoryHelper {
           .json([]);
       }
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.message);
     }
   }

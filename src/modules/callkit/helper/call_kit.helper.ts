@@ -173,7 +173,6 @@ export class CallKitHelper {
         throw new NotFoundException("Call is not invalid");
       }
     } catch (error) {
-      console.log(error);
       throw new NotFoundException(error.message);
     }
     return null;
@@ -265,7 +264,6 @@ export class CallKitHelper {
         res.json(dataUpdateReturn);
       }
     } catch (error) {
-      console.log(error);
       throw new NotFoundException(error.message);
     }
   }
@@ -541,7 +539,6 @@ export class CallKitHelper {
         );
 
         if (!query.notification || Number(query.notification) == 1) {
-          console.log("That to Call");
           const dataToSendNotification = JSON.parse(JSON.stringify(dataToSend));
           delete dataToSendNotification.offer;
           delete dataToSendNotification.answer;
@@ -582,7 +579,6 @@ export class CallKitHelper {
 
       res.json(dataToSend);
     } catch (error) {
-      console.log(error);
       throw new NotFoundException(error.message);
     }
     return null;
@@ -619,7 +615,6 @@ export class CallKitHelper {
       );
       res.json(dataReturn);
     } catch (error) {
-      console.log(error);
       throw new NotFoundException(error.message);
     }
   }

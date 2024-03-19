@@ -162,6 +162,8 @@ export class ChatRoomController {
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
+      if (!id) throw new Error("Invalid chat room's ID");
+
       const dataFilter = {
         user_id: userObject._id.toString(),
         chat_room_id: id,

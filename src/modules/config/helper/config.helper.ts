@@ -326,7 +326,6 @@ export class ConfigHelper {
 
       let chatGPTKey = "";
       if (dataReturnConfig && dataReturnConfig?.option_content) {
-        //console.log(dataReturnConfig?.option_content, 'dataReturnConfig?.option_content')
         //Check key
         const optionContents = dataReturnConfig ? dataReturnConfig.option_content : [];
         for (const dataOptionContent of optionContents) {
@@ -361,10 +360,8 @@ export class ConfigHelper {
             return response?.data;
           })
           .catch(function (error) {
-            console.log(error);
             return null;
           });
-        // console.log(dataReturn, 'dataReturn')
 
         if (dataReturn) {
           return res

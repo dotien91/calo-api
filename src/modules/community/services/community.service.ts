@@ -389,7 +389,6 @@ export class CommunityService {
   }
 
   initHook() {
-    console.log("Make sure you work once community %s", Math.random());
     HookExpress.add_action("community.delete-community-by-channel-permission", async (data: any) => {
       try {
         // await this.deleteMultipleCommunityByChannelPermission(data);

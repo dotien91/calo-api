@@ -71,7 +71,6 @@ export class ChatHistoryController {
 
           const leftTime = currentTime - updatedAt;
           if (leftTime < 3600000 && Number(dataCreateReturnRoom?.chat_history_count) > 0) {
-            console.log("Not return");
             continue;
           }
 

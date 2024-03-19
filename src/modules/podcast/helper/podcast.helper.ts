@@ -136,7 +136,6 @@ export class PodcastHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }
@@ -196,7 +195,6 @@ export class PodcastHelper {
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
-      console.log(error, "error");
       throw new NotFoundException(error.message);
     }
   }
