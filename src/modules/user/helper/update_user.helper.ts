@@ -1406,6 +1406,9 @@ export class UpdateUserHelper {
       const referralUser = await this.appUserService.findOne({ invitation_code: body.invitation_code });
       if (!referralUser) throw new Error("Invalid invitation code");
 
+      if (referralUser._id.toString() === userObject._id.toString())
+        throw new BadRequestException("You can not enter your code itself");
+
       await this.appUserService.update({
         _id: userObject._id.toString(),
         ref_invitation_code: referralUser.invitation_code,

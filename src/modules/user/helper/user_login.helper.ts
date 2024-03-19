@@ -445,7 +445,7 @@ export class UserLoginHelper {
   async register(dataLogin: RegisterUserDto, res: Response, req: Request) {
     try {
       //Process User Email
-      const userLogin = dataLogin.user_email?.replace("@", "_");
+      const userLogin = dataLogin.user_email?.replace("@", "_").toLowerCase();
       const dataToSearch = {
         user_login: userLogin,
       };
@@ -467,7 +467,7 @@ export class UserLoginHelper {
         //Create New User
         const dataToCreate = {
           user_login: userLogin,
-          user_email: dataLogin.user_email,
+          user_email: dataLogin.user_email.toLowerCase(),
           user_avatar: dataUrl,
           user_avatar_thumbnail: dataUrl,
           user_password: await this.handleProcessPassword(dataLogin.user_password),
