@@ -1281,7 +1281,7 @@ export class UserLoginHelper {
       });
 
       this.emailService.send({
-        eventName: EmailPattern.APPROVE_TUTOR,
+        eventName: EmailPattern.REJECT_TUTOR,
         email: tutor.email,
         language: tutor.default_language,
         replacePattern: {

@@ -1,14 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import { Permissions } from "../../../decorators/auth.decorator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { UserRoles } from "../../../modules/user/interfaces/user.interface";
 import { EmailService } from "../../email/services/email.service";
-import { EmailPattern } from "../../email/services/email.service.i";
 import { NotificationHelper } from "../../notification/helper/notification.helper";
-import { NotificationRouter } from "../../notification/interfaces/notification.interface";
 import { UserLoginHelper } from "../../user/helper/user_login.helper";
 import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
@@ -16,7 +13,6 @@ import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
 import { UpdateOrderUserDto } from "../dto/update-order_user.dto";
 import { OrderHelper } from "../helper/order.helper";
-import { OrderStatus } from "../interfaces/order.interface";
 
 @Controller("order")
 @ApiTags("order")
@@ -36,59 +32,59 @@ export class OrderController {
   private COUNTER = {};
   private authCode = "";
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async checkPendingOrder() {
-    try {
-      const newCounter = {};
-      const pendingOrders = await this.orderHelper.getOrdersByStatus(OrderStatus.PENDING);
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // async checkPendingOrder() {
+  //   try {
+  //     const newCounter = {};
+  //     const pendingOrders = await this.orderHelper.getOrdersByStatus(OrderStatus.PENDING);
 
-      for (const order of pendingOrders) {
-        const orderId = order._id.toString();
-        if (!this.COUNTER[orderId]) newCounter[orderId] = 1;
-        else newCounter[orderId] = this.COUNTER[orderId] + 1;
+  //     for (const order of pendingOrders) {
+  //       const orderId = order._id.toString();
+  //       if (!this.COUNTER[orderId]) newCounter[orderId] = 1;
+  //       else newCounter[orderId] = this.COUNTER[orderId] + 1;
 
-        if (newCounter[orderId] === 3 || newCounter[orderId] === 7) {
-          // send notification
-          const path = `/checkout`;
-          const dataToSendNotification = {
-            data_id: orderId,
-            // TODO: update path
-            path: path,
-          };
-          const dataNotification = {
-            user_id: order.user_id._id.toString(),
-            title: `You have orders in your cart, please check it`,
-            content: "",
-            param: JSON.stringify(dataToSendNotification),
-            type_action: "link",
-            router: NotificationRouter.NAVIGATION_CHECKOUT_SCREEN,
-            click_action: "",
-            image: "",
-          };
-          this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
+  //       if (newCounter[orderId] === 3 || newCounter[orderId] === 7) {
+  //         // send notification
+  //         const path = `/checkout`;
+  //         const dataToSendNotification = {
+  //           data_id: orderId,
+  //           // TODO: update path
+  //           path: path,
+  //         };
+  //         const dataNotification = {
+  //           user_id: order.user_id._id.toString(),
+  //           title: `You have orders in your cart, please check it`,
+  //           content: "",
+  //           param: JSON.stringify(dataToSendNotification),
+  //           type_action: "link",
+  //           router: NotificationRouter.NAVIGATION_CHECKOUT_SCREEN,
+  //           click_action: "",
+  //           image: "",
+  //         };
+  //         this.notificationHelper.handleSendNotification(dataNotification, this.authCode);
 
-          // send email
-          this.emailService.send({
-            eventName: EmailPattern.PENDING_ORDER,
-            email: order.user_id.user_email,
-            language: order.user_id.default_language,
-            replacePattern: {
-              display_name: order.user_id.display_name,
-              order_name: order.items?.map((item) => item.service_name)?.toString(),
-              order_price: order.price,
-              order_checkout_url: "https://ieltshunter.io" + path,
-            },
-          });
+  //         // send email
+  //         this.emailService.send({
+  //           eventName: EmailPattern.PENDING_ORDER,
+  //           email: order.user_id.user_email,
+  //           language: order.user_id.default_language,
+  //           replacePattern: {
+  //             display_name: order.user_id.display_name,
+  //             order_name: order.items?.map((item) => item.service_name)?.toString(),
+  //             order_price: order.price,
+  //             order_checkout_url: "https://ieltshunter.io" + path,
+  //           },
+  //         });
 
-          if (newCounter[orderId] === 7) newCounter[orderId] = 0;
-        }
-      }
+  //         if (newCounter[orderId] === 7) newCounter[orderId] = 0;
+  //       }
+  //     }
 
-      this.COUNTER = newCounter;
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  //     this.COUNTER = newCounter;
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 
   @Get("/user-list")
   async getUserOrder(@Query() query: ListOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
