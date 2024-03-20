@@ -20,12 +20,12 @@ export class CommunityCommentService {
    * @param filter
    * @returns
    */
-  async getCondition(filter: SearchCommunityCommentDto) {
+  async getCondition(filter: SearchCommunityCommentDto, isCounting = false) {
     let condition: any = {};
 
     if (filter?.parent_id) {
       condition = Object.assign(condition, { parent_id: filter.parent_id });
-    } else {
+    } else if (!isCounting) {
       condition = Object.assign(condition, { parent_id: null });
     }
 
@@ -176,7 +176,7 @@ export class CommunityCommentService {
    */
   public count = async (filter: SearchCommunityCategoryDto) => {
     try {
-      const condition = await this.getCondition(filter);
+      const condition = await this.getCondition(filter, true);
       if (JSON.stringify(condition) === JSON.stringify({})) {
         return this.communityModel.estimatedDocumentCount();
       } else {
