@@ -61,7 +61,6 @@ export class TransactionController {
   }
 
   @Patch("/update-bank")
-  @Permissions(UserRoles.ADMIN)
   async updateBankTransaction(
     @Body() createTransactionBody: UpdateTransactionBankDto,
     @Res() res: Response,
@@ -71,7 +70,6 @@ export class TransactionController {
   }
 
   @Post("/create-bank")
-  @Permissions(UserRoles.ADMIN)
   async createNewTransactionBank(
     @Body() createTransactionBody: CreateTransactionBankDto,
     @Res() res: Response,
@@ -81,7 +79,6 @@ export class TransactionController {
   }
 
   @Delete("delete-bank/:id")
-  @Permissions(UserRoles.ADMIN)
   async deleteTransactionBank(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleDeleteTransactionBank(id, res, req);
   }
