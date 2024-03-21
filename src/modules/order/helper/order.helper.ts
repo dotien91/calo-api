@@ -175,11 +175,14 @@ export class OrderHelper {
 
       if (dataOrder) {
         checkOrderId = true;
+        if (dataOrder._id.toString() !== orderId) {
+          res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
+        }
         if (Number(dataOrder.price) == amountOrder) {
           checkAmount = true;
         }
       } else {
-        res.status(200).json({ RspCode: "01", Message: "Order not found" });
+        res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
       }
 
       if (secureHash === signed) {
@@ -239,7 +242,7 @@ export class OrderHelper {
           // };
           // await this.orderService.update(dataUpdate);
           // console.log("ORDER NOT FOUND");
-          res.status(200).json({ RspCode: "01", Message: "Order not found" });
+          res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
         }
       } else {
         // let dataUpdate = {
