@@ -175,6 +175,9 @@ export class OrderHelper {
 
       if (dataOrder) {
         checkOrderId = true;
+        console.log(dataOrder._id.toString() !== orderId);
+        console.log(dataOrder._id.toString());
+        console.log(orderId, typeof orderId);
         if (dataOrder._id.toString() !== orderId) {
           res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
         }
