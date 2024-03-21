@@ -176,6 +176,7 @@ export class OrderHelper {
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
       const dataOrder = await this.orderService.findById(orderId?.toString() || "");
+      const isPendingOrder = dataOrder.status === "pending";
 
       if (dataOrder) {
         checkOrderId = true;
@@ -214,7 +215,7 @@ export class OrderHelper {
                   _id: orderId?.toString(),
                   status: "close",
                 };
-                await this.orderService.update(dataUpdate);
+                if (isPendingOrder) await this.orderService.update(dataUpdate);
                 res.status(200).json({ RspCode: "00", Message: "Success" });
               }
             } else {
@@ -222,7 +223,7 @@ export class OrderHelper {
                 _id: orderId?.toString(),
                 status: "close",
               };
-              await this.orderService.update(dataUpdate);
+              if (isPendingOrder) await this.orderService.update(dataUpdate);
               res.status(200).json({ RspCode: "02", Message: "This order has been updated to the payment status" });
             }
           } else {
@@ -230,7 +231,7 @@ export class OrderHelper {
               _id: orderId?.toString(),
               status: "close",
             };
-            await this.orderService.update(dataUpdate);
+            if (isPendingOrder) await this.orderService.update(dataUpdate);
             res.status(200).json({ RspCode: "04", Message: "Invalid amount" });
           }
         } else {
