@@ -131,16 +131,20 @@ export class OrderHelper {
       const rspCode = vnp_Params["vnp_ResponseCode"];
       const amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
 
-      const allowedIpdArray = [
-        "113.160.92.202",
-        "113.52.45.78",
-        "116.97.245.130",
-        "42.118.107.252",
-        "113.20.97.250",
-        "203.171.19.146",
-        "103.220.87.4",
-        "103.220.86.4",
-      ];
+      const allowedIpdArray = ["113.160.92.202"];
+      if (process.env.NODE_ENV === "production") {
+        allowedIpdArray.push(
+          ...[
+            "113.52.45.78",
+            "116.97.245.130",
+            "42.118.107.252",
+            "113.20.97.250",
+            "203.171.19.146",
+            "103.220.87.4",
+            "103.220.86.4",
+          ]
+        );
+      }
 
       const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
       if (allowedIpdArray?.indexOf(ipAddr?.toString()) === -1) {
