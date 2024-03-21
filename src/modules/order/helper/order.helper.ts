@@ -175,9 +175,6 @@ export class OrderHelper {
 
       if (dataOrder) {
         checkOrderId = true;
-        if (dataOrder._id.toString() !== orderId) {
-          return res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
-        }
         if (Number(dataOrder.price) == amountOrder) {
           checkAmount = true;
         }
