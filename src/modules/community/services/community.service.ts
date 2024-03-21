@@ -39,6 +39,10 @@ export class CommunityService {
       condition = Object.assign(condition, { post_type: filter.post_type });
     }
 
+    if (filter.blocked_user) {
+      condition = Object.assign(condition, { user_id: { $nin: filter.blocked_user } });
+    }
+
     if (!filter.post_status || filter.post_status.trim() === "") {
       condition = { ...condition, ...{ post_status: "publish" } };
     } else {

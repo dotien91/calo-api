@@ -354,6 +354,9 @@ export class CommunityHelper {
       }
 
       const dataToFilter = { ...query };
+      if (req.user_object) {
+        dataToFilter["blocked_user"] = req.user_object.block_users.map((block_user_id) => block_user_id.toString());
+      }
 
       delete dataToFilter.page;
       delete dataToFilter.limit;

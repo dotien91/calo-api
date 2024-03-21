@@ -16,4 +16,5 @@ export class SearchPostDto {
   comment_number?: string;
   data_json_type?: string;
   ref_id?: string;
+  blocked_user?: string[];
 }
