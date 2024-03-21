@@ -144,7 +144,7 @@ export class OrderHelper {
 
       const ipAddr = req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.socket.remoteAddress;
       if (allowedIpdArray?.indexOf(ipAddr?.toString()) === -1) {
-        res.status(200).json({ RspCode: "99", Message: "Unknow error" });
+        return res.status(200).json({ RspCode: "99", Message: "Unknow error" });
       }
 
       const dataCreate = {
@@ -175,17 +175,14 @@ export class OrderHelper {
 
       if (dataOrder) {
         checkOrderId = true;
-        console.log(dataOrder._id.toString() !== orderId);
-        console.log(dataOrder._id.toString());
-        console.log(orderId, typeof orderId);
         if (dataOrder._id.toString() !== orderId) {
-          res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
+          return res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
         }
         if (Number(dataOrder.price) == amountOrder) {
           checkAmount = true;
         }
       } else {
-        res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
+        return res.status(200).json({ RspCode: "01", Message: "Order Not Found" });
       }
 
       if (secureHash === signed) {
@@ -197,7 +194,6 @@ export class OrderHelper {
               if (rspCode == "00") {
                 if (dataOrder?.status == "success") {
                   res.status(200).json({ RspCode: "02", Message: "Order already confirmed" });
-                  return false;
                 }
                 //thanh cong
                 //paymentStatus = '1'
@@ -226,7 +222,6 @@ export class OrderHelper {
                 status: "close",
               };
               await this.orderService.update(dataUpdate);
-              console.log("This order has been updated to the payment status");
               res.status(200).json({ RspCode: "02", Message: "This order has been updated to the payment status" });
             }
           } else {
@@ -235,8 +230,7 @@ export class OrderHelper {
               status: "close",
             };
             await this.orderService.update(dataUpdate);
-            console.log("Amount invalid");
-            res.status(200).json({ RspCode: "04", Message: "Amount invalid" });
+            res.status(200).json({ RspCode: "04", Message: "Invalid amount" });
           }
         } else {
           // let dataUpdate = {

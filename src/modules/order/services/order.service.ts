@@ -266,13 +266,17 @@ export class OrderService {
     if (!id) {
       return null;
     }
-    const objectId = new Types.ObjectId(id);
-    if (!objectId) {
+
+    try {
+      const objectId = new Types.ObjectId(id);
+      if (!objectId) {
+        throw new Error("Not found objectId");
+      }
+      const dataReturn: any = await this.orderModel.aggregate(this.getOrderDetailAggregate(objectId));
+      return dataReturn[0];
+    } catch (e) {
       return null;
     }
-
-    const dataReturn: any = await this.orderModel.aggregate(this.getOrderDetailAggregate(objectId));
-    return dataReturn[0];
   }
 
   /**
