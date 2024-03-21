@@ -176,7 +176,6 @@ export class OrderHelper {
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
       const dataOrder = await this.orderService.findById(orderId?.toString() || "");
-      const isPendingOrder = dataOrder.status === "pending";
 
       if (dataOrder) {
         checkOrderId = true;
@@ -188,6 +187,7 @@ export class OrderHelper {
       }
 
       if (secureHash === signed) {
+        const isPendingOrder = dataOrder.status === "pending";
         //kiểm tra checksum
         if (checkOrderId) {
           if (checkAmount) {
