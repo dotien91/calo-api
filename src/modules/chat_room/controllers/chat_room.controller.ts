@@ -201,7 +201,7 @@ export class ChatRoomController {
         .status(HttpStatus.OK)
         .json(dataRoomReturn);
     } catch (error) {
-      this.logger.log("getById Error: " + JSON.stringify(error));
+      // this.logger.log("getById Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
     }
   }
