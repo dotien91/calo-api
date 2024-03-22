@@ -225,6 +225,11 @@ export class Course {
     ref: "UserOrganization",
   })
   organization_id: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: MongooseSchema.Types.String,
+  })
+  price_id: string;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course).index({

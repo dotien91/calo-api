@@ -111,4 +111,9 @@ export class CreateCourseDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   organization_id?: string;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  price_id?: string;
 }

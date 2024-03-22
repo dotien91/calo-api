@@ -115,4 +115,9 @@ export class UpdateCourseDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   rating?: number;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  price_id?: string;
 }
