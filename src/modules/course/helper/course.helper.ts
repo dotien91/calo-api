@@ -1288,34 +1288,31 @@ export class CourseHelper {
    */
   async handleAddUserToCourse(dataFollow: CreateCourseUserDto, req: ExpressRequestDto, res: Response) {
     try {
-      const isValidUser = await this.checkUserCoursePermission(dataFollow.course_id, req, res);
-      if (!isValidUser) throw new Error("You can't do this action since you're not a part of organization");
-
       const userObject = req?.user_object;
       const userId = userObject._id;
 
-      const videoObject = await this.courseService.findById(dataFollow.course_id);
-      if (!videoObject) {
-        throw new NotFoundException("Video not found");
+      const course = await this.courseService.findById(dataFollow.course_id);
+      if (!course) {
+        throw new NotFoundException("Course not found");
       }
       //Check PlanObject
-      if (Number(videoObject?.price) && Number(videoObject?.price) !== 1) {
+      if (Number(course?.price) && Number(course?.price) !== 1) {
         if (dataFollow?.add_type === "payment") {
           dataFollow = { ...{ user_id: userId }, ...dataFollow };
-          await this.processAddUserToCoursePayment(dataFollow, videoObject);
+          await this.processAddUserToCoursePayment(dataFollow, course);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
             .json(dataFollow);
         } else {
-          const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
+          const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, course, req);
           return res
             .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
             .status(HttpStatus.OK)
             .json(dataReturn);
         }
       } else {
-        const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, videoObject, req);
+        const dataReturn = await this.processAddUserToCourse(userObject, dataFollow, course, req);
         return res
           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
           .status(HttpStatus.OK)
