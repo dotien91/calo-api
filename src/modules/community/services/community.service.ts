@@ -29,6 +29,10 @@ export class CommunityService {
    */
   async getCondition(filter: SearchPostDto) {
     let condition: any = {};
+    if (filter.blocked_user) {
+      condition = Object.assign(condition, { user_id: { $nin: filter.blocked_user } });
+    }
+
     if (filter.user_id) {
       condition = Object.assign(condition, { user_id: filter.user_id });
     }
@@ -37,10 +41,6 @@ export class CommunityService {
     }
     if (filter.post_type) {
       condition = Object.assign(condition, { post_type: filter.post_type });
-    }
-
-    if (filter.blocked_user) {
-      condition = Object.assign(condition, { user_id: { $nin: filter.blocked_user } });
     }
 
     if (!filter.post_status || filter.post_status.trim() === "") {
