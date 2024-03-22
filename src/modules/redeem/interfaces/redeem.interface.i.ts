@@ -14,6 +14,7 @@ export enum RedeemMissionActionType {
 export enum RedeemMissionActionTarget {
   COMMUNITY = "community",
   COURSE = "course",
+  FREE_COURSE = "freecourse",
   TEST = "test",
   ACCOUNT = "account",
   PRODUCT = "product",

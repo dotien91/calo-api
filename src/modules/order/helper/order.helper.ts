@@ -874,7 +874,9 @@ export class OrderHelper {
                 : UserPointHistory_EntityTarget.PRODUCT;
             const redeemTarget =
               orderItem.type === TransactionRefType.COURSE
-                ? RedeemMissionActionTarget.COURSE
+                ? orderObject.payment_method === "free"
+                  ? RedeemMissionActionTarget.FREE_COURSE
+                  : RedeemMissionActionTarget.COURSE
                 : RedeemMissionActionTarget.PRODUCT;
 
             // update point for user

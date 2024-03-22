@@ -1,13 +1,18 @@
 import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
 import { CreateTestUserDTO, ListTestUserDto, UpdateTestUserDTO } from "../dtos/test_user.dto";
 import { MAX_BAND, TestStatus } from "../interfaces/test.interface.i";
 import { TestUserService } from "../services/test_user.service";
 
 @Injectable()
 export class TestUserHelper {
-  constructor(private testUserService: TestUserService) {}
+  constructor(private testUserService: TestUserService, private redeemUserService: RedeemUserService) {}
 
   async list(query: ListTestUserDto, res: Response, req: ExpressRequestDto) {
     try {
@@ -65,6 +70,8 @@ export class TestUserHelper {
         status: TestStatus.PENDING,
         user_id: userObject._id.toString(),
       });
+
+      this.redeemUserService.updateUserRedeem(userObject, RedeemMissionActionType.JOIN, RedeemMissionActionTarget.TEST);
 
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

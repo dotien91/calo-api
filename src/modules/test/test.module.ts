@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BotModule } from "../bot/bot.module";
 import { GptService } from "../gpt/services/gpt.service";
+import { RedeemModule } from "../redeem/redeem.module";
 import { TestController } from "./controllers/test.controller";
 import { TestHelper } from "./helpers/test.helper";
 import { TestQuestionHelper } from "./helpers/test_question.helper";
@@ -21,6 +22,7 @@ import { TestUserService } from "./services/test_user.service";
       { name: TestUser.name, schema: TestUserSchema },
     ]),
     BotModule,
+    RedeemModule,
   ],
   controllers: [TestController],
   providers: [
