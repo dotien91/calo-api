@@ -1382,9 +1382,11 @@ export class CourseHelper {
           display_name: userObject.display_name,
           course_name: videoObject.title,
           course_start_time: momentTz(videoObject.start_time.toString())
-            .tz(userObject.timezone)
+            .tz(userObject?.timezone || "UTC")
             .format("DD-MM-YYYY HH:mm"),
-          course_end_time: momentTz(videoObject.end_time.toString()).tz(userObject.timezone).format("DD-MM-YYYY HH:mm"),
+          course_end_time: momentTz(videoObject.end_time.toString())
+            .tz(userObject?.timezone || "UTC")
+            .format("DD-MM-YYYY HH:mm"),
         },
       });
 
