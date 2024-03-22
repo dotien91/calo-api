@@ -269,9 +269,6 @@ export class UserFilterHelper {
   async getListFollower(query: SearchUserFollowDto, req: ExpressRequestDto, res: Response) {
     try {
       const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
       if (Number(query.limit) > 1000) {
         query.limit = 1000;
       }
@@ -369,11 +366,12 @@ export class UserFilterHelper {
         }
 
         // should filter ignored follower
-        dataReturn = dataReturn.filter((elem) => {
-          return !userObject.ignore_followers.find((ignoreFollower) => {
-            return ignoreFollower.toString() === elem.partner_id._id.toString();
+        if (userObject)
+          dataReturn = dataReturn.filter((elem) => {
+            return !userObject.ignore_followers.find((ignoreFollower) => {
+              return ignoreFollower.toString() === elem.partner_id._id.toString();
+            });
           });
-        });
       }
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
