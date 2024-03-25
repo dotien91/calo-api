@@ -3249,6 +3249,6 @@ export class CourseHelper {
     const totalStartMinutes = startHour * 60 + startMinute;
     const totalEndMinutes = endHour * 60 + endMinute;
 
-    return (totalEndMinutes - totalStartMinutes) / 60;
+    return Number(((totalEndMinutes - totalStartMinutes) / 60).toFixed());
   }
 }
