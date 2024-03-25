@@ -5,6 +5,7 @@ import {
   CreateRedeemDTO,
   HandleCheckUserSocialActionDTO,
   HandleUpdateSocialLinkAction,
+  HandleUpdateSocialLinkByUser,
   HandleUpdateUserRedeemDTO,
   ListRedeemDto,
   UpdateRedeemDTO,
@@ -82,6 +83,15 @@ export class RedeemController {
     @Req() req: ExpressRequestDto
   ) {
     return await this.redeemHelper.handleUpdateSocialLinkAction(data, res, req);
+  }
+
+  @Get("update-link")
+  async handleUpdateSocialLinkByUser(
+    @Query() data: HandleUpdateSocialLinkByUser,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.redeemHelper.handleUpdateSocialLinkByUser(data, res, req);
   }
 
   // redeem mission apis

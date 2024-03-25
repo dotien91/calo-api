@@ -1,5 +1,9 @@
 import { IsArray, IsDefined, IsEnum, IsIn, IsNumber, IsNumberString, IsOptional, IsString, Min } from "class-validator";
-import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+  RedeemUserSocialLinkStatus,
+} from "../interfaces/redeem.interface.i";
 
 export interface FilterRedeemDTO {
   title?: string;
@@ -117,4 +121,23 @@ export class HandleUpdateSocialLinkAction {
   @IsString()
   @IsDefined()
   social_link: string;
+}
+
+export class HandleUpdateSocialLinkByUser {
+  @IsString()
+  @IsDefined()
+  redeem_id: string;
+
+  @IsString()
+  @IsDefined()
+  user_id: string;
+
+  @IsString()
+  @IsDefined()
+  social_link: string;
+
+  @IsString()
+  @IsDefined()
+  @IsEnum(RedeemUserSocialLinkStatus)
+  status: RedeemUserSocialLinkStatus;
 }

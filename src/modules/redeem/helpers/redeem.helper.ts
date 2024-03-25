@@ -7,6 +7,7 @@ import {
   CreateRedeemDTO,
   HandleCheckUserSocialActionDTO,
   HandleUpdateSocialLinkAction,
+  HandleUpdateSocialLinkByUser,
   HandleUpdateUserRedeemDTO,
   ListRedeemDto,
   UpdateRedeemDTO,
@@ -241,6 +242,20 @@ export class RedeemHelper {
       if (!userObject) throw new Error("Invalid user");
 
       await this.redeemUserService.updateShareLinkAction(userObject, body);
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json();
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async handleUpdateSocialLinkByUser(query: HandleUpdateSocialLinkByUser, res: Response, req: ExpressRequestDto) {
+    try {
+      await this.redeemUserService.updateShareLinkActionByUser(query);
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",

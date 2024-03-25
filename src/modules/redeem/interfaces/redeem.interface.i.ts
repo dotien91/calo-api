@@ -35,4 +35,12 @@ export interface ShareLinkObject {
   like_counter?: number;
   comment_counter?: number;
   share_counter?: number;
+  status: RedeemUserSocialLinkStatus;
+}
+
+export enum RedeemUserSocialLinkStatus {
+  PENDING = "pending",
+  ACTIVE = "active",
+  DONE = "done",
+  REJECT = "reject",
 }

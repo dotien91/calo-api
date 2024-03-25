@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import mongoose, { Model } from "mongoose";
+import { HttpClientService } from "../../../base/http-client/http.base";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
@@ -8,9 +9,13 @@ import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
-import { HandleUpdateSocialLinkAction } from "../dtos/redeem.dto";
+import { HandleUpdateSocialLinkAction, HandleUpdateSocialLinkByUser } from "../dtos/redeem.dto";
 import { FilterRedeemUserDTO } from "../dtos/redeem_user.dto";
-import { RedeemMissionActionTarget, RedeemMissionActionType } from "../interfaces/redeem.interface.i";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+  RedeemUserSocialLinkStatus,
+} from "../interfaces/redeem.interface.i";
 import { RedeemUser, RedeemUserDocument } from "../schemas/redeem_user.schema";
 import { RedeemService } from "./redeem.service";
 import { RedeemMissionService } from "./redeem_mission.service";
@@ -25,7 +30,8 @@ export class RedeemUserService {
     private redeemMissionService: RedeemMissionService,
     private eventHookWorkerService: EventHookWorkerService,
     private jwtHelperService: JwtHelperService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private httpService: HttpClientService
   ) {}
 
   async create(createUser): Promise<RedeemUser> {
@@ -147,10 +153,60 @@ export class RedeemUserService {
       like_counter: 0,
       comment_counter: 0,
       share_counter: 0,
+      status: RedeemUserSocialLinkStatus.PENDING,
     };
 
     // update counter
     await this.redeemUserModel.updateOne({ user_id: user._id.toString(), redeem_id: body.redeem_id }, updateObject);
+
+    let baseUrl = "";
+    switch (process.env.APP_NAME) {
+      case "ieltshunter": {
+        baseUrl = "api.live.ieltshunter.io";
+        break;
+      }
+      case "ikigai": {
+        baseUrl = "api.live.ieltshunter.io";
+        break;
+      }
+    }
+    this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+      chat_id: process.env.TELEGRAM_ROOM_ID,
+      text: `
+        <b>THÔNG BÁO ĐĂNG TẢI VIDEO</b>\nĐịa chỉ:${body.social_link}\nTrạng thái: ${"Pending"}\nDuyệt video: ${
+        "https://" +
+        baseUrl +
+        "/api/redeem/update-link?redeem_id=65f174e71145e857a7e80518&user_id=6589231382a81d6187758f7e&social_link=https://www.tiktok.com/@dong/video/7339526559176445202&status=active"
+      }\nTừ chối video: ${
+        "https://" +
+        baseUrl +
+        "/api/redeem/update-link?redeem_id=65f174e71145e857a7e80518&user_id=6589231382a81d6187758f7e&social_link=https://www.tiktok.com/@dong/video/7339526559176445202&status=reject"
+      }
+      `,
+      parse_mode: "HTML",
+    });
+
+    return null;
+  }
+
+  async updateShareLinkActionByUser(body: HandleUpdateSocialLinkByUser) {
+    const redeemUser = await this.redeemUserModel.findOne({ user_id: body.user_id, redeem_id: body.redeem_id });
+    if (!redeemUser) throw new NotFoundException("Not found redeem user");
+
+    const index = redeemUser.share_link_container.findIndex((obj) => obj.social_link === body.social_link);
+    if (index !== -1) {
+      if (body.status === RedeemUserSocialLinkStatus.REJECT) {
+        redeemUser.share_link_container.splice(index, 1);
+      } else if (body.status === RedeemUserSocialLinkStatus.ACTIVE)
+        redeemUser.share_link_container[index] = {
+          ...redeemUser.share_link_container[index],
+          status: RedeemUserSocialLinkStatus.ACTIVE,
+        };
+    }
+    await this.redeemUserModel.updateOne(
+      { _id: redeemUser._id.toString() },
+      { share_link_container: redeemUser.share_link_container }
+    );
 
     return null;
   }
@@ -259,6 +315,19 @@ export class RedeemUserService {
         if (targetMission.action_amount <= currentLinkRedeem[targetMission.action_type + "_counter"]) {
           const updateObject = { $push: {} };
           updateObject.$push["done_redeem_mission_ids"] = new mongoose.Types.ObjectId(targetMission._id.toString());
+
+          // update status for social link
+          const index = redeemHistory.share_link_container.findIndex(
+            (obj) => obj.social_link === currentLinkRedeem.social_link
+          );
+          if (index !== -1) {
+            redeemHistory.share_link_container[index] = {
+              ...currentLinkRedeem,
+              status: RedeemUserSocialLinkStatus.DONE, // by setting this, the crawler will not check this url anymore
+            };
+          }
+          updateObject["share_link_container"] = redeemHistory.share_link_container;
+
           await this.redeemUserModel.updateOne({ _id: redeemHistory._id.toString() }, updateObject);
 
           // add point to user
