@@ -25,3 +25,7 @@ export function filterDuplicateObject(product_list: any[]) {
 
   return Array.from(uniqueProductsMap.values());
 }
+
+export function formatWithCommas(number: number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
+import { HttpClientService } from "../../../base/http-client/http.base";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
@@ -67,7 +68,8 @@ export class OrderHelper {
     private eventHookNotificationService: EventHookNotificationService,
     private courseHelper: CourseHelper,
     private referralService: ReferralService,
-    private redeemUserService: RedeemUserService
+    private redeemUserService: RedeemUserService,
+    private httpService: HttpClientService
   ) {
     // if (!initHook) {
     //   this.initHook();
@@ -748,23 +750,30 @@ export class OrderHelper {
 
           try {
             setTimeout(async () => {
-              const adminUsers = await this.userService.findAll({
-                user_role: "admin",
+              // const adminUsers = await this.userService.findAll({
+              //   user_role: "admin",
+              // });
+              // for (const adminUser of adminUsers) {
+              //   this.eventHookNotificationService.sendNotiNMailPaySuccess({
+              //     user_id: adminUser._id.toString(),
+              //     path: `/orders/detail/${orderObject._id.toString()}`,
+              //     content: (params: any) => {
+              //       return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.items
+              //         .map((item) => item.service_name)
+              //         .toString()}`;
+              //     },
+              //     title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.items
+              //       .map((item) => item.service_name.toLocaleUpperCase())
+              //       .toString()}`,
+              //   });
+              // }
+              this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+                chat_id: process.env.TELEGRAM_ROOM_ID,
+                text: `
+                  <b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Chuyển khoản</b>\nMã đơn hàng: ${dataUpdate._id}\nHình thức giao dịch: ${dataUpdate.payment_method}\nGhi chú đơn hàng: ${dataUpdate.order_note}
+                `,
+                parse_mode: "HTML",
               });
-              for (const adminUser of adminUsers) {
-                this.eventHookNotificationService.sendNotiNMailPaySuccess({
-                  user_id: adminUser._id.toString(),
-                  path: `/orders/detail/${orderObject._id.toString()}`,
-                  content: (params: any) => {
-                    return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.items
-                      .map((item) => item.service_name)
-                      .toString()}`;
-                  },
-                  title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.items
-                    .map((item) => item.service_name.toLocaleUpperCase())
-                    .toString()}`,
-                });
-              }
             }, 500);
           } catch (error) {}
 

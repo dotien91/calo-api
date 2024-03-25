@@ -28,6 +28,7 @@ import { UserPermission, UserPermissionSchema } from "../user_permission/schemas
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
 import { OrderController } from "./controllers/order.controller";
 // import { OrderHelper } from "./helper/OrderHelper";
+import { HttpClientService } from "../../base/http-client/http.base";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { CouponModule } from "../coupon/coupon.module";
 import { CourseModule } from "../course/course.module";
@@ -115,6 +116,7 @@ import { OrderService } from "./services/order.service";
     UserService,
     UserPointHistoryService,
     ReferralService,
+    HttpClientService,
   ],
   exports: [OrderService],
 })

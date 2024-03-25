@@ -9,6 +9,7 @@ import {
 import { Response } from "express";
 import * as momentBase from "moment";
 import * as moment from "moment-timezone";
+import { HttpClientService } from "../../../base/http-client/http.base";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
@@ -22,7 +23,7 @@ import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { UserService } from "../../../modules/user/services/user.service";
 import { UserPointHistoryService } from "../../../modules/user/services/user_point_history.service";
-import { filterDuplicateObject } from "../../../utils/utils";
+import { filterDuplicateObject, formatWithCommas } from "../../../utils/utils";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateTransactionBankDto } from "../dto/create-transaction_bank.dto";
 import { CreateWithdrawalDto } from "../dto/create-withdrawal.dto";
@@ -49,7 +50,8 @@ export class TransactionHelper {
     private notificationHelper: NotificationHelper,
     private notificationService: NotificationService,
     private userPointHistoryService: UserPointHistoryService,
-    private referralService: ReferralService
+    private referralService: ReferralService,
+    private httpService: HttpClientService
   ) {}
 
   private readonly logger = new Logger("chat_history_controller");
@@ -251,6 +253,11 @@ export class TransactionHelper {
         throw new BadRequestException("Error while Transaction!");
       }
 
+      const transactionBank = await this.transactionBankService.findOne({
+        _id: createTransactionData.transaction_bank,
+      });
+      if (!transactionBank) throw new Error("Invalid transaction bank ID");
+
       //Only Admin Create Transaction
       //Check Admin
       const userId = userObject._id.toString();
@@ -301,22 +308,34 @@ export class TransactionHelper {
       // Update request user token
       this.userService.update({ _id: userObject?._id?.toString(), current_token: currentToken });
 
-      const adminUser = await this.userService.findOne({ user_role: "admin" });
-      this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
-        send_user_id: req?.user_id?.toString(),
-        user_id: adminUser._id.toString(),
-        // TODO: update path
-        path: `/r/mentor/payment-management`,
-        mail_template: "withdraw_request",
-        params: {
-          transaction_value: createTransactionData.transaction_value,
-          data_payment: createTransactionData.data_payment,
-          transaction_bank: createTransactionData.transaction_bank,
-        },
-        content: (params: any) => {
-          return `${userObject?.display_name} RÚT TIỀN `;
-        },
-        title: `${userObject?.display_name.toLocaleUpperCase()} RÚT TIỀN`,
+      // const adminUser = await this.userService.findOne({ user_role: "admin" });
+      // this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
+      //   send_user_id: req?.user_id?.toString(),
+      //   user_id: adminUser._id.toString(),
+      //   // TODO: update path
+      //   path: `/r/mentor/payment-management`,
+      //   mail_template: "withdraw_request",
+      //   params: {
+      //     transaction_value: createTransactionData.transaction_value,
+      //     data_payment: createTransactionData.data_payment,
+      //     transaction_bank: createTransactionData.transaction_bank,
+      //   },
+      //   content: (params: any) => {
+      //     return `${userObject?.display_name} RÚT TIỀN `;
+      //   },
+      //   title: `${userObject?.display_name.toLocaleUpperCase()} RÚT TIỀN`,
+      // });
+
+      this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+        chat_id: process.env.TELEGRAM_ROOM_ID,
+        text: `
+          <b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Rút tiền</b>\nGiá trị giao dịch: ${formatWithCommas(
+            createTransactionData.transaction_value
+          )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
+          transactionBank.bank_account_name
+        }\nSố tài khoản: ${transactionBank.bank_name}
+        `,
+        parse_mode: "HTML",
       });
 
       const dataCreate = await this.transactionService.create(newDataCreate);
