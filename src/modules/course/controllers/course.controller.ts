@@ -250,6 +250,11 @@ export class CourseController {
     return await this.courseHelper.getCourseList(body, res, req);
   }
 
+  @Post("/suggest")
+  async getCourseSuggest(@Body() body: ListCourseDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.courseHelper.getCourseList(body, res, req);
+  }
+
   @Post("/list-tutor")
   async getTutors(@Body() body: ListTutorDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.courseHelper.getTutors(body, req, res);

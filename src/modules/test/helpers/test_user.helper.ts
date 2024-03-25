@@ -177,10 +177,10 @@ export class TestUserHelper {
         })
         .status(HttpStatus.OK)
         .json({
-          listening_percentage: listeningCounter > 0 ? listeningTotal / listeningCounter : 0,
-          reading_percentage: readingCounter > 0 ? readingTotal / readingCounter : 0,
-          writing_percentage: writingCounter > 0 ? writingTotal / writingCounter : 0,
-          speaking_percentage: speakingCounter > 0 ? speakingTotal / speakingCounter : 0,
+          listening_percentage_average: listeningCounter > 0 ? listeningTotal / listeningCounter : 0,
+          reading_percentage_average: readingCounter > 0 ? readingTotal / readingCounter : 0,
+          writing_percentage_average: writingCounter > 0 ? writingTotal / writingCounter : 0,
+          speaking_percentage_average: speakingCounter > 0 ? speakingTotal / speakingCounter : 0,
         });
     } catch (e) {
       throw new Error(`Error when check user test submit: ${e.message}`);
