@@ -542,7 +542,7 @@ export class ChatRoomHelper {
           throw new BadRequestException("You not have permission for this action! " + chatRoomId);
         }
 
-        if (datum.chat_room_id.room_type !== "group") {
+        if (!["group", "class"].includes(datum.chat_room_id.room_type)) {
           throw new BadRequestException("Room is not Group type! " + chatRoomId);
         }
 
@@ -675,7 +675,7 @@ export class ChatRoomHelper {
         mediaObject = mediaObject.toObject();
       }
 
-      if (roomUserObject.chat_room_id.room_type !== "group") {
+      if (!["group", "class"].includes(roomUserObject.chat_room_id.room_type)) {
         throw new BadRequestException("Can't update this Room, because this Room is not Group!");
       }
       const objectId = new Types.ObjectId(dataUpdate.room_image);
@@ -765,7 +765,8 @@ export class ChatRoomHelper {
       ) {
         throw new BadRequestException("You not have permission for this action!");
       }
-      if (dataUserOption.chat_room_id.room_type !== "group") {
+
+      if (!["group", "class"].includes(dataUserOption.chat_room_id.room_type)) {
         throw new BadRequestException("Room is not Group type!");
       }
       await this.chatRoomUserOptionService.remove(dataUserOption._id.toString());
@@ -990,12 +991,9 @@ export class ChatRoomHelper {
           //return res.set({ "Access-Control-Expose-Headers": "X-Authorization" }).status(HttpStatus.OK).json(dataReturn);
           continue;
         }
-        // if (dataUserOption.chat_room_id.room_type !== "group") {
-        //   throw new BadRequestException("Room is not Group type!");
-        // }
 
-        if (dataRoomObject?.room_type !== "group") {
-          throw new BadRequestException("Room is not Group type!");
+        if (!["group", "class"].includes(dataRoomObject?.room_type)) {
+          throw new BadRequestException("Room is not Group/Class type!");
         }
 
         if (Number(dataRoomObject?.room_private) !== 0) {
