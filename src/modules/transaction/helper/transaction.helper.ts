@@ -755,6 +755,7 @@ export class TransactionHelper {
             billing_on: new Date(),
           };
 
+          await this.userService.update({ _id: userObject?._id?.toString(), current_coin: newCoin });
           await this.sendSocketUpdateCoin(userObject?._id?.toString(), newCoin, currentToken, auth);
           await this.transactionService.create(dataCreate);
         }
@@ -809,6 +810,7 @@ export class TransactionHelper {
         billing_on: new Date(),
       };
 
+      await this.userService.update({ _id: data.userId, current_coin: newCoin });
       await this.sendSocketUpdateCoin(data.userId, newCoin, 0, auth);
       await this.transactionService.create(dataCreate);
     } catch (error) {
