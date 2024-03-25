@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
-import { NotificationRouter } from "src/modules/notification/interfaces/notification.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
+import { NotificationRouter } from "../../../modules/notification/interfaces/notification.interface";
 import {
   RedeemMissionActionTarget,
   RedeemMissionActionType,
