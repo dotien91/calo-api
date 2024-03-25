@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Response } from "express";
+import { NotificationRouter } from "src/modules/notification/interfaces/notification.interface";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import {
   RedeemMissionActionTarget,
   RedeemMissionActionType,
@@ -12,7 +14,11 @@ import { TestUserService } from "../services/test_user.service";
 
 @Injectable()
 export class TestUserHelper {
-  constructor(private testUserService: TestUserService, private redeemUserService: RedeemUserService) {}
+  constructor(
+    private testUserService: TestUserService,
+    private redeemUserService: RedeemUserService,
+    private notificationHelper: NotificationHelper
+  ) {}
 
   async list(query: ListTestUserDto, res: Response, req: ExpressRequestDto) {
     try {
@@ -100,7 +106,26 @@ export class TestUserHelper {
 
   async checkUserTestSubmit(data: UpdateTestUserDTO) {
     try {
-      await this.testUserService.calculateUserBand(data);
+      try {
+        await this.testUserService.calculateUserBand(data);
+
+        // should send notification to user after done exam
+        const dataNotification = {
+          user_id: data.user_id,
+          title: `There is a class about to start`,
+          content: "",
+          param: JSON.stringify({
+            test_id: data.test_id,
+          }),
+          type_action: "link",
+          router: NotificationRouter.NAVIGATION_TEST_RESULT,
+          click_action: "",
+          image: "",
+        };
+        this.notificationHelper.sendNotification(dataNotification);
+      } catch (e) {
+        throw new Error(e);
+      }
     } catch (e) {
       throw new Error(`Error when check user test submit: ${e.message}`);
     }

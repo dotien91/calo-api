@@ -31,6 +31,7 @@ export class TestController {
           finished_time: test.finished_time,
           test_id: test.test_id.toString(),
           type: test.type,
+          user_id: test.user_id.toString(),
         };
         await this.testUserHelper.checkUserTestSubmit(data);
       }

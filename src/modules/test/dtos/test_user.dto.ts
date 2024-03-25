@@ -96,4 +96,8 @@ export class UpdateTestUserDTO {
   @IsEnum(TestType)
   @IsOptional()
   type?: TestType;
+
+  @IsEnum(TestType)
+  @IsDefined()
+  user_id: string;
 }
