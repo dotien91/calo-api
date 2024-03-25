@@ -2435,6 +2435,7 @@ export class CourseHelper {
       const isExist = await this.courseOneOneService.findOne({
         user_id: dataFollow.user_id,
         role: CourseOneOneRole.STUDENT,
+        course_id: dataFollow.course_id,
       });
       if (isExist) throw new Error("The student already created time available, try update");
 
@@ -2500,6 +2501,7 @@ export class CourseHelper {
       const isExist = await this.courseOneOneService.findOne({
         user_id: dataFollow.user_id,
         role: CourseOneOneRole.STUDENT,
+        course_id: dataFollow.course_id,
       });
       if (isExist) throw new Error("The student already created time available, try update");
 
