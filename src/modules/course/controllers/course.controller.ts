@@ -205,7 +205,7 @@ export class CourseController {
     }
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async checkPendingCourse() {
     const pendingCourses = await this.courseHelper.getCourseListNoReq({ public_status: CoursePublicStatus.PENDING });
     for (const pendingCourse of pendingCourses) {
@@ -228,10 +228,7 @@ export class CourseController {
           break;
         }
         case CourseType.CALL_ONE_ONE: {
-          const teacherTimeAvailable = await this.courseHelper.getCourseCalendarTeacherListNoReq({
-            user_id: pendingCourse.user_id._id.toString(),
-          });
-          if (teacherTimeAvailable) isValidCourse = true;
+          isValidCourse = true;
           break;
         }
         default: {
