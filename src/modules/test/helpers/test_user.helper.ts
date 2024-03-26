@@ -121,8 +121,9 @@ export class TestUserHelper {
           router: NotificationRouter.NAVIGATION_TEST_RESULT,
           click_action: "",
           image: "",
+          channel: "user",
         };
-        this.notificationHelper.sendNotification(dataNotification);
+        this.notificationHelper.handleSendNotification(dataNotification);
       } catch (e) {
         throw new Error(e);
       }
