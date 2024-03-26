@@ -65,6 +65,14 @@ export class CouponHelper {
 
   async updateCoupon(updateCouponData: UpdateCouponDTO, res: Response, req: ExpressRequestDto) {
     try {
+      const userObject = req?.user_object;
+
+      const coupon = await this.couponService.findOne({ _id: updateCouponData._id });
+      if (!coupon) throw new Error("Not found coupon");
+
+      if (coupon.user_id.toString() !== userObject?._id.toString())
+        throw new Error("You don't have permission to do this action");
+
       const dataReturn = await this.couponService.update(updateCouponData);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })

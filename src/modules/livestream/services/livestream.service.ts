@@ -1,7 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import axios from "axios";
 import { Model, Types } from "mongoose";
 import { CreateLivestreamDto } from "../dto/create-livestream.dto";
 import { SearchLivestreamDto } from "../dto/search-livestream.dto";
@@ -30,40 +28,40 @@ export class LivestreamService {
   private readonly MAX_ATTEMPT_RETRIES = 5;
   private checkingStreamContainer = {};
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
-  async checkingAliveLivestream() {
-    const safe = this;
-    const livestreams = await this.livestreamModel.find({
-      livestream_status: "live",
-    });
+  // @Cron(CronExpression.EVERY_5_SECONDS)
+  // async checkingAliveLivestream() {
+  //   const safe = this;
+  //   const livestreams = await this.livestreamModel.find({
+  //     livestream_status: "live",
+  //   });
 
-    for (const livestream of livestreams) {
-      const checkingUrl = livestream.livestream_data.m3u8_url;
+  //   for (const livestream of livestreams) {
+  //     const checkingUrl = livestream.livestream_data.m3u8_url;
 
-      await axios
-        .get(checkingUrl, {})
-        .then(function (response) {
-          if (response.status === 200) safe.checkingStreamContainer[livestream._id.toString()] = 0;
-        })
-        .catch(function (error) {
-          if (error.message.search("404") !== -1)
-            if (safe.checkingStreamContainer[livestream._id.toString()])
-              safe.checkingStreamContainer[livestream._id.toString()] =
-                safe.checkingStreamContainer[livestream._id.toString()] + 1;
-            else safe.checkingStreamContainer[livestream._id.toString()] = 1;
-        })
-        .finally(async () => {
-          for (const livestreamId of Object.keys(safe.checkingStreamContainer)) {
-            if (safe.checkingStreamContainer[livestreamId] === safe.MAX_ATTEMPT_RETRIES) {
-              await this.livestreamModel.findByIdAndUpdate(livestreamId, {
-                livestream_status: "end",
-              });
-              delete safe.checkingStreamContainer[livestreamId];
-            }
-          }
-        });
-    }
-  }
+  //     await axios
+  //       .get(checkingUrl, {})
+  //       .then(function (response) {
+  //         if (response.status === 200) safe.checkingStreamContainer[livestream._id.toString()] = 0;
+  //       })
+  //       .catch(function (error) {
+  //         if (error.message.search("404") !== -1)
+  //           if (safe.checkingStreamContainer[livestream._id.toString()])
+  //             safe.checkingStreamContainer[livestream._id.toString()] =
+  //               safe.checkingStreamContainer[livestream._id.toString()] + 1;
+  //           else safe.checkingStreamContainer[livestream._id.toString()] = 1;
+  //       })
+  //       .finally(async () => {
+  //         for (const livestreamId of Object.keys(safe.checkingStreamContainer)) {
+  //           if (safe.checkingStreamContainer[livestreamId] === safe.MAX_ATTEMPT_RETRIES) {
+  //             await this.livestreamModel.findByIdAndUpdate(livestreamId, {
+  //               livestream_status: "end",
+  //             });
+  //             delete safe.checkingStreamContainer[livestreamId];
+  //           }
+  //         }
+  //       });
+  //   }
+  // }
 
   /**
    * @author Tony Vu
