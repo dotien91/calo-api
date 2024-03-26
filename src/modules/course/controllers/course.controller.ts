@@ -108,6 +108,7 @@ export class CourseController {
                 router: NotificationRouter.NAVIGATION_CLASS_ROOM,
                 click_action: "",
                 image: "",
+                channel: "user",
               };
 
               // plus taught_time for teacher
@@ -180,6 +181,7 @@ export class CourseController {
               router: NotificationRouter.NAVIGATION_CLASS_ROOM,
               click_action: "",
               image: "",
+              channel: "user",
             };
 
             // plus taught_time for teacher
