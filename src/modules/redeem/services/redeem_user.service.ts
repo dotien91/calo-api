@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import mongoose, { Model } from "mongoose";
-import { HttpClientService } from "../../../base/http-client/http.base";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
 import { AddCoinToUserData, AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
+import { TelegramService } from "../../../modules/telegram/services/telegram.service";
 import { TransactionRefType } from "../../../modules/transaction/interfaces/transaction.interface";
 import { User } from "../../../modules/user/schemas/user.schema";
 import { HandleUpdateSocialLinkAction, HandleUpdateSocialLinkByUser } from "../dtos/redeem.dto";
@@ -31,7 +31,7 @@ export class RedeemUserService {
     private eventHookWorkerService: EventHookWorkerService,
     private jwtHelperService: JwtHelperService,
     private socketService: SocketService,
-    private httpService: HttpClientService
+    private telegramService: TelegramService
   ) {}
 
   async create(createUser): Promise<RedeemUser> {
@@ -159,29 +159,33 @@ export class RedeemUserService {
     // update counter
     await this.redeemUserModel.updateOne({ user_id: user._id.toString(), redeem_id: body.redeem_id }, updateObject);
 
-    let baseUrl = "";
+    let baseUrl = "http://localhost:3900";
     switch (process.env.APP_NAME) {
       case "ieltshunter": {
-        baseUrl = "api.live.ieltshunter.io";
+        baseUrl = "https://api.live.ieltshunter.io";
         break;
       }
       case "ikigai": {
-        baseUrl = "api.live.ieltshunter.io";
+        baseUrl = "https://api.live.ieltshunter.io";
+        break;
+      }
+      default: {
+        baseUrl = "https://api.live.ieltshunter.io";
         break;
       }
     }
-    this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+
+    this.telegramService.sendMessage({
       chat_id: process.env.TELEGRAM_ROOM_ID,
-      text: `
-        <b>THÔNG BÁO ĐĂNG TẢI VIDEO</b>\nĐịa chỉ:${body.social_link}\nTrạng thái: ${"Pending"}\nDuyệt video: ${
-        "https://" +
+      text: `<b>========================</b>\n<b>THÔNG BÁO ĐĂNG TẢI VIDEO</b>\nĐịa chỉ:${
+        body.social_link
+      }\nTrạng thái: <b>${"PENDING"}</b>\n<a href="${
         baseUrl +
         "/api/redeem/update-link?redeem_id=65f174e71145e857a7e80518&user_id=6589231382a81d6187758f7e&social_link=https://www.tiktok.com/@dong/video/7339526559176445202&status=active"
-      }\nTừ chối video: ${
-        "https://" +
+      }">Duyệt video ✅</a>\n<a href="${
         baseUrl +
         "/api/redeem/update-link?redeem_id=65f174e71145e857a7e80518&user_id=6589231382a81d6187758f7e&social_link=https://www.tiktok.com/@dong/video/7339526559176445202&status=reject"
-      }
+      }">Từ chối video ⛔️</a>
       `,
       parse_mode: "HTML",
     });
@@ -207,6 +211,16 @@ export class RedeemUserService {
       { _id: redeemUser._id.toString() },
       { share_link_container: redeemUser.share_link_container }
     );
+
+    this.telegramService.sendMessage({
+      chat_id: process.env.TELEGRAM_ROOM_ID,
+      text: `
+      <b>========================</b>\n<b>THÔNG BÁO CẬP NHẬT TRẠNG THÁI VIDEO</b>\nĐịa chỉ: ${
+        body.social_link
+      }\nTrạng thái: <b>${body.status.toUpperCase()}</b>
+      `,
+      parse_mode: "HTML",
+    });
 
     return null;
   }

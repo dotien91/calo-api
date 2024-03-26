@@ -329,12 +329,11 @@ export class TransactionHelper {
       this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
         chat_id: process.env.TELEGRAM_ROOM_ID,
         text: `
-          <b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Rút tiền</b>\nGiá trị giao dịch: ${formatWithCommas(
-            createTransactionData.transaction_value
-          )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
+        <b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Rút tiền</b>\nGiá trị giao dịch: ${formatWithCommas(
+          createTransactionData.transaction_value
+        )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
           transactionBank.bank_account_name
-        }\nSố tài khoản: ${transactionBank.bank_name}
-        `,
+        }\nSố tài khoản: ${transactionBank.bank_name}`,
         parse_mode: "HTML",
       });
 

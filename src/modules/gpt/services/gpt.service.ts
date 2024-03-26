@@ -15,7 +15,7 @@ export class GptService {
       messages: [
         {
           role: "user",
-          content: `Bạn kiểm tra giúp mình xem nội dung dưới đây có vi phạm qui tắc cộng đồng không? Tiêu chuẩn cộng đồng là tiêu chuẩn chung mà các mạng xã hội đã xây dựng như Facebook hoặc Reddit. Bạn có thể tham khảo thêm về tiêu chuẩn cộng đồng. Sau đây là nội dung: "${content}" Vui lòng hãy chỉ trả lời "Có" hoặc "Không". Kết quả trả về không được thêm bất kì ký tự hoặc câu nào khác hãy tập trung trả lời đúng hai kết quả là "Có" hoặc "Không"`,
+          content: `Bạn kiểm tra giúp mình xem nội dung dưới đây có vi phạm qui tắc cộng đồng không? Tiêu chuẩn cộng đồng là tiêu chuẩn chung mà các mạng xã hội đã xây dựng như Facebook hoặc Reddit. Bạn có thể tham khảo thêm về tiêu chuẩn cộng đồng. Sau đây là nội dung: "${content}". Vui lòng hãy chỉ trả lời "Có" hoặc "Không". Kết quả trả về không được thêm bất kì ký tự hoặc câu nào khác hãy tập trung trả lời đúng hai kết quả là "Có" hoặc "Không"`,
         },
       ],
     });

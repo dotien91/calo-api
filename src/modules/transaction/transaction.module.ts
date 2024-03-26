@@ -1,7 +1,6 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { HttpClientService } from "../../base/http-client/http.base";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
@@ -12,6 +11,7 @@ import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
+import { TelegramService } from "../telegram/services/telegram.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
@@ -67,7 +67,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     UserSessionService,
     UserPointHistoryService,
     ReferralService,
-    HttpClientService,
+    TelegramService,
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
 })

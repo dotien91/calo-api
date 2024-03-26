@@ -2,7 +2,6 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment";
-import { HttpClientService } from "../../../base/http-client/http.base";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
@@ -24,6 +23,7 @@ import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.
 import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
+import { TelegramService } from "../../../modules/telegram/services/telegram.service";
 import {
   TransactionRefType,
   TransactionValueType,
@@ -69,7 +69,7 @@ export class OrderHelper {
     private courseHelper: CourseHelper,
     private referralService: ReferralService,
     private redeemUserService: RedeemUserService,
-    private httpService: HttpClientService
+    private telegramService: TelegramService
   ) {
     // if (!initHook) {
     //   this.initHook();
@@ -767,11 +767,10 @@ export class OrderHelper {
               //       .toString()}`,
               //   });
               // }
-              this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+
+              this.telegramService.sendMessage({
                 chat_id: process.env.TELEGRAM_ROOM_ID,
-                text: `
-                  <b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Chuyển khoản</b>\nMã đơn hàng: ${dataUpdate._id}\nHình thức giao dịch: ${dataUpdate.payment_method}\nGhi chú đơn hàng: ${dataUpdate.order_note}
-                `,
+                text: `<b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Chuyển khoản</b>\nMã đơn hàng: ${orderObject.short_id}\nGhi chú đơn hàng: ${dataUpdate.order_note}`,
                 parse_mode: "HTML",
               });
             }, 500);

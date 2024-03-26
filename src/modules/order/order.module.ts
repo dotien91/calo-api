@@ -28,7 +28,6 @@ import { UserPermission, UserPermissionSchema } from "../user_permission/schemas
 import { UserPermissionService } from "../user_permission/services/user_permission.service";
 import { OrderController } from "./controllers/order.controller";
 // import { OrderHelper } from "./helper/OrderHelper";
-import { HttpClientService } from "../../base/http-client/http.base";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { CouponModule } from "../coupon/coupon.module";
 import { CourseModule } from "../course/course.module";
@@ -43,6 +42,7 @@ import { ReferralModule } from "../referral/referral.module";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
+import { TelegramService } from "../telegram/services/telegram.service";
 import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
 import { UserPointHistoryService } from "../user/services/user_point_history.service";
 import { UserModule } from "../user/user.module";
@@ -116,7 +116,7 @@ import { OrderService } from "./services/order.service";
     UserService,
     UserPointHistoryService,
     ReferralService,
-    HttpClientService,
+    TelegramService,
   ],
   exports: [OrderService],
 })
