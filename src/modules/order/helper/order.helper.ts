@@ -717,6 +717,19 @@ export class OrderHelper {
     }
   }
 
+  async get_handleUpdateOrderByAdmin(dataUpdate: UpdateOrderDto, res: Response, req: ExpressRequestDto) {
+    try {
+      const dataReturn = await this.orderService.update(dataUpdate);
+      await this.updateOrderAfter(dataReturn._id.toString());
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json(dataReturn);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   // /**
   //  * @author Tony Vu
   //  * @param id
@@ -768,9 +781,32 @@ export class OrderHelper {
               //   });
               // }
 
+              let baseUrl = "http://localhost:3900";
+              switch (process.env.APP_NAME) {
+                case "ieltshunter": {
+                  baseUrl = "https://api.live.ieltshunter.io";
+                  break;
+                }
+                case "ikigai": {
+                  baseUrl = "https://api.live.ieltshunter.io";
+                  break;
+                }
+                default: {
+                  baseUrl = "https://api.live.ieltshunter.io";
+                  break;
+                }
+              }
+
               this.telegramService.sendMessage({
                 chat_id: process.env.TELEGRAM_ROOM_ID,
-                text: `<b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Chuyển khoản</b>\nMã đơn hàng: ${orderObject.short_id}\nGhi chú đơn hàng: ${dataUpdate.order_note}`,
+                text: `<b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Chuyển khoản</b>\nMã đơn hàng: ${
+                  orderObject.short_id
+                }\nGhi chú đơn hàng: ${dataUpdate.order_note}\n<a href="${
+                  baseUrl + `/api/order/admin-update?_id=${orderObject._id.toString()}&status=success`
+                }">Duyệt đơn hàng ✅</a>\n<a href="${
+                  baseUrl + `/api/order/admin-update?_id=${orderObject._id.toString()}&status=close`
+                }">Từ chối đơn hàng ⛔️</a>
+                `,
                 parse_mode: "HTML",
               });
             }, 500);
@@ -804,7 +840,7 @@ export class OrderHelper {
       if (orderObject.status == "success" && beforeStatus == "pending") {
         let dataToCreate = null;
         for (const orderItem of orderObject.items) {
-          const amountOfDay = Number(orderItem.plan_id.amount_of_day);
+          const amountOfDay = Number(orderItem.plan_id?.amount_of_day);
           const date = new Date();
           date.setDate(date.getDate() + amountOfDay);
           const endTime = date;

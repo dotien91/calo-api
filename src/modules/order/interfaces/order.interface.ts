@@ -8,6 +8,8 @@ export enum OrderPaymentMethod {
 export enum OrderStatus {
   PENDING = "pending",
   SUCCESS = "success",
+  CLOSE = "close",
+  PROCESSING = "processing",
   // [
   //   "pending",
   //   "processing",

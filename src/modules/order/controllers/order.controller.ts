@@ -117,6 +117,11 @@ export class OrderController {
     return await this.orderHelper.handleUpdateOrderByAdmin(dataUpdate, res, req);
   }
 
+  @Get("/admin-update")
+  async get_updateByAdmin(@Query() dataUpdate: UpdateOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.orderHelper.get_handleUpdateOrderByAdmin(dataUpdate, res, req);
+  }
+
   @Post("/user-update")
   async updateByUser(@Body() dataUpdate: UpdateOrderUserDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.orderHelper.handleUpdateOrderByUser(dataUpdate, res, req);
