@@ -20,7 +20,7 @@ export class TestController {
     private readonly testUserHelper: TestUserHelper
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async checkUserTestSubmit() {
     try {
       const tests = await this.testUserHelper.getTestByStatus(TestStatus.PENDING);
