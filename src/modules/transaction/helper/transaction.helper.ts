@@ -333,7 +333,7 @@ export class TransactionHelper {
           createTransactionData.transaction_value
         )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
           transactionBank.bank_account_name
-        }\nSố tài khoản: ${transactionBank.bank_name}`,
+        }\nSố tài khoản: ${transactionBank.bank_number}`,
         parse_mode: "HTML",
       });
 
