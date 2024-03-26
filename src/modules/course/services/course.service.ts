@@ -5,7 +5,7 @@ import { UserRoles } from "../../user/interfaces/user.interface";
 import { User, UserDocument } from "../../user/schemas/user.schema";
 import { CreateCourseDto } from "../dto/create-course.dto";
 import { SearchCourseDto, SearchSaleCourseDto, SearchTutorDto } from "../dto/search-course.dto";
-import { CourseOneOneRole, CourseSkill, CourseType } from "../interfaces/course.interface";
+import { CourseOneOneRole, CoursePublicStatus, CourseSkill, CourseType } from "../interfaces/course.interface";
 import { Course, CourseDocument } from "../schemas/course.schema";
 import { CourseOneOne, CourseOneOneDocument } from "../schemas/course_one_one.schema";
 
@@ -161,6 +161,7 @@ export class CourseService {
     const matchObject = {};
     const matchCourseObject = {};
 
+    // matchObject
     matchObject["user_role"] = UserRoles.TEACHER;
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
     if (filter.levelOfTutor?.length)
@@ -173,6 +174,8 @@ export class CourseService {
         $options: "i",
       };
 
+    // matchCourseObject
+    matchCourseObject["courses.public_status"] = CoursePublicStatus.ACTIVE;
     if (filter.types?.length)
       matchCourseObject["courses.type"] = {
         $in: filter.types,

@@ -3020,7 +3020,7 @@ export class CourseHelper {
   }
 
   async countValue(userId: string) {
-    const courses = await this.courseService.findAll({ user_id: userId });
+    const courses = await this.courseService.findAll({ user_id: userId, public_status: CoursePublicStatus.ACTIVE });
 
     const courseIds = courses.map((course) => course._id.toString());
 

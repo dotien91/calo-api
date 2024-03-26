@@ -12,6 +12,7 @@ import * as _ from "lodash";
 import { Types } from "mongoose";
 import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { CoursePublicStatus } from "../../../modules/course/interfaces/course.interface";
 import { OrderService } from "../../../modules/order/services/order.service";
 import { ReferralType } from "../../../modules/referral/interfaces/referral.interface.i";
 import { ReferralService } from "../../../modules/referral/services/referral.service";
@@ -886,7 +887,7 @@ export class UserFilterHelper {
         throw new NotFoundException("User is invalid");
       }
 
-      const courses = await this.courseService.findAll({ user_id: id });
+      const courses = await this.courseService.findAll({ user_id: id, public_status: CoursePublicStatus.ACTIVE });
       const courseIds = courses.map((course) => course._id.toString());
       const members = await this.courseUserService.findAll({ course_id: { $in: courseIds } });
 
