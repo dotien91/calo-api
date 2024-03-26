@@ -68,7 +68,7 @@ export class CourseController {
 
     for (const _class of classes) {
       const calendars = _class.course_calendar_ids;
-      const classId = _class._id;
+      const classId = _class._id.toString();
       for (const calendar of calendars) {
         for (const member of _class.members) {
           const { day, time_start, time_end } = calendar as any;
