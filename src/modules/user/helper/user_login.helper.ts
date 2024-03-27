@@ -98,7 +98,11 @@ export class UserLoginHelper {
         let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
 
         if (!userObject || (userObject && !userObject._id)) {
-          const dataAvtar = await this.handleGetUserAvatarRandom();
+          const [dataAvtar, dataIp] = await Promise.all([
+            this.handleGetUserAvatarRandom(),
+            this.configService.getIpInfo(req),
+          ]);
+
           //Create New User
           const dataToCreate = {
             user_login: userLogin,
@@ -108,6 +112,8 @@ export class UserLoginHelper {
             user_avatar_thumbnail: dataAvtar,
             user_status: 1,
             invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            country: dataIp.country,
+            timezone: dataIp.timezone,
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -280,7 +286,11 @@ export class UserLoginHelper {
         let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
 
         if (!userObject || (userObject && !userObject._id)) {
-          const dataUrl = await this.handleGetUserAvatarRandom();
+          const [dataUrl, dataIp] = await Promise.all([
+            this.handleGetUserAvatarRandom(),
+            this.configService.getIpInfo(req),
+          ]);
+
           //Create New User
           const dataToCreate = {
             user_avatar: dataUrl,
@@ -290,6 +300,8 @@ export class UserLoginHelper {
             display_name: "IH-" + makeRandom(8, "0123456789"),
             user_status: 1,
             invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            country: dataIp.country,
+            timezone: dataIp.timezone,
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
@@ -349,6 +361,8 @@ export class UserLoginHelper {
         if (!userObject || (userObject && !userObject._id)) {
           const userEmail = userData.data.email || String(userData?.data?.id + "@facebook.com");
           const userAvatar = `https://graph.facebook.com/${userData?.data?.id}/picture?type=square`;
+          const [dataIp] = await Promise.all([this.configService.getIpInfo(req)]);
+
           //Create New User
           const dataToCreate = {
             user_login: userLogin,
@@ -358,6 +372,8 @@ export class UserLoginHelper {
             user_avatar_thumbnail: userAvatar,
             user_status: 1,
             invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            country: dataIp.country,
+            timezone: dataIp.timezone,
           };
           userObject = await this.appUserService.create(dataToCreate);
         }
