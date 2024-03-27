@@ -7,5 +7,5 @@ import { I18NService } from "./services/i18n.service";
   providers: [I18NService],
   exports: [I18NService],
 })
-export class I18nModule {}
+export class I18NModule {}
 

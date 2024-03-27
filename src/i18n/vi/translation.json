@@ -29,6 +29,16 @@
   },
   "test": {
     "result": "Bạn vừa nhận được kết quả của một bài kiểm tra"
+  },
+  "chat": {
+    "endMessage": {
+      "file": "gửi file",
+      "call": "cuộc gọi từ",
+      "gift": "tặng quà"
+    },
+    "startMessage": {
+      "message": "Tin nhắn: last_message"
+    }
   }
 }
 

@@ -29,6 +29,16 @@
   },
   "test": {
     "result": "You've received the results of your test"
+  },
+  "chat": {
+    "endMessage": {
+      "file": "send file",
+      "call": "call from",
+      "gift": "gift"
+    },
+    "startMessage": {
+      "message": "Message: last_message"
+    }
   }
 }
 

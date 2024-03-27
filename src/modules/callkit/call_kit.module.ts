@@ -7,14 +7,11 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ChatHistoryHelper } from "../chat_history/helpers/chat_history.helper";
 import { ChatHistory, ChatHistorySchema } from "../chat_history/schemas/chat_history.schema";
 import { ChatHistoryService } from "../chat_history/services/chat_history.service";
-import { ChatRoomHelper } from "../chat_room/helpers/chat_room.helper";
-import { ChatRoom, ChatRoomSchema } from "../chat_room/schemas/chat_room.schema";
-import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
-import { ChatRoomService } from "../chat_room/services/chat_room.service";
-import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
+import { ChatRoomModule } from "../chat_room/chat_room.module";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
+import { I18NModule } from "../i18n/i18n.module";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { MediaService } from "../media/services/media.service";
 import { NotificationModule } from "../notification/notification.module";
@@ -59,8 +56,6 @@ import { CallkitService } from "./services/callkit.service";
       }
     ),
     MongooseModule.forFeature([
-      { name: ChatRoom.name, schema: ChatRoomSchema },
-      { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
       { name: User.name, schema: UserSchema },
       { name: ChatHistory.name, schema: ChatHistorySchema },
       { name: Media.name, schema: MediaSchema },
@@ -79,15 +74,15 @@ import { CallkitService } from "./services/callkit.service";
     ]),
     SocketModule,
     NotificationModule,
+    ChatRoomModule,
+    I18NModule,
   ],
   controllers: [CallKitController],
   providers: [
     TransactionBankService,
     CallKitHelper,
-    ChatRoomService,
     TransactionHelper,
     TransactionService,
-    ChatRoomUserOptionService,
     UserAnonymousService,
     JwtHelperService,
     ChatHistoryService,
@@ -98,7 +93,6 @@ import { CallkitService } from "./services/callkit.service";
     UserService,
     UserPermissionService,
     UserSessionService,
-    ChatRoomHelper,
     UserFollowService,
     QueueService,
     EventHookWorkerService,

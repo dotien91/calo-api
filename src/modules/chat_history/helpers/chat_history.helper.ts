@@ -4,6 +4,7 @@ import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.service";
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
+import { I18NService } from "../../../modules/i18n/services/i18n.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { SocketService } from "../../../modules/socket/services/socket.service";
@@ -27,7 +28,8 @@ export class ChatHistoryHelper {
     private readonly chatRoomService: ChatRoomService,
     private readonly mediaService: MediaService,
     private readonly notificationHelper: NotificationHelper,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
+    private readonly i18nService: I18NService
   ) {}
 
   private readonly logger = new Logger("chat_history");
@@ -172,23 +174,23 @@ export class ChatHistoryHelper {
           createChatHistoryDto.chat_room_id
         );
 
-        let stringLast = "gửi file/ảnh";
-        if (dataMediaResult.is_call) {
-          stringLast = "Cuộc gọi từ";
-          lastMessageString = `${stringLast} ${userObject.display_name}`;
-        } else {
-          if (dataMediaResult?.is_gift) {
-            stringLast = "tặng quà";
-            lastMessageString = `${userObject.display_name} ${stringLast}`;
-          } else {
-            stringLast = "gửi file/ảnh";
-            lastMessageString = `${userObject.display_name} ${stringLast}`;
-          }
-        }
+        // let stringLast = this.i18nService.getMessage("translation.chat.endMessage.file");
+        // if (dataMediaResult.is_call) {
+        //   stringLast = this.i18nService.getMessage("translation.chat.endMessage.call");
+        //   lastMessageString = `${stringLast} ${userObject.display_name}`;
+        // } else {
+        //   if (dataMediaResult?.is_gift) {
+        //     stringLast = this.i18nService.getMessage("translation.chat.endMessage.gift");
+        //     lastMessageString = `${userObject.display_name} ${stringLast}`;
+        //   } else {
+        //     stringLast = this.i18nService.getMessage("translation.chat.endMessage.file");
+        //     lastMessageString = `${userObject.display_name} ${stringLast}`;
+        //   }
+        // }
 
         dataToUpdateRoom = {
           ...dataToUpdateRoom,
-          ...{ last_message: lastMessageString },
+          ...{ last_message: "file" }, // lastMessageString
           ...{ last_history: dataChat._id.toString() },
         };
       } else {
@@ -697,28 +699,17 @@ export class ChatHistoryHelper {
   ) {
     try {
       const notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
-      let chatContentToSend = "Tin nhắn: " + lastMessage;
+      let chatContentToSend = "translation.chat.startMessage.message";
       if (lastMessage && lastMessage.length >= 255) {
         chatContentToSend = lastMessage.substring(0, 250) + "...";
       }
 
       let userIdSend = "";
       const userIdArray = [];
-      let language = "en";
       for (const userItem of toUser) {
-        if (userItem?.country === "VN") {
-          language = "vi";
-        }
         userIdArray.push(userItem._id.toString());
       }
 
-      if (!lastMessage) {
-        let textSendFile = "send file to you!";
-        if (language === "vi") {
-          textSendFile = "gửi file tới bạn!";
-        }
-        chatContentToSend = notificationTitle + " " + textSendFile;
-      }
       userIdSend = userIdArray.join(",");
       const dataToSendNotification = {
         chat_room_id: dataChat?.chat_room_id,
@@ -739,6 +730,9 @@ export class ChatHistoryHelper {
           ? fromUser.user_avatar.toString()
           : "https://lgbtapp.s3.ap-southeast-1.amazonaws.com/2022/08/23/62e8a1df34a5b011e5d174e5-default_avatar.png",
         channel: "user",
+        replace_pattern: {
+          last_message: lastMessage,
+        },
       };
       await this.notificationHelper.handleSendNotification(dataNotification, authCode);
       return true;
