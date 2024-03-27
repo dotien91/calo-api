@@ -112,7 +112,7 @@ export class TestUserHelper {
         // should send notification to user after done exam
         const dataNotification = {
           user_id: data.user_id,
-          title: `There is a class about to start`,
+          title: `You've received the results of your test`,
           content: "",
           param: JSON.stringify({
             test_id: data.test_id,
@@ -121,7 +121,6 @@ export class TestUserHelper {
           router: NotificationRouter.NAVIGATION_TEST_RESULT,
           click_action: "",
           image: "",
-          channel: "user",
         };
         this.notificationHelper.handleSendNotification(dataNotification);
       } catch (e) {
