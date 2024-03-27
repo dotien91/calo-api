@@ -2,9 +2,7 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
@@ -42,7 +40,6 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Transaction.name, schema: TransactionSchema },
@@ -50,14 +47,13 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
       { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   providers: [
     EventHookNotificationService,
     EventHookWorkerService,
     EventHookAdderService,
-    NotificationHelper,
     UserService,
-    NotificationService,
     UserSessionService,
     TransactionHelper,
     UserPermissionService,

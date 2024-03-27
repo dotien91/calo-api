@@ -1,0 +1,34 @@
+{
+  "user": {
+    "loginWithPassword": "E-mail hoặc mật khẩu không chính xác!"
+  },
+  "community": {
+    "comment": {
+      "title": "notification_title đã bình luận bài viết post_title",
+      "content": "notification_title đã bình luận: content"
+    }
+  },
+  "transaction": {
+    "accountBalance": {
+      "title": "Thông báo biến động số dư",
+      "content": "Số dư hiện tại current_token token"
+    }
+  },
+  "order": {
+    "purchase": {
+      "title": "Một người dùng đã thanh toán thành công sản phẩm items",
+      "content": "user_display_name đã thanh toán thành công sản phẩm items"
+    }
+  },
+  "course": {
+    "class": {
+      "start": {
+        "title": "Bạn có một lớp học sắp sửa bắt đầu"
+      }
+    }
+  },
+  "test": {
+    "result": "Bạn vừa nhận được kết quả của một bài kiểm tra"
+  }
+}
+

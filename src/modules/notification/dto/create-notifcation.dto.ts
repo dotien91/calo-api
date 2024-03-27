@@ -1,4 +1,4 @@
-import { IsDateString, IsIn, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsIn, IsObject, IsOptional, IsString } from "class-validator";
 export class CreateNotificationDto {
   @IsString()
   title: string;
@@ -25,7 +25,12 @@ export class CreateNotificationDto {
   click_action?: string;
 
   @IsString()
-  image: string;
+  @IsOptional()
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  channel?: string;
 
   @IsDateString()
   @IsOptional(null)
@@ -38,4 +43,8 @@ export class CreateNotificationDto {
   @IsString()
   @IsOptional()
   router?: string;
+
+  @IsObject()
+  @IsOptional()
+  replace_pattern?: object;
 }

@@ -9,9 +9,7 @@ import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { HandleService, HandleServiceSchema } from "../plan/schemas/handle_service.schema";
 import { Plan, PlanSchema } from "../plan/schemas/plan.schema";
 import { HandleServiceService } from "../plan/services/handle_service.service";
@@ -85,7 +83,6 @@ import { CourseViewService } from "./services/course_view.service";
       { name: Plan.name, schema: PlanSchema },
       { name: User.name, schema: UserSchema },
       { name: UserOrganization.name, schema: UserOrganizationSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
@@ -99,6 +96,7 @@ import { CourseViewService } from "./services/course_view.service";
     ReferralModule,
     RedeemModule,
     SocketModule,
+    NotificationModule,
   ],
   controllers: [CourseController],
   providers: [
@@ -119,8 +117,6 @@ import { CourseViewService } from "./services/course_view.service";
     UserService,
     EventHookWorkerService,
     EventHookNotificationService,
-    NotificationHelper,
-    NotificationService,
     JwtHelperService,
     TransactionHelper,
     TransactionService,

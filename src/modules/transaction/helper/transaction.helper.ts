@@ -308,24 +308,6 @@ export class TransactionHelper {
       // Update request user token
       this.userService.update({ _id: userObject?._id?.toString(), current_token: currentToken });
 
-      // const adminUser = await this.userService.findOne({ user_role: "admin" });
-      // this.eventHookNotificationService.sendNotiUserWithdrawMoneyForBoss({
-      //   send_user_id: req?.user_id?.toString(),
-      //   user_id: adminUser._id.toString(),
-      //   // TODO: update path
-      //   path: `/r/mentor/payment-management`,
-      //   mail_template: "withdraw_request",
-      //   params: {
-      //     transaction_value: createTransactionData.transaction_value,
-      //     data_payment: createTransactionData.data_payment,
-      //     transaction_bank: createTransactionData.transaction_bank,
-      //   },
-      //   content: (params: any) => {
-      //     return `${userObject?.display_name} RÚT TIỀN `;
-      //   },
-      //   title: `${userObject?.display_name.toLocaleUpperCase()} RÚT TIỀN`,
-      // });
-
       this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
         chat_id: process.env.TELEGRAM_ROOM_ID,
         text: `
@@ -337,14 +319,24 @@ export class TransactionHelper {
         parse_mode: "HTML",
       });
 
+      const notification = {
+        title: "translation.transaction.accountBalance.title",
+        user_id: userId,
+        content: "translation.transaction.accountBalance.content",
+        image: "",
+        type_action: "link",
+        channel: "user",
+        replace_pattern: {
+          current_token: currentToken,
+        },
+      };
+      this.notificationHelper.handleSendNotification(notification, req?.auth_code);
+
       const dataCreate = await this.transactionService.create(newDataCreate);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataCreate);
-      // } else {
-      //   throw new BadRequestException("You haven't permission for this Action!");
-      // }
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -893,15 +885,6 @@ export class TransactionHelper {
           this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
           return false;
         });
-
-      const notification = await this.notificationService.create({
-        title: "Account Balance Notification",
-        user_id: userId,
-        content: `Your current balance ${coinNumber} coin - ${tokenNumber} - token`,
-        image: "",
-        type_action: "link",
-      });
-      this.notificationHelper.handleSendNotificationToSession(notification);
 
       return dataUpdateUser;
     } catch (error) {

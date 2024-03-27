@@ -112,7 +112,7 @@ export class TestUserHelper {
         // should send notification to user after done exam
         const dataNotification = {
           user_id: data.user_id,
-          title: `You've received the results of your test`,
+          title: "translation.test.result",
           content: "",
           param: JSON.stringify({
             test_id: data.test_id,

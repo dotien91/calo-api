@@ -14,6 +14,7 @@ import { google } from "googleapis";
 import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { I18NService } from "../../../modules/i18n/services/i18n.service";
 import {
   RedeemMissionActionTarget,
   RedeemMissionActionType,
@@ -54,7 +55,8 @@ export class UserLoginHelper {
     private emailService: EmailService,
     private configService: ConfigService,
     private referralService: ReferralService,
-    private redeemUserService: RedeemUserService
+    private redeemUserService: RedeemUserService,
+    private i18nService: I18NService
   ) {}
 
   private readonly logger = new Logger("user_login");
@@ -404,11 +406,13 @@ export class UserLoginHelper {
       };
       const userObject = await this.appUserService.findOneLogin(dataToSearch);
       if (!userObject) {
-        throw new BadRequestException("E-mail or Password is not correct!");
+        const message = this.i18nService.getMessage("translation.user.loginWithPassword");
+        throw new BadRequestException(message);
       }
       const passwordToCheck = await this.handleProcessPassword(dataLogin?.user_password);
       if (passwordToCheck?.toString() !== userObject?.user_password?.toString()) {
-        throw new BadRequestException("E-mail or Password is not correct!");
+        const message = this.i18nService.getMessage("translation.user.loginWithPassword");
+        throw new BadRequestException(message);
       }
       //Correct
       if (userObject && userObject._id) {
@@ -427,11 +431,8 @@ export class UserLoginHelper {
           .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
           .status(HttpStatus.OK)
           .json(userObject);
-      } else {
-        throw new BadRequestException("Have an Error while login with Apple.");
       }
     } catch (error) {
-      this.logger.log("Login with Password Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
     }
   }

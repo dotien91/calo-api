@@ -113,6 +113,12 @@ export class Notification {
     nullable: false,
   })
   router: string;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+    default: null,
+  })
+  replace_pattern: object;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

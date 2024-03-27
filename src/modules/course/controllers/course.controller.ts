@@ -101,7 +101,7 @@ export class CourseController {
               });
               const dataNotification = {
                 user_id: memberId,
-                title: `There is a class about to start`,
+                title: "translation.course.class.start.title",
                 content: "",
                 param: JSON.stringify(dataToSendNotification),
                 type_action: "link",
@@ -174,7 +174,7 @@ export class CourseController {
             });
             const dataNotification = {
               user_id: memberId,
-              title: `There is a class about to start`,
+              title: "translation.course.class.start.title",
               content: "",
               param: JSON.stringify(dataToSendNotification),
               type_action: "link",

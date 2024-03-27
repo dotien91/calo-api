@@ -3,9 +3,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
@@ -47,17 +45,15 @@ import { PodcastCategoryService } from "./services/podcast_category.service";
       { name: UserAnonymousSession.name, schema: UserAnonymousSessionSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: User.name, schema: UserSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   controllers: [PodcastController],
   providers: [
     UserSessionService,
-    NotificationService,
-    NotificationHelper,
     PodcastService,
     PodcastHelper,
     UserPermissionService,

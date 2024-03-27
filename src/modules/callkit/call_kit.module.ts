@@ -17,9 +17,7 @@ import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { MediaService } from "../media/services/media.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
@@ -67,7 +65,6 @@ import { CallkitService } from "./services/callkit.service";
       { name: ChatHistory.name, schema: ChatHistorySchema },
       { name: Media.name, schema: MediaSchema },
       { name: UserSession.name, schema: UserSessionSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: Media.name, schema: MediaSchema },
       { name: Callkit.name, schema: CallkitSchema },
       { name: UserBlock.name, schema: UserBlockSchema },
@@ -81,6 +78,7 @@ import { CallkitService } from "./services/callkit.service";
       { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   controllers: [CallKitController],
   providers: [
@@ -92,10 +90,8 @@ import { CallkitService } from "./services/callkit.service";
     ChatRoomUserOptionService,
     UserAnonymousService,
     JwtHelperService,
-    NotificationHelper,
     ChatHistoryService,
     ChatHistoryHelper,
-    NotificationService,
     UserBlockService,
     CallkitService,
     MediaService,

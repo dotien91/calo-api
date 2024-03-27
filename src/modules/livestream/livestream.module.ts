@@ -14,9 +14,7 @@ import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { MediaService } from "../media/services/media.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
@@ -65,7 +63,6 @@ import { LivestreamViewService } from "./services/livestream_view.service";
       { name: LivestreamLike.name, schema: LivestreamLikeSchema },
       { name: LivestreamView.name, schema: LivestreamViewSchema },
       { name: LivestreamComment.name, schema: LivestreamCommentSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: User.name, schema: UserSchema },
       { name: ChatHistory.name, schema: ChatHistorySchema },
@@ -77,12 +74,11 @@ import { LivestreamViewService } from "./services/livestream_view.service";
       { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   controllers: [LivestreamController],
   providers: [
     UserSessionService,
-    NotificationHelper,
-    NotificationService,
     LivestreamService,
     LivestreamHelper,
     LivestreamViewService,

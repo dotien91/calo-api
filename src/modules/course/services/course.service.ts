@@ -43,6 +43,8 @@ export class CourseService {
 
     if (filter.public_status) {
       condition = Object.assign(condition, { public_status: filter.public_status });
+    } else {
+      condition = Object.assign(condition, { public_status: CoursePublicStatus.ACTIVE });
     }
 
     if (filter.max_price) {
@@ -163,6 +165,7 @@ export class CourseService {
 
     // matchObject
     matchObject["user_role"] = UserRoles.TEACHER;
+    matchObject["user_status"] = 1;
     if (filter.onlyEnglishNativeSpeakers) matchObject["is_native"] = filter.onlyEnglishNativeSpeakers;
     if (filter.levelOfTutor?.length)
       matchObject["tutor_level"] = {

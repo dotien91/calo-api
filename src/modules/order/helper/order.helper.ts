@@ -763,24 +763,6 @@ export class OrderHelper {
 
           try {
             setTimeout(async () => {
-              // const adminUsers = await this.userService.findAll({
-              //   user_role: "admin",
-              // });
-              // for (const adminUser of adminUsers) {
-              //   this.eventHookNotificationService.sendNotiNMailPaySuccess({
-              //     user_id: adminUser._id.toString(),
-              //     path: `/orders/detail/${orderObject._id.toString()}`,
-              //     content: (params: any) => {
-              //       return `${orderObject?.user_id?.display_name} has successfully placed an order ${orderObject.items
-              //         .map((item) => item.service_name)
-              //         .toString()}`;
-              //     },
-              //     title: `${orderObject?.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER ${orderObject.items
-              //       .map((item) => item.service_name.toLocaleUpperCase())
-              //       .toString()}`,
-              //   });
-              // }
-
               let baseUrl = "http://localhost:3900";
               switch (process.env.APP_NAME) {
                 case "ieltshunter": {
@@ -898,14 +880,12 @@ export class OrderHelper {
               path: `/r/course/${orderObject._id.toString()}`,
               router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_COURSE_SCREEN,
               order_id: orderObject._id?.toString(),
-              content: (params: any) => {
-                return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.items
-                  .map((item) => item.service_name)
-                  .toString()}`;
+              content: `translation.order.purchase.content`,
+              title: `translation.order.purchase.title`,
+              replace_pattern: {
+                items: orderObject.items.map((item) => item.service_name).toString(),
+                user_display_name: orderObject.user_id?.display_name.toUpperCase(),
               },
-              title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.items
-                .map((item) => item.service_name.toLocaleUpperCase())
-                .toString()}`,
             });
           }
 
@@ -968,22 +948,6 @@ export class OrderHelper {
               });
           }
         }
-
-        // send notification to user who bought the course
-        this.eventHookNotificationService.sendNotiNMailOrderSuccess({
-          user_id: orderObject.user_id?._id.toString(),
-          path: `/r/orders/detail/${orderObject._id.toString()}`,
-          router: NotificationRouter.NAVIGATION_PURCHASE_SUCCESS_SCREEN,
-          order_id: orderObject._id?.toString(),
-          content: (params: any) => {
-            return `${orderObject.user_id?.display_name} has successfully placed an order for ${orderObject.items
-              .map((item) => item.service_name)
-              .toString()}`;
-          },
-          title: `${orderObject.user_id.display_name.toLocaleUpperCase()} HAS SUCCESSFULLY PLACED AN ORDER FOR ${orderObject.items
-            .map((item) => item.service_name.toLocaleUpperCase())
-            .toString()}`,
-        });
 
         // send success_order email to user who bought the course
         this.emailService.send({

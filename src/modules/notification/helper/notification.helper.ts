@@ -20,6 +20,7 @@ import * as _ from "lodash";
 import { Model, Types } from "mongoose";
 import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
+import { I18NService } from "../../../modules/i18n/services/i18n.service";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
@@ -27,6 +28,7 @@ import { UserService } from "../../../modules/user/services/user.service";
 import { DeleteNotificationDto } from "../dto/delete-notification.dto";
 import { UpdateNotificationDto } from "../dto/update-notification.dto";
 import { NotificationRouter } from "../interfaces/notification.interface";
+
 const apn = require("apn");
 
 /**
@@ -43,7 +45,8 @@ export class NotificationHelper {
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private i18nService: I18NService
   ) {}
   private readonly logger = new Logger("notification");
 
@@ -60,8 +63,7 @@ export class NotificationHelper {
         //Send to socket
         await this.handleSendNotificationToSession(dataReturn);
         setTimeout(async () => {
-          // console.log(authCode, 'authCode')
-          await this.handleSendNoificationSocket(dataReturn, authCode);
+          await this.handleSendNotificationSocket(dataReturn, authCode);
         }, 500);
       }
       return true;
@@ -77,36 +79,55 @@ export class NotificationHelper {
    * @param auth
    * @returns
    */
-  async handleSendNoificationSocket(dataJson: any, auth: string) {
+  async handleSendNotificationSocket(dataJson: any, auth: string) {
     try {
       if (dataJson?.user_id) {
         delete dataJson.user_id;
       }
       //Get Notification Object
       const dataNotificationObject = await this.notificationService.findById(dataJson?._id?.toString());
-      const dataToUpdate = {
-        notification: JSON.stringify(dataNotificationObject),
-      };
-      const params = new URLSearchParams(dataToUpdate);
-      const headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
-      };
-      const dataNotification = await this.socketService
-        .send(SocketPath.NOTIFICATION, headers, params)
-        .then((response) => {
-          if (response?.data) {
-            this.logger.log("Send Notification Successfully" + JSON.stringify(response.data));
-            return true;
-          } else {
+
+      for (const user_id of dataNotificationObject.user_id) {
+        const userSession = await this.userSessionService.findById(user_id, {});
+
+        const dataToUpdate = {
+          notification: JSON.stringify({
+            ...dataNotificationObject,
+            user_id: [user_id],
+            title: this.i18nService.getMessage(
+              dataNotificationObject.title,
+              userSession.picked_language,
+              dataNotificationObject.replace_pattern
+            ),
+            content: this.i18nService.getMessage(
+              dataNotificationObject.content,
+              userSession.picked_language,
+              dataNotificationObject.replace_pattern
+            ),
+          }),
+        };
+        const params = new URLSearchParams(dataToUpdate);
+        const headers = {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": auth,
+        };
+
+        await this.socketService
+          .send(SocketPath.NOTIFICATION, headers, params)
+          .then((response) => {
+            if (response?.data) {
+              this.logger.log("Send Notification Successfully" + JSON.stringify(response.data));
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .catch((error) => {
+            this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
             return false;
-          }
-        })
-        .catch((error) => {
-          this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
-          return false;
-        });
-      return dataNotification;
+          });
+        return null;
+      }
     } catch (error) {}
   }
 
@@ -271,7 +292,6 @@ export class NotificationHelper {
    * @returns
    */
   async handleSendNotificationToSession(dataNotification: Notification) {
-    // console.log(JSON.stringify(dataNotification), "dataNotification");
     try {
       if (dataNotification.channel !== "user") {
         //Send Notification to Channel
@@ -284,35 +304,33 @@ export class NotificationHelper {
         //Find Session
         const sessionData = await this.userSessionService.filter({ user_id: userId }, { createdAt: "DESC" }, 1, 1000);
 
-        // console.log(sessionData, '')
-
-        if (sessionData && sessionData.length) {
+        for (let i = 0; i < sessionData.length; i++) {
           let deviceIds = [];
           let appleSignature = [];
-          for (const sessionItem of sessionData) {
-            if (dataNotification.type_action === "link") {
-              if (process.env.USE_APN_MESSAGE === "false") {
-                if (sessionItem.device_signature) {
-                  deviceIds.push(sessionItem.device_signature);
-                }
-              } else {
-                if (sessionItem.device_signature && !sessionItem.apple_notification) {
-                  deviceIds.push(sessionItem.device_signature);
-                }
-                if (sessionItem.apple_notification) {
-                  appleSignature.push(sessionItem.apple_notification);
-                }
-              }
-            } else {
-              //Is Call
-              if (sessionItem.device_signature && !sessionItem.apple_signature) {
+          const sessionItem = sessionData[i];
+          if (dataNotification.type_action === "link") {
+            if (process.env.USE_APN_MESSAGE === "false") {
+              if (sessionItem.device_signature) {
                 deviceIds.push(sessionItem.device_signature);
               }
-              if (sessionItem.apple_signature) {
-                appleSignature.push(sessionItem.apple_signature);
+            } else {
+              if (sessionItem.device_signature && !sessionItem.apple_notification) {
+                deviceIds.push(sessionItem.device_signature);
+              }
+              if (sessionItem.apple_notification) {
+                appleSignature.push(sessionItem.apple_notification);
               }
             }
+          } else {
+            //Is Call
+            if (sessionItem.device_signature && !sessionItem.apple_signature) {
+              deviceIds.push(sessionItem.device_signature);
+            }
+            if (sessionItem.apple_signature) {
+              appleSignature.push(sessionItem.apple_signature);
+            }
           }
+
           let dataParam = {};
           try {
             dataParam = JSON.parse(dataNotification.param.toString());
@@ -325,10 +343,21 @@ export class NotificationHelper {
           appleSignature = _.uniq(appleSignature);
 
           //Send Notification
+          const title = this.i18nService.getMessage(
+            dataNotification.title,
+            sessionItem.picked_language,
+            dataNotification.replace_pattern
+          );
+          const content = this.i18nService.getMessage(
+            dataNotification.content,
+            sessionItem.picked_language,
+            dataNotification.replace_pattern
+          );
+
           let data = {
             notification: {
-              title: dataNotification.title,
-              body: dataNotification.content,
+              title,
+              content,
               click_action: dataNotification.click_action,
               icon: dataNotification.image,
               image: dataNotification.image,
@@ -578,7 +607,6 @@ export class NotificationHelper {
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
-      const userId = userObject._id.toString();
 
       if (Number(query.limit) > 1000 || !query.limit) {
         query.limit = 1000;
@@ -595,6 +623,12 @@ export class NotificationHelper {
       delete dataToFilter.limit;
       delete dataToFilter.order_by;
       const dataReturn = await this.notificationService.filter(dataToFilter, orderByOBject, page, limit);
+      for (const dataIndexItem in dataReturn) {
+        dataReturn[dataIndexItem] = { ...dataReturn[dataIndexItem]?.toObject() };
+      }
+
+      const finalDataReturn = this.formatNotificationDataReturn(dataReturn);
+
       const dataCount = await this.notificationService.count(dataToFilter);
       const readCount = await this.notificationService.count({ ...dataToFilter, ...{ read_status: "0" } });
       return res
@@ -604,7 +638,7 @@ export class NotificationHelper {
           "X-Total-Unread": readCount,
         })
         .status(HttpStatus.OK)
-        .json(dataReturn);
+        .json(finalDataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -709,14 +743,11 @@ export class NotificationHelper {
           data_id: "",
           order_id: data?.order_id,
         };
-        const notificationContent = data?.content({
-          display_name: dataUser?.display_name.toString(),
-        });
         const dataNotification = {
           createdBy: data?.send_user_id,
           user_id: dataUser?._id.toString(),
           title: data?.title,
-          content: notificationContent,
+          content: data?.content,
           request_id: data?.request_id,
           param: JSON.stringify(dataToSendNotification),
           type_action: "link",
@@ -724,6 +755,7 @@ export class NotificationHelper {
           click_action: "",
           image: "",
           channel: "user",
+          replace_pattern: data.replace_pattern,
         };
         await this.handleSendNotification(dataNotification, tokenReturn.toString());
       }
@@ -786,5 +818,15 @@ export class NotificationHelper {
       this.logger.log("handleSendNotification Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
     }
+  }
+
+  private formatNotificationDataReturn(dataReturn: any[]) {
+    dataReturn = dataReturn.map((notification) => ({
+      ...notification,
+      title: this.i18nService.getMessage(notification.title, undefined, notification.replace_pattern),
+      content: this.i18nService.getMessage(notification.content, undefined, notification.replace_pattern),
+    }));
+
+    return dataReturn;
   }
 }

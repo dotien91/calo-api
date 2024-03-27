@@ -9,9 +9,7 @@ import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { MediaService } from "../media/services/media.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
@@ -65,13 +63,13 @@ import { ChatRoomUserOptionService } from "./services/chat_room_user_option.serv
       { name: Transaction.name, schema: TransactionSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
       { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   controllers: [ChatRoomController],
   providers: [
@@ -88,8 +86,6 @@ import { ChatRoomUserOptionService } from "./services/chat_room_user_option.serv
     TransactionService,
     ChatHistoryService,
     ChatHistoryHelper,
-    NotificationHelper,
-    NotificationService,
     UserFollowService,
     QueueService,
     EventHookWorkerService,

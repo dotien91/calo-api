@@ -534,17 +534,8 @@ export class CommunityHelper {
   ) {
     try {
       let notificationTitle = fromUser.display_name ? fromUser.display_name : fromUser.user_login;
-      let chatContentToSend = `${notificationTitle} đã bình luận trong bài viết: ${dataComment.content}`;
-      if (chatContentToSend && chatContentToSend.length >= 255) {
-        chatContentToSend = chatContentToSend.substring(0, 250) + "...";
-      }
-      notificationTitle = notificationTitle + ` đã bình luận trong "${dataCommunity?.post_title}`;
-
-      if (notificationTitle && notificationTitle.length >= 70) {
-        notificationTitle = notificationTitle.substring(0, 68) + '..."';
-      } else {
-        notificationTitle = notificationTitle + '"';
-      }
+      const _notificationTitle = `translation.community.comment.title`;
+      const _notificationContent = `translation.community.comment.content`;
 
       const userIdArray = [];
 
@@ -576,12 +567,12 @@ export class CommunityHelper {
           path: "/v/post/",
           data_id: dataCommunity?.post_slug?.toString(),
         };
-        const notificationContent = chatContentToSend;
+
         const dataNotification = {
           createdBy: fromUser._id.toString(),
           user_id: finalUserIdArray,
-          title: notificationTitle?.toString(),
-          content: notificationContent,
+          title: _notificationTitle,
+          content: _notificationContent,
           param: JSON.stringify(dataToSendNotification),
           community_id: dataCommunity?._id?.toString(),
           type_action: "link",
@@ -589,6 +580,11 @@ export class CommunityHelper {
           click_action: "",
           image: "",
           channel: "user",
+          replace_pattern: {
+            notification_title: notificationTitle,
+            post_title: dataCommunity?.post_title,
+            content: dataComment.content,
+          },
         };
         await this.notificationHelper.handleSendNotification(dataNotification, authCode);
       }

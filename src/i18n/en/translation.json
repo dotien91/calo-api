@@ -1,0 +1,34 @@
+{
+  "user": {
+    "loginWithPassword": "E-mail or Password is not correct!"
+  },
+  "community": {
+    "comment": {
+      "title": "notification_title commented on post_title",
+      "content": "notification_title commented on the post: content"
+    }
+  },
+  "transaction": {
+    "accountBalance": {
+      "title": "Account Balance Notification",
+      "content": "Your current balance current_token token"
+    }
+  },
+  "order": {
+    "purchase": {
+      "title": "An user has successfully purchased items",
+      "content": "user_display_name has successfully placed an order for items"
+    }
+  },
+  "course": {
+    "class": {
+      "start": {
+        "title": "There is a class about to start"
+      }
+    }
+  },
+  "test": {
+    "result": "You've received the results of your test"
+  }
+}
+

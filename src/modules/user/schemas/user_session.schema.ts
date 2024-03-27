@@ -94,6 +94,9 @@ export class UserSession {
 
   @Prop({ type: MongooseSchema.Types.Date, default: Date.now })
   expired_at: MongooseSchema.Types.Date;
+
+  @Prop({ type: MongooseSchema.Types.String })
+  picked_language: string;
 }
 
 export const UserSessionSchema = SchemaFactory.createForClass(UserSession);

@@ -21,6 +21,8 @@ import { SubscribeModule } from "./modules/subscribe/subscribe.module";
 import { TransactionModule } from "./modules/transaction/transaction.module";
 // import { UserService } from "./modules/user/services/user.service";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { AcceptLanguageResolver, I18nModule } from "nestjs-i18n";
+import * as path from "path";
 import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -48,7 +50,16 @@ import { UserPermissionModule } from "./modules/user_permission/user_permission.
 
 const dataImport = [
   ConfigModule.forRoot(),
-
+  I18nModule.forRoot({
+    fallbackLanguage: "en",
+    loaderOptions: {
+      path: path.join(__dirname, "/i18n/"),
+      watch: true,
+      throwOnMissingKey: false,
+      logging: false,
+    },
+    resolvers: [AcceptLanguageResolver],
+  }),
   MongooseModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],

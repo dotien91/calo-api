@@ -6,9 +6,7 @@ import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
@@ -64,7 +62,6 @@ import { PurchaseService } from "./services/purchase.service";
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: User.name, schema: UserSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
@@ -77,6 +74,7 @@ import { PurchaseService } from "./services/purchase.service";
     EmailModule,
     CouponModule,
     SocketModule,
+    NotificationModule,
   ],
   controllers: [PurchaseController],
   providers: [
@@ -84,8 +82,6 @@ import { PurchaseService } from "./services/purchase.service";
     TransactionBankService,
     PlanService,
     SubscribeService,
-    NotificationService,
-    NotificationHelper,
     TransactionHelper,
     UserService,
     JwtHelperService,

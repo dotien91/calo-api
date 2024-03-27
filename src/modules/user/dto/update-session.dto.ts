@@ -37,5 +37,10 @@ export class UpdateSessionDto {
   @ApiPropertyOptional()
   _id: string;
 
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  picked_language?: string;
+
   unset_ids?: any[];
 }

@@ -15,9 +15,8 @@ import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { I18nModule } from "../i18n/i18n.module";
+import { NotificationModule } from "../notification/notification.module";
 import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
@@ -92,7 +91,6 @@ import { UserViewService } from "./services/user_view.service";
       { name: UserInterest.name, schema: UserInterestSchema },
       { name: UserOrganization.name, schema: UserOrganizationSchema },
       { name: Order.name, schema: OrderSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserMood.name, schema: UserMoodSchema },
       { name: UserQuestion.name, schema: UserQuestionSchema },
       { name: Transaction.name, schema: TransactionSchema },
@@ -114,6 +112,8 @@ import { UserViewService } from "./services/user_view.service";
     ReferralModule,
     forwardRef(() => RedeemModule),
     SocketModule,
+    NotificationModule,
+    I18nModule,
   ],
   controllers: [UserController],
   providers: [
@@ -128,8 +128,6 @@ import { UserViewService } from "./services/user_view.service";
     UserQuestionService,
     UserSessionService,
     JwtHelperService,
-    NotificationHelper,
-    NotificationService,
     UserInterestService,
     UserPermissionService,
     UserFilterHelper,

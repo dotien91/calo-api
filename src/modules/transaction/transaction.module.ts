@@ -4,9 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
 import { ReferralService } from "../referral/services/referral.service";
@@ -44,12 +42,12 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: User.name, schema: UserSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
       { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
+    NotificationModule,
   ],
   controllers: [TransactionController],
   providers: [
@@ -61,9 +59,7 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     QueueService,
     EventHookWorkerService,
     EventHookNotificationService,
-    NotificationHelper,
     JwtHelperService,
-    NotificationService,
     UserSessionService,
     UserPointHistoryService,
     ReferralService,

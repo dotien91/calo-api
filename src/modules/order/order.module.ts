@@ -3,9 +3,6 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
 import { HandleService, HandleServiceSchema } from "../plan/schemas/handle_service.schema";
 import { Plan, PlanSchema } from "../plan/schemas/plan.schema";
 import { HandleServiceService } from "../plan/services/handle_service.service";
@@ -37,6 +34,7 @@ import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.sche
 import { CourseService } from "../course/services/course.service";
 import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
+import { NotificationModule } from "../notification/notification.module";
 import { RedeemModule } from "../redeem/redeem.module";
 import { ReferralModule } from "../referral/referral.module";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
@@ -75,7 +73,6 @@ import { OrderService } from "./services/order.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: VnpayLog.name, schema: VnpayLogSchema },
       { name: User.name, schema: UserSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: CourseUser.name, schema: CourseUserSchema },
       { name: Course.name, schema: CourseSchema },
@@ -90,6 +87,7 @@ import { OrderService } from "./services/order.service";
     ReferralModule,
     RedeemModule,
     SocketModule,
+    NotificationModule,
   ],
   controllers: [OrderController],
   providers: [
@@ -105,8 +103,6 @@ import { OrderService } from "./services/order.service";
     UserService,
     EventHookWorkerService,
     EventHookNotificationService,
-    NotificationHelper,
-    NotificationService,
     TransactionHelper,
     TransactionBankService,
     JwtHelperService,

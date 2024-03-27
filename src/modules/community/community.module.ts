@@ -5,9 +5,7 @@ import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { GptModule } from "../gpt/gpt.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { NotificationHelper } from "../notification/helper/notification.helper";
-import { Notification, NotificationSchema } from "../notification/schemas/notification.schema";
-import { NotificationService } from "../notification/services/notification.service";
+import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
 import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
@@ -70,7 +68,6 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: User.name, schema: UserSchema },
       { name: CommunityDisLike.name, schema: CommunityDisLikeSchema },
-      { name: Notification.name, schema: NotificationSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: CommunityPoll.name, schema: CommunityPollSchema },
       { name: UserFollow.name, schema: UserFollowSchema },
@@ -82,13 +79,12 @@ import { CommunityPollService } from "./services/community_poll.service";
     GptModule,
     RedeemModule,
     SocketModule,
+    NotificationModule,
   ],
   controllers: [CommunityController],
   providers: [
     CommunityDisLikeService,
     UserSessionService,
-    NotificationService,
-    NotificationHelper,
     CommunityService,
     CommunityHelper,
     UserPermissionService,
