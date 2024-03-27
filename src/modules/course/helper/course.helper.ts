@@ -2011,6 +2011,66 @@ export class CourseHelper {
     }
   }
 
+  async addMemberToClassInAppPurchase(dataFollow: AddMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
+    try {
+      const [courseClass, userObject] = await Promise.all([
+        this.courseClassService.findOne({
+          _id: dataFollow.class_id,
+        }),
+        this.userService.findOne({ _id: dataFollow.user_id }),
+      ]);
+      if (!courseClass) throw new Error("Not found your class");
+      if (!userObject) throw new Error("Not found user to add");
+
+      const course = await this.courseService.findOne({ _id: courseClass.course_id._id.toString() });
+
+      await this.processAddUserToCourse(
+        userObject,
+        {
+          course_id: course._id.toString(),
+          user_id: userObject._id.toString(),
+        },
+        course,
+        req
+      );
+
+      await this.courseClassService.update({
+        _id: courseClass._id,
+        members: [...courseClass.members, new mongoose.Types.ObjectId(dataFollow.user_id)],
+      });
+
+      // add user to chatroom's class
+      (async () => {
+        try {
+          const course = await this.courseService.findOne({ _id: courseClass.course_id });
+          const chatRoom = await this.chatRoomService.findOneRoom({
+            user_id: course.user_id._id.toString(),
+            room_type: "class",
+            room_name: courseClass.name,
+          });
+          await this.chatRoomHelper.addUserRole(undefined, req, {
+            user_id: dataFollow.user_id,
+            chat_room_id: chatRoom._id.toString(),
+            user_permission: "write",
+            role: "user",
+            room_type: "class",
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      })();
+
+      if (res) {
+        return res
+          .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+          .status(HttpStatus.OK)
+          .send();
+      }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
   async checkMemberToClass(dataFollow: AddMemberCourseClassDto, req: ExpressRequestDto, res: Response) {
     try {
       const courseClass = await this.courseClassService.findOne({
@@ -2322,6 +2382,21 @@ export class CourseHelper {
 
   async createCourseCalendarStudent(dataFollow: CreateCourseOneOneStudentDto, req: ExpressRequestDto, res: Response) {
     try {
+      const [userObject, course] = await Promise.all([
+        this.userService.findOne({ _id: dataFollow.user_id }),
+        this.courseService.findOne({ _id: dataFollow.course_id }),
+      ]);
+      if (!userObject) throw new Error("Not found user to add");
+
+      await this.processAddUserToCourse(
+        userObject,
+        {
+          course_id: course._id.toString(),
+          user_id: userObject._id.toString(),
+        },
+        course,
+        req
+      );
       // if (dataFollow.time_pick.length > 4) throw new Error("Exceed limit, you can only pick 4 or lower time");
 
       // const isExist = await this.courseOneOneService.findOne({
@@ -2358,7 +2433,6 @@ export class CourseHelper {
       // }
 
       // // check if the student time pick is on range of teacher time available
-      const course = await this.courseService.findOne({ _id: dataFollow.course_id });
       // const courseClasses_Teacher = await this.courseOneOneService.getAllAssignedTimeInCourseOfTeacher(
       //   course.user_id._id.toString()
       // );

@@ -457,7 +457,7 @@ export class CourseController {
     @Res() res: Response,
     @Req() req: ExpressRequestDto
   ) {
-    return await this.courseHelper.addMemberToClass(addMemberClassBody, req, res);
+    return await this.courseHelper.addMemberToClassInAppPurchase(addMemberClassBody, req, res);
   }
 
   @Post("class/member/check")

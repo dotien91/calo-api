@@ -14,5 +14,5 @@ export class CreateCourseUserDto {
   @IsString()
   @ApiProperty()
   @IsOptional(null)
-  add_type: string;
+  add_type?: string;
 }
