@@ -178,7 +178,6 @@ export class CourseService {
       };
 
     // matchCourseObject
-    matchCourseObject["courses.public_status"] = CoursePublicStatus.ACTIVE;
     if (filter.types?.length)
       matchCourseObject["courses.type"] = {
         $in: filter.types,
@@ -309,7 +308,8 @@ export class CourseService {
     users = users.map((user) => {
       const newUser = {
         ...user,
-        course_count: user.course_container.length,
+        course_count: user.course_container.filter((course) => course.public_status === CoursePublicStatus.ACTIVE)
+          .length,
       };
       delete newUser.course_container;
       return newUser;
