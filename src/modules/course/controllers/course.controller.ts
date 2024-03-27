@@ -451,6 +451,15 @@ export class CourseController {
     return await this.courseHelper.createNewClass(createClassBody, req, res);
   }
 
+  @Post("class/add-member")
+  async addMemberToClass(
+    @Body() addMemberClassBody: AddMemberCourseClassDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.addMemberToClass(addMemberClassBody, req, res);
+  }
+
   @Post("class/member/check")
   async checkMemberToClass(
     @Body() addMemberClassBody: AddMemberCourseClassDto,
@@ -509,6 +518,15 @@ export class CourseController {
     @Req() req: ExpressRequestDto
   ) {
     return await this.courseHelper.createCourseCalendarTeacher(createBody, req, res);
+  }
+
+  @Post("one-one/student/create")
+  async createNewCalendarStudent(
+    @Body() createBody: CreateCourseOneOneStudentDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.courseHelper.createCourseCalendarStudent(createBody, req, res);
   }
 
   @Patch("one-one/teacher/update")
