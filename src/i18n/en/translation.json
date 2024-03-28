@@ -1,6 +1,14 @@
 {
   "user": {
-    "loginWithPassword": "E-mail or Password is not correct!"
+    "login": {
+      "loginWithPassword": "E-mail or Password is not correct!"
+    },
+    "register": {
+      "missing": "Missing user's phone/email",
+      "weakPassword": "Your password is too weak!",
+      "lengthPassword": "Your password length reach out maximum",
+      "duplicateUserEmail": "Your email already taken"
+    }
   },
   "community": {
     "comment": {

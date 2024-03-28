@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsArray, IsEmail, IsOptional, IsString } from "class-validator";
+import { UserCertificate, UserEducation } from "./update-user.dto";
 
 /**
  * @author Tony Vu
@@ -10,9 +11,6 @@ export class RegisterUserDto {
   user_email: string;
 
   @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, { message: "Password too weak!" })
   @ApiProperty()
   user_password: string;
 
@@ -59,4 +57,19 @@ export class RegisterUserDto {
   @ApiPropertyOptional()
   @IsOptional(null)
   invitation_code?: string;
+
+  @IsArray()
+  @IsOptional()
+  @ApiPropertyOptional()
+  certificates?: Array<UserCertificate>;
+
+  @IsArray()
+  @IsOptional()
+  @ApiPropertyOptional()
+  educations?: Array<UserEducation>;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  description?: string;
 }

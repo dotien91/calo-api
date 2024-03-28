@@ -55,8 +55,6 @@ const dataImport = [
     loaderOptions: {
       path: path.join(__dirname, "/i18n/"),
       watch: true,
-      throwOnMissingKey: false,
-      logging: false,
     },
     resolvers: [AcceptLanguageResolver],
   }),

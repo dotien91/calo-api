@@ -422,12 +422,12 @@ export class UserLoginHelper {
       };
       const userObject = await this.appUserService.findOneLogin(dataToSearch);
       if (!userObject) {
-        const message = this.i18nService.getMessage("translation.user.loginWithPassword");
+        const message = this.i18nService.getMessage("translation.user.login.loginWithPassword");
         throw new BadRequestException(message);
       }
       const passwordToCheck = await this.handleProcessPassword(dataLogin?.user_password);
       if (passwordToCheck?.toString() !== userObject?.user_password?.toString()) {
-        const message = this.i18nService.getMessage("translation.user.loginWithPassword");
+        const message = this.i18nService.getMessage("translation.user.login.loginWithPassword");
         throw new BadRequestException(message);
       }
       //Correct
@@ -461,6 +461,18 @@ export class UserLoginHelper {
    */
   async register(dataLogin: RegisterUserDto, res: Response, req: Request) {
     try {
+      if (dataLogin.user_password.length < 4) {
+        const isValidPassword = dataLogin.user_password.match(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
+        if (!isValidPassword) {
+          const message = this.i18nService.getMessage("translation.user.register.weakPassword");
+          throw new BadRequestException(message);
+        }
+      }
+      if (dataLogin.user_password.length > 20) {
+        const message = this.i18nService.getMessage("translation.user.register.lengthPassword");
+        throw new BadRequestException(message);
+      }
+
       //Process User Email
       const userLogin = dataLogin.user_email?.replace("@", "_").toLowerCase();
       const dataToSearch = {
@@ -468,11 +480,13 @@ export class UserLoginHelper {
       };
       let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
       if (userObject) {
-        throw new BadRequestException("This user has already existed! Please Login!");
+        const message = this.i18nService.getMessage("translation.user.register.duplicateUserEmail");
+        throw new BadRequestException(message);
       }
 
       if (!(dataLogin.phone_number || dataLogin.user_email)) {
-        throw new BadRequestException("Missing user's phone/email");
+        const message = this.i18nService.getMessage("translation.user.register.missing");
+        throw new BadRequestException(message);
       }
 
       if (!userObject || (userObject && !userObject._id)) {
@@ -555,6 +569,18 @@ export class UserLoginHelper {
 
   async becameTutor(dataLogin: RegisterUserDto, res: Response, req: Request) {
     try {
+      if (
+        dataLogin.user_password.length < 4 ||
+        !!!dataLogin.user_password.match(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
+      ) {
+        const message = this.i18nService.getMessage("translation.user.register.weakPassword");
+        throw new BadRequestException(message);
+      }
+      if (dataLogin.user_password.length > 20) {
+        const message = this.i18nService.getMessage("translation.user.register.lengthPassword");
+        throw new BadRequestException(message);
+      }
+
       //Process User Email
       const userLogin = dataLogin.user_email?.replace("@", "_");
       const dataToSearch = {
@@ -569,7 +595,8 @@ export class UserLoginHelper {
       }
 
       if (!(dataLogin.phone_number || dataLogin.user_email)) {
-        throw new BadRequestException("Missing user's phone/email");
+        const message = this.i18nService.getMessage("translation.user.register.missing");
+        throw new BadRequestException(message);
       }
 
       if (!userObject || (userObject && !userObject._id)) {
@@ -580,6 +607,7 @@ export class UserLoginHelper {
 
         //Create New User
         const dataToCreate = {
+          ...dataLogin,
           user_login: userLogin,
           user_email: dataLogin.user_email,
           user_avatar: dataUrl,

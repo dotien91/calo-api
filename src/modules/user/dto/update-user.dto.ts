@@ -181,6 +181,7 @@ export interface UserCertificate {
   place_of_issue: string;
   date_of_issue: string;
   is_validated: boolean;
+  url: string;
 }
 
 export interface UserEducation {

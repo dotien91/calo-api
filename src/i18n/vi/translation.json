@@ -1,6 +1,14 @@
 {
   "user": {
-    "loginWithPassword": "E-mail hoặc mật khẩu không chính xác!"
+    "login": {
+      "loginWithPassword": "E-mail hoặc mật khẩu không chính xác!"
+    },
+    "register": {
+      "missing": "Vui lòng thêm số điện thoại hoặc email",
+      "weakPassword": "Mật khẩu của bạn quá yếu",
+      "lengthPassword": "Mật khẩu của bạn quá dài",
+      "duplicateUserEmail": "Email đã có người sử dụng"
+    }
   },
   "community": {
     "comment": {
