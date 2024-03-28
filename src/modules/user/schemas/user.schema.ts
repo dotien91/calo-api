@@ -307,6 +307,21 @@ export class User {
     default: false,
   })
   is_pending_to_became_teacher: boolean;
+
+  @Prop({
+    type: MongooseSchema.Types.Array,
+  })
+  skills: any[];
+
+  @Prop({
+    type: MongooseSchema.Types.String,
+  })
+  ielts_band: string;
+
+  @Prop({
+    type: MongooseSchema.Types.Number,
+  })
+  exp_time: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

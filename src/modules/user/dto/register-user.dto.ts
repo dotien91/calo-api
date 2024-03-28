@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsEmail, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
 import { UserCertificate, UserEducation } from "./update-user.dto";
 
 /**
@@ -72,4 +72,19 @@ export class RegisterUserDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   description?: string;
+
+  @IsArray()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  skills?: any[];
+
+  @IsString()
+  @ApiPropertyOptional()
+  @IsOptional(null)
+  ielts_band?: string;
+
+  @IsNumber()
+  @ApiPropertyOptional()
+  @IsOptional(null)
+  exp_time?: number;
 }

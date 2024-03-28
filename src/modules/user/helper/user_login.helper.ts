@@ -607,7 +607,6 @@ export class UserLoginHelper {
 
         //Create New User
         const dataToCreate = {
-          ...dataLogin,
           user_login: userLogin,
           user_email: dataLogin.user_email,
           user_avatar: dataUrl,
@@ -624,6 +623,15 @@ export class UserLoginHelper {
         userObject = await this.appUserService.create(dataToCreate);
       }
       if (userObject && userObject._id) {
+        await this.appUserService.update({
+          _id: userObject._id.toString(),
+          skills: dataLogin.skills,
+          ielts_band: dataLogin.ielts_band,
+          exp_time: dataLogin.exp_time,
+          description: dataLogin.description,
+          certificates: dataLogin.certificates,
+        });
+
         const dataSession = await this.handleUserSession(req, userObject, dataLogin);
         let sessionGenerator = "";
         if (dataSession && dataSession._id) {
@@ -649,7 +657,7 @@ export class UserLoginHelper {
         return res
           .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
           .status(HttpStatus.OK)
-          .json(userObject);
+          .json({});
       } else {
         throw new BadRequestException("Have an Error while register account.");
       }
