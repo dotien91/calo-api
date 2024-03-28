@@ -86,6 +86,21 @@ export class CreateTransactionDto {
   @ApiPropertyOptional()
   last_coin?: number;
 
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  current_token?: number;
+
+  @IsNumber()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  last_token?: number;
+
+  @IsString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  transaction_value_type?: string;
+
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()

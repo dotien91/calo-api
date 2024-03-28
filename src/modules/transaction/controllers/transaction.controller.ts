@@ -98,6 +98,15 @@ export class TransactionController {
     return await this.transactionHelper.handleUpdateTransactionByAdmin(dataUpdate, res, req);
   }
 
+  @Get("/admin-update")
+  async updateByAdminTelegram(
+    @Query() dataUpdate: UpdateTransactionDto,
+    @Res() res: Response,
+    @Req() req: ExpressRequestDto
+  ) {
+    return await this.transactionHelper.handleUpdateTransactionByAdminTelegram(dataUpdate, res, req);
+  }
+
   @Get("detail-transaction/:id")
   async getDetailTransaction(@Param("id") id: string, @Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.transactionHelper.handleGetDetailTransaction(id, res, req);

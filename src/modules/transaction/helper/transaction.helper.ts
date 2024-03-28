@@ -32,7 +32,7 @@ import { ListTransactionBankDto } from "../dto/list-transaction_bank.dto";
 import { ListUserIncomeDto } from "../dto/list-user-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transactions.dto";
 import { UpdateTransactionBankDto } from "../dto/update-transactions_bank.dto";
-import { TransactionRefType, TransactionValueType } from "../interfaces/transaction.interface";
+import { TransactionRefType, TransactionStatus, TransactionValueType } from "../interfaces/transaction.interface";
 import { TransactionService } from "../services/transaction.service";
 import { TransactionBankService } from "../services/transaction_bank.service";
 /**
@@ -295,30 +295,18 @@ export class TransactionHelper {
           billing_on: new Date(),
           processing_on: new Date(),
           method: "minus",
-          status: "processing",
+          status: TransactionStatus.PROCESSING,
           trans_id: "",
           transaction_value: createTransactionData.transaction_value,
           transaction_value_type: TransactionValueType.TOKEN,
+          income_value: Number(createTransactionData.transaction_value),
         },
       };
-
-      //Send Notification
-      this.sendSocketUpdateCoin(userObject?._id?.toString(), lastCoin, currentToken, authCode);
 
       // Update request user token
       this.userService.update({ _id: userObject?._id?.toString(), current_token: currentToken });
 
-      this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
-        chat_id: process.env.TELEGRAM_ROOM_ID,
-        text: `
-        <b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Rút tiền</b>\nGiá trị giao dịch: ${formatWithCommas(
-          createTransactionData.transaction_value
-        )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
-          transactionBank.bank_account_name
-        }\nSố tài khoản: ${transactionBank.bank_number}`,
-        parse_mode: "HTML",
-      });
-
+      // send notification to user
       const notification = {
         title: "translation.transaction.accountBalance.title",
         user_id: userId,
@@ -333,6 +321,41 @@ export class TransactionHelper {
       this.notificationHelper.handleSendNotification(notification, req?.auth_code);
 
       const dataCreate = await this.transactionService.create(newDataCreate);
+
+      // send notification to telegram group
+      (() => {
+        let baseUrl = "http://localhost:3900";
+        switch (process.env.APP_NAME) {
+          case "ieltshunter": {
+            baseUrl = "https://api.live.ieltshunter.io";
+            break;
+          }
+          case "ikigai": {
+            baseUrl = "https://api.live.ieltshunter.io";
+            break;
+          }
+          default: {
+            baseUrl = "https://api.live.ieltshunter.io";
+            break;
+          }
+        }
+        this.httpService.get$(`https://api.telegram.org/${process.env.TELEGRAM_BOT_ID}/sendMessage?`, {
+          chat_id: process.env.TELEGRAM_ROOM_ID,
+          text: `
+          <b>===================</b>\n<b>THÔNG BÁO GIAO DỊCH</b>\nLoại: <b>Rút tiền</b>\nGiá trị giao dịch: ${formatWithCommas(
+            createTransactionData.transaction_value
+          )}\nNgân hàng: ${transactionBank.bank_name}\nTên tài khoản: ${
+            transactionBank.bank_account_name
+          }\nSố tài khoản: ${transactionBank.bank_number}\n<a href="${
+            baseUrl + `/api/transaction/admin-update?_id=${dataCreate._id.toString()}&status=${TransactionStatus.DONE}`
+          }">Duyệt giao dịch ✅</a>\n<a href="${
+            baseUrl +
+            `/api/transaction/admin-update?_id=${dataCreate._id.toString()}&status=${TransactionStatus.REJECT}`
+          }">Từ chối giao dịch ⛔️</a>`,
+          parse_mode: "HTML",
+        });
+      })();
+
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
@@ -693,6 +716,77 @@ export class TransactionHelper {
     }
   }
 
+  async handleUpdateTransactionByAdminTelegram(
+    dataUpdate: UpdateTransactionDto,
+    res: Response,
+    req: ExpressRequestDto
+  ) {
+    try {
+      const oldTransaction = await this.transactionService.findOne({ _id: dataUpdate._id });
+      if (!oldTransaction) throw new Error("Not found transaction");
+
+      if (oldTransaction.status !== TransactionStatus.PROCESSING) throw new Error("This transaction already committed");
+
+      switch (dataUpdate.status) {
+        case TransactionStatus.DONE: {
+          await this.transactionService.update(dataUpdate);
+          break;
+        }
+        case TransactionStatus.REJECT: {
+          const newestTransaction = await this.transactionService.findOne({
+            user_id: oldTransaction.user_id.toString(),
+          });
+
+          await Promise.all([
+            this.transactionService.update({
+              _id: dataUpdate._id,
+              status: TransactionStatus.DONE,
+            }),
+            this.transactionService.create({
+              user_id: newestTransaction.user_id.toString(),
+              transaction_value: oldTransaction.income_value,
+              method: "plus",
+              status: TransactionStatus.DONE,
+              current_coin: newestTransaction.current_coin,
+              last_coin: newestTransaction.last_coin,
+              note: `Reject withdrawal ${
+                oldTransaction.income_value
+              } token from System ID: ${newestTransaction.user_id.toString()}`,
+              billing_on: new Date(),
+              successfully_on: new Date(),
+              last_token: newestTransaction.current_token,
+              current_token: newestTransaction.current_token + newestTransaction.income_value,
+              transaction_value_type: TransactionValueType.TOKEN,
+            }),
+          ]);
+
+          // send notification to user
+          const notification = {
+            title: "translation.transaction.accountBalance.title",
+            user_id: newestTransaction.user_id.toString(),
+            content: "translation.transaction.accountBalance.content",
+            image: "",
+            type_action: "link",
+            channel: "user",
+            replace_pattern: {
+              current_token: newestTransaction.current_token + newestTransaction.income_value,
+            },
+          };
+          this.notificationHelper.handleSendNotification(notification, req?.auth_code);
+
+          break;
+        }
+      }
+
+      return res
+        .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+        .status(HttpStatus.OK)
+        .json({ successfully: true });
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
   /**
    *
    * @param orderData
@@ -866,25 +960,27 @@ export class TransactionHelper {
       };
       const dataUpdateUser = await this.userService.update(dataToUpdate);
 
-      const params = new URLSearchParams(dataToUpdate);
-      const headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": authCode,
-      };
-      await this.socketService
-        .send(SocketPath.UPDATE_COIN, headers, params)
-        .then((response) => {
-          if (response?.data) {
-            this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
-            return true;
-          } else {
+      if (coinNumber !== 0) {
+        const params = new URLSearchParams(dataToUpdate);
+        const headers = {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Authorization": authCode,
+        };
+        await this.socketService
+          .send(SocketPath.UPDATE_COIN, headers, params)
+          .then((response) => {
+            if (response?.data) {
+              this.logger.log("Send Message Successfully" + JSON.stringify(response.data));
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .catch((error) => {
+            this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
             return false;
-          }
-        })
-        .catch((error) => {
-          this.logger.log("Send Message Error: " + JSON.stringify(error.response.data));
-          return false;
-        });
+          });
+      }
 
       return dataUpdateUser;
     } catch (error) {

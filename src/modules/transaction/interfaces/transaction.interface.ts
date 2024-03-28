@@ -10,3 +10,9 @@ export enum TransactionValueType {
   COIN = "coin",
   TOKEN = "token",
 }
+
+export enum TransactionStatus {
+  PROCESSING = "processing",
+  DONE = "done",
+  REJECT = "reject",
+}
