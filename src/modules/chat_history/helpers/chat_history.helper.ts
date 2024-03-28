@@ -734,7 +734,7 @@ export class ChatHistoryHelper {
           last_message: lastMessage,
         },
       };
-      await this.notificationHelper.handleSendNotification(dataNotification, authCode);
+      await this.notificationHelper.handleSendNotification(dataNotification, authCode, true);
       return true;
     } catch (error) {
       return false;

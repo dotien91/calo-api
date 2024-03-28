@@ -55,7 +55,11 @@ export class NotificationHelper {
    * @param dataCreate
    * @returns
    */
-  async handleSendNotification(dataCreate: CreateNotificationDto, authCode: string = "") {
+  async handleSendNotification(
+    dataCreate: CreateNotificationDto,
+    authCode: string = "",
+    isSkippingSocketNotification: boolean = false
+  ) {
     //Check User
     try {
       const dataReturn = await this.notificationService.create(dataCreate);
@@ -63,6 +67,7 @@ export class NotificationHelper {
         //Send to socket
         await this.handleSendNotificationToSession(dataReturn);
         setTimeout(async () => {
+          if (isSkippingSocketNotification) return;
           await this.handleSendNotificationSocket(dataReturn, authCode);
         }, 500);
       }
