@@ -13,7 +13,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name)
     private appUserModel: Model<UserDocument>
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -145,6 +145,10 @@ export class UserService {
       condition = Object.assign(condition, { $and: [{ public_sound: { $ne: null } }, { public_sound: { $ne: "" } }] });
     }
 
+    if (filter.less_point) {
+      condition = Object.assign(condition, { point: { $gte: Number(filter.less_point) } });
+    }
+
     if (filter.phone_number) {
       const dataPhoneToFilter = filter.phone_number;
       const dataPhoneArray = parsePhoneNumber(dataPhoneToFilter.trim());
@@ -207,7 +211,7 @@ export class UserService {
    * @param filter
    * @returns
    */
-  public count = async (filter: any) => {
+  public count = async (filter: SearchUserDto) => {
     try {
       const condition = await this.getCondition(filter);
       if (JSON.stringify(condition) === JSON.stringify({})) {
