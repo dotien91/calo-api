@@ -4,6 +4,7 @@ import { BotModule } from "../bot/bot.module";
 import { GptService } from "../gpt/services/gpt.service";
 import { NotificationModule } from "../notification/notification.module";
 import { RedeemModule } from "../redeem/redeem.module";
+import { UserModule } from "../user/user.module";
 import { TestController } from "./controllers/test.controller";
 import { TestHelper } from "./helpers/test.helper";
 import { TestQuestionHelper } from "./helpers/test_question.helper";
@@ -25,6 +26,7 @@ import { TestUserService } from "./services/test_user.service";
     BotModule,
     RedeemModule,
     NotificationModule,
+    UserModule,
   ],
   controllers: [TestController],
   providers: [

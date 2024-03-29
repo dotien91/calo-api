@@ -54,3 +54,5 @@ export interface BandDetail {
 }
 
 export const MAX_BAND = 9;
+
+export const HIGH_SCORE_BAND = 7;

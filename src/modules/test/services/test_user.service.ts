@@ -5,8 +5,15 @@ import axios from "axios";
 import mongoose, { Model } from "mongoose";
 import { BotService } from "../../../modules/bot/services/bot.service";
 import { GptService } from "../../../modules/gpt/services/gpt.service";
+import {
+  RedeemMissionActionTarget,
+  RedeemMissionActionType,
+} from "../../../modules/redeem/interfaces/redeem.interface.i";
+import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
+import { UserService } from "../../../modules/user/services/user.service";
 import { FilterTestUserDTO, UpdateTestUserDTO, UserAnswer } from "../dtos/test_user.dto";
 import {
+  HIGH_SCORE_BAND,
   Junbro1016ResponseData,
   SpeakingResult,
   TestQuestionPart,
@@ -26,7 +33,9 @@ export class TestUserService {
 
     private testQuestionService: TestQuestionService,
     private gptService: GptService,
-    private botService: BotService
+    private botService: BotService,
+    private redeemUserService: RedeemUserService,
+    private userService: UserService
   ) {}
 
   /**
@@ -198,6 +207,7 @@ export class TestUserService {
 
   async calculateUserBand(data: UpdateTestUserDTO): Promise<any> {
     try {
+      const userObject = await this.userService.findOne({ _id: data.user_id });
       const testQuestions = await this.testQuestionService.findAll({ test_id: data.test_id });
       const userAnswers = data.answers;
 
@@ -275,6 +285,14 @@ export class TestUserService {
             },
             status: TestStatus.DONE,
           });
+
+          if (band > HIGH_SCORE_BAND)
+            this.redeemUserService.updateUserRedeem(
+              userObject,
+              RedeemMissionActionType.RESULT,
+              RedeemMissionActionTarget.TEST
+            );
+
           break;
         }
       }
