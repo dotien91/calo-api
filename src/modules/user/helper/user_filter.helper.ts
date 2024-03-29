@@ -1228,7 +1228,7 @@ export class UserFilterHelper {
 
       //Get Me
 
-      let me: User[] = [];
+      let me: User = null;
       let myRanking = 0;
 
       if (req?.user_object) {
@@ -1241,7 +1241,7 @@ export class UserFilterHelper {
         let dataCount = await this.appUserService.count(dataFilter);
         //My Ranking
         myRanking = dataCount;
-        me = [userObject];
+        me = userObject;
       }
 
       const dataReturn = {
