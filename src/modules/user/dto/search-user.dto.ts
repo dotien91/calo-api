@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsIn, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 import { UserSortBy } from "../interfaces/user.interface";
 
 export class SearchUserDto {
@@ -7,6 +7,11 @@ export class SearchUserDto {
   @IsOptional(null)
   @ApiPropertyOptional()
   user_login?: string;
+
+  @IsNumberString()
+  @IsOptional(null)
+  @ApiPropertyOptional()
+  less_point?: number;
 
   @IsString()
   @IsOptional(null)

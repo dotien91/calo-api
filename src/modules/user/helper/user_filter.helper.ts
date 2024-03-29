@@ -54,7 +54,7 @@ export class UserFilterHelper {
     private courseService: CourseService,
     private courseUserService: CourseUserService,
     private referralService: ReferralService
-  ) {}
+  ) { }
 
   /**
    * @author Tony Vu
@@ -1210,36 +1210,50 @@ export class UserFilterHelper {
 
   async getRankingBoard(query: GetRankingBoardParams, req: ExpressRequestDto, res: Response) {
     try {
-      const userObject = req?.user_object;
-      if (!userObject) {
-        throw new ForbiddenException("User is invalid");
-      }
-      if (Number(query.limit) > 1000) {
-        query.limit = 1000;
+      // const userObject = req?.user_object;
+      // if (!userObject) {
+      //   throw new ForbiddenException("User is invalid");
+      // }
+      if (Number(query.limit) > 100) {
+        query.limit = 100;
       }
 
-      const limit = query.limit ? query.limit : 1000;
+      const limit = query.limit ? query.limit : 100;
       const page = query.page ? query.page : 1;
 
-      const users = await this.appUserService.findAllWithMinimumData();
-      for (const dataIndexCourse in users) {
-        // @ts-ignore
-        users[dataIndexCourse] = users[dataIndexCourse]?.toObject();
-      }
-      const rankedUsers = this.getUsersRanking(users);
+      //Get Ranking orderby point
+      let dataRanking = await this.appUserService.filter({}, { point: "DESC" }, page, limit);
 
-      const me = rankedUsers.find((user: any) => user._id.toString() === req.user_id.toString());
-      const paginationUsers = rankedUsers.slice((page - 1) * limit, page * limit);
+
+      //Get Me
+
+      let me: User[] = [];
+      let myRanking = 0;
+
+      if (req?.user_object) {
+        const userObject = req?.user_object;
+
+        let myPoint = userObject?.point;
+        let dataFilter = {
+          less_point: myPoint
+        }
+        let dataCount = await this.appUserService.count(dataFilter);
+        //My Ranking
+        myRanking = dataCount;
+        me = [userObject];
+      }
 
       const dataReturn = {
         user_id: me,
-        other_users: paginationUsers,
+        my_ranking: myRanking,
+        other_users: dataRanking,
       };
+      let dataCount = await this.appUserService.count({});
 
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
-          "X-Total-Count": paginationUsers.length,
+          "X-Total-Count": dataCount,
         })
         .status(HttpStatus.OK)
         .json(dataReturn);
