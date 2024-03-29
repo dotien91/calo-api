@@ -74,6 +74,7 @@ export class PurchaseHelper {
       //Validate Google
       const dataValidate = await this.validateGoogle(createPurchaseData, orderObject);
 
+
       if (dataValidate === "success") {
         //Update Order
         const dataUpdate = {
@@ -90,7 +91,7 @@ export class PurchaseHelper {
         // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
         // await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id, 'success');
         setTimeout(async () => {
-          this.hookWorker.UpdateOrderAfter(createPurchaseData?.local_order_id, 'success');
+          this.hookWorker.UpdateOrderAfter(createPurchaseData?.local_order_id, 'pending');
         }, 300);
         const timeToSave = new Date(Number(createPurchaseData?.purchase_time) * 1000);
         if (timeToSave.getTime() > 0) {
@@ -245,7 +246,7 @@ export class PurchaseHelper {
 
       // await this.orderHelper.updateOrderAfter(dataCreate?.local_order_id, 'success');
       setTimeout(async () => {
-        this.hookWorker.UpdateOrderAfter(dataCreate?.local_order_id, 'success');
+        this.hookWorker.UpdateOrderAfter(dataCreate?.local_order_id, 'pending');
       }, 300);
 
       // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
