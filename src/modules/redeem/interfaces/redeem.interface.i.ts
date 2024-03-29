@@ -9,6 +9,7 @@ export enum RedeemMissionActionType {
   WATCH = "watch",
   SHARE = "share",
   VIEW = "view",
+  RESULT = "result",
 }
 
 export enum RedeemMissionActionTarget {
