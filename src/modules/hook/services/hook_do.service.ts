@@ -36,6 +36,11 @@ export class EventHookWorkerService {
     HookExpress.do_action("course.add-payment", dataCourseJoin, courseData);
   }
 
+  UpdateOrderAfter(dataOrder: string, status: string) {
+    HookExpress.do_action("order.update-order-after", dataOrder, status);
+  }
+
+
   // ProcessAddLevel(data: any) {
   //   HookExpress.do_action("request.add-level", data);
   // }

@@ -4,7 +4,7 @@ import { Response } from "express";
 import Verifier from "google-play-billing-validator";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-// import { OrderHelper } from "../../../modules/order/helper/OrderHelper";
+// import { OrderHelper } from "../../../modules/order/helper/order.helper";
 import { Order } from "../../../modules/order/schemas/order.schema";
 import { OrderService } from "../../../modules/order/services/order.service";
 import { PlanService } from "../../../modules/plan/services/plan.service";
@@ -14,6 +14,7 @@ import { UserService } from "../../../modules/user/services/user.service";
 import { CreatePurchaseAppleDto } from "../dto/create-purchase_apple.dto";
 import { CreatePurchaseGoogleDto } from "../dto/create-purchase_google.dto";
 import { PurchaseService } from "../services/purchase.service";
+import { EventHookWorkerService } from "src/modules/hook/services/hook_do.service";
 
 /**
  * @author Tony Vu
@@ -28,6 +29,7 @@ export class PurchaseHelper {
     private orderService: OrderService,
     // private orderHelper: OrderHelper,
     private appUserService: UserService,
+    private readonly hookWorker: EventHookWorkerService,
     private jwtHelper: JwtHelperService,
     private transactionHelper: TransactionHelper
   ) {}
@@ -86,6 +88,10 @@ export class PurchaseHelper {
         //   await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id);
         // }
         // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
+        // await this.orderHelper.updateOrderAfter(createPurchaseData?.local_order_id, 'success');
+        setTimeout(async () => {
+          this.hookWorker.UpdateOrderAfter(createPurchaseData?.local_order_id, 'success');
+        }, 300);
         const timeToSave = new Date(Number(createPurchaseData?.purchase_time) * 1000);
         if (timeToSave.getTime() > 0) {
         } else {
@@ -237,6 +243,11 @@ export class PurchaseHelper {
       };
       await this.orderService.update(dataUpdate);
 
+      // await this.orderHelper.updateOrderAfter(dataCreate?.local_order_id, 'success');
+      setTimeout(async () => {
+        this.hookWorker.UpdateOrderAfter(dataCreate?.local_order_id, 'success');
+      }, 300);
+
       // await this.sendNotificationPublisher(userObject, req, res, userObject?.country?.toString());
 
       console.log(">> Paid from Apple: >>" + response.data.environment);
@@ -259,6 +270,8 @@ export class PurchaseHelper {
       };
 
       const dataReturn = await this.purchaseService.create(dataToAdd);
+
+     
 
       for (const orderItem of orderObject.items) {
         if (orderItem.plan_type === "coin") {

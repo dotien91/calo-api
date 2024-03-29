@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import axios from "axios";
 import { Response } from "express";
-import * as moment from "moment";
+import * as moment from "moment-timezone";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
 import { CouponService } from "../../../modules/coupon/services/coupon.service";
@@ -45,8 +45,9 @@ import { UpdateOrderDto } from "../dto/update-order.dto";
 import { OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
+import HookExpress from "../../hook/hook_express";
 
-const initHook = false;
+let initHook = false;
 /**
  * @author Tony Vu
  * @class UpdateUserHelper
@@ -71,10 +72,10 @@ export class OrderHelper {
     private redeemUserService: RedeemUserService,
     private telegramService: TelegramService
   ) {
-    // if (!initHook) {
-    //   this.initHook();
-    //   initHook = true;
-    // }
+    if (!initHook) {
+      this.initHook();
+      initHook = true;
+    }
   }
 
   // initHook() {
@@ -82,6 +83,12 @@ export class OrderHelper {
   //     await this.processCreateOrderCourse(data, courseData);
   //   });
   // }
+
+  initHook() {
+    HookExpress.add_action("order.update-order-after", async (orderId: string, status: string) => {
+      await this.updateOrderAfter(orderId, status);
+    });
+  }
 
   // /**
   //  *
@@ -976,8 +983,7 @@ export class OrderHelper {
             order_id: orderObject._id.toString(),
             order_name: orderObject.items?.map((item) => item.service_name)?.toString(),
             order_price: orderObject.price,
-            order_date: moment()
-              .tz(orderObject.user_id.timezone || "UTC")
+            order_date: moment().tz(orderObject.user_id.timezone || "UTC")
               .format("DD-MM-YYYY HH:mm"),
           },
         });
