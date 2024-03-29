@@ -740,6 +740,7 @@ export class UserFilterHelper {
       let dataReturn: any = [];
       let dataCount = 0;
       dataReturn = await this.appUserService.filterAdmin(query, orderByObject, page, limit);
+      //@ts-ignore
       dataCount = await this.appUserService.count(query);
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count", "X-Total-Count": dataCount })
