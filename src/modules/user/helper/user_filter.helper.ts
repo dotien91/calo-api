@@ -1224,6 +1224,14 @@ export class UserFilterHelper {
 
       //Get Ranking orderby point
       let dataRanking = await this.appUserService.filter({}, { point: "DESC" }, page, limit);
+      for (let indexRank in dataRanking) {
+        //Get rank Number
+
+        let offset = limit * (page - 1);
+        let currentRank = Number(indexRank) + 1 + Number(offset);
+        //@ts-ignore
+        dataRanking[indexRank] = { ...dataRanking[indexRank]?.toObject(), ...{ rank: currentRank } };
+      }
 
 
       //Get Me
@@ -1241,7 +1249,8 @@ export class UserFilterHelper {
         let dataCount = await this.appUserService.count(dataFilter);
         //My Ranking
         myRanking = dataCount;
-        me = userObject;
+        //@ts-ignore
+        me = { ...userObject?.toObject(), ...{ rank: dataCount } };
       }
 
       const dataReturn = {
