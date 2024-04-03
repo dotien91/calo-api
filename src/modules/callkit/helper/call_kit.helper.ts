@@ -42,7 +42,7 @@ export class CallKitHelper {
     private readonly mediaService: MediaService,
     private readonly chatHistoryHelper: ChatHistoryHelper,
     private readonly socketService: SocketService
-  ) {}
+  ) { }
   private readonly logger = new Logger("call");
 
   /**
@@ -112,7 +112,7 @@ export class CallKitHelper {
             authCode,
             isExpired
           );
-        } catch (error) {}
+        } catch (error) { }
 
         const currentTime = new Date();
 
@@ -245,7 +245,7 @@ export class CallKitHelper {
         const params = new URLSearchParams(dataToUpdate);
         const headers = {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Authorization": auth,
+          "X-Authorization": auth
         };
         this.socketService
           .send(SocketPath.UPDATE_CALL, headers, params)
@@ -755,11 +755,12 @@ export class CallKitHelper {
       const params = new URLSearchParams(dataToUpdate);
       const headers = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
+        "X-Authorization": auth
       };
       const dataNotification = await this.socketService
-        .send(SocketPath.MAKE_CALL, params, headers)
+        .send(SocketPath.MAKE_CALL, headers, params)
         .then((response) => {
+          console.log(response, 'response')
           if (response?.data) {
             this.logger.log("Send Call Successfully" + JSON.stringify(response.data));
             return true;
@@ -773,6 +774,7 @@ export class CallKitHelper {
         });
       return dataNotification;
     } catch (error) {
+      console.log(error, 'errror')
       return null;
     }
   }
@@ -851,7 +853,7 @@ export class CallKitHelper {
       const params = new URLSearchParams(dataToUpdate);
       const headers = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-Authorization": auth,
+        "X-Authorization": auth
       };
       const dataNotification = await this.socketService
         .send(SocketPath.END_CALL, headers, params)
