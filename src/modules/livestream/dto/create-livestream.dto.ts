@@ -9,7 +9,7 @@ export class CreateLivestreamDto {
   @IsString()
   @IsOptional(null)
   @ApiPropertyOptional()
-  avatar?: string;
+  cover_url?: string;
 
   @IsString()
   @ApiProperty()

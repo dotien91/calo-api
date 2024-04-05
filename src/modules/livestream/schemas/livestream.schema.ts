@@ -141,11 +141,10 @@ export class Livestream {
   language: string;
 
   @Prop({
-    type: MongooseSchema.Types.ObjectId,
+    type: MongooseSchema.Types.String,
     default: null,
-    ref: "Media",
   })
-  avatar: MongooseSchema.Types.ObjectId;
+  cover_url: MongooseSchema.Types.String;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
