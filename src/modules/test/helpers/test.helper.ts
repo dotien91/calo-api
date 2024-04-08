@@ -39,17 +39,17 @@ export class TestHelper {
       }
 
       const testsDoneByUser = await this.testUserService.findUniqueTestByUser(userId);
-      const finalDataReturn = dataReturn.map((test) => ({
-        ...test,
-        is_done: testsDoneByUser.find((testDoneByUser) => {
+      const finalDataReturn = dataReturn.map((test) => {
+        const findItem = testsDoneByUser.find((testDoneByUser) => {
           return (
-            testDoneByUser._id.user_id.toString() === userId &&
             testDoneByUser._id.test_id.toString() === test._id.toString()
           );
         })
-          ? true
-          : false,
-      }));
+        return {
+        ...test,
+        band_detail: findItem?.band_detail,
+        is_done: !!findItem
+      }});
 
       return res
         .set({
