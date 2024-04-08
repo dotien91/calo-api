@@ -76,7 +76,7 @@ export class TestUserService {
         $group: {
           _id: { user_id: "$user_id", test_id: "$test_id" },
           band_detail: {
-            $first: "$band_detail",
+            $last: "$band_detail",
           },
           count: { $sum: 1 },
         },
