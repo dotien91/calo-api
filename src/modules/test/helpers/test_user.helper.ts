@@ -170,7 +170,6 @@ export class TestUserHelper {
           speakingTotal = speakingTotal + speaking_point / MAX_BAND;
         }
       }
-
       return res
         .set({
           "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
