@@ -297,143 +297,145 @@ export class NotificationHelper {
    * @returns
    */
   async handleSendNotificationToSession(dataNotification: Notification) {
-    try {
-      if (dataNotification.channel !== "user") {
-        //Send Notification to Channel
-      } else {
-        let userId = dataNotification.user_id.toString();
-        if (dataNotification.user_id && dataNotification.user_id.length > 1) {
-          userId = dataNotification.user_id.join(",");
-        }
-        this.logger.log("Send a Message to " + userId);
-        //Find Session
-        const sessionData = await this.userSessionService.filter({ user_id: userId }, { createdAt: "DESC" }, 1, 1000);
-
-        for (let i = 0; i < sessionData.length; i++) {
-          let deviceIds = [];
-          let appleSignature = [];
-          const sessionItem = sessionData[i];
-          if (dataNotification.type_action === "link") {
-            if (process.env.USE_APN_MESSAGE === "false") {
-              if (sessionItem.device_signature) {
-                deviceIds.push(sessionItem.device_signature);
-              }
-            } else {
-              if (sessionItem.device_signature && !sessionItem.apple_notification) {
-                deviceIds.push(sessionItem.device_signature);
-              }
-              if (sessionItem.apple_notification) {
-                appleSignature.push(sessionItem.apple_notification);
-              }
-            }
-          } else {
-            //Is Call
-            if (sessionItem.device_signature && !sessionItem.apple_signature) {
-              deviceIds.push(sessionItem.device_signature);
-            }
-            if (sessionItem.apple_signature) {
-              appleSignature.push(sessionItem.apple_signature);
-            }
+      // console.log(JSON.stringify(dataNotification), "dataNotification");
+      try {
+        if (dataNotification.channel !== "user") {
+          //Send Notification to Channel
+        } else {
+          let userId = dataNotification.user_id.toString();
+          if (dataNotification.user_id && dataNotification.user_id.length > 1) {
+            userId = dataNotification.user_id.join(",");
           }
-
-          let dataParam = {};
-          try {
-            dataParam = JSON.parse(dataNotification.param.toString());
-          } catch (error) {
-            dataParam = {};
-          }
-          deviceIds = _.uniq(deviceIds);
-
-          // console.log(deviceIds, "deviceIds");
-          appleSignature = _.uniq(appleSignature);
-
-          //Send Notification
-          const title = this.i18nService.getMessage(
-            dataNotification.title,
-            sessionItem.picked_language,
-            dataNotification.replace_pattern
-          );
-          const content = this.i18nService.getMessage(
-            dataNotification.content,
-            sessionItem.picked_language,
-            dataNotification.replace_pattern
-          );
-
-          let data = {
-            notification: {
-              title,
-              content,
-              click_action: dataNotification.click_action,
-              icon: dataNotification.image,
-              image: dataNotification.image,
-              type_action: dataNotification.type_action,
-              router: dataNotification.router,
-            },
-            android: {
+          this.logger.log("Send a Message to " + userId);
+          //Find Session
+          let sessionData = await this.userSessionService.filter({ user_id: userId }, { createdAt: "DESC" }, 1, 1000);
+  
+          if (sessionData && sessionData.length) {
+            let deviceIds = [];
+            let appleSignature = [];
+            for (let sessionItem of sessionData) {
+              if (dataNotification.type_action === "link") {
+                if (process.env.USE_APN_MESSAGE === "false") {
+                  if (sessionItem.device_signature) {
+                    deviceIds.push(sessionItem.device_signature);
+                  }
+                } else {
+                  if (sessionItem.device_signature && !sessionItem.apple_notification) {
+                    deviceIds.push(sessionItem.device_signature);
+                  }
+                  if (sessionItem.apple_notification) {
+                    appleSignature.push(sessionItem.apple_notification);
+                  }
+                }
+              } else {
+                //Is Call
+                if (sessionItem.device_signature && !sessionItem.apple_signature) {
+                  deviceIds.push(sessionItem.device_signature);
+                }
+                if (sessionItem.apple_signature) {
+                  appleSignature.push(sessionItem.apple_signature);
+                }
+              }
+            }
+            let dataParam = {};
+            try {
+              dataParam = JSON.parse(dataNotification.param.toString());
+            } catch (error) {
+              dataParam = {};
+            }
+            deviceIds = _.uniq(deviceIds);
+  
+            // console.log(deviceIds, "deviceIds");
+            appleSignature = _.uniq(appleSignature);
+  
+            //Send Notification
+            const title = this.i18nService.getMessage(
+              dataNotification.title,
+              "vi",
+              dataNotification.replace_pattern
+            );
+            const content = this.i18nService.getMessage(
+              dataNotification.content,
+              "vi",
+              dataNotification.replace_pattern
+            );
+            let data = {
+              notification: {
+                title,
+                body: content,
+                click_action: dataNotification.click_action,
+                icon: dataNotification.image,
+                image: dataNotification.image,
+                type_action: dataNotification.type_action,
+                router: dataNotification.router,
+              },
+              android: {
+                priority: "high",
+              },
+              collapse_key: "Notification ChatGPT",
               priority: "high",
-            },
-            collapse_key: "Notification ChatGPT",
-            priority: "high",
-            data: { ...dataParam, ...{ type_action: dataNotification.type_action, router: dataNotification.router } },
-            icon: dataNotification.image,
-          };
+              data: { ...dataParam, ...{ type_action: dataNotification.type_action, router: dataNotification.router } },
+              icon: dataNotification.image,
+            };
+  
+            if (appleSignature && appleSignature.length) {
+              if (dataNotification.type_action === "link") {
+                let newData = JSON.parse(JSON.stringify(data));
+                newData = {
+                  ...newData,
+                  ...{
+                    msgFrom: dataNotification.title,
+                    messageFrom: dataNotification.title,
+                    launchImage: dataNotification.image,
+                  },
+                };
+                await this.handleSendNotificationAppleMessage(
+                  appleSignature,
+                  dataNotification?.content?.toString(),
+                  data
+                );
+              } else {
+                if (dataNotification.type_action.indexOf("end_") === -1) {
+                  await this.handleSendNotificationApple(appleSignature, dataNotification?.title?.toString(), data);
+                }
+              }
+            }
 
-          if (appleSignature && appleSignature.length) {
-            if (dataNotification.type_action === "link") {
-              let newData = JSON.parse(JSON.stringify(data));
-              newData = {
-                ...newData,
+            console.log("datadata", data)
+            if (deviceIds && deviceIds.length) {
+              data = {
+                ...data,
                 ...{
-                  msgFrom: dataNotification.title,
-                  messageFrom: dataNotification.title,
-                  launchImage: dataNotification.image,
+                  registration_ids: deviceIds,
                 },
               };
-              await this.handleSendNotificationAppleMessage(
-                appleSignature,
-                dataNotification?.content?.toString(),
-                data
-              );
-            } else {
-              if (dataNotification.type_action.indexOf("end_") === -1) {
-                await this.handleSendNotificationApple(appleSignature, dataNotification?.title?.toString(), data);
-              }
+              const config = {
+                headers: {
+                  Authorization: `Bearer ${process.env.FIREBASE_SEND_NOTIFICATION_KEY}`,
+                  "Content-Type": "application/json",
+                },
+              };
+              const urlLogin = "https://fcm.googleapis.com/fcm/send";
+              let dataReturn = await axios
+                .post(urlLogin, JSON.stringify(data), config)
+                .then((response) => {
+                  if (response?.data) {
+                    this.logger.log("Send Notification Successfully: " + JSON.stringify(response.data));
+                    return true;
+                  } else {
+                    this.logger.log("Send Notification Error: NOT HAVE DATA " + JSON.stringify(response));
+                    return false;
+                  }
+                })
+                .catch((error) => {
+                  this.logger.log("Send Notification Error: " + JSON.stringify(error));
+                  return false;
+                });
+              return dataReturn;
             }
           }
-          if (deviceIds && deviceIds.length) {
-            data = {
-              ...data,
-              ...{
-                registration_ids: deviceIds,
-              },
-            };
-            const config = {
-              headers: {
-                Authorization: `Bearer ${process.env.FIREBASE_SEND_NOTIFICATION_KEY}`,
-                "Content-Type": "application/json",
-              },
-            };
-            const urlLogin = "https://fcm.googleapis.com/fcm/send";
-            const dataReturn = await axios
-              .post(urlLogin, JSON.stringify(data), config)
-              .then((response) => {
-                if (response?.data) {
-                  this.logger.log("Send Notification Successfully: " + JSON.stringify(response.data));
-                  return true;
-                } else {
-                  this.logger.log("Send Notification Error: NOT HAVE DATA " + JSON.stringify(response));
-                  return false;
-                }
-              })
-              .catch((error) => {
-                this.logger.log("Send Notification Error: " + JSON.stringify(error));
-                return false;
-              });
-            return dataReturn;
-          }
         }
-      }
-      return null;
+        return null;
     } catch (error) {
       this.logger.log("handleSendNotificationFirebase Error: " + JSON.stringify(error));
       throw new BadRequestException(error.message);
