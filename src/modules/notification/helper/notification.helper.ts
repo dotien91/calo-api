@@ -344,7 +344,6 @@ export class NotificationHelper {
               dataParam = {};
             }
             deviceIds = _.uniq(deviceIds);
-  
             // console.log(deviceIds, "deviceIds");
             appleSignature = _.uniq(appleSignature);
   

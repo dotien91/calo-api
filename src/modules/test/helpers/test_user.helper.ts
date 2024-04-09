@@ -108,16 +108,16 @@ export class TestUserHelper {
     try {
       try {
         await this.testUserService.calculateUserBand(data);
-
         // should send notification to user after done exam
         const dataNotification = {
           user_id: data.user_id,
-          title: "translation.test.result",
+          title: "Bạn đã có kết quả bài test!",
           content: "",
           param: JSON.stringify({
             test_id: data.test_id,
           }),
           type_action: "link",
+          channel: "user",
           router: NotificationRouter.NAVIGATION_TEST_RESULT,
           click_action: "",
           image: "",
