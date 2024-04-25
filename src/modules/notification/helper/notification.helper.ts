@@ -400,7 +400,6 @@ export class NotificationHelper {
               }
             }
 
-            console.log("datadata", data)
             if (deviceIds && deviceIds.length) {
               data = {
                 ...data,

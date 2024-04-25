@@ -20,3 +20,22 @@ export class UpdateOrderUserDto {
   @ApiPropertyOptional()
   media_id?: string;
 }
+
+
+export class UpdateExternalOrderAfterDto {
+  @IsString()
+  @ApiProperty()
+  _id?: string;
+
+}
+
+export class UpdateExternalOrderDto {
+  @IsString()
+  @ApiProperty()
+  _id?: string;
+
+
+  @IsIn(["success"])
+  @ApiProperty()
+  status?: string;
+}

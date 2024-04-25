@@ -11,7 +11,7 @@ import { CreateOrderDto } from "../dto/create-order.dto";
 import { ListOrderDto } from "../dto/list-order.dto";
 import { ListPaymentMethodDto } from "../dto/list-payment_method.dto";
 import { UpdateOrderDto } from "../dto/update-order.dto";
-import { UpdateOrderUserDto } from "../dto/update-order_user.dto";
+import { UpdateExternalOrderAfterDto, UpdateExternalOrderDto, UpdateOrderUserDto } from "../dto/update-order_user.dto";
 import { OrderHelper } from "../helper/order.helper";
 
 @Controller("order")
@@ -140,5 +140,15 @@ export class OrderController {
   @Get("vnpay_ipn")
   async handleVnPayIpn(@Res() res: Response, @Req() req: ExpressRequestDto) {
     return await this.orderHelper.handleVnpayIpn(res, req);
+  }
+
+  @Post("external-update-order-after")
+  async handleUpdateExternalOrderAfter(@Body() dataUpdate: UpdateExternalOrderAfterDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.orderHelper.handleExternalOrderAfter(dataUpdate._id, res);
+  }
+
+  @Post("external-update")
+  async externalUpdate(@Body() dataUpdate: UpdateExternalOrderDto, @Res() res: Response, @Req() req: ExpressRequestDto) {
+    return await this.orderHelper.updateExternalOrder(dataUpdate, res, req);
   }
 }

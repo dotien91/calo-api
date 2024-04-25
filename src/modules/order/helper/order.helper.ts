@@ -46,6 +46,7 @@ import { OrderPaymentMethod, PayloadType } from "../interfaces/order.interface";
 import { Order } from "../schemas/order.schema";
 import { OrderService } from "../services/order.service";
 import HookExpress from "../../hook/hook_express";
+import { UpdateExternalOrderDto } from "../dto/update-order_user.dto";
 
 let initHook = false;
 /**
@@ -78,52 +79,31 @@ export class OrderHelper {
     }
   }
 
-  // initHook() {
-  //   HookExpress.add_action("course.add-payment", async (data: CreateCourseLikeDto, courseData: Course) => {
-  //     await this.processCreateOrderCourse(data, courseData);
-  //   });
-  // }
-
   initHook() {
     HookExpress.add_action("order.update-order-after", async (orderId: string, status: string) => {
       await this.updateOrderAfter(orderId, status);
+
     });
   }
 
-  // /**
-  //  *
-  //  * @param dataJoin
-  //  * @param courseData
-  //  * @returns
-  //  */
-  // async processCreateOrderCourse(dataJoin: CreateCourseLikeDto, courseData: Course) {
-  //   try {
-  //     const dataToAdd = {
-  //       channel_id: courseData?.channel_id?.toString(),
-  //       payment_method: "transfer",
-  //       user_id: dataJoin?.user_id,
-  //       service_name: courseData.title,
-  //       service_id: courseData?.service_id?.toString(),
-  //       plan_id: courseData?.plan_id?.toString(),
-  //       plan_type: "one_time",
-  //       status: "success",
-  //       short_id: null,
-  //       amount_of_package: 1,
-  //       order_note: "",
-  //       coupon_code: "",
-  //       description: "",
-  //       trans_id: "",
-  //       deep_link: "",
-  //       price: Number(courseData.price),
-  //     };
-  //     let dataCreate: Order = await this.orderService.create(dataToAdd);
-  //     dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-  //     return dataCreate;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return true;
-  //   }
-  // }
+  async updateExternalOrder(dataUpdate: UpdateExternalOrderDto, res: Response, req: ExpressRequestDto) {
+    try {
+      await this.orderService.update(dataUpdate);
+      res.status(200).json({ Message: "This order has been updated to the payment status" });
+    } catch (error) {
+      res.status(200).json({Message: "Unknow error" });
+    }
+
+  }
+
+  async handleExternalOrderAfter(id, res: Response) {
+    try {
+      await this.updateOrderAfter(id, "pending");
+      res.status(200).json({ Message: "Success" });
+    } catch (error) {
+      res.status(200).json({ Message: "Unknow error" });
+    }
+  }
 
   /**
    *
@@ -266,15 +246,9 @@ export class OrderHelper {
     }
   }
 
-  /**
-   *
-   * @param res
-   * @param req
-   */
   async handleVnpayReturn(res: Response, req: ExpressRequestDto) {
     try {
       let vnp_Params = req.query;
-      // console.log(JSON.stringify(vnp_Params), "JSON.stringify(vnp_Params)");
       if (JSON.stringify(vnp_Params) == "{}") {
         return res.json({ status: "false" }).status(404);
       }
@@ -285,7 +259,7 @@ export class OrderHelper {
       delete vnp_Params["vnp_SecureHash"];
       delete vnp_Params["vnp_SecureHashType"];
 
-      const orderId = vnp_Params["vnp_TxnRef"];
+      let orderId = vnp_Params?.["vnp_TxnRef"] || "";
       const amountOrder = Number(vnp_Params["vnp_Amount"]) / 100;
 
       const paymentStatus = "0";
@@ -305,7 +279,22 @@ export class OrderHelper {
 
       let checkOrderId = false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
       let checkAmount = false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-      const dataOrder = await this.orderService.findById(orderId?.toString() || "");
+
+      //get datatorder from app
+      let dataOrder = null
+      const dataFromOrderId = (orderId.toString()).split("_")
+      //If there is 'app_name' in the params, perform the update order case for the domain according to 'app_name'
+      const external_app_name = dataFromOrderId?.[2]
+      if (external_app_name) {
+        const price = dataFromOrderId?.[1]
+        orderId = dataFromOrderId?.[0]
+        dataOrder = {
+          deep_link: `${external_app_name}://payment`,
+          price,
+        }
+      } else {
+        dataOrder = await this.orderService.findById(orderId?.toString() || "");
+      }
 
       let dataRedirect = "https://ieltshunter.io" + "/orders/detail/" + dataOrder?._id?.toString();
       if (dataOrder?.deep_link) {
@@ -330,11 +319,17 @@ export class OrderHelper {
                 //paymentStatus = '1'
                 // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
                 const dataUpdate = {
-                  _id: orderId?.toString(),
+                  _id: orderId.toString(),
                   status: "success",
                 };
-                await this.orderService.update(dataUpdate);
-                await this.updateOrderAfter(orderId?.toString(), dataOrder?.status?.toString());
+                if (external_app_name) {
+                  const baseUrl = this.getBaseUrlByAppName(external_app_name)
+                  await this.updateExtertalOrderService(dataUpdate, baseUrl)
+                  await this.handleAfterExternalOrder(orderId.toString(), baseUrl);
+                } else {
+                  await this.orderService.update(dataUpdate);
+                  await this.updateOrderAfter(orderId?.toString(), dataOrder?.status?.toString());
+                }
               } else {
                 const dataUpdate = {
                   _id: orderId?.toString(),
@@ -368,178 +363,32 @@ export class OrderHelper {
     }
   }
 
-  /**
-   * @author Tony Vu
-   * @param id
-   * @param createUserPermission
-   * @param res
-   * @param req
-   * @returns
-   */
-  // async createNewOrder(createOrderData: CreateOrderDto, res: Response, req: ExpressRequestDto) {
-  //   try {
-  //     const userObject = req?.user_object;
-  //     if (!userObject) {
-  //       throw new ForbiddenException("User is invalid");
-  //     }
-  //     const userId = userObject._id.toString();
+  updateExtertalOrderService = (data: any, baseUrl: string) => {
+    const config = {
+      method: "post",
+      url: `${baseUrl}/api/order/external-update`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+    return axios(config);
+  }
 
-  //     const planObject = await this.planService.findById(createOrderData.plan_id);
-  //     const oldOrder = await this.orderService.findOne({});
-  //     let oldShortId = 1;
-  //     if (oldOrder) {
-  //       oldShortId = Number(oldOrder.short_id) + 1;
-  //     }
-  //     const channelId = req?.channel_id || "";
-  //     if (channelId) {
-  //       createOrderData = { ...createOrderData, ...{ channel_id: channelId } };
-  //     }
-
-  //     //Check Plan Service
-  //     if (!createOrderData?.payment_method && !Number(planObject?.trial_day) && Number(planObject?.price)) {
-  //       throw new ForbiddenException("Payment method need!");
-  //     }
-
-  //     //Kiểm tra trường hợp có ngày dùng thử
-  //     if (Number(planObject?.trial_day)) {
-  //       //Check Subscribe
-  //       const subscribe = await this.subscribeService.filter(
-  //         {
-  //           user_id: userId,
-  //           service_id: planObject?.service_id?.toString(),
-  //           channel_id: channelId,
-  //         },
-  //         { createdAt: "DESC" },
-  //         1,
-  //         1
-  //       );
-  //       // console.log(subscribe, "subscribe");
-  //       //Trường hợp Đã tồn tại một gói đăng ký của người dùng
-  //       if (subscribe?.length) {
-  //         //Kiểm tra xem Extension đó có phí hay không
-  //         if (Number(planObject?.price)) {
-  //           if (!createOrderData?.payment_method) {
-  //             //Trả về lỗi
-  //             throw new ForbiddenException("Payment method need!");
-  //           } else {
-  //             //Trường hợp này khách thanh toán bình thường nó sẽ chạy tới hàm tiếp theo và sẽ bị tính tiền!
-  //           }
-  //         } else {
-  //           //Trường hợp còn lại là trường hợp miễn phí
-  //           createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
-  //         }
-  //       } else {
-  //         //Trường hợp này là chưa có gói đăng ksy, tiến hành cập nhập cho khách thành free và trạng thái đơn chuyển về thành công!
-  //         createOrderData = { ...createOrderData, ...{ payment_method: "free", status: "success" } };
-  //       }
-  //     }
-
-  //     //Cập nhập lại payment_method nếu gói miễn phí!
-  //     if (!Number(planObject?.price)) {
-  //       createOrderData = { ...createOrderData, ...{ payment_method: "free" } };
-  //     }
-
-  //     if (planObject) {
-  //       let couponProduct = null;
-
-  //       if (createOrderData.coupon_product_id)
-  //         couponProduct = await this.couponService.findOne({ _id: createOrderData.coupon_product_id });
-
-  //       const orderPrice = this.getOrderPrice(couponProduct, planObject.price, createOrderData.amount_of_package);
-
-  //       let dataToAdd = {
-  //         ...createOrderData,
-  //         ...{
-  //           user_id: userId,
-  //           service_name: planObject.handle,
-  //           service_id: planObject.service_id,
-  //           plan_id: planObject._id.toString(),
-  //           plan_type: planObject.type,
-  //           short_id: oldShortId,
-  //           price: orderPrice,
-  //           coupon_product_id: createOrderData.coupon_product_id,
-  //         },
-  //       };
-
-  //       if (planObject?.service_id?.service_type == "channel") {
-  //         dataToAdd = { ...dataToAdd, ...{ trans_id: req?.channel_id?.toString() } };
-  //       }
-
-  //       if (createOrderData?.payment_method === "vn_pay") {
-  //         // Lấy thời điểm hiện tại
-  //         const currentTime = new Date();
-
-  //         // Lấy thời điểm hiện tại dưới dạng số miligiây
-  //         const currentTimeInMilliseconds = currentTime.getTime();
-
-  //         // Cộng thêm 5 giây (5,000 miligiây)
-  //         const newTimeInMilliseconds = currentTimeInMilliseconds + 4000;
-
-  //         // Tạo đối tượng Date mới với thời điểm sau khi cộng
-  //         const newTime = new Date(newTimeInMilliseconds);
-  //         dataToAdd = { ...dataToAdd, ...{ vnpay_on: newTime } };
-  //       }
-  //       let dataCreate: Order = await this.orderService.create(dataToAdd);
-
-  //       //Hậu xử lý!
-  //       //Nếu là chuyển khoản thì bay tới trang detail luôn!
-  //       if (dataCreate.payment_method == "transfer") {
-  //         //Return after
-  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
-  //         dataCreate = await this.orderService.update(dataUpdate);
-  //         return res
-  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //           .status(HttpStatus.OK)
-  //           .json(dataCreate);
-  //       }
-
-  //       //Trường hợp này là payment_method là miễn phí!
-  //       if (dataCreate.payment_method == "free") {
-  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl, status: "success" };
-  //         dataCreate = await this.orderService.update(dataUpdate);
-  //         dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-  //         return res
-  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //           .status(HttpStatus.OK)
-  //           .json(dataCreate);
-  //       }
-  //       if (dataCreate.payment_method == "vn_pay") {
-  //         const redirectUrl = await this.createVNPayLink(req, orderPrice, "", "", dataCreate?._id?.toString());
-  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl?.toString() };
-  //         dataCreate = await this.orderService.update(dataUpdate);
-  //         return res
-  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //           .status(HttpStatus.OK)
-  //           .json(dataCreate);
-  //       }
-
-  //       if (dataCreate?.status == "success") {
-  //         //Update After
-
-  //         //Update Channel
-  //         const redirectUrl = `/r/orders/detail/${dataCreate?._id?.toString()}`;
-  //         const dataUpdate = { _id: dataCreate?._id?.toString(), redirect_url: redirectUrl };
-  //         dataCreate = await this.orderService.update(dataUpdate);
-  //         dataCreate = await this.updateOrderAfter(dataCreate?._id?.toString(), "pending");
-  //         return res
-  //           .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //           .status(HttpStatus.OK)
-  //           .json(dataCreate);
-  //       }
-
-  //       return res
-  //         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
-  //         .status(HttpStatus.OK)
-  //         .json(dataCreate);
-  //     } else {
-  //       throw new BadRequestException("Plan not found!");
-  //     }
-  //   } catch (error) {
-  //     throw new NotFoundException(error.message);
-  //   }
-  // }
+  handleAfterExternalOrder = (orderId: string, baseUrl: string) => {
+    // update_order_after
+    const config = {
+      method: "post",
+      url: `${baseUrl}/api/order/external-update-order-after`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        _id: orderId
+      },
+    };
+    return axios(config);
+  }
 
   getOrderPrice(couponProduct: Coupon, productPrice: number, productAmount = 1) {
     let price = productPrice * productAmount || 0;
@@ -812,6 +661,30 @@ export class OrderHelper {
     } catch (error) {
       throw new NotFoundException(error.message);
     }
+  }
+
+  getBaseUrlByAppName = (appName) => {
+    let baseUrl = ""
+    switch (appName) {
+      case "ikicoach": {
+        baseUrl = "https://api.ikigai.ikigroup.vn";
+        // baseUrl = "http://192.168.1.154:3900"
+        break;
+      }
+      case "edulike": {
+        baseUrl = "https://api.edulike.vn";
+        break;
+      }
+      case "isempai": {
+        baseUrl = "https://api.isempai.edu.vn";
+        break;
+      }
+      default: {
+        baseUrl = "https://api.live.ieltshunter.io";
+        break;
+      }
+    }
+    return baseUrl
   }
 
   /**
@@ -1342,7 +1215,8 @@ export class OrderHelper {
     amount: number,
     bankCode: string,
     locale: string = "",
-    orderId: string
+    orderId: string,
+    external_app_name: string = "",
   ) {
     process.env.TZ = "Asia/Ho_Chi_Minh";
 
@@ -1356,7 +1230,6 @@ export class OrderHelper {
     let vnpUrl = process.env.VNPAY_URL;
     const returnUrl = process.env.VNPAY_RETURN_URL;
     // let orderId = moment(date).format("DDHHmmss");
-
     if (locale === null || locale === "") {
       locale = "vn";
     }
@@ -1367,7 +1240,11 @@ export class OrderHelper {
     vnp_Params["vnp_TmnCode"] = tmnCode;
     vnp_Params["vnp_Locale"] = locale;
     vnp_Params["vnp_CurrCode"] = currCode;
-    vnp_Params["vnp_TxnRef"] = orderId;
+    if (external_app_name) {
+      vnp_Params["vnp_TxnRef"] = orderId+`_${amount}_${external_app_name}`;
+    } else {
+     vnp_Params["vnp_TxnRef"] = orderId
+    }
     vnp_Params["vnp_OrderInfo"] = "Thanh toan cho ma GD:" + orderId;
     vnp_Params["vnp_OrderType"] = "other";
     vnp_Params["vnp_Amount"] = amount * 100;

@@ -132,4 +132,8 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   invitation_code?: string;
+
+  @IsString()
+  @IsOptional()
+  app_name?: string;
 }
