@@ -4,3 +4,15 @@ dist
 test.js
 yarn.lock
 .env
+
+# Secrets and sensitive files
+config-firebase.json
+google-service-account.json
+.env.example
+
+# IDE files
+.vscode/
+.DS_Store
+
+# Build files
+*.tsbuildinfo
