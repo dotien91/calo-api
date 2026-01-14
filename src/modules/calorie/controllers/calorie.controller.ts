@@ -17,11 +17,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CloudinaryService } from "../../media/services/cloudinary.service";
-import { UserService } from "../../user/services/user.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
 import { OnboardingDto } from "../dto/onboarding.dto";
 import { CalorieAnalysisService } from "../services/calorie_analysis.service";
 import { CalorieService } from "../services/calorie.service";
+import { OnboardingService } from "../services/onboarding.service";
 
 @Controller("calorie")
 export class CalorieController {
@@ -29,7 +29,7 @@ export class CalorieController {
     private readonly calorieService: CalorieService,
     private readonly calorieAnalysisService: CalorieAnalysisService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly userService: UserService
+    private readonly onboardingService: OnboardingService
   ) {}
 
   /**
@@ -320,7 +320,7 @@ export class CalorieController {
 
   /**
    * @author Tony Vu
-   * Onboarding - Tính toán và lưu kế hoạch calorie vào user
+   * Onboarding - Tính toán và lưu kế hoạch calorie vào bảng onboarding
    * @param body
    * @param req
    * @returns
@@ -336,9 +336,8 @@ export class CalorieController {
       // Tính toán kế hoạch calorie
       const plan = this.calorieService.calculateOnboardingPlan(body);
 
-      // Chuẩn bị data để update vào user
-      const dataToUpdate = {
-        _id: userObject._id.toString(),
+      // Chuẩn bị data để lưu vào bảng onboarding
+      const dataToSave = {
         gender: body.gender,
         age: body.age,
         height: body.height,
@@ -356,19 +355,51 @@ export class CalorieController {
         estimated_completion_date: new Date(plan.estimated_date),
       };
 
-      // Update user với thông tin onboarding
-      const updatedUser = await this.userService.update(dataToUpdate);
+      // Lưu hoặc cập nhật onboarding (upsert)
+      const onboarding = await this.onboardingService.createOrUpdate(
+        userObject._id.toString(),
+        dataToSave
+      );
 
       return {
         success: true,
         message: "Onboarding thành công",
         data: {
-          user: updatedUser,
+          onboarding: onboarding,
           plan: plan,
         },
       };
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi onboarding.");
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Lấy thông tin onboarding của user
+   * @param req
+   * @returns
+   */
+  @Get("onboarding")
+  async getOnboarding(@Req() req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+
+      const onboarding = await this.onboardingService.findByUserId(userObject._id.toString());
+
+      if (!onboarding) {
+        throw new BadRequestException("Chưa có thông tin onboarding. Vui lòng thực hiện onboarding trước.");
+      }
+
+      return {
+        success: true,
+        data: onboarding,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }
