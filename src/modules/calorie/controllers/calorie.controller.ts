@@ -96,11 +96,25 @@ export class CalorieController {
 
       const page = Number(query?.page) || 1;
       const limit = Number(query?.limit) || 20;
+      
+      // Parse date filter từ query params
+      const dateFrom = query?.date_from || query?.from ? new Date(query.date_from || query.from) : undefined;
+      const dateTo = query?.date_to || query?.to ? new Date(query.date_to || query.to) : undefined;
+
+      // Validate dates
+      if (dateFrom && isNaN(dateFrom.getTime())) {
+        throw new BadRequestException("date_from không hợp lệ");
+      }
+      if (dateTo && isNaN(dateTo.getTime())) {
+        throw new BadRequestException("date_to không hợp lệ");
+      }
 
       const result = await this.calorieAnalysisService.findByUserId(
         userObject._id.toString(),
         page,
-        limit
+        limit,
+        dateFrom,
+        dateTo
       );
 
       return res

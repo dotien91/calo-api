@@ -59,14 +59,32 @@ export class CalorieAnalysisService {
    * @param userId
    * @param page
    * @param limit
+   * @param dateFrom
+   * @param dateTo
    * @returns
    */
   async findByUserId(
     userId: string,
     page: number = 1,
-    limit: number = 20
+    limit: number = 20,
+    dateFrom?: Date,
+    dateTo?: Date
   ): Promise<{ data: CalorieAnalysisDocument[]; total: number }> {
-    const condition = { user_id: new Types.ObjectId(userId) };
+    const condition: any = { user_id: new Types.ObjectId(userId) };
+    
+    // Filter theo thời gian nếu có
+    if (dateFrom || dateTo) {
+      condition.createdAt = {};
+      if (dateFrom) {
+        condition.createdAt.$gte = dateFrom;
+      }
+      if (dateTo) {
+        // Set time về cuối ngày (23:59:59.999)
+        const endOfDay = new Date(dateTo);
+        endOfDay.setHours(23, 59, 59, 999);
+        condition.createdAt.$lte = endOfDay;
+      }
+    }
     
     const data = await this.calorieAnalysisModel
       .find(condition)

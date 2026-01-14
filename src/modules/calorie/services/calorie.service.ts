@@ -32,8 +32,6 @@ export class CalorieService {
       throw new Error("Tất cả các model đã hết quota trong ngày. Vui lòng thử lại vào ngày mai.");
     }
 
-    console.log(111, model);
-
     try {
       // Gọi model với quota management
       const response = await this.client.models.generateContent({
