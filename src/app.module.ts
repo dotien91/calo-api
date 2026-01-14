@@ -26,6 +26,7 @@ import * as path from "path";
 import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { CalorieModule } from "./modules/calorie/calorie.module";
 import { CallKitModule } from "./modules/callkit/call_kit.module";
 import { CartModule } from "./modules/cart/cart.module";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
@@ -99,6 +100,7 @@ const dataImport = [
   ShopModule,
   ProductModule,
   CartModule,
+  CalorieModule,
   RedeemModule,
   ThreadModule,
   SocketModule,
