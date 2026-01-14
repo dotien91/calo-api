@@ -506,8 +506,8 @@ export class UserLoginHelper {
           display_name: dataLogin?.full_name ? dataLogin?.full_name : userLogin,
           user_status: 1,
           phone_number: dataLogin?.phone_number ? dataLogin?.phone_number : "",
-          country: dataIp.country,
-          timezone: dataIp.timezone,
+          country: dataIp?.country,
+          timezone: dataIp?.timezone,
           invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
         };
         userObject = await this.appUserService.create(dataToCreate);

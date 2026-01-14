@@ -11,6 +11,7 @@ export interface IIngredient {
 export interface ICalorieAnalysis {
   food_name: string;
   health_score: number;
+  health_reason?: string;
   total_weight: number;
   total_calories: number;
   total_carbs: number;

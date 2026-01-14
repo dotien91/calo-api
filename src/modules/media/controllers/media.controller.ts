@@ -14,17 +14,24 @@ import {
   Query,
   Req,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CreateMediaPresignDto } from "../dto/create-media_presign.dto";
 import { GetMediaRoomDto } from "../dto/get-media_room.dto";
 import { UpdateMediaDto } from "../dto/update-media.dto";
+import { CloudinaryService } from "../services/cloudinary.service";
 import { MediaService } from "../services/media.service";
 
 @Controller("media")
 export class MediaController {
-  constructor(private readonly mediaService: MediaService) {}
+  constructor(
+    private readonly mediaService: MediaService,
+    private readonly cloudinaryService: CloudinaryService
+  ) {}
 
   private readonly logger = new Logger("media_controller");
   @Post("/create")
@@ -231,12 +238,138 @@ export class MediaController {
     try {
       //Check Permission
       const dataReturn = await this.mediaService.findById(id);
+      
+      // Nếu có public_id từ Cloudinary, tạo thêm các URL variants
+      if (dataReturn && dataReturn.media_meta) {
+        const publicIdMeta = Array.isArray(dataReturn.media_meta) 
+          ? dataReturn.media_meta.find((meta: any) => meta.key === "public_id")
+          : null;
+        if (publicIdMeta && publicIdMeta.value) {
+          const publicId = publicIdMeta.value;
+          const thumbnailUrl = this.cloudinaryService.getThumbnailUrl(publicId, 200);
+          const squareUrl = this.cloudinaryService.getSquareUrl(publicId, 400);
+          
+          const mediaData = (dataReturn as any).toObject ? (dataReturn as any).toObject() : dataReturn;
+          
+          return res
+            .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
+            .status(HttpStatus.OK)
+            .json({
+              ...mediaData,
+              urls: {
+                original: dataReturn.media_url,
+                thumbnail: thumbnailUrl,
+                square: squareUrl,
+              },
+            });
+        }
+      }
+      
       return res
         .set({ "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count" })
         .status(HttpStatus.OK)
         .json(dataReturn);
     } catch (error) {
       throw new NotFoundException(error.message);
+    }
+  }
+
+  @Get("image-url/:publicId")
+  async getImageUrl(
+    @Param("publicId") publicId: string,
+    @Query("width") width?: string,
+    @Query("height") height?: string,
+    @Query("crop") crop?: string,
+    @Query("gravity") gravity?: string,
+    @Query("radius") radius?: string,
+    @Query("format") format?: string,
+  ) {
+    try {
+      const url = this.cloudinaryService.getImageUrl(publicId, {
+        width: width ? parseInt(width) : undefined,
+        height: height ? parseInt(height) : undefined,
+        crop: crop as any,
+        gravity: gravity as any,
+        radius: radius === "max" ? "max" : radius ? parseInt(radius) : undefined,
+        format: format as any,
+      });
+
+      return {
+        success: true,
+        url: url,
+      };
+    } catch (error) {
+      this.logger.error("getImageUrl Error: " + error.message);
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post("/upload-food")
+  @UseInterceptors(FileInterceptor("file"))
+  async uploadFood(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    try {
+      const userObject = req?.user_object;
+      // if (!userObject) {
+      //   throw new ForbiddenException("User is invalid");
+      // }
+
+      if (!file) {
+        throw new BadRequestException("Vui lòng cung cấp hình ảnh món ăn");
+      }
+
+      // 1. Upload lên thư mục riêng cho Food
+      const uploadResult = await this.cloudinaryService.uploadFoodImage(file);
+
+      // 2. Tạo các URL variants với dynamic transformations
+      const thumbnailUrl = this.cloudinaryService.getThumbnailUrl(uploadResult.public_id, 200);
+      const squareUrl = this.cloudinaryService.getSquareUrl(uploadResult.public_id, 400);
+
+      // 3. Tạo record lưu trữ media theo chuẩn của Tony Vu
+      const dataToCreate = {
+        media_url: uploadResult.secure_url,
+        media_thumbnail: thumbnailUrl,
+        media_square: squareUrl,
+        createBy: userObject?._id?.toString() || null,
+        media_type: "image",
+        media_mime_type: file.mimetype,
+        media_file_name: file.originalname,
+        media_status: 1, // Đã hoàn tất upload
+        media_meta: [
+          {
+            key: "public_id",
+            value: uploadResult.public_id,
+          },
+          {
+            key: "source",
+            value: "cloudinary",
+          },
+          {
+            key: "usage",
+            value: "calorie_scan",
+          },
+        ],
+      };
+
+      // 4. Lưu vào database
+      const savedMedia = await this.mediaService.create(dataToCreate);
+
+      // Trả về kết quả kèm URL để frontend có thể hiển thị ảnh ngay lập tức
+      const mediaData = (savedMedia as any).toObject ? (savedMedia as any).toObject() : savedMedia;
+      return {
+        success: true,
+        message: "Upload ảnh đồ ăn thành công",
+        data: {
+          ...mediaData,
+          urls: {
+            original: uploadResult.secure_url,
+            thumbnail: thumbnailUrl,
+            square: squareUrl,
+          },
+        },
+      };
+    } catch (error) {
+      this.logger.error("uploadFood Error: " + error.message);
+      throw new BadRequestException(error.message);
     }
   }
 }

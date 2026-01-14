@@ -1,0 +1,10 @@
+{
+  "gemini-3-flash": {
+    "count": 1,
+    "lastReset": "2026-01-14"
+  },
+  "gemini-2.5-flash-lite": {
+    "count": 1,
+    "lastReset": "2026-01-14"
+  }
+}

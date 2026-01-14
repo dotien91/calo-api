@@ -30,7 +30,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@google-cloud/speech", "npm:6.7.1"],\
           ["@google/genai", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:1.35.0"],\
-          ["@google/generative-ai", "npm:0.21.0"],\
           ["@nestjs/bull", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.2.3"],\
           ["@nestjs/cli", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.4.9"],\
           ["@nestjs/common", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.4.22"],\
@@ -72,6 +71,7 @@ const RAW_RUNTIME_STATE =
           ["cheerio", "npm:1.1.2"],\
           ["class-transformer", "npm:0.5.1"],\
           ["class-validator", "npm:0.14.3"],\
+          ["cloudinary", "npm:2.8.0"],\
           ["cookie-parser", "npm:1.4.7"],\
           ["countries-and-timezones", "npm:3.8.0"],\
           ["crypto", "npm:1.0.1"],\
@@ -1198,15 +1198,6 @@ const RAW_RUNTIME_STATE =
         "packagePeers": [\
           "@modelcontextprotocol/sdk",\
           "@types/modelcontextprotocol__sdk"\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["@google/generative-ai", [\
-      ["npm:0.21.0", {\
-        "packageLocation": "../../../.yarn/berry/cache/@google-generative-ai-npm-0.21.0-4b1f39d77c-10c0.zip/node_modules/@google/generative-ai/",\
-        "packageDependencies": [\
-          ["@google/generative-ai", "npm:0.21.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -6674,6 +6665,17 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["cloudinary", [\
+      ["npm:2.8.0", {\
+        "packageLocation": "../../../.yarn/berry/cache/cloudinary-npm-2.8.0-61d8aed053-10c0.zip/node_modules/cloudinary/",\
+        "packageDependencies": [\
+          ["cloudinary", "npm:2.8.0"],\
+          ["lodash", "npm:4.17.21"],\
+          ["q", "npm:1.5.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["cluster-key-slot", [\
       ["npm:1.1.2", {\
         "packageLocation": "../../../.yarn/berry/cache/cluster-key-slot-npm-1.1.2-0571a28825-10c0.zip/node_modules/cluster-key-slot/",\
@@ -10688,7 +10690,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@google-cloud/speech", "npm:6.7.1"],\
           ["@google/genai", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:1.35.0"],\
-          ["@google/generative-ai", "npm:0.21.0"],\
           ["@nestjs/bull", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.2.3"],\
           ["@nestjs/cli", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.4.9"],\
           ["@nestjs/common", "virtual:cdc0a057ff5c345ef1ebfff199aeced895620215279c2804e6feaa25335c60f0b49dc41c587aec2d10bd06e400344c3e7c5b7bcb3c1ad3374dc20cb8da98f363#npm:10.4.22"],\
@@ -10730,6 +10731,7 @@ const RAW_RUNTIME_STATE =
           ["cheerio", "npm:1.1.2"],\
           ["class-transformer", "npm:0.5.1"],\
           ["class-validator", "npm:0.14.3"],\
+          ["cloudinary", "npm:2.8.0"],\
           ["cookie-parser", "npm:1.4.7"],\
           ["countries-and-timezones", "npm:3.8.0"],\
           ["crypto", "npm:1.0.1"],\
@@ -12617,6 +12619,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../.yarn/berry/cache/punycode-npm-2.3.1-97543c420d-10c0.zip/node_modules/punycode/",\
         "packageDependencies": [\
           ["punycode", "npm:2.3.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["q", [\
+      ["npm:1.5.1", {\
+        "packageLocation": "../../../.yarn/berry/cache/q-npm-1.5.1-a28b3cfeaf-10c0.zip/node_modules/q/",\
+        "packageDependencies": [\
+          ["q", "npm:1.5.1"]\
         ],\
         "linkType": "HARD"\
       }]\
