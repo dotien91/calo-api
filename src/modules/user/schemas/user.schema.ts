@@ -322,6 +322,115 @@ export class User {
     type: MongooseSchema.Types.Number,
   })
   exp_time: number;
+
+  // ========== CALORIE TARGET CONFIG ==========
+  @Prop({
+    type: String,
+    default: null,
+  })
+  gender: string; // MALE hoặc FEMALE
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  age: number; // Tuổi
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  height: number; // Chiều cao (cm)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  current_weight: number; // Cân nặng hiện tại (kg)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_weight: number; // Cân nặng mục tiêu (kg)
+
+  @Prop({
+    type: String,
+    default: null,
+  })
+  activity_level: string; // SEDENTARY, LIGHTLY_ACTIVE, MODERATELY_ACTIVE, VERY_ACTIVE, EXTREMELY_ACTIVE
+
+  @Prop({
+    type: String,
+    default: null,
+  })
+  weight_goal_pace: string; // SLOW, NORMAL, FAST
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  bmr: number; // Basal Metabolic Rate (kcal)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  tdee: number; // Total Daily Energy Expenditure (kcal)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_calories: number; // Calo mục tiêu (kcal)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_protein: number; // Protein mục tiêu (g)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_carbs: number; // Carbs mục tiêu (g)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_fat: number; // Fat mục tiêu (g)
+
+  @Prop({
+    type: String,
+    default: null,
+  })
+  diet_type: string; // Chế độ ăn (ví dụ: "Ít Carb", "Cân bằng", "Keto", v.v.)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_steps: number; // Bước chân mục tiêu (bước)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  target_water: number; // Nước mục tiêu (ml)
+
+  @Prop({
+    type: Number,
+    default: null,
+  })
+  weeks_to_goal: number; // Số tuần để đạt mục tiêu
+
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  estimated_completion_date: Date; // Ngày dự kiến hoàn thành mục tiêu
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

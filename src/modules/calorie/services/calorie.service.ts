@@ -2,6 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { GoogleGenAI } from "@google/genai";
 import { ICalorieAnalysis } from "../interfaces/calorie.interface";
 import { QuotaManager } from "./quota.manager";
+import { ACTIVITY_MULTIPLIERS, PACE_CALORIES } from "../constants/calorie.constants";
+import { Gender, WeightGoalPace } from "../enums/calorie.enum";
+import { OnboardingDto } from "../dto/onboarding.dto";
 
 @Injectable()
 export class CalorieService {
@@ -130,5 +133,56 @@ export class CalorieService {
         ]
       }
     `;
+  }
+
+  /**
+   * @author Tony Vu
+   * Tính toán kế hoạch calorie dựa trên thông tin onboarding
+   * @param dto
+   * @returns
+   */
+  calculateOnboardingPlan(dto: OnboardingDto) {
+    // 1. Tính BMR (Mifflin-St Jeor Equation - Công thức chuẩn nhất hiện nay)
+    let bmr = (10 * dto.currentWeight) + (6.25 * dto.height) - (5 * dto.age);
+    bmr += dto.gender === Gender.MALE ? 5 : -161;
+
+    // 2. Tính TDEE (Tổng năng lượng tiêu hao mỗi ngày)
+    const multiplier = ACTIVITY_MULTIPLIERS[dto.activityLevel];
+    const tdee = Math.round(bmr * multiplier);
+
+    // 3. Tính Daily Calorie Target (Mục tiêu calo mỗi ngày)
+    const isGaining = dto.targetWeight > dto.currentWeight;
+    const adjustment = PACE_CALORIES[dto.pace];
+    
+    // Nếu tăng cân thì cộng thêm, giảm cân thì trừ đi
+    const dailyCalories = isGaining ? tdee + adjustment : tdee - adjustment;
+
+    // 4. Tính Ngày hoàn thành (Estimated Completion Date)
+    const weightDiff = Math.abs(dto.targetWeight - dto.currentWeight);
+    const weeklyChangeRate = dto.pace === WeightGoalPace.SLOW ? 0.25 : 
+                             dto.pace === WeightGoalPace.NORMAL ? 0.5 : 1.0;
+    
+    const weeksNeeded = weightDiff / weeklyChangeRate;
+    const daysNeeded = Math.round(weeksNeeded * 7);
+
+    const estimatedDate = new Date();
+    estimatedDate.setDate(estimatedDate.getDate() + daysNeeded);
+
+    // 5. Chia Macros (Tỷ lệ 50% Carb - 20% Protein - 30% Fat)
+    const macros = {
+      carbs_g: Math.round((dailyCalories * 0.5) / 4),    // 1g Carb = 4kcal
+      protein_g: Math.round((dailyCalories * 0.2) / 4),  // 1g Protein = 4kcal
+      fat_g: Math.round((dailyCalories * 0.3) / 9),      // 1g Fat = 9kcal
+    };
+
+    return {
+      bmr,
+      tdee,
+      daily_calories: Math.round(dailyCalories),
+      target_weight: dto.targetWeight,
+      weeks_to_goal: Math.round(weeksNeeded * 10) / 10, // Làm tròn 1 số thập phân
+      estimated_date: estimatedDate.toISOString().split('T')[0], // Trả về dạng YYYY-MM-DD
+      macros
+    };
   }
 }

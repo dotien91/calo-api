@@ -17,7 +17,9 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CloudinaryService } from "../../media/services/cloudinary.service";
+import { UserService } from "../../user/services/user.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
+import { OnboardingDto } from "../dto/onboarding.dto";
 import { CalorieAnalysisService } from "../services/calorie_analysis.service";
 import { CalorieService } from "../services/calorie.service";
 
@@ -26,7 +28,8 @@ export class CalorieController {
   constructor(
     private readonly calorieService: CalorieService,
     private readonly calorieAnalysisService: CalorieAnalysisService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly userService: UserService
   ) {}
 
   /**
@@ -312,6 +315,60 @@ export class CalorieController {
       };
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Onboarding - Tính toán và lưu kế hoạch calorie vào user
+   * @param body
+   * @param req
+   * @returns
+   */
+  @Post("onboarding")
+  async onboarding(@Body() body: OnboardingDto, @Req() req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+
+      // Tính toán kế hoạch calorie
+      const plan = this.calorieService.calculateOnboardingPlan(body);
+
+      // Chuẩn bị data để update vào user
+      const dataToUpdate = {
+        _id: userObject._id.toString(),
+        gender: body.gender,
+        age: body.age,
+        height: body.height,
+        current_weight: body.currentWeight,
+        target_weight: body.targetWeight,
+        activity_level: body.activityLevel,
+        weight_goal_pace: body.pace,
+        bmr: plan.bmr,
+        tdee: plan.tdee,
+        target_calories: plan.daily_calories,
+        target_protein: plan.macros.protein_g,
+        target_carbs: plan.macros.carbs_g,
+        target_fat: plan.macros.fat_g,
+        weeks_to_goal: plan.weeks_to_goal,
+        estimated_completion_date: new Date(plan.estimated_date),
+      };
+
+      // Update user với thông tin onboarding
+      const updatedUser = await this.userService.update(dataToUpdate);
+
+      return {
+        success: true,
+        message: "Onboarding thành công",
+        data: {
+          user: updatedUser,
+          plan: plan,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message || "Có lỗi xảy ra khi onboarding.");
     }
   }
 }
