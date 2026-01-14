@@ -21,21 +21,25 @@ export class CalorieAnalysisService {
   async create(
     userId: string,
     analysisData: ICalorieAnalysis,
-    imageUrl: string
+    imageUrl?: string
   ): Promise<CalorieAnalysisDocument> {
-    const dataToCreate = {
+    const dataToCreate: any = {
       user_id: new Types.ObjectId(userId),
       food_name: analysisData.food_name,
-      health_score: analysisData.health_score,
+      health_score: analysisData.health_score || 5, // Default health_score nếu không có
       health_reason: analysisData.health_reason || "",
       total_weight: analysisData.total_weight,
       total_calories: analysisData.total_calories,
       total_carbs: analysisData.total_carbs,
       total_protein: analysisData.total_protein,
       total_fat: analysisData.total_fat,
-      ingredients: analysisData.ingredients,
-      image_url: imageUrl,
+      ingredients: analysisData.ingredients || [],
     };
+
+    // Chỉ thêm image_url nếu có
+    if (imageUrl) {
+      dataToCreate.image_url = imageUrl;
+    }
 
     const created = new this.calorieAnalysisModel(dataToCreate);
     return await created.save();

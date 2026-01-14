@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
@@ -16,6 +17,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CloudinaryService } from "../../media/services/cloudinary.service";
+import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
 import { CalorieAnalysisService } from "../services/calorie_analysis.service";
 import { CalorieService } from "../services/calorie.service";
 
@@ -76,6 +78,115 @@ export class CalorieController {
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi phân tích calorie.");
     }
+  }
+
+  /**
+   * @author Tony Vu
+   * Nhập thủ công các thông số calorie (chỉ cần các thông số dinh dưỡng)
+   * @param body
+   * @param req
+   * @returns
+   */
+  @Post("manual")
+  async createManual(@Body() body: CreateManualCalorieDto, @Req() req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+
+      // Tính toán health_score dựa trên tỷ lệ dinh dưỡng
+      const healthScore = this.calculateHealthScore(
+        body.total_calories,
+        body.total_protein,
+        body.total_carbs,
+        body.total_fat
+      );
+
+      // Chuyển đổi DTO thành ICalorieAnalysis format với các giá trị mặc định
+      const analysisData = {
+        food_name: "Bữa ăn thủ công",
+        health_score: healthScore.score,
+        health_reason: healthScore.reason,
+        total_weight: body.total_weight,
+        total_calories: body.total_calories,
+        total_carbs: body.total_carbs,
+        total_protein: body.total_protein,
+        total_fat: body.total_fat,
+        ingredients: [],
+      };
+
+      // Lưu vào database (không có image_url)
+      const savedAnalysis = await this.calorieAnalysisService.create(
+        userObject._id.toString(),
+        analysisData
+      );
+
+      return {
+        success: true,
+        message: "Nhập calorie thủ công thành công",
+        data: savedAnalysis,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message || "Có lỗi xảy ra khi nhập calorie thủ công.");
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Tính toán health_score dựa trên tỷ lệ dinh dưỡng
+   * @param calories
+   * @param protein
+   * @param carbs
+   * @param fat
+   * @returns
+   */
+  private calculateHealthScore(
+    calories: number,
+    protein: number,
+    carbs: number,
+    fat: number
+  ): { score: number; reason: string } {
+    // Tính tỷ lệ % của từng chất dinh dưỡng
+    const proteinCalories = protein * 4;
+    const carbsCalories = carbs * 4;
+    const fatCalories = fat * 9;
+
+    const proteinPercent = (proteinCalories / calories) * 100;
+    const carbsPercent = (carbsCalories / calories) * 100;
+    const fatPercent = (fatCalories / calories) * 100;
+
+    let score = 5; // Điểm mặc định
+    let reason = "";
+
+    // Logic đánh giá:
+    // - Protein cao (>25%) -> tốt
+    // - Fat vừa phải (20-35%) -> tốt
+    // - Carbs không quá cao (<60%) -> tốt
+    // - Fat quá cao (>40%) -> không tốt
+    // - Protein quá thấp (<15%) -> không tốt
+
+    if (proteinPercent >= 25 && fatPercent <= 35 && carbsPercent <= 60) {
+      score = 8;
+      reason = "Tỷ lệ dinh dưỡng cân bằng, protein cao, chất béo vừa phải";
+    } else if (proteinPercent >= 20 && fatPercent <= 40 && carbsPercent <= 65) {
+      score = 7;
+      reason = "Tỷ lệ dinh dưỡng khá cân bằng";
+    } else if (proteinPercent >= 15 && fatPercent <= 45) {
+      score = 6;
+      reason = "Tỷ lệ dinh dưỡng ở mức chấp nhận được";
+    } else if (fatPercent > 45) {
+      score = 4;
+      reason = "Hàm lượng chất béo cao";
+    } else if (proteinPercent < 15) {
+      score = 4;
+      reason = "Hàm lượng protein thấp";
+    } else {
+      score = 5;
+      reason = "Tỷ lệ dinh dưỡng trung bình";
+    }
+
+    return { score, reason };
   }
 
   /**

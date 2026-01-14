@@ -73,7 +73,7 @@ export class CalorieAnalysis {
   @Prop({ type: [IngredientSchema], default: [] })
   ingredients: Ingredient[];
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   image_url: string;
 }
 
