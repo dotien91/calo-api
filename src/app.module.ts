@@ -34,7 +34,6 @@ import { CommunityModule } from "./modules/community/community.module";
 import { CouponModule } from "./modules/coupon/coupon.module";
 import { CourseModule } from "./modules/course/course.module";
 import { EmailModule } from "./modules/email/email.module";
-import { LivestreamModule } from "./modules/livestream/livestream.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ProductModule } from "./modules/product/product.module";
@@ -94,7 +93,6 @@ const dataImport = [
   CommunityModule,
   ChatRoomModule,
   ChatHistoryModule,
-  LivestreamModule,
   CallKitModule,
   EmailModule,
   CouponModule,

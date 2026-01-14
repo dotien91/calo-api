@@ -10,6 +10,7 @@ import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 import { createHash } from "crypto";
 import { Request, Response } from "express";
+import { ParsedQs } from "qs";
 import { google } from "googleapis";
 import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
@@ -669,10 +670,10 @@ export class UserLoginHelper {
 
   handleUpdateGeoIP(
     req: Request<
-      import("express-serve-static-core").ParamsDictionary,
+      Record<string, string>,
       any,
       any,
-      import("qs").ParsedQs,
+      ParsedQs,
       Record<string, any>
     >,
     res: Response<any, Record<string, any>>,

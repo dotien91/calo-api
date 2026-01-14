@@ -1,7 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import { AppModule } from "./app.module";
@@ -17,8 +16,8 @@ async function bootstrap() {
   };
 
   app.use(cookieParser());
-  app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true, limit: "500mb" }));
-  app.use(bodyParser.json({ verify: rawBodyBuffer, limit: "500mb" }));
+  app.use(urlencoded({ verify: rawBodyBuffer, extended: true, limit: "500mb" }));
+  app.use(json({ verify: rawBodyBuffer, limit: "500mb" }));
 
   const configService: ConfigService = app.get(ConfigService);
   app.setGlobalPrefix(configService.get<string>("APP_PREFIX") ? configService.get<string>("APP_PREFIX") : "api");
