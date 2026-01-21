@@ -6,6 +6,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -19,6 +20,7 @@ import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CloudinaryService } from "../../media/services/cloudinary.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
 import { OnboardingDto } from "../dto/onboarding.dto";
+import { Onboarding } from "../schemas/onboarding.schema";
 import { CalorieAnalysisService } from "../services/calorie_analysis.service";
 import { CalorieService } from "../services/calorie.service";
 import { OnboardingService } from "../services/onboarding.service";
@@ -400,6 +402,62 @@ export class CalorieController {
       };
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Cập nhật một số thông tin onboarding của user (diet_type, target_steps, target_water, etc.)
+   * @param body
+   * @param req
+   * @returns
+   */
+  @Patch("onboarding")
+  async updateOnboarding(@Body() body: Partial<Onboarding>, @Req() req: ExpressRequestDto) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+
+      // Chỉ cho phép cập nhật một số trường cụ thể
+      const allowedFields = [
+        'diet_type',
+        'target_steps',
+        'target_water',
+        'target_weight',
+        'current_weight',
+        'activity_level',
+        'weight_goal_pace'
+      ];
+
+      const updateData: any = {};
+      for (const field of allowedFields) {
+        if (body[field] !== undefined) {
+          updateData[field] = body[field];
+        }
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        throw new BadRequestException("Không có dữ liệu để cập nhật.");
+      }
+
+      const updatedOnboarding = await this.onboardingService.update(
+        userObject._id.toString(),
+        updateData
+      );
+
+      if (!updatedOnboarding) {
+        throw new BadRequestException("Không thể cập nhật thông tin onboarding.");
+      }
+
+      return {
+        success: true,
+        message: "Cập nhật thông tin onboarding thành công",
+        data: updatedOnboarding,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message || "Có lỗi xảy ra khi cập nhật onboarding.");
     }
   }
 }
