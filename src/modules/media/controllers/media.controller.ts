@@ -25,12 +25,14 @@ import { GetMediaRoomDto } from "../dto/get-media_room.dto";
 import { UpdateMediaDto } from "../dto/update-media.dto";
 import { CloudinaryService } from "../services/cloudinary.service";
 import { MediaService } from "../services/media.service";
+import { CalorieAnalysisService } from "../../calorie/services/calorie_analysis.service";
 
 @Controller("media")
 export class MediaController {
   constructor(
     private readonly mediaService: MediaService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly calorieAnalysisService: CalorieAnalysisService
   ) {}
 
   private readonly logger = new Logger("media_controller");
@@ -306,7 +308,7 @@ export class MediaController {
 
   @Post("/upload-food")
   @UseInterceptors(FileInterceptor("file"))
-  async uploadFood(@UploadedFile() file: Express.Multer.File, @Req() req) {
+  async uploadFood(@UploadedFile() file: Express.Multer.File, @Req() req, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       // if (!userObject) {
@@ -319,6 +321,11 @@ export class MediaController {
 
       // 1. Upload lên thư mục riêng cho Food
       const uploadResult = await this.cloudinaryService.uploadFoodImage(file);
+
+      const analysisId = req?.body?.analysis_id || req?.body?.analysisId;
+      if (analysisId) {
+        await this.calorieAnalysisService.updateImageUrl(analysisId, uploadResult.secure_url);
+      }
 
       // 2. Tạo các URL variants với dynamic transformations
       const thumbnailUrl = this.cloudinaryService.getThumbnailUrl(uploadResult.public_id, 200);
@@ -355,18 +362,14 @@ export class MediaController {
 
       // Trả về kết quả kèm URL để frontend có thể hiển thị ảnh ngay lập tức
       const mediaData = (savedMedia as any).toObject ? (savedMedia as any).toObject() : savedMedia;
-      return {
-        success: true,
-        message: "Upload ảnh đồ ăn thành công",
-        data: {
+      return res.status(HttpStatus.OK).json({
           ...mediaData,
           urls: {
             original: uploadResult.secure_url,
             thumbnail: thumbnailUrl,
             square: squareUrl,
           },
-        },
-      };
+        });
     } catch (error) {
       this.logger.error("uploadFood Error: " + error.message);
       throw new BadRequestException(error.message);

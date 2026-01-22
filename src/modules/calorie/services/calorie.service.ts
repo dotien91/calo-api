@@ -38,7 +38,7 @@ export class CalorieService {
     try {
       // Gọi model với quota management
       const response = await this.client.models.generateContent({
-        model: "gemini-3-flash",
+        model,
         contents: [
           {
             role: "user",

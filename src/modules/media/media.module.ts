@@ -1,6 +1,7 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { CalorieModule } from "../calorie/calorie.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserService } from "../user/services/user.service";
 import { UserPermission, UserPermissionSchema } from "../user_permission/schemas/user_permission.schema";
@@ -17,6 +18,7 @@ import { MediaService } from "./services/media.service";
       { name: Media.name, schema: MediaSchema },
       { name: UserPermission.name, schema: UserPermissionSchema },
     ]),
+    forwardRef(() => CalorieModule),
   ],
   controllers: [MediaController],
   providers: [MediaService, CloudinaryService, UserService, UserPermissionService],

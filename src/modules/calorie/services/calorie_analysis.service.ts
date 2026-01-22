@@ -63,6 +63,31 @@ export class CalorieAnalysisService {
   }
 
   /**
+   * Update image_url for an existing analysis
+   * @param id
+   * @param imageUrl
+   * @returns
+   */
+  async updateImageUrl(id: string, imageUrl: string): Promise<CalorieAnalysisDocument> {
+    if (!id) {
+      throw new Error("Id phân tích calorie không hợp lệ.");
+    }
+    if (!imageUrl) {
+      throw new Error("Image URL không hợp lệ.");
+    }
+
+    const updated = await this.calorieAnalysisModel
+      .findByIdAndUpdate(id, { image_url: imageUrl }, { new: true })
+      .exec();
+
+    if (!updated) {
+      throw new Error("Không tìm thấy phân tích calorie này.");
+    }
+
+    return updated;
+  }
+
+  /**
    * @author Tony Vu
    * @param userId
    * @param page
