@@ -17,7 +17,6 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { CloudinaryService } from "../../media/services/cloudinary.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
 import { OnboardingDto } from "../dto/onboarding.dto";
 import { Onboarding } from "../schemas/onboarding.schema";
@@ -30,7 +29,6 @@ export class CalorieController {
   constructor(
     private readonly calorieService: CalorieService,
     private readonly calorieAnalysisService: CalorieAnalysisService,
-    private readonly cloudinaryService: CloudinaryService,
     private readonly onboardingService: OnboardingService
   ) {}
 
@@ -46,6 +44,7 @@ export class CalorieController {
   async analyze(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: ExpressRequestDto,
+    @Res() res: Response,
     @Query("country") country?: string
   ) {
     if (!file) {
@@ -58,28 +57,13 @@ export class CalorieController {
     }
 
     try {
-      // 1. Upload ảnh lên Cloudinary
-      const uploadResult = await this.cloudinaryService.uploadFoodImage(file);
-
-      // 2. Phân tích ảnh bằng AI với country context (nếu có)
-      const analysisResult = await this.calorieService.analyzeFoodImage(file, country);
-
-      if (!analysisResult) {
-        throw new BadRequestException("AI không thể phân tích hình ảnh này.");
-      }
-
-      // 3. Lưu kết quả vào database
-      const savedAnalysis = await this.calorieAnalysisService.create(
+      const savedAnalysis = await this.calorieAnalysisService.createFromImage(
         userObject._id.toString(),
-        analysisResult,
-        uploadResult.secure_url
+        file,
+        country
       );
 
-      return {
-        success: true,
-        message: "Phân tích calorie thành công",
-        data: savedAnalysis,
-      };
+      return res.status(HttpStatus.OK).json(savedAnalysis);
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi phân tích calorie.");
     }
@@ -93,45 +77,19 @@ export class CalorieController {
    * @returns
    */
   @Post("manual")
-  async createManual(@Body() body: CreateManualCalorieDto, @Req() req: ExpressRequestDto) {
+  async createManual(@Body() body: CreateManualCalorieDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
         throw new BadRequestException("User is invalid");
       }
 
-      // Tính toán health_score dựa trên tỷ lệ dinh dưỡng
-      const healthScore = this.calculateHealthScore(
-        body.total_calories,
-        body.total_protein,
-        body.total_carbs,
-        body.total_fat
-      );
-
-      // Chuyển đổi DTO thành ICalorieAnalysis format với các giá trị mặc định
-      const analysisData = {
-        food_name: "Bữa ăn thủ công",
-        health_score: healthScore.score,
-        health_reason: healthScore.reason,
-        total_weight: body.total_weight,
-        total_calories: body.total_calories,
-        total_carbs: body.total_carbs,
-        total_protein: body.total_protein,
-        total_fat: body.total_fat,
-        ingredients: [],
-      };
-
-      // Lưu vào database (không có image_url)
-      const savedAnalysis = await this.calorieAnalysisService.create(
+      const savedAnalysis = await this.calorieAnalysisService.createFromManual(
         userObject._id.toString(),
-        analysisData
+        body
       );
 
-      return {
-        success: true,
-        message: "Nhập calorie thủ công thành công",
-        data: savedAnalysis,
-      };
+      return res.status(HttpStatus.OK).json(savedAnalysis);
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi nhập calorie thủ công.");
     }
@@ -146,53 +104,7 @@ export class CalorieController {
    * @param fat
    * @returns
    */
-  private calculateHealthScore(
-    calories: number,
-    protein: number,
-    carbs: number,
-    fat: number
-  ): { score: number; reason: string } {
-    // Tính tỷ lệ % của từng chất dinh dưỡng
-    const proteinCalories = protein * 4;
-    const carbsCalories = carbs * 4;
-    const fatCalories = fat * 9;
-
-    const proteinPercent = (proteinCalories / calories) * 100;
-    const carbsPercent = (carbsCalories / calories) * 100;
-    const fatPercent = (fatCalories / calories) * 100;
-
-    let score = 5; // Điểm mặc định
-    let reason = "";
-
-    // Logic đánh giá:
-    // - Protein cao (>25%) -> tốt
-    // - Fat vừa phải (20-35%) -> tốt
-    // - Carbs không quá cao (<60%) -> tốt
-    // - Fat quá cao (>40%) -> không tốt
-    // - Protein quá thấp (<15%) -> không tốt
-
-    if (proteinPercent >= 25 && fatPercent <= 35 && carbsPercent <= 60) {
-      score = 8;
-      reason = "Tỷ lệ dinh dưỡng cân bằng, protein cao, chất béo vừa phải";
-    } else if (proteinPercent >= 20 && fatPercent <= 40 && carbsPercent <= 65) {
-      score = 7;
-      reason = "Tỷ lệ dinh dưỡng khá cân bằng";
-    } else if (proteinPercent >= 15 && fatPercent <= 45) {
-      score = 6;
-      reason = "Tỷ lệ dinh dưỡng ở mức chấp nhận được";
-    } else if (fatPercent > 45) {
-      score = 4;
-      reason = "Hàm lượng chất béo cao";
-    } else if (proteinPercent < 15) {
-      score = 4;
-      reason = "Hàm lượng protein thấp";
-    } else {
-      score = 5;
-      reason = "Tỷ lệ dinh dưỡng trung bình";
-    }
-
-    return { score, reason };
-  }
+  // Health score calculation moved to CalorieService
 
   /**
    * @author Tony Vu
@@ -271,17 +183,14 @@ export class CalorieController {
    * @returns 
    */
   @Delete("delete/:id")
-  async delete(@Param("id") id: string) {
+  async delete(@Param("id") id: string, @Res() res: Response) {
     try {
       const deleted = await this.calorieAnalysisService.delete(id);
       if (!deleted) {
         throw new BadRequestException("Không thể xóa phân tích calorie này.");
       }
 
-      return {
-        success: true,
-        message: "Xóa phân tích calorie thành công",
-      };
+      return res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -295,7 +204,7 @@ export class CalorieController {
    * @returns 
    */
   @Get("stats")
-  async getStats(@Req() req: ExpressRequestDto, @Query() query: any) {
+  async getStats(@Req() req: ExpressRequestDto, @Query() query: any, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -311,10 +220,7 @@ export class CalorieController {
         dateTo
       );
 
-      return {
-        success: true,
-        data: stats,
-      };
+      return res.status(HttpStatus.OK).json(stats);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -328,7 +234,7 @@ export class CalorieController {
    * @returns
    */
   @Post("onboarding")
-  async onboarding(@Body() body: OnboardingDto, @Req() req: ExpressRequestDto) {
+  async onboarding(@Body() body: OnboardingDto, @Req() req: ExpressRequestDto, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -363,14 +269,10 @@ export class CalorieController {
         dataToSave
       );
 
-      return {
-        success: true,
-        message: "Onboarding thành công",
-        data: {
-          onboarding: onboarding,
-          plan: plan,
-        },
-      };
+      return res.status(HttpStatus.OK).json({
+        onboarding: onboarding,
+        plan: plan,
+      });
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi onboarding.");
     }
@@ -383,7 +285,7 @@ export class CalorieController {
    * @returns
    */
   @Get("onboarding")
-  async getOnboarding(@Req() req: ExpressRequestDto) {
+  async getOnboarding(@Req() req: ExpressRequestDto, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -396,10 +298,7 @@ export class CalorieController {
         throw new BadRequestException("Chưa có thông tin onboarding. Vui lòng thực hiện onboarding trước.");
       }
 
-      return {
-        success: true,
-        data: onboarding,
-      };
+      return res.status(HttpStatus.OK).json(onboarding);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -413,7 +312,7 @@ export class CalorieController {
    * @returns
    */
   @Patch("onboarding")
-  async updateOnboarding(@Body() body: Partial<Onboarding>, @Req() req: ExpressRequestDto) {
+  async updateOnboarding(@Body() body: Partial<Onboarding>, @Req() req: ExpressRequestDto, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
       if (!userObject) {
@@ -448,16 +347,79 @@ export class CalorieController {
       );
 
       if (!updatedOnboarding) {
-        throw new BadRequestException("Không thể cập nhật thông tin onboarding.");
+        throw new BadRequestException("Bạn chưa có hồ sơ sức khỏe (Onboarding). Vui lòng cập nhật thông tin cơ bản trước khi đặt mục tiêu.");
       }
 
-      return {
-        success: true,
-        message: "Cập nhật thông tin onboarding thành công",
-        data: updatedOnboarding,
-      };
+      return res.status(HttpStatus.OK).json(updatedOnboarding);
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi cập nhật onboarding.");
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Lấy danh sách và tổng lượng calo tiêu thụ trong ngày hôm nay
+   * @param req
+   * @returns
+   */
+  @Get("today")
+  async getTodayConsumption(@Req() req: ExpressRequestDto, @Res() res: Response) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+
+      const today = new Date();
+      const result = await this.calorieAnalysisService.getDailyConsumption(
+        userObject._id.toString(),
+        today
+      );
+
+      return res
+        .set({
+          "Access-Control-Expose-Headers": "X-Authorization, X-Total-Count",
+        })
+        .status(HttpStatus.OK)
+        .json(result);
+    } catch (error) {
+      throw new BadRequestException(
+        error.message || "Có lỗi xảy ra khi lấy dữ liệu hôm nay."
+      );
+    }
+  }
+
+  /**
+   * @author Tony Vu
+   * Lấy danh sách và tổng lượng calo tiêu thụ cho ngày được chọn
+   * @param req
+   * @param date (query) - ISO date string or YYYY-MM-DD
+   */
+  @Get("day")
+  async getDayConsumption(@Req() req: ExpressRequestDto, @Query('date') dateStr: string, @Res() res: Response) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException('User is invalid');
+      }
+
+      const date = dateStr ? new Date(dateStr) : new Date();
+      if (isNaN(date.getTime())) {
+        throw new BadRequestException('date is invalid');
+      }
+
+      // Return consumption for each day in the week containing the given date
+      const weekResult = await this.calorieAnalysisService.getWeeklyConsumption(
+        userObject._id.toString(),
+        date
+      );
+
+      return res
+        .set({ 'Access-Control-Expose-Headers': 'X-Authorization, X-Total-Count' })
+        .status(HttpStatus.OK)
+        .json({ week: weekResult });
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Có lỗi xảy ra khi lấy dữ liệu theo ngày.');
     }
   }
 }

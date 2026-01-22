@@ -1,6 +1,15 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Schema as MongooseSchema } from "mongoose";
 
+export enum DietType {
+  BALANCED = 'BALANCED',
+  LOW_CARB = 'LOW_CARB',
+  LOW_FAT = 'LOW_FAT',
+  HIGH_PROTEIN = 'HIGH_PROTEIN',
+  KETO = 'KETO',
+  VEGETARIAN = 'VEGETARIAN',
+}
+
 export type OnboardingDocument = Onboarding & Document;
 
 @Schema({
@@ -100,9 +109,10 @@ export class Onboarding {
 
   @Prop({
     type: String,
+    enum: DietType,
     default: null,
   })
-  diet_type: string; // Chế độ ăn (ví dụ: "Ít Carb", "Cân bằng", "Keto", v.v.)
+  diet_type: DietType; // Chế độ ăn (enum: BALANCED, LOW_CARB, LOW_FAT, HIGH_PROTEIN, KETO, VEGETARIAN)
 
   @Prop({
     type: Number,

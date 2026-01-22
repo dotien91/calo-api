@@ -185,4 +185,47 @@ export class CalorieService {
       macros
     };
   }
+
+  /**
+   * Calculate health score based on macro ratios (extracted from controller)
+   */
+  calculateHealthScore(
+    calories: number,
+    protein: number,
+    carbs: number,
+    fat: number
+  ): { score: number; reason: string } {
+    const proteinCalories = protein * 4;
+    const carbsCalories = carbs * 4;
+    const fatCalories = fat * 9;
+
+    const proteinPercent = (proteinCalories / calories) * 100;
+    const carbsPercent = (carbsCalories / calories) * 100;
+    const fatPercent = (fatCalories / calories) * 100;
+
+    let score = 5;
+    let reason = "";
+
+    if (proteinPercent >= 25 && fatPercent <= 35 && carbsPercent <= 60) {
+      score = 8;
+      reason = "Tỷ lệ dinh dưỡng cân bằng, protein cao, chất béo vừa phải";
+    } else if (proteinPercent >= 20 && fatPercent <= 40 && carbsPercent <= 65) {
+      score = 7;
+      reason = "Tỷ lệ dinh dưỡng khá cân bằng";
+    } else if (proteinPercent >= 15 && fatPercent <= 45) {
+      score = 6;
+      reason = "Tỷ lệ dinh dưỡng ở mức chấp nhận được";
+    } else if (fatPercent > 45) {
+      score = 4;
+      reason = "Hàm lượng chất béo cao";
+    } else if (proteinPercent < 15) {
+      score = 4;
+      reason = "Hàm lượng protein thấp";
+    } else {
+      score = 5;
+      reason = "Tỷ lệ dinh dưỡng trung bình";
+    }
+
+    return { score, reason };
+  }
 }
