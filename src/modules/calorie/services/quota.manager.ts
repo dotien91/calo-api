@@ -14,7 +14,7 @@ interface QuotaData {
 
 export class QuotaManager {
   // Danh sách model ưu tiên theo thứ tự
-  private models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+  private models = ['gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-flash'];
   private limitPerDay = 20;
 
   constructor() {
