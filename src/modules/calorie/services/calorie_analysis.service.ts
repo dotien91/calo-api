@@ -40,9 +40,10 @@ export class CalorieAnalysisService {
       ingredients: analysisData.ingredients || [],
     };
 
-    // Chỉ thêm image_url nếu có
-    if (imageUrl) {
-      dataToCreate.image_url = imageUrl;
+    // Ưu tiên imageUrl từ tham số, nếu không có thì lấy từ analysisData.image_url
+    const finalImageUrl = imageUrl || analysisData.image_url;
+    if (finalImageUrl) {
+      dataToCreate.image_url = finalImageUrl;
     }
 
     const created = new this.calorieAnalysisModel(dataToCreate);
@@ -325,8 +326,18 @@ export class CalorieAnalysisService {
       body.total_fat
     );
 
+    const normalizedIngredients = (body.ingredients || []).map((i: any) => ({
+      name: i?.name,
+      weight: i?.weight,
+      unit: i?.unit || "g",
+      calories: i?.calories,
+      carbs: i?.carbs,
+      protein: i?.protein,
+      fat: i?.fat,
+    }));
+
     const analysisData: ICalorieAnalysis = {
-      food_name: body.food_name || 'Bữa ăn thủ công',
+      food_name: body.food_name || "Bữa ăn thủ công",
       health_score: healthScore.score,
       health_reason: healthScore.reason,
       total_weight: body.total_weight,
@@ -334,7 +345,8 @@ export class CalorieAnalysisService {
       total_carbs: body.total_carbs,
       total_protein: body.total_protein,
       total_fat: body.total_fat,
-      ingredients: body.ingredients || [],
+      ingredients: normalizedIngredients,
+      image_url: body.image_url,
     };
 
     const saved = await this.create(userId, analysisData);

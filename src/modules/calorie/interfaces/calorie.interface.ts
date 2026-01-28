@@ -18,4 +18,5 @@ export interface ICalorieAnalysis {
   total_protein: number;
   total_fat: number;
   ingredients: IIngredient[];
+  image_url?: string;
 }

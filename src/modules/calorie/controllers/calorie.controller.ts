@@ -17,6 +17,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
+import { CloudinaryService } from "../../media/services/cloudinary.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
 import { OnboardingDto } from "../dto/onboarding.dto";
 import { Onboarding } from "../schemas/onboarding.schema";
@@ -29,7 +30,8 @@ export class CalorieController {
   constructor(
     private readonly calorieService: CalorieService,
     private readonly calorieAnalysisService: CalorieAnalysisService,
-    private readonly onboardingService: OnboardingService
+    private readonly onboardingService: OnboardingService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   /**
@@ -57,13 +59,20 @@ export class CalorieController {
     }
 
     try {
-      const savedAnalysis = await this.calorieAnalysisService.createFromImage(
-        userObject._id.toString(),
-        file,
-        country
-      );
+      // Only analyze and return data (do NOT save to DB)
+      const [uploadResult, analysisResult] = await Promise.all([
+        this.cloudinaryService.uploadFoodImage(file),
+        this.calorieService.analyzeFoodImage(file, country),
+      ]);
 
-      return res.status(HttpStatus.OK).json(savedAnalysis);
+      if (!analysisResult) {
+        throw new BadRequestException("AI không thể phân tích hình ảnh này.");
+      }
+
+      return res.status(HttpStatus.OK).json({
+        ...analysisResult,
+        image_url: (uploadResult as any)?.secure_url,
+      });
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi phân tích calorie.");
     }
