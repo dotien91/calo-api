@@ -32,7 +32,6 @@ import { CourseModule } from "./modules/course/course.module";
 import { EmailModule } from "./modules/email/email.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PodcastModule } from "./modules/podcast/podcast.module";
-import { ProductModule } from "./modules/product/product.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ReferralModule } from "./modules/referral/referral.module";
 import { ShortModule } from "./modules/short/short.module";
@@ -89,7 +88,6 @@ const dataImport = [
   ChatHistoryModule,
   EmailModule,
   CouponModule,
-  ProductModule,
   CalorieModule,
   RedeemModule,
   ThreadModule,
