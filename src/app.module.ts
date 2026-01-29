@@ -7,7 +7,6 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { AuthMiddleware } from "./middlewares/auth.middleware";
 import { CheckDocumentSizeMiddleware } from "./middlewares/check_length.middleware";
 import { ConfigModule as ConfigModuleCore } from "./modules/config/config.module";
-import { ContactFormModule } from "./modules/contact_form/contact_form.module";
 import { CoreModule } from "./modules/core/core.module";
 import { HookModule } from "./modules/hook/hook.module";
 import { NotificationModule } from "./modules/notification/notification.module";
@@ -17,9 +16,7 @@ import { PurchaseModule } from "./modules/purchase/purchase.module";
 import { QueueModule } from "./modules/queue/queue.module";
 import { ReportModule } from "./modules/report/report.module";
 import { SubscribeModule } from "./modules/subscribe/subscribe.module";
-// import { TaskService } from "./modules/task/task.service";
 import { TransactionModule } from "./modules/transaction/transaction.module";
-// import { UserService } from "./modules/user/services/user.service";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { AcceptLanguageResolver, I18nModule } from "nestjs-i18n";
 import * as path from "path";
@@ -27,8 +24,6 @@ import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CalorieModule } from "./modules/calorie/calorie.module";
-import { CallKitModule } from "./modules/callkit/call_kit.module";
-import { CartModule } from "./modules/cart/cart.module";
 import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
 import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
@@ -40,7 +35,6 @@ import { PodcastModule } from "./modules/podcast/podcast.module";
 import { ProductModule } from "./modules/product/product.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ReferralModule } from "./modules/referral/referral.module";
-import { ShopModule } from "./modules/shop/shop.module";
 import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
 import { TestModule } from "./modules/test/test.module";
@@ -83,7 +77,6 @@ const dataImport = [
   ConfigModuleCore,
   TransactionModule,
   UserModule,
-  ContactFormModule,
   ScheduleModule.forRoot(),
   HookModule,
   MediaModule,
@@ -94,12 +87,9 @@ const dataImport = [
   CommunityModule,
   ChatRoomModule,
   ChatHistoryModule,
-  CallKitModule,
   EmailModule,
   CouponModule,
-  ShopModule,
   ProductModule,
-  CartModule,
   CalorieModule,
   RedeemModule,
   ThreadModule,
