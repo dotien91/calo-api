@@ -4,7 +4,6 @@ import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ChatRoomService } from "../../../modules/chat_room/services/chat_room.service";
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
-import { I18NService } from "../../../modules/i18n/services/i18n.service";
 import { MediaService } from "../../../modules/media/services/media.service";
 import { NotificationHelper } from "../../../modules/notification/helper/notification.helper";
 import { SocketService } from "../../../modules/socket/services/socket.service";
@@ -28,8 +27,7 @@ export class ChatHistoryHelper {
     private readonly chatRoomService: ChatRoomService,
     private readonly mediaService: MediaService,
     private readonly notificationHelper: NotificationHelper,
-    private readonly socketService: SocketService,
-    private readonly i18nService: I18NService
+    private readonly socketService: SocketService
   ) {}
 
   private readonly logger = new Logger("chat_history");

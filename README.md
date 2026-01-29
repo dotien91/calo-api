@@ -71,3 +71,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+tar -czf dist.tar.gz dist
+
+cat dist.tar.gz | ssh root@159.223.41.222 "cat > /var/www/calo-app/calo-api/dist.tar.gz"
+
+ tar -xzvf dist.tar.gz

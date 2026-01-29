@@ -20,7 +20,7 @@ import * as _ from "lodash";
 import { Model, Types } from "mongoose";
 import { Buffer } from "node:buffer";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { I18NService } from "../../../modules/i18n/services/i18n.service";
+import { getDefaultMessage } from "../../../utils/default-messages";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { User, UserDocument } from "../../../modules/user/schemas/user.schema";
@@ -45,8 +45,7 @@ export class NotificationHelper {
     private notificationService: NotificationService,
     private userSessionService: UserSessionService,
     private jwtHelper: JwtHelperService,
-    private socketService: SocketService,
-    private i18nService: I18NService
+    private socketService: SocketService
   ) {}
   private readonly logger = new Logger("notification");
 
@@ -99,14 +98,12 @@ export class NotificationHelper {
           notification: JSON.stringify({
             ...dataNotificationObject,
             user_id: [user_id],
-            title: this.i18nService.getMessage(
+            title: getDefaultMessage(
               dataNotificationObject.title,
-              userSession.picked_language,
               dataNotificationObject.replace_pattern
             ),
-            content: this.i18nService.getMessage(
+            content: getDefaultMessage(
               dataNotificationObject.content,
-              userSession.picked_language,
               dataNotificationObject.replace_pattern
             ),
           }),
@@ -348,14 +345,12 @@ export class NotificationHelper {
             appleSignature = _.uniq(appleSignature);
   
             //Send Notification
-            const title = this.i18nService.getMessage(
+            const title = getDefaultMessage(
               dataNotification.title,
-              "vi",
               dataNotification.replace_pattern
             );
-            const content = this.i18nService.getMessage(
+            const content = getDefaultMessage(
               dataNotification.content,
-              "vi",
               dataNotification.replace_pattern
             );
             let data = {
@@ -828,8 +823,8 @@ export class NotificationHelper {
   private formatNotificationDataReturn(dataReturn: any[]) {
     dataReturn = dataReturn.map((notification) => ({
       ...notification,
-      title: this.i18nService.getMessage(notification.title, undefined, notification.replace_pattern),
-      content: this.i18nService.getMessage(notification.content, undefined, notification.replace_pattern),
+      title: getDefaultMessage(notification.title, notification.replace_pattern),
+      content: getDefaultMessage(notification.content, notification.replace_pattern),
     }));
 
     return dataReturn;

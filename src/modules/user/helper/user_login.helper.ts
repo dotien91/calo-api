@@ -15,7 +15,7 @@ import { google } from "googleapis";
 import * as url from "url";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { JwtHelperService } from "../../../modules/core/services/jwt_helper.service";
-import { I18NService } from "../../../modules/i18n/services/i18n.service";
+import { getDefaultMessage } from "../../../utils/default-messages";
 import {
   RedeemMissionActionTarget,
   RedeemMissionActionType,
@@ -57,8 +57,7 @@ export class UserLoginHelper {
     private emailService: EmailService,
     private configService: ConfigService,
     private referralService: ReferralService,
-    private redeemUserService: RedeemUserService,
-    private i18nService: I18NService
+    private redeemUserService: RedeemUserService
   ) {}
 
   private readonly logger = new Logger("user_login");
@@ -497,13 +496,11 @@ export class UserLoginHelper {
       };
       const userObject = await this.appUserService.findOneLogin(dataToSearch);
       if (!userObject) {
-        const message = this.i18nService.getMessage("translation.user.login.loginWithPassword");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.login.loginWithPassword"));
       }
       const passwordToCheck = await this.handleProcessPassword(dataLogin?.user_password);
       if (passwordToCheck?.toString() !== userObject?.user_password?.toString()) {
-        const message = this.i18nService.getMessage("translation.user.login.loginWithPassword");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.login.loginWithPassword"));
       }
       //Correct
       if (userObject && userObject._id) {
@@ -539,13 +536,11 @@ export class UserLoginHelper {
       if (dataLogin.user_password.length < 4) {
         const isValidPassword = dataLogin.user_password.match(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/);
         if (!isValidPassword) {
-          const message = this.i18nService.getMessage("translation.user.register.weakPassword");
-          throw new BadRequestException(message);
+          throw new BadRequestException(getDefaultMessage("translation.user.register.weakPassword"));
         }
       }
       if (dataLogin.user_password.length > 20) {
-        const message = this.i18nService.getMessage("translation.user.register.lengthPassword");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.lengthPassword"));
       }
 
       //Process User Email
@@ -555,13 +550,11 @@ export class UserLoginHelper {
       };
       let userObject: any = await this.appUserService.findOneLogin(dataToSearch);
       if (userObject) {
-        const message = this.i18nService.getMessage("translation.user.register.duplicateUserEmail");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.duplicateUserEmail"));
       }
 
       if (!(dataLogin.phone_number || dataLogin.user_email)) {
-        const message = this.i18nService.getMessage("translation.user.register.missing");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.missing"));
       }
 
       if (!userObject || (userObject && !userObject._id)) {
@@ -648,12 +641,10 @@ export class UserLoginHelper {
         dataLogin.user_password.length < 4 ||
         !!!dataLogin.user_password.match(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
       ) {
-        const message = this.i18nService.getMessage("translation.user.register.weakPassword");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.weakPassword"));
       }
       if (dataLogin.user_password.length > 20) {
-        const message = this.i18nService.getMessage("translation.user.register.lengthPassword");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.lengthPassword"));
       }
 
       //Process User Email
@@ -670,8 +661,7 @@ export class UserLoginHelper {
       }
 
       if (!(dataLogin.phone_number || dataLogin.user_email)) {
-        const message = this.i18nService.getMessage("translation.user.register.missing");
-        throw new BadRequestException(message);
+        throw new BadRequestException(getDefaultMessage("translation.user.register.missing"));
       }
 
       if (!userObject || (userObject && !userObject._id)) {

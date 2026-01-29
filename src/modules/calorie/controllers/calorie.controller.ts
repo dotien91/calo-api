@@ -328,15 +328,26 @@ export class CalorieController {
         throw new BadRequestException("User is invalid");
       }
 
-      // Chỉ cho phép cập nhật một số trường cụ thể
+      // Các trường được phép cập nhật (trừ _id, user_id)
       const allowedFields = [
+        'gender',
+        'age',
+        'height',
+        'current_weight',
+        'target_weight',
+        'activity_level',
+        'weight_goal_pace',
+        'bmr',
+        'tdee',
+        'target_calories',
+        'target_protein',
+        'target_carbs',
+        'target_fat',
         'diet_type',
         'target_steps',
         'target_water',
-        'target_weight',
-        'current_weight',
-        'activity_level',
-        'weight_goal_pace'
+        'weeks_to_goal',
+        'estimated_completion_date',
       ];
 
       const updateData: any = {};
@@ -345,7 +356,6 @@ export class CalorieController {
           updateData[field] = body[field];
         }
       }
-
       if (Object.keys(updateData).length === 0) {
         throw new BadRequestException("Không có dữ liệu để cập nhật.");
       }

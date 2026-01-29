@@ -15,7 +15,6 @@ import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { I18NModule } from "../i18n/i18n.module";
 import { NotificationModule } from "../notification/notification.module";
 import { Order, OrderSchema } from "../order/schemas/order.schema";
 import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
@@ -113,7 +112,6 @@ import { UserViewService } from "./services/user_view.service";
     forwardRef(() => RedeemModule),
     SocketModule,
     NotificationModule,
-    I18NModule,
   ],
   controllers: [UserController],
   providers: [

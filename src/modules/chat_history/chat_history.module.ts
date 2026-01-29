@@ -13,7 +13,6 @@ import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schem
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { I18NModule } from "../i18n/i18n.module";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
@@ -70,7 +69,6 @@ import { ChatHistory, ChatHistorySchema } from "./schemas/chat_history.schema";
     ]),
     SocketModule,
     NotificationModule,
-    I18NModule,
   ],
   controllers: [ChatHistoryController],
   providers: [

@@ -7,7 +7,6 @@ import { ChatHistoryService } from "../chat_history/services/chat_history.servic
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { I18NModule } from "../i18n/i18n.module";
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { MediaService } from "../media/services/media.service";
 import { NotificationModule } from "../notification/notification.module";
@@ -71,7 +70,6 @@ import { ChatRoomUserOptionService } from "./services/chat_room_user_option.serv
     ]),
     SocketModule,
     NotificationModule,
-    I18NModule,
   ],
   controllers: [ChatRoomController],
   providers: [

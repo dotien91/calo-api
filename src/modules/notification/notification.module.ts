@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
-import { I18NModule } from "../i18n/i18n.module";
 import { SocketModule } from "../socket/socket.module";
 import { User, UserSchema } from "../user/schemas/user.schema";
 import { UserSession, UserSessionSchema } from "../user/schemas/user_session.schema";
@@ -24,7 +23,6 @@ import { NotificationService } from "./services/notification.service";
       { name: User.name, schema: UserSchema },
     ]),
     SocketModule,
-    I18NModule,
   ],
   controllers: [NotificationController],
   providers: [
