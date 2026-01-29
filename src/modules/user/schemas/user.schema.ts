@@ -323,6 +323,13 @@ export class User {
   })
   exp_time: number;
 
+  @Prop({
+    type: String,
+    default: null,
+    index: true,
+  })
+  device_uuid?: string;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User).index({

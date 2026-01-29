@@ -20,6 +20,7 @@ import { CreateUserViewDto } from "../dto/create-user_view.dto";
 import { ListUserOrganizationDto } from "../dto/filter-user_organization.dto";
 import { LoginUserDto } from "../dto/login-user.dto";
 import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
+import { LoginDeviceDto } from "../dto/login-device.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
 import { RequestDataDto } from "../dto/request-data.dto";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
@@ -101,6 +102,14 @@ export class UserController {
   @Post("login/password")
   loginWithPassword(@Body() loginData: LoginUserPasswordDto, @Res() res: Response, @Req() req: Request) {
     return this.userLoginHelper.loginWithPassword(loginData, res, req);
+  }
+
+  /**
+   * @description Login (or create) by device_uuid
+   */
+  @Post("login/device")
+  loginWithDevice(@Body() loginData: LoginDeviceDto, @Res() res: Response, @Req() req: Request) {
+    return this.userLoginHelper.loginWithDevice(loginData, res, req);
   }
 
   /**

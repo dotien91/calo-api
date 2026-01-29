@@ -30,6 +30,7 @@ import { CreateChangePasswordDto } from "../dto/create-change-password.dto";
 import { CreateForgotPasswordEmail } from "../dto/create-forgot-password.dto";
 import { LoginUserDto } from "../dto/login-user.dto";
 import { LoginUserPasswordDto } from "../dto/login-user_password.dto";
+import { LoginDeviceDto } from "../dto/login-device.dto";
 import { RegisterUserDto } from "../dto/register-user.dto";
 import { SendPhoneDto } from "../dto/send-phone.dto";
 import { UpdateSessionDto } from "../dto/update-session.dto";
@@ -61,6 +62,79 @@ export class UserLoginHelper {
   ) {}
 
   private readonly logger = new Logger("user_login");
+
+  /**
+   * @description Login/Create account by device_uuid
+   * - If no user has device_uuid: create a new user and assign device_uuid
+   * - If exists: return same as other login APIs (set X-Authorization + user object)
+   */
+  async loginWithDevice(dataLogin: LoginDeviceDto, res: Response, req: Request) {
+    try {
+      const deviceUuid = dataLogin?.device_uuid?.toString();
+      if (!deviceUuid) {
+        throw new BadRequestException("device_uuid is required");
+      }
+
+      // Find user by device_uuid
+      let userObject: any = await this.appUserService.findOne({ device_uuid: deviceUuid });
+
+      // Create user if not exist
+      if (!userObject || !userObject._id) {
+        const [dataAvatar, dataIp] = await Promise.all([
+          this.handleGetUserAvatarRandom(),
+          this.configService.getIpInfo(req),
+        ]);
+
+        const userLogin = `device_${deviceUuid}`.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
+        const userEmail = `${userLogin}@device.local`;
+
+        const dataToCreate: any = {
+          user_login: userLogin,
+          user_email: userEmail,
+          display_name: "IH-" + makeRandom(8, "0123456789"),
+          user_avatar: dataAvatar,
+          user_avatar_thumbnail: dataAvatar,
+          user_status: 1,
+          invitation_code: makeRandom(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+          country: dataIp?.country,
+          timezone: dataIp?.timezone,
+          device_uuid: deviceUuid,
+        };
+
+        userObject = await this.appUserService.create(dataToCreate);
+      }
+
+      if (userObject && !Number(userObject.user_status)) {
+        throw new BadRequestException("User is invalid!");
+      }
+
+      // Create session + JWT (same behavior as other login)
+      const sessionLikeLoginDto: any = {
+        device_uuid: deviceUuid,
+        device_signature: dataLogin.device_signature,
+        device_type: dataLogin.device_type,
+        language: dataLogin.language,
+      };
+
+      const dataSession = await this.handleUserSession(req, userObject, sessionLikeLoginDto as LoginUserDto);
+      const sessionGenerator = dataSession?._id ? dataSession._id.toString() : "";
+
+      const tokenReturn = this.jwtHelper.generateJwt(
+        userObject?._id.toString(),
+        userObject?.user_email.toString(),
+        sessionGenerator,
+        true
+      );
+
+      return res
+        .set({ "X-Authorization": tokenReturn, "Access-Control-Expose-Headers": "X-Authorization" })
+        .status(HttpStatus.OK)
+        .json(userObject);
+    } catch (error) {
+      this.logger.log("Login with Device Error: " + JSON.stringify(error));
+      throw new BadRequestException(error.message);
+    }
+  }
 
   /**
    * @author Tony Vu
