@@ -19,22 +19,22 @@ export class NotificationController {
   /**
    * @author Tony Vu
    */
-  async handleProcessCron() {
-    const cronJob = schedule(CronExpression.EVERY_2_HOURS, async () => {
-      try {
-        // await this.bar();
-        console.log("Start Cron Job Every 2 Hour");
-        this.notificationHelper.handleCronJob();
-      } catch (e) {
-        console.error(e);
-      }
-    });
-    cronJob.start();
-    // // Start job
-    // if (!cronJob.running) {
-    //   cronJob.start();
-    // }
-  }
+  // async handleProcessCron() {
+  //   const cronJob = schedule(CronExpression.EVERY_2_HOURS, async () => {
+  //     try {
+  //       // await this.bar();
+  //       console.log("Start Cron Job Every 2 Hour");
+  //       this.notificationHelper.handleCronJob();
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   });
+  //   cronJob.start();
+  //   // // Start job
+  //   // if (!cronJob.running) {
+  //   //   cronJob.start();
+  //   // }
+  // }
 
   @Get("/admin-list")
   @Permissions(UserRoles.ADMIN)

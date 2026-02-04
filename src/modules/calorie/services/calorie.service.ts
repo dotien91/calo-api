@@ -1,88 +1,67 @@
 import { Injectable } from "@nestjs/common";
 import { GoogleGenAI } from "@google/genai";
 import { ICalorieAnalysis } from "../interfaces/calorie.interface";
-import { QuotaManager } from "./quota.manager";
 import { ACTIVITY_MULTIPLIERS, PACE_CALORIES } from "../constants/calorie.constants";
 import { Gender, WeightGoalPace } from "../enums/calorie.enum";
 import { OnboardingDto } from "../dto/onboarding.dto";
 
+const GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'] as const;
+
 @Injectable()
 export class CalorieService {
   private client: GoogleGenAI;
-  private quotaManager: QuotaManager;
+  /** Sau khi A lỗi phải dùng B thì lần sau ưu tiên gọi B trước */
+  private preferSecondModel = false;
 
   constructor() {
-    // Khởi tạo client theo SDK mới
     this.client = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
-    this.quotaManager = new QuotaManager();
   }
-
-
 
   /**
    * @author Tony Vu
-   * @param file
-   * @param country
-   * @returns
+   * Gọi A, lỗi thì B. Lần sau ưu tiên gọi B trước.
    */
   async analyzeFoodImage(file: Express.Multer.File, country?: string): Promise<ICalorieAnalysis> {
-    // Lấy model còn quota
-    const model = this.quotaManager.getAvailableModel();
-    
-    if (!model) {
-      throw new Error("Tất cả các model đã hết quota trong ngày. Vui lòng thử lại vào ngày mai.");
-    }
+    const models = process.env.GEMINI_MODEL
+      ? [process.env.GEMINI_MODEL]
+      : this.preferSecondModel
+        ? [GEMINI_MODELS[1], GEMINI_MODELS[0]]
+        : [...GEMINI_MODELS];
 
-    try {
-      // Gọi model với quota management
-      const response = await this.client.models.generateContent({
-        model,
-        contents: [
-          {
-            role: "user",
-            parts: [
-              { text: this.getDinhDuongPrompt(country) },
-              {
-                inlineData: {
-                  data: file.buffer.toString("base64"),
-                  mimeType: file.mimetype,
-                },
+    const payload = {
+      contents: [
+        {
+          role: "user" as const,
+          parts: [
+            { text: this.getDinhDuongPrompt(country) },
+            {
+              inlineData: {
+                data: file.buffer.toString("base64"),
+                mimeType: file.mimetype,
               },
-            ],
-          },
-        ],
-        // Ép kiểu trả về là JSON để không cần helper parse thủ công
-        config: {
-            responseMimeType: "application/json"
-        }
-      });
+            },
+          ],
+        },
+      ],
+      config: { responseMimeType: "application/json" as const },
+    };
 
-      // Tăng counter sau khi gọi thành công
-      this.quotaManager.incrementUsage(model);
-
-      // SDK mới trả về kết quả trực tiếp qua thuộc tính .value (hoặc xử lý tùy phiên bản)
-      // Thường response.text sẽ trả về chuỗi JSON sạch
-      return JSON.parse(response.text);
-    } catch (e) {
-      // Nếu lỗi 429 (rate limit) thì đánh dấu model exhausted
-      if (e.message?.includes('429') || (e as any).status === 429) {
-        this.quotaManager.markAsExhausted(model);
-        console.error(`[Gemini Error] Model ${model} exhausted:`, e.message);
-      } else {
-        console.error(`[Gemini Error] Model ${model}:`, e.message);
+    let isFirstModel = true;
+    for (const model of models) {
+      try {
+        const response = await this.client.models.generateContent({ model, ...payload });
+        if (isFirstModel) this.preferSecondModel = model !== GEMINI_MODELS[0];
+        return JSON.parse(response.text);
+      } catch (e) {
+        const err = e as any;
+        console.warn(`[Gemini] model=${model}`, err?.message ?? err);
+        if (isFirstModel) this.preferSecondModel = true;
+        isFirstModel = false;
       }
-      
-      // Thử lại với model khác nếu có
-      const nextModel = this.quotaManager.getAvailableModel();
-      if (nextModel && nextModel !== model) {
-        console.log(`[Quota] Retrying with model: ${nextModel}`);
-        return this.analyzeFoodImage(file, country);
-      }
-      
-      return null;
     }
+    return null;
   }
 
   /**

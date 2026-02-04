@@ -27,7 +27,7 @@ export class PurchaseController {
     private readonly purchaseHelper: PurchaseHelper,
     private readonly orderService: OrderService // private readonly orderHelper: OrderHelper
   ) {
-    this.handleProcessCron();
+    // this.handleProcessCron();
   }
 
   /**
@@ -281,22 +281,22 @@ export class PurchaseController {
   /**
    * @author Tony Vu
    */
-  async handleProcessCron() {
-    const cronJob = schedule(CronExpression.EVERY_3_HOURS, async () => {
-      try {
-        // await this.bar();
-        console.log("Start Cron Job Every 6 Hours");
-        //this.purchaseHelper.handleCronJob();
-      } catch (e) {
-        console.error(e);
-      }
-    });
-    // Start job
-    // if (!cronJob.running) {
-    //   cronJob.start();
-    // }
-    cronJob?.start();
-  }
+  // async handleProcessCron() {
+  //   const cronJob = schedule(CronExpression.EVERY_3_HOURS, async () => {
+  //     try {
+  //       // await this.bar();
+  //       console.log("Start Cron Job Every 6 Hours");
+  //       //this.purchaseHelper.handleCronJob();
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   });
+  //   // Start job
+  //   // if (!cronJob.running) {
+  //   //   cronJob.start();
+  //   // }
+  //   cronJob?.start();
+  // }
 
   @UsePipes(
     new ValidationPipe({
