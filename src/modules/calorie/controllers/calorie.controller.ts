@@ -62,30 +62,10 @@ export class CalorieController {
       // Only analyze and return data (do NOT save to DB)
       const [uploadResult, analysisResult] = await Promise.all([
         this.cloudinaryService.uploadFoodImage(file),
+        {}
         // this.calorieService.analyzeFoodImage(file, country),
-        {
-          food_name: "Bữa ăn thủ công",
-          health_score: 5,
-          health_reason: "Bữa ăn thủ công",
-          total_weight: 100,
-          total_calories: 100,
-          total_carbs: 10,
-          total_protein: 10,
-          total_fat: 10,
-          ingredients: [
-            {
-              name: "Thịt bò",
-              weight: 100,
-              unit: "g",
-              calories: 100,
-              carbs: 10,
-              protein: 10,
-              fat: 10,
-            },
-          ],
-        },
       ]);
-
+console.log("uploadResultuploadResult", uploadResult);
       if (!analysisResult) {
         throw new BadRequestException("AI không thể phân tích hình ảnh này.");
       }

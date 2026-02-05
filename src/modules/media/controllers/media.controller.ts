@@ -311,67 +311,53 @@ export class MediaController {
   async uploadFood(@UploadedFile() file: Express.Multer.File, @Req() req, @Res() res: Response) {
     try {
       const userObject = req?.user_object;
-      // if (!userObject) {
-      //   throw new ForbiddenException("User is invalid");
-      // }
 
       if (!file) {
         throw new BadRequestException("Vui lòng cung cấp hình ảnh món ăn");
       }
 
-      // 1. Upload lên thư mục riêng cho Food
+      // 1. Upload & Nén (Đã tích hợp Sharp trong service)
       const uploadResult = await this.cloudinaryService.uploadFoodImage(file);
 
+      // 2. Cập nhật URL vào bản ghi phân tích (nếu có id)
       const analysisId = req?.body?.analysis_id || req?.body?.analysisId;
       if (analysisId) {
         await this.calorieAnalysisService.updateImageUrl(analysisId, uploadResult.secure_url);
       }
 
-      // 2. Tạo các URL variants với dynamic transformations
+      // 3. Tạo các URL variants
       const thumbnailUrl = this.cloudinaryService.getThumbnailUrl(uploadResult.public_id, 200);
       const squareUrl = this.cloudinaryService.getSquareUrl(uploadResult.public_id, 400);
 
-      // 3. Tạo record lưu trữ media theo chuẩn của Tony Vu
+      // 4. Lưu record Media
       const dataToCreate = {
         media_url: uploadResult.secure_url,
         media_thumbnail: thumbnailUrl,
         media_square: squareUrl,
         createBy: userObject?._id?.toString() || null,
         media_type: "image",
-        media_mime_type: file.mimetype,
+        media_mime_type: "image/jpeg", // Sharp đã convert sang jpeg
         media_file_name: file.originalname,
-        media_status: 1, // Đã hoàn tất upload
+        media_status: 1,
         media_meta: [
-          {
-            key: "public_id",
-            value: uploadResult.public_id,
-          },
-          {
-            key: "source",
-            value: "cloudinary",
-          },
-          {
-            key: "usage",
-            value: "calorie_scan",
-          },
+          { key: "public_id", value: uploadResult.public_id },
+          { key: "source", value: "cloudinary" },
+          { key: "usage", value: "calorie_scan" },
         ],
       };
 
-      // 4. Lưu vào database
       const savedMedia = await this.mediaService.create(dataToCreate);
-
-      // Trả về kết quả kèm URL để frontend có thể hiển thị ảnh ngay lập tức
       const mediaData = (savedMedia as any).toObject ? (savedMedia as any).toObject() : savedMedia;
+
       return res.status(HttpStatus.OK).json({
-          ...mediaData,
-          urls: {
-            original: uploadResult.secure_url,
-            thumbnail: thumbnailUrl,
-            square: squareUrl,
-          },
-        });
+        ...mediaData,
+        urls: {
+          original: uploadResult.secure_url,
+          thumbnail: thumbnailUrl,
+          square: squareUrl,
+        },
+      });
     } catch (error) {
-      this.logger.error("uploadFood Error: " + error.message);
       throw new BadRequestException(error.message);
     }
   }
