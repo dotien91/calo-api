@@ -36,6 +36,7 @@ import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
 import { TestModule } from "./modules/test/test.module";
 import { ThreadModule } from "./modules/thread/thread.module";
+import { TrackingModule } from "./modules/tracking/tracking.module";
 import { UserModule } from "./modules/user/user.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
 
@@ -81,6 +82,7 @@ const dataImport = [
   CalorieModule,
   RedeemModule,
   ThreadModule,
+  TrackingModule,
   SocketModule,
   TestModule,
   ReferralModule,
