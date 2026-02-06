@@ -5,13 +5,15 @@ import { ACTIVITY_MULTIPLIERS, PACE_CALORIES } from "../constants/calorie.consta
 import { Gender, WeightGoalPace } from "../enums/calorie.enum";
 import { OnboardingDto } from "../dto/onboarding.dto";
 
-const GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'] as const;
+// =================================================================
+// CẤU HÌNH MODEL TẠI ĐÂY (Thay đổi trực tiếp tên model ở dòng dưới)
+// =================================================================
+const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+const CURRENT_MODEL = 'gemini-2.5-flash-lite'; 
 
 @Injectable()
 export class CalorieService {
   private client: GoogleGenAI;
-  /** Sau khi A lỗi phải dùng B thì lần sau ưu tiên gọi B trước */
-  private preferSecondModel = false;
 
   constructor() {
     this.client = new GoogleGenAI({
@@ -19,16 +21,9 @@ export class CalorieService {
     });
   }
 
-  /**
-   * @author Tony Vu
-   * Gọi A, lỗi thì B. Lần sau ưu tiên gọi B trước.
-   */
-  async analyzeFoodImage(file: Express.Multer.File, country?: string): Promise<ICalorieAnalysis> {
-    const models = process.env.GEMINI_MODEL
-      ? [process.env.GEMINI_MODEL]
-      : this.preferSecondModel
-        ? [GEMINI_MODELS[1], GEMINI_MODELS[0]]
-        : [...GEMINI_MODELS];
+  async analyzeFoodImage(file: Express.Multer.File, country?: string): Promise<ICalorieAnalysis | null> {
+    // Sử dụng model được cấu hình cứng ở trên đầu file
+    const model = CURRENT_MODEL;
 
     const payload = {
       contents: [
@@ -45,30 +40,34 @@ export class CalorieService {
           ],
         },
       ],
-      config: { responseMimeType: "application/json" as const },
+      config: { 
+        responseMimeType: "application/json" as const 
+      },
     };
 
-    let isFirstModel = true;
-    for (const model of models) {
-      try {
-        const response = await this.client.models.generateContent({ model, ...payload });
-        if (isFirstModel) this.preferSecondModel = model !== GEMINI_MODELS[0];
+    try {
+      const response = await this.client.models.generateContent({ 
+        model, 
+        ...payload 
+      });
+
+      if (response && response.text) {
         return JSON.parse(response.text);
-      } catch (e) {
-        const err = e as any;
-        console.warn(`[Gemini] model=${model}`, err?.message ?? err);
-        if (isFirstModel) this.preferSecondModel = true;
-        isFirstModel = false;
       }
+      return null;
+
+    } catch (e) {
+      const err = e as any;
+      const errCode = err?.status || err?.error?.code || 'UNKNOWN';
+      const errMsg = err?.message || err?.error?.message || JSON.stringify(err);
+      
+      console.warn(`[Gemini Error] Model: ${model} | Code: ${errCode} | Message: ${errMsg}`);
+      return null;
     }
-    return null;
   }
 
-  /**
-   * @author Tony Vu
-   * @param country - Quốc gia (Việt Nam, Nhật Bản, Ý, Hàn Quốc, v.v.)
-   * @returns Prompt string tối ưu logic phân tích quốc tế
-   */
+  // --- CÁC HÀM BÊN DƯỚI GIỮ NGUYÊN ---
+
   private getDinhDuongPrompt(country?: string): string {
     const countryContext = country 
       ? `Cấu hình quốc gia/loại hình ẩm thực: ${country}.` 
@@ -114,29 +113,17 @@ export class CalorieService {
     `;
   }
 
-  /**
-   * @author Tony Vu
-   * Tính toán kế hoạch calorie dựa trên thông tin onboarding
-   * @param dto
-   * @returns
-   */
   calculateOnboardingPlan(dto: OnboardingDto) {
-    // 1. Tính BMR (Mifflin-St Jeor Equation - Công thức chuẩn nhất hiện nay)
     let bmr = (10 * dto.currentWeight) + (6.25 * dto.height) - (5 * dto.age);
     bmr += dto.gender === Gender.MALE ? 5 : -161;
 
-    // 2. Tính TDEE (Tổng năng lượng tiêu hao mỗi ngày)
     const multiplier = ACTIVITY_MULTIPLIERS[dto.activityLevel];
     const tdee = Math.round(bmr * multiplier);
 
-    // 3. Tính Daily Calorie Target (Mục tiêu calo mỗi ngày)
     const isGaining = dto.targetWeight > dto.currentWeight;
     const adjustment = PACE_CALORIES[dto.pace];
-    
-    // Nếu tăng cân thì cộng thêm, giảm cân thì trừ đi
     const dailyCalories = isGaining ? tdee + adjustment : tdee - adjustment;
 
-    // 4. Tính Ngày hoàn thành (Estimated Completion Date)
     const weightDiff = Math.abs(dto.targetWeight - dto.currentWeight);
     const weeklyChangeRate = dto.pace === WeightGoalPace.SLOW ? 0.25 : 
                              dto.pace === WeightGoalPace.NORMAL ? 0.5 : 1.0;
@@ -147,11 +134,10 @@ export class CalorieService {
     const estimatedDate = new Date();
     estimatedDate.setDate(estimatedDate.getDate() + daysNeeded);
 
-    // 5. Chia Macros (Tỷ lệ 50% Carb - 20% Protein - 30% Fat)
     const macros = {
-      carbs_g: Math.round((dailyCalories * 0.5) / 4),    // 1g Carb = 4kcal
-      protein_g: Math.round((dailyCalories * 0.2) / 4),  // 1g Protein = 4kcal
-      fat_g: Math.round((dailyCalories * 0.3) / 9),      // 1g Fat = 9kcal
+      carbs_g: Math.round((dailyCalories * 0.5) / 4),
+      protein_g: Math.round((dailyCalories * 0.2) / 4),
+      fat_g: Math.round((dailyCalories * 0.3) / 9),
     };
 
     return {
@@ -159,21 +145,20 @@ export class CalorieService {
       tdee,
       daily_calories: Math.round(dailyCalories),
       target_weight: dto.targetWeight,
-      weeks_to_goal: Math.round(weeksNeeded * 10) / 10, // Làm tròn 1 số thập phân
-      estimated_date: estimatedDate.toISOString().split('T')[0], // Trả về dạng YYYY-MM-DD
+      weeks_to_goal: Math.round(weeksNeeded * 10) / 10,
+      estimated_date: estimatedDate.toISOString().split('T')[0],
       macros
     };
   }
 
-  /**
-   * Calculate health score based on macro ratios (extracted from controller)
-   */
   calculateHealthScore(
     calories: number,
     protein: number,
     carbs: number,
     fat: number
   ): { score: number; reason: string } {
+    if (calories === 0) return { score: 10, reason: "Không có calo" };
+
     const proteinCalories = protein * 4;
     const carbsCalories = carbs * 4;
     const fatCalories = fat * 9;
