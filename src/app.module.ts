@@ -22,20 +22,15 @@ import { join } from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CalorieModule } from "./modules/calorie/calorie.module";
-import { ChatHistoryModule } from "./modules/chat_history/chat_history.module";
-import { ChatRoomModule } from "./modules/chat_room/chat_room.module";
 import { CommunityModule } from "./modules/community/community.module";
 import { CouponModule } from "./modules/coupon/coupon.module";
-import { CourseModule } from "./modules/course/course.module";
 import { EmailModule } from "./modules/email/email.module";
 import { MediaModule } from "./modules/media/media.module";
-import { PodcastModule } from "./modules/podcast/podcast.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
 import { ReferralModule } from "./modules/referral/referral.module";
 import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
 import { TestModule } from "./modules/test/test.module";
-import { ThreadModule } from "./modules/thread/thread.module";
 import { TrackingModule } from "./modules/tracking/tracking.module";
 import { UserModule } from "./modules/user/user.module";
 import { UserPermissionModule } from "./modules/user_permission/user_permission.module";
@@ -71,17 +66,12 @@ const dataImport = [
   HookModule,
   MediaModule,
   QueueModule,
-  PodcastModule,
   ShortModule,
-  CourseModule,
   CommunityModule,
-  ChatRoomModule,
-  ChatHistoryModule,
   EmailModule,
   CouponModule,
   CalorieModule,
   RedeemModule,
-  ThreadModule,
   TrackingModule,
   SocketModule,
   TestModule,
