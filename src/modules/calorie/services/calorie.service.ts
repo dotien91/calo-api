@@ -9,7 +9,7 @@ import { OnboardingDto } from "../dto/onboarding.dto";
 // CẤU HÌNH MODEL TẠI ĐÂY (Thay đổi trực tiếp tên model ở dòng dưới)
 // =================================================================
 const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
-const CURRENT_MODEL = 'gemini-2.5-flash-lite'; 
+const CURRENT_MODEL = 'gemini-2.5-flash'; 
 
 @Injectable()
 export class CalorieService {

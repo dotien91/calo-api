@@ -43,7 +43,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ disableErrorMessages: false, forbidNonWhitelisted: false, whitelist: true }));
   app.use(urlencoded({ extended: true, limit: "500mb" }));
   await app.listen(configService.get<string>("PORT"));
-  console.log("[Calo API] version: new");
 }
 
 bootstrap();

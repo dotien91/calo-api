@@ -1,46 +1,35 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
-import * as sharp from 'sharp';
-import * as streamifier from 'streamifier';
 
 @Injectable()
 export class CloudinaryService implements OnModuleInit {
   constructor(private configService: ConfigService) {}
 
   onModuleInit() {
+    // Cấu hình Cloudinary khi module khởi động
     cloudinary.config({
-      cloud_name: this.configService.get('CLOUDINARY_NAME'),
-      api_key: this.configService.get('CLOUDINARY_API_KEY'),
-      api_secret: this.configService.get('CLOUDINARY_SECRET'),
+      cloud_name: process.env.CLOUDINARY_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_SECRET,
     });
   }
 
   /**
-   * @author Tony Vu - Optimized with Sharp
-   * Nén ảnh ngay tại NestJS trước khi gửi lên Cloudinary
+   * @author Tony Vu
+   * @param file 
+   * @returns 
    */
   async uploadFoodImage(file: Express.Multer.File): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    
-    // TỐI ƯU TẠI SERVER: Nén ảnh trước khi đẩy lên Cloud
-    // Việc này giúp giảm băng thông từ Server của bạn đi lên Cloudinary
-    const optimizedBuffer = await sharp(file.buffer)
-      .resize(1200, 1200, { // Resize về 1200px (đủ nét cho Gemini/AI)
-        fit: 'inside',
-        withoutEnlargement: true 
-      })
-      .jpeg({ quality: 80, progressive: true }) // Nén chất lượng xuống 80%
-      .toBuffer();
-
     return new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         {
           folder: 'calo-food-scans',
-          resource_type: 'image',
-          // Cloudinary vẫn có thể xử lý thêm nếu cần
+          resource_type: 'auto',
+          // Tối ưu cực hạn cho AI: Rộng 800px là đủ để Gemini nhận diện chính xác
           transformation: [
-            { quality: "auto" },
-            { fetch_format: "auto" }
+            { width: 800, crop: "limit", quality: "auto:best" },
+            { fetch_format: "jpg" } // Chuyển về JPG để đồng bộ dữ liệu gửi AI
           ]
         },
         (error, result) => {
@@ -49,13 +38,16 @@ export class CloudinaryService implements OnModuleInit {
         },
       );
       
-      // Sử dụng streamifier để đẩy buffer đã nén vào upload stream
-      streamifier.createReadStream(optimizedBuffer).pipe(upload);
+      upload.end(file.buffer);
     });
   }
 
   /**
-   * Tạo dynamic URL với transformations (Giữ nguyên logic của bạn)
+   * @author Tony Vu
+   * Tạo dynamic URL với transformations
+   * @param publicId - Public ID của image trên Cloudinary
+   * @param options - Options cho transformations
+   * @returns URL string
    */
   getImageUrl(
     publicId: string,
@@ -71,6 +63,8 @@ export class CloudinaryService implements OnModuleInit {
     }
   ): string {
     const transformations: any[] = [];
+
+    // Crop và size
     if (options?.crop === 'thumb' && options?.width && options?.height) {
       transformations.push({
         crop: 'thumb',
@@ -84,13 +78,23 @@ export class CloudinaryService implements OnModuleInit {
       if (options?.crop) transformations.push({ crop: options.crop });
       if (options?.gravity) transformations.push({ gravity: options.gravity });
     }
-    if (options?.radius === 'max') transformations.push({ radius: 'max' });
-    else if (options?.radius) transformations.push({ radius: options.radius });
-    
+
+    // Radius (bo góc)
+    if (options?.radius === 'max') {
+      transformations.push({ radius: 'max' });
+    } else if (options?.radius) {
+      transformations.push({ radius: options.radius });
+    }
+
+    // Format
     if (options?.format || options?.fetchFormat) {
       transformations.push({ fetch_format: options.format || options.fetchFormat || 'auto' });
     }
-    if (options?.quality) transformations.push({ quality: options.quality });
+
+    // Quality
+    if (options?.quality) {
+      transformations.push({ quality: options.quality });
+    }
 
     return cloudinary.url(publicId, {
       transformation: transformations,
@@ -98,6 +102,13 @@ export class CloudinaryService implements OnModuleInit {
     });
   }
 
+  /**
+   * @author Tony Vu
+   * Tạo thumbnail URL với face detection (giống ví dụ)
+   * @param publicId - Public ID của image
+   * @param size - Kích thước (mặc định 200x200)
+   * @returns URL string
+   */
   getThumbnailUrl(publicId: string, size: number = 200): string {
     return this.getImageUrl(publicId, {
       crop: 'thumb',
@@ -109,6 +120,13 @@ export class CloudinaryService implements OnModuleInit {
     });
   }
 
+  /**
+   * @author Tony Vu
+   * Tạo square image URL
+   * @param publicId - Public ID của image
+   * @param size - Kích thước (mặc định 400x400)
+   * @returns URL string
+   */
   getSquareUrl(publicId: string, size: number = 400): string {
     return this.getImageUrl(publicId, {
       crop: 'fill',
@@ -120,6 +138,13 @@ export class CloudinaryService implements OnModuleInit {
     });
   }
 
+  /**
+   * @author Tony Vu
+   * Tạo optimized URL cho web (tự động format và quality)
+   * @param publicId - Public ID của image
+   * @param maxWidth - Chiều rộng tối đa
+   * @returns URL string
+   */
   getOptimizedUrl(publicId: string, maxWidth?: number): string {
     return this.getImageUrl(publicId, {
       width: maxWidth,
