@@ -6,14 +6,15 @@ import { Gender, WeightGoalPace } from "../enums/calorie.enum";
 import { OnboardingDto } from "../dto/onboarding.dto";
 
 // =================================================================
-// CẤU HÌNH MODEL TẠI ĐÂY (Thay đổi trực tiếp tên model ở dòng dưới)
+// CẤU HÌNH MODEL: luân phiên 2 model, lỗi thì retry model kia; model thành công được đặt mặc định cho lần sau
 // =================================================================
 const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
-const CURRENT_MODEL = 'gemini-2.5-flash'; 
 
 @Injectable()
 export class CalorieService {
   private client: GoogleGenAI;
+  /** Model mặc định sau khi có lần gọi thành công; null = chưa xác định, thử lần lượt theo MODELS */
+  private preferredModel: string | null = null;
 
   constructor() {
     this.client = new GoogleGenAI({
@@ -22,8 +23,10 @@ export class CalorieService {
   }
 
   async analyzeFoodImage(file: Express.Multer.File, country?: string): Promise<ICalorieAnalysis | null> {
-    // Sử dụng model được cấu hình cứng ở trên đầu file
-    const model = CURRENT_MODEL;
+    const modelOrder =
+      this.preferredModel !== null
+        ? [this.preferredModel, ...MODELS.filter((m) => m !== this.preferredModel)]
+        : [...MODELS];
 
     const payload = {
       contents: [
@@ -40,30 +43,31 @@ export class CalorieService {
           ],
         },
       ],
-      config: { 
-        responseMimeType: "application/json" as const 
+      config: {
+        responseMimeType: "application/json" as const,
       },
     };
 
-    try {
-      const response = await this.client.models.generateContent({ 
-        model, 
-        ...payload 
-      });
+    for (const model of modelOrder) {
+      try {
+        const response = await this.client.models.generateContent({
+          model,
+          ...payload,
+        });
 
-      if (response && response.text) {
-        return JSON.parse(response.text);
+        if (response && response.text) {
+          const parsed = JSON.parse(response.text);
+          this.preferredModel = model;
+          return parsed;
+        }
+      } catch (e) {
+        const err = e as any;
+        const errCode = err?.status || err?.error?.code || "UNKNOWN";
+        const errMsg = err?.message || err?.error?.message || JSON.stringify(err);
+        console.warn(`[Gemini Error] Model: ${model} | Code: ${errCode} | Message: ${errMsg}`);
       }
-      return null;
-
-    } catch (e) {
-      const err = e as any;
-      const errCode = err?.status || err?.error?.code || 'UNKNOWN';
-      const errMsg = err?.message || err?.error?.message || JSON.stringify(err);
-      
-      console.warn(`[Gemini Error] Model: ${model} | Code: ${errCode} | Message: ${errMsg}`);
-      return null;
     }
+    return null;
   }
 
   // --- CÁC HÀM BÊN DƯỚI GIỮ NGUYÊN ---
