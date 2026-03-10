@@ -2,7 +2,6 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
-import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
@@ -15,8 +14,6 @@ import { Plan, PlanSchema } from "../plan/schemas/plan.schema";
 import { HandleServiceService } from "../plan/services/handle_service.service";
 import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { Subscribe, SubscribeSchema } from "../subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../subscribe/services/subscribe.service";
@@ -69,10 +66,8 @@ import { PurchaseService } from "./services/purchase.service";
       { name: HandleService.name, schema: HandleServiceSchema },
       { name: VnpayLog.name, schema: VnpayLogSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     EmailModule,
-    CouponModule,
     SocketModule,
     NotificationModule,
   ],
@@ -97,7 +92,6 @@ import { PurchaseService } from "./services/purchase.service";
     EventHookWorkerService,
     EventHookNotificationService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [PurchaseHelper, PurchaseService],
 })

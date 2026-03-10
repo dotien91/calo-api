@@ -5,7 +5,6 @@ import { ChatRoomModule } from "../chat_room/chat_room.module";
 import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schemas/chat_room_user_option.schema";
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
-import { CouponModule } from "../coupon/coupon.module";
 import { EmailModule } from "../email/email.module";
 import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
@@ -16,9 +15,6 @@ import { HandleServiceService } from "../plan/services/handle_service.service";
 import { PlanService } from "../plan/services/plan.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
-import { ReferralModule } from "../referral/referral.module";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -87,13 +83,10 @@ import { CourseViewService } from "./services/course_view.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: ChatRoomUserOption.name, schema: ChatRoomUserOptionSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     ChatRoomModule,
     UserModule,
     EmailModule,
-    CouponModule,
-    ReferralModule,
     RedeemModule,
     SocketModule,
     NotificationModule,
@@ -124,7 +117,6 @@ import { CourseViewService } from "./services/course_view.service";
     UserOrganizationService,
     ChatRoomUserOptionService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [
     CourseHelper,

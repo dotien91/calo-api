@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import axios from "axios";
 import { GoogleGenAI } from "@google/genai";
 import { ICalorieAnalysis } from "../interfaces/calorie.interface";
 import { ACTIVITY_MULTIPLIERS, PACE_CALORIES } from "../constants/calorie.constants";
@@ -22,7 +23,11 @@ export class CalorieService {
     });
   }
 
-  async analyzeFoodImage(file: Express.Multer.File, country?: string): Promise<ICalorieAnalysis | null> {
+  async analyzeFoodImage(
+    file: Express.Multer.File,
+    country?: string,
+    userEditHint?: string,
+  ): Promise<ICalorieAnalysis | null> {
     const modelOrder =
       this.preferredModel !== null
         ? [this.preferredModel, ...MODELS.filter((m) => m !== this.preferredModel)]
@@ -33,7 +38,7 @@ export class CalorieService {
         {
           role: "user" as const,
           parts: [
-            { text: this.getDinhDuongPrompt(country) },
+            { text: this.getDinhDuongPrompt(country, userEditHint) },
             {
               inlineData: {
                 data: file.buffer.toString("base64"),
@@ -70,16 +75,53 @@ export class CalorieService {
     return null;
   }
 
+  /**
+   * Phân tích lại từ ảnh qua URL (dùng cho reanalyze – ảnh đã lưu trên Cloudinary).
+   * userEditHint: gợi ý chỉnh sửa của user, được đưa vào prompt để AI ưu tiên điều chỉnh.
+   */
+  async analyzeFoodImageFromUrl(
+    imageUrl: string,
+    country?: string,
+    userEditHint?: string,
+  ): Promise<ICalorieAnalysis | null> {
+    const res = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const buffer = Buffer.from(res.data);
+    const contentType = res.headers["content-type"];
+    const mimeType =
+      typeof contentType === "string" && contentType.split(";")[0].trim()
+        ? contentType.split(";")[0].trim()
+        : "image/jpeg";
+    const fileLike: Express.Multer.File = {
+      fieldname: "image",
+      originalname: "image.jpg",
+      encoding: "7bit",
+      mimetype: mimeType,
+      buffer,
+      size: buffer.length,
+    } as Express.Multer.File;
+    return this.analyzeFoodImage(fileLike, country, userEditHint);
+  }
+
   // --- CÁC HÀM BÊN DƯỚI GIỮ NGUYÊN ---
 
-  private getDinhDuongPrompt(country?: string): string {
+  private getDinhDuongPrompt(country?: string, userEditHint?: string): string {
     const countryContext = country 
       ? `Cấu hình quốc gia/loại hình ẩm thực: ${country}.` 
       : `Tự động nhận diện quốc gia và phong cách ẩm thực qua hình ảnh (đặc điểm nguyên liệu, cách bày trí, vật dụng ăn uống đi kèm) để áp dụng định mức calo tương ứng.`;
 
+    const userHintBlock =
+      userEditHint && userEditHint.trim()
+        ? `
+      QUAN TRỌNG - GỢI Ý CHỈNH SỬA CỦA NGƯỜI DÙNG (ưu tiên áp dụng khi phân tích):
+      "${userEditHint.trim()}"
+      Hãy điều chỉnh kết quả (tên món, thành phần, khối lượng, calo, macros) theo đúng gợi ý trên nếu hợp lý với hình ảnh.
+      `
+        : "";
+
     return `
       Hệ thống phân tích dinh dưỡng thực phẩm quốc tế.
       ${countryContext}
+      ${userHintBlock}
 
       LOGIC CHẤM ĐIỂM HEALTHY (/10):
       - Điểm cao (8-10): Ưu tiên thực phẩm tươi sống (sushi), đồ hấp/luộc, nhiều rau xanh, đạm nạc, ít nước sốt công nghiệp.

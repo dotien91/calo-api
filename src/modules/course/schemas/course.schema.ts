@@ -212,11 +212,7 @@ export class Course {
   type: CourseType;
 
   // percentage
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    default: null,
-    ref: "Coupon",
-  })
+  @Prop({ type: MongooseSchema.Types.ObjectId, default: null })
   coupon_id: string;
 
   @Prop({

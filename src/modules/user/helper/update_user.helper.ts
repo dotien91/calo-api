@@ -20,7 +20,6 @@ import {
   RedeemMissionActionType,
 } from "../../../modules/redeem/interfaces/redeem.interface.i";
 import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
-import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { SocketService } from "../../../modules/socket/services/socket.service";
 import { SocketPath } from "../../../modules/socket/services/socket.service.i";
 import { ChatRoomUserOptionService } from "../../chat_room/services/chat_room_user_option.service";
@@ -72,7 +71,6 @@ export class UpdateUserHelper {
     private userLocationService: UserLocationService,
     private userAnonymousService: UserAnonymousService,
     private chatRoomUserOptionService: ChatRoomUserOptionService,
-    private referralService: ReferralService,
     private socketService: SocketService,
     private redeemUserService: RedeemUserService
   ) {}
@@ -1414,8 +1412,6 @@ export class UpdateUserHelper {
         _id: userObject._id.toString(),
         ref_invitation_code: referralUser.invitation_code,
       });
-
-      this.referralService.processSignUpBonusForReferralUser(body.invitation_code, userObject);
 
       // update redeem mission for user
       if (referralUser)

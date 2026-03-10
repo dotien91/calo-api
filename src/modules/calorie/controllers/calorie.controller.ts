@@ -19,6 +19,9 @@ import { Response } from "express";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CloudinaryService } from "../../media/services/cloudinary.service";
 import { CreateManualCalorieDto } from "../dto/create-manual-calorie.dto";
+import { UpdateCalorieDto } from "../dto/update-calorie.dto";
+import { ReanalyzeCalorieDto } from "../dto/reanalyze-calorie.dto";
+import { AnalyzeFromUrlDto } from "../dto/analyze-from-url.dto";
 import { OnboardingDto } from "../dto/onboarding.dto";
 import { Onboarding } from "../schemas/onboarding.schema";
 import { CalorieAnalysisService } from "../services/calorie_analysis.service";
@@ -74,6 +77,39 @@ export class CalorieController {
       });
     } catch (error) {
       throw new BadRequestException(error.message || "Có lỗi xảy ra khi phân tích calorie.");
+    }
+  }
+
+  /**
+   * Phân tích lại từ URL ảnh + gợi ý user (không lưu DB). Dùng cho màn scanner khi user sửa kết quả và bấm "Phân tích lại bằng AI".
+   */
+  @Post("analyze-from-url")
+  async analyzeFromUrl(
+    @Body() body: AnalyzeFromUrlDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+      const result = await this.calorieService.analyzeFoodImageFromUrl(
+        body.image_url,
+        undefined,
+        body.user_edit_hint,
+      );
+      if (!result) {
+        throw new BadRequestException("AI không thể phân tích hình ảnh này.");
+      }
+      return res.status(HttpStatus.OK).json({
+        ...result,
+        image_url: body.image_url,
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        error.message || "Có lỗi xảy ra khi phân tích lại.",
+      );
     }
   }
 
@@ -201,6 +237,62 @@ export class CalorieController {
       return res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  /**
+   * Phân tích lại bằng AI từ ảnh đã lưu (image_url). Body có thể gửi user_edit_hint để AI ưu tiên chỉnh theo ý user.
+   */
+  @Post("reanalyze/:id")
+  async reanalyze(
+    @Param("id") id: string,
+    @Body() body: ReanalyzeCalorieDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+      const updated = await this.calorieAnalysisService.reanalyze(
+        id,
+        userObject._id.toString(),
+        body,
+      );
+      return res.status(HttpStatus.OK).json(updated);
+    } catch (error) {
+      throw new BadRequestException(
+        error.message || "Có lỗi xảy ra khi phân tích lại.",
+      );
+    }
+  }
+
+  /**
+   * Cập nhật calorie analysis (sửa kết quả) – chỉ chủ bản ghi mới được sửa
+   */
+  @Patch("update/:id")
+  async update(
+    @Param("id") id: string,
+    @Body() body: UpdateCalorieDto,
+    @Req() req: ExpressRequestDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const userObject = req?.user_object;
+      if (!userObject) {
+        throw new BadRequestException("User is invalid");
+      }
+      const updated = await this.calorieAnalysisService.update(
+        id,
+        userObject._id.toString(),
+        body,
+      );
+      return res.status(HttpStatus.OK).json(updated);
+    } catch (error) {
+      throw new BadRequestException(
+        error.message || "Có lỗi xảy ra khi sửa kết quả calorie.",
+      );
     }
   }
 

@@ -200,11 +200,7 @@ export class Order {
   @Prop({ type: MongooseSchema.Types.Date, default: null })
   cancelled_on: MongooseSchema.Types.Date;
 
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: "Coupon",
-    default: null,
-  })
+  @Prop({ type: MongooseSchema.Types.ObjectId, default: null })
   coupon_product_id: MongooseSchema.Types.ObjectId;
 
   @Prop({

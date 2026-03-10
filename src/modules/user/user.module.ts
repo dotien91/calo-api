@@ -6,7 +6,6 @@ import { ChatRoomUserOption, ChatRoomUserOptionSchema } from "../chat_room/schem
 import { ChatRoomUserOptionService } from "../chat_room/services/chat_room_user_option.service";
 import { Config, ConfigSchema } from "../config/schemas/config.schema";
 import { ConfigService } from "../config/services/config.service";
-import { CouponModule } from "../coupon/coupon.module";
 import { Course, CourseSchema } from "../course/schemas/course.schema";
 import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
 import { CourseUser, CourseUserSchema } from "../course/schemas/course_user.schema";
@@ -21,9 +20,6 @@ import { VnpayLog, VnpayLogSchema } from "../order/schemas/vnpay_log.schema";
 import { OrderService } from "../order/services/order.service";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
-import { ReferralModule } from "../referral/referral.module";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -104,11 +100,8 @@ import { UserViewService } from "./services/user_view.service";
       { name: CourseUser.name, schema: CourseUserSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     EmailModule,
-    CouponModule,
-    ReferralModule,
     forwardRef(() => RedeemModule),
     SocketModule,
     NotificationModule,
@@ -146,7 +139,6 @@ import { UserViewService } from "./services/user_view.service";
     CourseService,
     CourseUserService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [
     UserFilterHelper,

@@ -5,7 +5,6 @@ import * as momentTz from "moment-timezone";
 import mongoose, { Types } from "mongoose";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { ChatRoomUserOptionService } from "../../../modules/chat_room/services/chat_room_user_option.service";
-import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { AddPointToUserData } from "../../../modules/hook/interfaces/hook.interface";
 import { EventHookWorkerService } from "../../../modules/hook/services/hook_do.service";
 import { EventHookNotificationService } from "../../../modules/hook/services/hook_notification.service";
@@ -16,7 +15,6 @@ import {
   RedeemMissionActionType,
 } from "../../../modules/redeem/interfaces/redeem.interface.i";
 import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
-import { ReferralService } from "../../../modules/referral/services/referral.service";
 import {
   UserPointHistory_EntityAction,
   UserPointHistory_EntityTarget,
@@ -102,8 +100,6 @@ export class CourseHelper {
     private readonly chatRoomHelper: ChatRoomHelper,
     private readonly chatRoomService: ChatRoomService,
     private readonly emailService: EmailService,
-    private readonly couponService: CouponService,
-    private readonly referralService: ReferralService,
     private readonly redeemUserService: RedeemUserService,
     private readonly chatRoomUserOptionService: ChatRoomUserOptionService
   ) {
@@ -179,9 +175,7 @@ export class CourseHelper {
       };
       const serviceData = await this.handleServiceService.create(dataServiceToAdd);
       if (serviceData) {
-        const price = courseData?.coupon_id
-          ? this.couponService.getPrice(Number(courseData.price), courseData.coupon_id as any)
-          : Number(courseData?.price);
+        const price = Number(courseData?.price);
 
         const dataPlanCreate = {
           service_id: serviceData?._id?.toString(),
@@ -225,9 +219,7 @@ export class CourseHelper {
    */
   async handleUpdatePlan(courseData: Course) {
     try {
-      const price = courseData?.coupon_id
-        ? this.couponService.getPrice(Number(courseData.price), courseData.coupon_id as any)
-        : Number(courseData?.price);
+      const price = Number(courseData?.price);
 
       const dataPlanCreate = {
         _id: courseData?.plan_id?.toString(),
@@ -1438,9 +1430,6 @@ export class CourseHelper {
         let point = 0;
         if (dataCourse.module_count === dataCourseViewedModule.length) {
           point = 100;
-
-          // update coin for referral user
-          this.referralService.processCompletedCourseBonusForReferralUser(userObject, moduleObject?.course_id?.price);
 
           // update redeem for user
           this.redeemUserService.updateUserRedeem(

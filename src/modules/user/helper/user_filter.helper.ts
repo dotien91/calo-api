@@ -14,8 +14,6 @@ import { DecodeUserToken } from "../../../dto/decode-user-token.dto";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
 import { CoursePublicStatus } from "../../../modules/course/interfaces/course.interface";
 import { OrderService } from "../../../modules/order/services/order.service";
-import { ReferralType } from "../../../modules/referral/interfaces/referral.interface.i";
-import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { CourseService } from "../../course/services/course.service";
 import { CourseUserService } from "../../course/services/course_user.service";
 import { SearchAdminFilterDto } from "../dto/search-admin_filter.dto";
@@ -52,8 +50,7 @@ export class UserFilterHelper {
     private userQuestionService: UserQuestionService,
     private userLocationService: UserLocationService,
     private courseService: CourseService,
-    private courseUserService: CourseUserService,
-    private referralService: ReferralService
+    private courseUserService: CourseUserService
   ) { }
 
   /**
@@ -917,10 +914,6 @@ export class UserFilterHelper {
 
       const projection = {};
       const dataUser = await this.appUserService.findById(userId, projection);
-      const isReferral = await this.referralService.findOne({
-        user_id: userId,
-        type: ReferralType.SIGN_UP,
-      });
       if (!Number(dataUser?.user_status)) {
         throw new NotFoundException("User is invalid");
       }
@@ -930,7 +923,7 @@ export class UserFilterHelper {
         .status(HttpStatus.OK)
         .json({
           ...dataUser.toObject(),
-          is_referral: isReferral ? true : false,
+          is_referral: false,
         });
     } catch (error) {
       throw new NotFoundException(error.message);

@@ -21,7 +21,6 @@ import {
   RedeemMissionActionType,
 } from "../../../modules/redeem/interfaces/redeem.interface.i";
 import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
-import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { makeRandom } from "../../../utils/utils";
 import { ConfigService } from "../../config/services/config.service";
 import { EmailService } from "../../email/services/email.service";
@@ -56,7 +55,6 @@ export class UserLoginHelper {
     private userAnonymousSessionService: UserAnonymousSessionService,
     private emailService: EmailService,
     private configService: ConfigService,
-    private referralService: ReferralService,
     private redeemUserService: RedeemUserService
   ) {}
 
@@ -602,15 +600,8 @@ export class UserLoginHelper {
           true
         );
 
-        // update coin for referral user
-        // update point for referral user
         // update redeem mission for user
         if (dataLogin.invitation_code) {
-          // update coin for referral user
-          // update point for referral user
-          this.referralService.processSignUpBonusForReferralUser(dataLogin.invitation_code, userObject);
-
-          // update redeem mission for user
           const referralUser = await this.appUserService.findOne({
             invitation_code: dataLogin.invitation_code,
           });

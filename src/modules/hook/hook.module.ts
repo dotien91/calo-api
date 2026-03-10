@@ -4,8 +4,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
 import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -44,7 +42,6 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
       { name: UserPermission.name, schema: UserPermissionSchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionSchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
     NotificationModule,
@@ -62,7 +59,6 @@ import { EventHookNotificationService } from "./services/hook_notification.servi
     TransactionService,
     TransactionBankService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [EventHookNotificationService, EventHookWorkerService, EventHookAdderService],
 })

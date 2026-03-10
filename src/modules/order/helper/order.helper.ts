@@ -3,8 +3,6 @@ import axios from "axios";
 import { Response } from "express";
 import * as moment from "moment-timezone";
 import { ExpressRequestDto } from "../../../dto/express-request.dto";
-import { Coupon } from "../../../modules/coupon/schemas/coupon.schema";
-import { CouponService } from "../../../modules/coupon/services/coupon.service";
 import { AddMemberCourseClassDto } from "../../../modules/course/dto/create-course_class.dto";
 import { CreateCourseOneOneStudentDto } from "../../../modules/course/dto/create-course_one_one.dto";
 import { CourseService } from "../../../modules/course/services/course.service";
@@ -20,7 +18,6 @@ import {
   RedeemMissionActionType,
 } from "../../../modules/redeem/interfaces/redeem.interface.i";
 import { RedeemUserService } from "../../../modules/redeem/services/redeem_user.service";
-import { ReferralService } from "../../../modules/referral/services/referral.service";
 import { Subscribe } from "../../../modules/subscribe/schemas/subscribe.schema";
 import { SubscribeService } from "../../../modules/subscribe/services/subscribe.service";
 import { TelegramService } from "../../../modules/telegram/services/telegram.service";
@@ -65,11 +62,9 @@ export class OrderHelper {
     private courseService: CourseService,
     private emailService: EmailService,
     private userService: UserService,
-    private couponService: CouponService,
     private eventHookWorkerService: EventHookWorkerService,
     private eventHookNotificationService: EventHookNotificationService,
     private courseHelper: CourseHelper,
-    private referralService: ReferralService,
     private redeemUserService: RedeemUserService,
     private telegramService: TelegramService
   ) {
@@ -390,14 +385,8 @@ export class OrderHelper {
     return axios(config);
   }
 
-  getOrderPrice(couponProduct: Coupon, productPrice: number, productAmount = 1) {
-    let price = productPrice * productAmount || 0;
-
-    if (couponProduct) {
-      price = this.couponService.getPrice(price, couponProduct);
-    }
-
-    return price;
+  getOrderPrice(_couponProduct: null, productPrice: number, productAmount = 1) {
+    return productPrice * productAmount || 0;
   }
 
   /**
@@ -796,36 +785,14 @@ export class OrderHelper {
             // update redeem for user
             this.redeemUserService.updateUserRedeem(orderObject.user_id, RedeemMissionActionType.BUY, redeemTarget);
 
-            // update coin for referral user
             // update redeem mission for user
             if (orderObject.invitation_code) {
-              // update coin for referral user
-              this.referralService.processBuyProductBonusForReferralUser(
-                orderObject.invitation_code,
-                orderObject.user_id,
-                orderObject.price,
-                orderItem.plan_id.ref_id.toString()
-              );
-
-              // update redeem mission for user
               const referralUser = await this.userService.findOne({
                 invitation_code: orderObject.invitation_code,
               });
               if (referralUser)
                 this.redeemUserService.updateUserRedeem(referralUser, RedeemMissionActionType.BUY, redeemTarget);
             }
-          }
-        }
-
-        // should update coupon total
-        if (orderObject.coupon_product_id) {
-          const couponProduct = await this.couponService.findOne({ _id: orderObject.coupon_product_id });
-          if (couponProduct) {
-            if (couponProduct.total > 0)
-              this.couponService.update({
-                _id: orderObject.coupon_product_id,
-                total: couponProduct.total - 1,
-              });
           }
         }
 
@@ -1297,11 +1264,6 @@ export class OrderHelper {
         throw new BadRequestException(e.message);
       }
 
-      if (data.coupon_product_id) {
-        const coupon = await this.couponService.findOne({ _id: data.coupon_product_id });
-        if (!this.couponService.isUsedAble(coupon)) throw new Error("Coupon is expired or not available yet");
-      }
-
       const planObjects = await this.planService.findAll({
         _id: { $in: data.plan_objects.map((plan) => plan.plan_id) },
       });
@@ -1318,7 +1280,6 @@ export class OrderHelper {
 
       if (planObjects.length) {
         let dataToAdd = null;
-        let couponProduct = null;
         let orderPrice = 0;
         const orderItems = [];
 
@@ -1347,7 +1308,6 @@ export class OrderHelper {
             user_id: userId,
             items: orderItems,
             short_id: oldShortId,
-            coupon_product_id: data.coupon_product_id,
           },
         };
         if (data?.payment_method === "vn_pay") {
@@ -1365,8 +1325,7 @@ export class OrderHelper {
           dataToAdd = { ...dataToAdd, ...{ vnpay_on: newTime } };
         }
 
-        if (data.coupon_product_id) couponProduct = await this.couponService.findOne({ _id: data.coupon_product_id });
-        orderPrice = this.getOrderPrice(couponProduct, orderPrice);
+        orderPrice = this.getOrderPrice(null, orderPrice);
         dataToAdd = {
           ...dataToAdd,
           price: orderPrice,

@@ -8,8 +8,6 @@ import { EventHookNotificationService } from "../hook/services/hook_notification
 import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
 import { RedeemModule } from "../redeem/redeem.module";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -74,7 +72,6 @@ import { CommunityPollService } from "./services/community_poll.service";
       { name: Transaction.name, schema: TransactionSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     GptModule,
     RedeemModule,
@@ -105,7 +102,6 @@ import { CommunityPollService } from "./services/community_poll.service";
     TransactionService,
     TransactionBankService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [
     CommunityHelper,

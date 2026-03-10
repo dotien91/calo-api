@@ -315,6 +315,136 @@ export class CalorieAnalysisService {
   }
 
   /**
+   * Phân tích lại bằng AI từ ảnh đã lưu (image_url). Body.user_edit_hint được truyền vào prompt để AI ưu tiên chỉnh theo ý user.
+   */
+  async reanalyze(
+    id: string,
+    userId: string,
+    body?: { user_edit_hint?: string },
+  ): Promise<CalorieAnalysisDocument> {
+    const doc = await this.findById(id);
+    if (!doc) {
+      throw new Error("Không tìm thấy phân tích calorie này.");
+    }
+    if (doc.user_id.toString() !== userId) {
+      throw new Error("Bạn không có quyền phân tích lại bản ghi này.");
+    }
+    if (!doc.image_url) {
+      throw new Error("Bản ghi không có ảnh để phân tích lại.");
+    }
+    const analysisResult = await this.calorieService.analyzeFoodImageFromUrl(
+      doc.image_url,
+      undefined,
+      body?.user_edit_hint,
+    );
+    if (!analysisResult) {
+      throw new Error("AI không thể phân tích lại hình ảnh này.");
+    }
+    const normalizedIngredients = (analysisResult.ingredients || []).map(
+      (i: any) => ({
+        name: i?.name,
+        weight: i?.weight,
+        unit: i?.unit || "g",
+        calories: i?.calories,
+        carbs: i?.carbs,
+        protein: i?.protein,
+        fat: i?.fat,
+      }),
+    );
+    const update: any = {
+      food_name: analysisResult.food_name,
+      health_score: analysisResult.health_score ?? doc.health_score,
+      health_reason: analysisResult.health_reason ?? doc.health_reason,
+      total_weight: analysisResult.total_weight,
+      total_calories: analysisResult.total_calories,
+      total_carbs: analysisResult.total_carbs,
+      total_protein: analysisResult.total_protein,
+      total_fat: analysisResult.total_fat,
+      ingredients: normalizedIngredients,
+    };
+    const updated = await this.calorieAnalysisModel
+      .findByIdAndUpdate(new Types.ObjectId(id), update, { new: true })
+      .exec();
+    return updated;
+  }
+
+  /**
+   * Cập nhật calorie analysis (sửa kết quả). Chỉ user sở hữu bản ghi mới được sửa.
+   */
+  async update(
+    id: string,
+    userId: string,
+    body: {
+      food_name?: string;
+      image_url?: string;
+      total_weight?: number;
+      total_calories?: number;
+      total_carbs?: number;
+      total_protein?: number;
+      total_fat?: number;
+      ingredients?: Array<{
+        name: string;
+        weight: number;
+        unit?: string;
+        calories: number;
+        carbs: number;
+        protein: number;
+        fat: number;
+      }>;
+    },
+  ): Promise<CalorieAnalysisDocument> {
+    const doc = await this.findById(id);
+    if (!doc) {
+      throw new Error("Không tìm thấy phân tích calorie này.");
+    }
+    if (doc.user_id.toString() !== userId) {
+      throw new Error("Bạn không có quyền sửa bản ghi này.");
+    }
+
+    const update: any = {};
+    if (body.food_name !== undefined) update.food_name = body.food_name;
+    if (body.image_url !== undefined) update.image_url = body.image_url;
+    if (body.total_weight !== undefined) update.total_weight = body.total_weight;
+    if (body.total_calories !== undefined) update.total_calories = body.total_calories;
+    if (body.total_carbs !== undefined) update.total_carbs = body.total_carbs;
+    if (body.total_protein !== undefined) update.total_protein = body.total_protein;
+    if (body.total_fat !== undefined) update.total_fat = body.total_fat;
+
+    if (
+      body.total_calories !== undefined &&
+      body.total_protein !== undefined &&
+      body.total_carbs !== undefined &&
+      body.total_fat !== undefined
+    ) {
+      const healthScore = this.calorieService.calculateHealthScore(
+        body.total_calories,
+        body.total_protein,
+        body.total_carbs,
+        body.total_fat,
+      );
+      update.health_score = healthScore.score;
+      update.health_reason = healthScore.reason;
+    }
+
+    if (body.ingredients !== undefined) {
+      update.ingredients = body.ingredients.map((i: any) => ({
+        name: i?.name,
+        weight: i?.weight,
+        unit: i?.unit || "g",
+        calories: i?.calories,
+        carbs: i?.carbs,
+        protein: i?.protein,
+        fat: i?.fat,
+      }));
+    }
+
+    const updated = await this.calorieAnalysisModel
+      .findByIdAndUpdate(new Types.ObjectId(id), update, { new: true })
+      .exec();
+    return updated;
+  }
+
+  /**
    * Create analysis from manual payload (calculate health score then save)
    */
   async createFromManual(userId: string, body: any) {

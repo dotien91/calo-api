@@ -23,11 +23,9 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CalorieModule } from "./modules/calorie/calorie.module";
 import { CommunityModule } from "./modules/community/community.module";
-import { CouponModule } from "./modules/coupon/coupon.module";
 import { EmailModule } from "./modules/email/email.module";
 import { MediaModule } from "./modules/media/media.module";
 import { RedeemModule } from "./modules/redeem/redeem.module";
-import { ReferralModule } from "./modules/referral/referral.module";
 import { ShortModule } from "./modules/short/short.module";
 import { SocketModule } from "./modules/socket/socket.module";
 import { TestModule } from "./modules/test/test.module";
@@ -69,13 +67,11 @@ const dataImport = [
   ShortModule,
   CommunityModule,
   EmailModule,
-  CouponModule,
   CalorieModule,
   RedeemModule,
   TrackingModule,
   SocketModule,
   TestModule,
-  ReferralModule,
   BullModule.forRoot({
     redis: {
       host: process.env.REDIS_HOST,

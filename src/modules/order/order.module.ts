@@ -26,7 +26,6 @@ import { UserPermissionService } from "../user_permission/services/user_permissi
 import { OrderController } from "./controllers/order.controller";
 // import { OrderHelper } from "./helper/OrderHelper";
 import { JwtHelperService } from "../core/services/jwt_helper.service";
-import { CouponModule } from "../coupon/coupon.module";
 import { CourseModule } from "../course/course.module";
 import { Course, CourseSchema } from "../course/schemas/course.schema";
 import { CourseOneOne, CourseOneOneSchema } from "../course/schemas/course_one_one.schema";
@@ -36,9 +35,6 @@ import { CourseUserService } from "../course/services/course_user.service";
 import { EmailModule } from "../email/email.module";
 import { NotificationModule } from "../notification/notification.module";
 import { RedeemModule } from "../redeem/redeem.module";
-import { ReferralModule } from "../referral/referral.module";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TelegramService } from "../telegram/services/telegram.service";
 import { UserPointHistory, UserPointHistorySchema } from "../user/schemas/user_point_history.schema";
@@ -78,13 +74,10 @@ import { OrderService } from "./services/order.service";
       { name: Course.name, schema: CourseSchema },
       { name: CourseOneOne.name, schema: CourseOneOneSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     EmailModule,
     UserModule,
     CourseModule,
-    CouponModule,
-    ReferralModule,
     RedeemModule,
     SocketModule,
     NotificationModule,
@@ -111,7 +104,6 @@ import { OrderService } from "./services/order.service";
     CourseService,
     UserService,
     UserPointHistoryService,
-    ReferralService,
     TelegramService,
   ],
   exports: [OrderService],

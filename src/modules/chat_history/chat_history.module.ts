@@ -16,8 +16,6 @@ import { EventHookNotificationService } from "../hook/services/hook_notification
 import { Media, MediaSchema } from "../media/schemas/media.schema";
 import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TransactionHelper } from "../transaction/helper/transaction.helper";
 import { Transaction, TransactionSchema } from "../transaction/schemas/transaction.schema";
@@ -65,7 +63,6 @@ import { ChatHistory, ChatHistorySchema } from "./schemas/chat_history.schema";
       { name: UserAnonymous.name, schema: UserAnonymousSchema },
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
     NotificationModule,
@@ -91,7 +88,6 @@ import { ChatHistory, ChatHistorySchema } from "./schemas/chat_history.schema";
     EventHookWorkerService,
     EventHookNotificationService,
     UserPointHistoryService,
-    ReferralService,
   ],
   exports: [ChatHistoryHelper, ChatHistoryService],
 })

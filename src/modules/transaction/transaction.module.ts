@@ -6,8 +6,6 @@ import { EventHookWorkerService } from "../hook/services/hook_do.service";
 import { EventHookNotificationService } from "../hook/services/hook_notification.service";
 import { NotificationModule } from "../notification/notification.module";
 import { QueueService } from "../queue/queue.service";
-import { Referral, ReferralSchema } from "../referral/schemas/referral.schema";
-import { ReferralService } from "../referral/services/referral.service";
 import { SocketModule } from "../socket/socket.module";
 import { TelegramService } from "../telegram/services/telegram.service";
 import { User, UserSchema } from "../user/schemas/user.schema";
@@ -44,7 +42,6 @@ import { TransactionBankService } from "./services/transaction_bank.service";
       { name: TransactionBank.name, schema: TransactionBankSchema },
       { name: UserSession.name, schema: UserSessionSchema },
       { name: UserPointHistory.name, schema: UserPointHistorySchema },
-      { name: Referral.name, schema: ReferralSchema },
     ]),
     SocketModule,
     NotificationModule,
@@ -62,7 +59,6 @@ import { TransactionBankService } from "./services/transaction_bank.service";
     JwtHelperService,
     UserSessionService,
     UserPointHistoryService,
-    ReferralService,
     TelegramService,
   ],
   exports: [TransactionHelper, TransactionBankService, TransactionService],
